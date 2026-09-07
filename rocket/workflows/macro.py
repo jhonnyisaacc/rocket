@@ -108,7 +108,18 @@ class MacroWorkflow:
             dates = sorted(values)
             stamp = dates[-1]
             prior_dates = [item for item in dates if item <= stamp - timedelta(days=28)]
-            prior = prior_dates[-1] if prior_dates else dates[0]
+            if not prior_dates:
+                factors[symbol] = {
+                    "status": "INSUFFICIENT",
+                    "failure_kind": "NO_4W_HISTORY",
+                    "observation_at": iso(stamp),
+                    "value": values[stamp],
+                    "source": result.source,
+                    "citation": f"https://fred.stlouisfed.org/series/{symbol}",
+                }
+                warnings.append(f"{symbol}: no observation at least 28 days before the latest print")
+                continue
+            prior = prior_dates[-1]
             fresh = started - stamp <= timedelta(days=days)
             retrieved = result.retrieved_at or started
             factors[symbol] = {

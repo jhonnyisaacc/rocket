@@ -8,9 +8,12 @@ from datetime import UTC, datetime, time, timedelta
 from html import unescape
 from typing import Literal
 
+import httpx
+
 from rocket.clock import NY, exchange_holidays
 
 ReportKind = Literal["manufacturing", "services"]
+ISM_SITEMAP_URL = "https://www.ismworld.org/sitemap.xml"
 _MONTH_PATTERN = (
     r"(?:January|February|March|April|May|June|July|"
     r"August|September|October|November|December)"
@@ -213,3 +216,32 @@ def parse_ism_html(html: str, *, kind: ReportKind, source_url: str) -> ISMReport
         contracting=_parse_industry_list(headline, trend="contracting"),
         source_url=source_url,
     )
+
+
+def latest_roundup_url(sitemap_xml: str, kind: ReportKind) -> str | None:
+    urls = re.findall(r"<loc>(https://www\.ismworld\.org[^<]+)</loc>", sitemap_xml)
+    roundups = [url for url in urls if "ism-pmi-reports-roundup" in url and f"-{kind}/" in url]
+    return max(roundups) if roundups else None
+
+
+def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None) -> ISMReport:
+    """Publisher path: sitemap roundup → PR Newswire body when unique, else roundup HTML."""
+    owns = http is None
+    client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"}, follow_redirects=True)
+    try:
+        sitemap = client.get(ISM_SITEMAP_URL)
+        sitemap.raise_for_status()
+        roundup_url = latest_roundup_url(sitemap.text, kind)
+        if not roundup_url:
+            raise ValueError(f"ISM {kind} roundup URL unavailable")
+        roundup = client.get(roundup_url)
+        roundup.raise_for_status()
+        source_url = extract_prnewswire_url(roundup.text, roundup_url=roundup_url, kind=kind) or roundup_url
+        if source_url == roundup_url:
+            return parse_ism_html(roundup.text, kind=kind, source_url=source_url)
+        release = client.get(source_url)
+        release.raise_for_status()
+        return parse_ism_html(release.text, kind=kind, source_url=source_url)
+    finally:
+        if owns:
+            client.close()

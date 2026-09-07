@@ -219,7 +219,7 @@ def ism(
 ) -> None:
     """Manufacturing and services ISM. Headline stays separate from rankings."""
     del json_out
-    from rocket.providers.ism import parse_ism_html
+    from rocket.providers.ism import fetch_ism_report, parse_ism_html
     from rocket.workflows.ism import IsmWorkflow
 
     reports = {}
@@ -235,6 +235,12 @@ def ism(
             kind="services",
             source_url=str(services_html),
         )
+    if not reports:
+        for kind in ("manufacturing", "services"):
+            try:
+                reports[kind] = fetch_ism_report(kind)
+            except (httpx.HTTPError, TypeError, ValueError):
+                continue
     store = ResearchStore(state_dir or rocket_home())
     emit_result(IsmWorkflow(store=store).run(reports=reports or None), human=human)
 
@@ -378,19 +384,47 @@ def memecoin_scan(
 @memecoin_app.command("collect")
 def memecoin_collect(
     spool: Path = typer.Option(..., "--spool"),
+    input_file: Path | None = typer.Option(None, "--input", exists=True, readable=True),
     state_dir: Path | None = typer.Option(None, "--state-dir"),
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Open the raw spool. Hot path is append/fsync only; not a strategy job."""
+    """Append raw frames to the spool. Not a strategy job and not a live websocket."""
     del json_out
     from rocket.capture.spool import RawCaptureSpool
+    from rocket.workflows.memecoin import MemecoinWorkflow, frames_from_payload
+
+    raw = json.loads(input_file.read_text(encoding="utf-8")) if input_file else []
+    writer = RawCaptureSpool(spool, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
+    try:
+        result = MemecoinWorkflow(store=ResearchStore(state_dir or rocket_home())).collect(
+            writer,
+            frames_from_payload(raw),
+        )
+    finally:
+        writer.close()
+    emit_result(result, human=human)
+
+
+@memecoin_app.command("evaluate")
+def memecoin_evaluate(
+    outcomes: Path = typer.Option(..., "--outcomes", exists=True, readable=True),
+    scan_file: Path | None = typer.Option(None, "--scan-file", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.models import ResearchResult as Result
     from rocket.workflows.memecoin import MemecoinWorkflow
 
-    writer = RawCaptureSpool(spool, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
-    writer.close()
     store = ResearchStore(state_dir or rocket_home())
-    emit_result(MemecoinWorkflow(store=store).status(), human=human)
+    scan = Result.from_dict(json.loads(scan_file.read_text(encoding="utf-8"))) if scan_file else store.load_result("memecoin.scan")
+    if scan is None:
+        raise typer.BadParameter("no scan result; pass --scan-file or run memecoin scan")
+    raw = json.loads(outcomes.read_text(encoding="utf-8"))
+    rows = raw.get("outcomes", raw) if isinstance(raw, dict) else raw
+    emit_result(MemecoinWorkflow(store=store).evaluate(scan, rows), human=human)
 
 
 if __name__ == "__main__":

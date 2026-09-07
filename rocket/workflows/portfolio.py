@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import json
 import math
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from rocket.clock import equity_observation_fresh
+from rocket.config import env
 from rocket.models import (
     Evidence,
     EvidenceKind,
@@ -117,6 +118,9 @@ def review_positions(
     evidence_by_ticker: Mapping[str, Mapping[str, Any]] | None = None,
     *,
     now: datetime | None = None,
+    inventory_status: OperationalStatus | None = None,
+    pending_review: Sequence[Mapping[str, Any]] = (),
+    extra_warnings: Sequence[str] = (),
 ) -> ResearchResult:
     evidence_by_ticker = evidence_by_ticker or {}
     decisions: list[dict[str, Any]] = []
@@ -201,24 +205,34 @@ def review_positions(
                 )
             )
     attention = [row for row in decisions if row["action"] != "HOLD"]
+    extra = tuple(extra_warnings)
     if not state.positions:
         research = ResearchStatus.INSUFFICIENT_EVIDENCE
         operational = OperationalStatus.HEALTHY
-        warnings = ("CALLER_STATE_MISSING: no positions in supplied portfolio state",)
+        warnings = ("CALLER_STATE_MISSING: no positions in supplied portfolio state",) + extra
     elif attention:
         research = ResearchStatus.ACTION_REQUIRED
         operational = OperationalStatus.HEALTHY
-        warnings = ()
+        warnings = extra
     else:
         research = ResearchStatus.NO_SETUP
         operational = OperationalStatus.HEALTHY
-        warnings = ()
+        warnings = extra
+    providers = [ProviderHealth(name="caller_state", status=OperationalStatus.HEALTHY, retrieved_at=decision_time)]
+    if inventory_status is not None:
+        providers.append(ProviderHealth(name="inventory", status=inventory_status, retrieved_at=decision_time))
+        if inventory_status is OperationalStatus.UNAVAILABLE:
+            operational = OperationalStatus.UNAVAILABLE
+            if research in {ResearchStatus.NO_SETUP, ResearchStatus.SETUP_FOUND}:
+                research = ResearchStatus.INSUFFICIENT_EVIDENCE
+        elif inventory_status is OperationalStatus.PARTIAL and operational is OperationalStatus.HEALTHY:
+            operational = OperationalStatus.PARTIAL
     return ResearchResult(
         workflow=WORKFLOW,
         status=research,
         operational=OperationalReport(
             status=operational,
-            providers=(ProviderHealth(name="caller_state", status=OperationalStatus.HEALTHY, retrieved_at=decision_time),),
+            providers=tuple(providers),
         ),
         decision_time=decision_time,
         started_at=decision_time,
@@ -230,6 +244,7 @@ def review_positions(
             "human_decision_required": True,
             "summary": {"attention": len(attention), "unchanged": len(decisions) - len(attention)},
             "execution_enabled": False,
+            "pending_review": list(pending_review),
             "user_state": {
                 "updated_at": state.updated_at,
                 "source_path": state.source_path,
@@ -256,16 +271,39 @@ class PortfolioWorkflow:
         now: datetime | None = None,
         refresh_inventory: bool = False,
     ) -> ResearchResult:
-        if refresh_inventory and self.inventory is not None and state.wallet_address:
-            fetched = self.inventory.fetch(address=state.wallet_address, now=now)
-            if fetched.status is OperationalStatus.HEALTHY:
-                by_ticker = {
-                    str(row.get("ticker") or "").upper(): row
-                    for row in fetched.records
-                    if isinstance(row, Mapping) and row.get("ticker")
-                }
-                state = apply_inventory(state, by_ticker)
-        result = review_positions(state, evidence_by_ticker, now=now)
+        inventory_status = None
+        pending: tuple[Mapping[str, Any], ...] = ()
+        extra_warnings: tuple[str, ...] = ()
+        if refresh_inventory:
+            address = state.wallet_address or env("ROCKET_INVENTORY_ADDRESS")
+            if self.inventory is None or not address:
+                inventory_status = OperationalStatus.UNAVAILABLE
+                extra_warnings = ("inventory refresh requested but no wallet address was available",)
+            else:
+                fetched = self.inventory.fetch(address=address, now=now)
+                inventory_status = fetched.status
+                if fetched.status is OperationalStatus.HEALTHY:
+                    by_ticker = {
+                        str(row.get("ticker") or "").upper(): row
+                        for row in fetched.records
+                        if isinstance(row, Mapping) and row.get("ticker") and row.get("ticker") != "UNKNOWN"
+                    }
+                    state = apply_inventory(state, by_ticker)
+                    pending = tuple(
+                        row
+                        for row in fetched.records
+                        if isinstance(row, Mapping) and row.get("pending_review") is True
+                    )
+                else:
+                    extra_warnings = ("inventory provider did not return a healthy snapshot",)
+        result = review_positions(
+            state,
+            evidence_by_ticker,
+            now=now,
+            inventory_status=inventory_status,
+            pending_review=pending,
+            extra_warnings=extra_warnings,
+        )
         if self.store:
             self.store.save_result(result)
         return result

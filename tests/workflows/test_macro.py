@@ -49,3 +49,18 @@ def test_missing_factor_fail_closed(tmp_path):
 
 def test_all_factors_present_in_contract():
     assert set(FACTORS) == {"EFFR", "WDTGAL", "RRPONTSYD", "WALCL"}
+
+
+def test_short_history_does_not_impute_neutral_regime(tmp_path):
+    from rocket.store import ResearchStore
+
+    def fetcher(symbol: str):
+        records = [{"date": NOW.date().isoformat(), "value": 10}]
+        return {"records": records, "retrieved_at": NOW.isoformat()}, "fixture"
+
+    result = MacroWorkflow(store=ResearchStore(tmp_path), fetcher=fetcher).run(now=NOW)
+    assert_research_result(result)
+    assert result.payload["regime"] == "unknown"
+    assert result.payload["status"] == "UNAVAILABLE"
+    assert not macro_is_usable(result.payload, NOW)
+    assert result.payload["factors"]["EFFR"]["status"] == "INSUFFICIENT"

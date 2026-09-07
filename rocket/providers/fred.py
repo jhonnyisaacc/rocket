@@ -69,14 +69,19 @@ def parse_fred_csv(text: str, series_id: str) -> list[dict[str, Any]]:
 
 
 def fetch_fred_csv(series_id: str, *, http: httpx.Client | None = None) -> Mapping[str, Any]:
+    owns = http is None
     client = http or httpx.Client(timeout=15.0)
     params: dict[str, str] = {"id": series_id}
     api_key = env("FRED_API_KEY")
     if api_key:
         params["api_key"] = api_key
-    response = client.get(FRED_CSV_URL, params=params)
-    response.raise_for_status()
-    records = parse_fred_csv(response.text, series_id)
+    try:
+        response = client.get(FRED_CSV_URL, params=params)
+        response.raise_for_status()
+        records = parse_fred_csv(response.text, series_id)
+    finally:
+        if owns:
+            client.close()
     observed = max((d for row in records if (d := _record_date(row))), default=None)
     retrieved = datetime.now(UTC).isoformat()
     return {

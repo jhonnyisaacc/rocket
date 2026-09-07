@@ -5,6 +5,8 @@ from rocket.providers.ism import (
     ISMReport,
     expected_reference,
     extract_prnewswire_url,
+    fetch_ism_report,
+    latest_roundup_url,
     parse_ism_html,
     release_identity,
 )
@@ -64,3 +66,42 @@ def test_ism_workflow_healthy_no_setup(tmp_path):
     assert result.operational.status is OperationalStatus.HEALTHY
     assert result.status is ResearchStatus.NO_SETUP
     assert result.payload["nmfbai_substituted_for_services_composite"] is False
+
+
+def test_latest_roundup_url_picks_kind():
+    sitemap = """
+    <url><loc>https://www.ismworld.org/blog/2026/ism-pmi-reports-roundup-august-2026-manufacturing/</loc></url>
+    <url><loc>https://www.ismworld.org/blog/2026/ism-pmi-reports-roundup-august-2026-services/</loc></url>
+    """
+    assert latest_roundup_url(sitemap, "services").endswith("-services/")
+
+
+def test_fetch_ism_report_follows_roundup(monkeypatch):
+    roundup = "https://www.ismworld.org/blog/2026/ism-pmi-reports-roundup-august-2026-manufacturing/"
+    release = "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-54-6-august-2026-report.html"
+    pages = {
+        "https://www.ismworld.org/sitemap.xml": f"<url><loc>{roundup}</loc></url>",
+        roundup: f'<h1>August Manufacturing</h1><a href="{release}">release</a>',
+        release: (
+            "<h1>August 2026 Manufacturing</h1>Manufacturing PMI registered 54.6 percent. "
+            "The industries reporting growth are: Primary Metals."
+        ),
+    }
+
+    class _Response:
+        def __init__(self, text):
+            self.text = text
+
+        def raise_for_status(self):
+            return None
+
+    class _Client:
+        def get(self, url):
+            return _Response(pages[url])
+
+        def close(self):
+            raise AssertionError("injected client must not be closed")
+
+    report = fetch_ism_report("manufacturing", http=_Client())
+    assert report.pmi == 54.6
+    assert report.source_url == release

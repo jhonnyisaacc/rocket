@@ -21,6 +21,7 @@ from rocket.pit import parse_datetime
 from rocket.store import ResearchStore
 
 WORKFLOW = "shorts"
+# Catalyst is optional: there is no live catalyst provider. Missing stays UNKNOWN.
 _FACTORS = (
     "macro_regime",
     "sector_weakness",
@@ -29,6 +30,7 @@ _FACTORS = (
     "technical_breakdown",
     "catalyst",
     "positioning_crowding",
+    "company_fundamentals",
 )
 UNIVERSE = {"AAPL": "XLK", "NVDA": "XLK", "TSLA": "XLY", "JPM": "XLF"}
 
@@ -42,6 +44,7 @@ def _flag(value: object) -> bool:
 def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
     macro = str(row.get("macro_regime") or "").strip().lower()
+    fundamentals = row.get("company_fundamentals")
     factors = {
         "macro_regime": macro or None,
         "sector_weakness": _flag(row.get("sector_weakness")),
@@ -50,8 +53,13 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "technical_breakdown": _flag(row.get("technical_breakdown")),
         "catalyst": str(row.get("catalyst") or "").strip() or None,
         "positioning_crowding": _flag(row.get("positioning_crowding")),
+        "company_fundamentals": None if fundamentals is None else _flag(fundamentals),
     }
-    non_macro = sum(bool(factors[name]) for name in _FACTORS if name not in {"macro_regime", "valuation_support"})
+    non_macro = sum(
+        factors[name] is True if name == "company_fundamentals" else bool(factors[name])
+        for name in _FACTORS
+        if name not in {"macro_regime", "valuation_support"}
+    )
     total = non_macro + int(macro in {"bearish", "risk_off", "contraction"})
     missing = [name for name in row.get("required_factors", []) if row.get(name) is None]
     if missing:
@@ -69,7 +77,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "asset": ticker,
         "direction": "short",
         "factors": factors,
-        "factor_states": {name: "UNKNOWN" if row.get(name) is None else "OBSERVED" for name in (*_FACTORS, "company_fundamentals")},
+        "factor_states": {name: "UNKNOWN" if factors.get(name) is None else "OBSERVED" for name in _FACTORS},
         "missing_required_factors": missing,
         "factor_count": total,
         "selected": selected,

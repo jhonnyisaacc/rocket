@@ -1,8 +1,11 @@
 from datetime import UTC, datetime
 
 from rocket.models import OperationalStatus, ResearchStatus
+from rocket.providers.inventory import FileInventory
+from rocket.store import ResearchStore
 from rocket.workflows.portfolio import (
     PortfolioState,
+    PortfolioWorkflow,
     PositionState,
     apply_inventory,
     review_positions,
@@ -57,3 +60,40 @@ def test_inventory_updates_quantity_without_creating_positions_or_theses():
     assert updated.positions[0].quantity == 3
     assert updated.positions[0].thesis == "keep"
     assert updated.positions[0].thesis_status == "RECORDED"
+
+
+def test_refresh_without_address_is_unavailable(tmp_path, monkeypatch):
+    monkeypatch.delenv("ROCKET_INVENTORY_ADDRESS", raising=False)
+    state = PortfolioState(positions=(PositionState("MSFT", thesis="keep", quantity=1),), updated_at=NOW.isoformat())
+    result = PortfolioWorkflow(store=ResearchStore(tmp_path), inventory=FileInventory()).run(
+        state,
+        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "source": "fixture"}}},
+        now=NOW,
+        refresh_inventory=True,
+    )
+    assert_research_result(result)
+    assert result.operational.status is OperationalStatus.UNAVAILABLE
+    assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
+
+
+def test_pending_ondo_mints_are_surfaced(tmp_path):
+    inventory = FileInventory(
+        (
+            {"ticker": "MSFT", "quantity": 4},
+            {"ticker": "UNKNOWN", "mint": "mysteryondo", "quantity": 2, "pending_review": True},
+        )
+    )
+    state = PortfolioState(
+        wallet_address="abc",
+        updated_at=NOW.isoformat(),
+        positions=(PositionState("MSFT", thesis="keep", quantity=1),),
+    )
+    result = PortfolioWorkflow(store=ResearchStore(tmp_path), inventory=inventory).run(
+        state,
+        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "source": "fixture"}}},
+        now=NOW,
+        refresh_inventory=True,
+    )
+    assert_research_result(result)
+    assert result.payload["positions"][0]["quantity"] == 4
+    assert result.payload["pending_review"][0]["mint"] == "mysteryondo"

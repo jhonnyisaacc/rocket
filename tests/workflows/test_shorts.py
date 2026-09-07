@@ -12,6 +12,21 @@ def test_shorts_registered():
     assert is_registered("shorts")
 
 
+def test_company_fundamentals_counts_as_non_macro_factor():
+    row = score_candidate(
+        {
+            "ticker": "AAPL",
+            "macro_regime": "risk_off",
+            "technical_breakdown": True,
+            "company_fundamentals": True,
+            "sector_weakness": False,
+        }
+    )
+    assert row["factors"]["company_fundamentals"] is True
+    assert row["factor_states"]["company_fundamentals"] == "OBSERVED"
+    assert row["selected"] is True
+
+
 def test_bearish_macro_alone_cannot_select():
     row = score_candidate({"ticker": "AAPL", "macro_regime": "bearish", "required_factors": ["catalyst"]})
     assert row["selected"] is False

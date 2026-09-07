@@ -44,6 +44,28 @@ def test_duplicate_identity_rejected():
     assert result.payload["case_study"] is None
 
 
+def test_collect_appends_frames(tmp_path):
+    spool = RawCaptureSpool(tmp_path / "spool", max_bytes=1024 * 1024, reserve_bytes=1)
+    result = MemecoinWorkflow().collect(spool, [(b"abc", NOW + timedelta(seconds=1))], now=NOW)
+    spool.close()
+    assert_research_result(result)
+    assert result.payload["edge"] == "NO_EDGE_VALIDATED"
+    assert result.payload["frames_appended"] == 1
+
+
+def test_evaluate_never_validates(tmp_path):
+    scan = MemecoinWorkflow().scan([snapshot()], now=NOW)
+    result = MemecoinWorkflow().evaluate(
+        scan,
+        [{"chain_id": "eip155:1", "contract_address": "0x" + "1" * 40, "forward_return": 0.4}],
+        now=NOW,
+    )
+    assert_research_result(result)
+    assert result.payload["edge"] == "NO_EDGE_VALIDATED"
+    assert result.payload["metrics"]["evaluated_count"] == 1
+    assert result.payload.get("strategy_state") != "VALIDATED"
+
+
 def test_spool_fsync_round_trip(tmp_path):
     spool = RawCaptureSpool(tmp_path, max_bytes=1024 * 1024, reserve_bytes=1)
     received = NOW + timedelta(seconds=1)

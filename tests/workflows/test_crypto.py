@@ -205,7 +205,7 @@ def test_scan_live_joins_hyperliquid_without_imputing_setups(tmp_path):
     assert observation["source"] == "live:CoinGecko+Hyperliquid"
     assert observation["candidates"][0]["setup_validation"]["valid"] is False
     names = {item.name for item in result.operational.providers}
-    assert names == {"coingecko", "hyperliquid"}
+    assert {"coingecko", "hyperliquid", "macro"} <= names
 
 
 def test_scan_live_hyperliquid_down_is_partial(tmp_path):
@@ -286,4 +286,60 @@ def test_scan_live_uses_injected_candles_for_setup(tmp_path):
     assert_research_result(result)
     assert result.status is ResearchStatus.SETUP_FOUND
     assert result.payload["funnel"]["momentum_pass"] == 1
+    assert result.payload["funnel"]["derivatives_pass"] == 1
     assert result.payload["final_candidates"][0]["direction"] == "long"
+
+
+def test_unknown_cot_does_not_veto_valid_setup():
+    funnel, final, _ = build_funnel(replay(candidate()), macro_context=_macro(), cot_regime="unknown")
+    assert funnel["cot_regime"] == "unknown"
+    assert funnel["final_candidates"] == 1
+    assert final
+
+
+def test_stale_cot_context_fails_open(tmp_path):
+    from rocket.store import ResearchStore
+
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_payload(
+        replay(candidate()),
+        macro_context=_macro(),
+        cot_context={"status": "STALE", "regime": "bearish", "warnings": ["COT report is stale; no directional COT gate was applied"]},
+        mode=Mode.REPLAY,
+        now=NOW,
+    )
+    assert_research_result(result)
+    assert result.status is ResearchStatus.SETUP_FOUND
+    assert any("COT is not applied as an asset-level signal" in warning for warning in result.warnings)
+
+
+def test_setup_rejects_extended_print():
+    bars = _rising_4h()
+    last = dict(bars[-1])
+    last["close"] = last["high"] * 1.05
+    last["high"] = last["close"]
+    setup = setup_from_candles([*bars[:-1], last])
+    assert setup["valid"] is False
+    assert setup["reason"] == "extended_beyond_retest_band"
+
+
+def test_scan_live_macro_down_is_not_healthy(tmp_path):
+    from rocket.store import ResearchStore
+
+    universe = ProviderResult(
+        status=OperationalStatus.HEALTHY,
+        records=(_cap("BTC", "bitcoin", 1),),
+        source="coingecko",
+    )
+    perps = ProviderResult(status=OperationalStatus.HEALTHY, records=(_perp("BTC"),), source="hyperliquid")
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_live(
+        universe=universe,
+        perps=perps,
+        candles={},
+        macro_context={"contract": "current_macro_v1", "status": "UNAVAILABLE"},
+        cot_regime="neutral",
+        now=NOW,
+    )
+    assert_research_result(result)
+    assert result.operational.status is OperationalStatus.PARTIAL
+    assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
+    assert any(item.name == "macro" and item.status is OperationalStatus.UNAVAILABLE for item in result.operational.providers)

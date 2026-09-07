@@ -206,7 +206,7 @@ def corroborate_claims(
                         {"topic": topic, "claim": transcript_claim.claim, "observed_direction": observed}
                     )
         except Exception as exc:
-            warnings.append(f"{topic}: {exc}")
+            warnings.append(f"{topic}: {type(exc).__name__}")
     return CavaCorroboration(
         evidence=tuple(evidence),
         indicators=tuple(indicators),

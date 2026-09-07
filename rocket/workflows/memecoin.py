@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import math
 import re
 from collections.abc import Mapping, Sequence
@@ -74,6 +75,32 @@ def _eligible(row: Mapping[str, Any]) -> tuple[bool, list[str]]:
     except (TypeError, ValueError):
         blockers.append("liquidity_missing")
     return not blockers, blockers
+
+
+def frames_from_payload(payload: Any) -> list[tuple[bytes, datetime]]:
+    rows = payload.get("frames", payload) if isinstance(payload, Mapping) else payload
+    frames: list[tuple[bytes, datetime]] = []
+    if not isinstance(rows, Sequence) or isinstance(rows, (str, bytes)):
+        return frames
+    for row in rows:
+        if isinstance(row, Mapping):
+            raw = row.get("raw") or row.get("raw_base64")
+            stamp = parse_datetime(row.get("received_at") or row.get("available_at"))
+            if isinstance(raw, str):
+                try:
+                    raw_bytes = base64.b64decode(raw)
+                except (ValueError, TypeError):
+                    raw_bytes = raw.encode()
+            elif isinstance(raw, bytes):
+                raw_bytes = raw
+            else:
+                continue
+            if stamp is None:
+                continue
+            frames.append((raw_bytes, stamp))
+        elif isinstance(row, bytes):
+            frames.append((row, datetime.now(UTC)))
+    return frames
 
 
 class MemecoinWorkflow:
@@ -153,6 +180,80 @@ class MemecoinWorkflow:
             },
             evidence=tuple(evidence),
             warnings=("NO EDGE VALIDATED. Discovery is research-only.",),
+        )
+        if self.store:
+            self.store.save_result(result)
+        return result
+
+    def collect(self, spool: Any, frames: Sequence[tuple[bytes, datetime]], *, now: datetime | None = None) -> ResearchResult:
+        decided = now or datetime.now(UTC)
+        receipts = spool.append_batch(frames)
+        result = ResearchResult(
+            workflow="memecoin.collect",
+            status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            operational=OperationalReport(status=OperationalStatus.HEALTHY),
+            decision_time=decided,
+            started_at=decided,
+            completed_at=decided,
+            payload={
+                "edge": EDGE,
+                "frames_appended": len(receipts),
+                "receipts": receipts,
+                "collector": "spool_first",
+                "execution_enabled": False,
+            },
+            warnings=("NO EDGE VALIDATED. Capture is spool-first; this is not a live websocket job.",),
+        )
+        if self.store:
+            self.store.save_result(result)
+        return result
+
+    def evaluate(
+        self,
+        scan_result: ResearchResult,
+        outcomes: Sequence[Mapping[str, Any]],
+        *,
+        now: datetime | None = None,
+    ) -> ResearchResult:
+        decided = now or datetime.now(UTC)
+        selected = {
+            str(item.get("identity"))
+            for item in (scan_result.payload.get("selected") or [])
+            if isinstance(item, Mapping) and item.get("identity")
+        }
+        evaluated = []
+        for outcome in outcomes:
+            if not isinstance(outcome, Mapping):
+                continue
+            identity = canonical_identity(outcome) or str(outcome.get("identity") or "")
+            if not identity or identity not in selected:
+                continue
+            try:
+                forward = float(outcome["forward_return"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if not math.isfinite(forward):
+                continue
+            evaluated.append({"identity": identity, "forward_return": forward, "hit": forward >= 0})
+        result = ResearchResult(
+            workflow="memecoin.evaluate",
+            status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            operational=OperationalReport(status=OperationalStatus.HEALTHY),
+            decision_time=decided,
+            started_at=decided,
+            completed_at=decided,
+            payload={
+                "edge": EDGE,
+                "strategy_state": "EXPERIMENTAL",
+                "metrics": {
+                    "evaluated_count": len(evaluated),
+                    "hit_rate": (sum(item["hit"] for item in evaluated) / len(evaluated)) if evaluated else None,
+                },
+                "outcomes": evaluated,
+                "source_scan_run_id": scan_result.run_id,
+                "execution_enabled": False,
+            },
+            warnings=("NO EDGE VALIDATED. Evaluation is research evidence only.",),
         )
         if self.store:
             self.store.save_result(result)

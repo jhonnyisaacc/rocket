@@ -125,7 +125,7 @@ def build_funnel(
                 claim=f"The point-in-time universe contained {len(members)} deduplicated members",
                 kind=EvidenceKind.FACT,
                 event_time=observation_time,
-                available_at=parse_datetime(observation.get("source_timestamp")) or observation_time,
+                available_at=parse_datetime(observation.get("source_timestamp")),
                 retrieved_at=observation_time,
                 decision_time=observation_time,
                 provenance=Provenance.PROVIDER_RESULT,
@@ -152,17 +152,17 @@ def build_funnel(
             if _asset_key(raw_candidate) == "unknown" or available is None or available > observation_time:
                 counts["invalid_observations"] += 1
                 continue
-            cot_pass = cot_regime_passes(effective_cot, direction)
+            cot_pass = True if effective_cot == "unknown" else cot_regime_passes(effective_cot, direction)
             if eligible:
                 counts["eligible"] += 1
-            if liquid:
+            if eligible and liquid:
                 counts["liquid"] += 1
-                counts["derivatives_pass"] += 1
             if eligible and liquid and setup_valid:
                 counts["momentum_pass"] += 1
-            if macro_pass and eligible and liquid:
+                counts["derivatives_pass"] += 1
+            if eligible and liquid and setup_valid and macro_pass:
                 counts["macro_pass"] += 1
-            if cot_pass and eligible and liquid:
+            if eligible and liquid and setup_valid and macro_pass and cot_pass:
                 counts["cot_pass"] += 1
             if not (eligible and liquid and setup_valid and macro_pass and cot_pass):
                 continue
@@ -378,10 +378,16 @@ def setup_from_candles(bars: Sequence[Mapping[str, Any]] | None) -> dict[str, An
             "bars": len(parsed),
         }
     structure = structure_state(parsed)
-    window = parsed[-STRUCTURE_BARS:]
-    close = window[-1]["close"]
-    swing_high = max(row["high"] for row in window)
-    swing_low = min(row["low"] for row in window)
+    prior = parsed[-(STRUCTURE_BARS + 1) : -1]
+    if len(prior) < STRUCTURE_BARS:
+        return {
+            "valid": False,
+            "reason": "insufficient_4h_history",
+            "bars": len(parsed),
+        }
+    close = parsed[-1]["close"]
+    swing_high = max(row["high"] for row in prior)
+    swing_low = min(row["low"] for row in prior)
     if structure == "HIGHER_HIGH_HIGHER_LOW":
         if close > swing_high * (1 + NO_CHASE_PCT):
             return {
@@ -753,8 +759,10 @@ class CryptoWorkflow:
                 self.store.save_result(result)
             return result
         perps_result = perps or fetch_perp_markets(now=observed)
+        macro_result = None
         if macro_context is None:
-            macro_context = MacroWorkflow(store=self.store).run(now=observed).payload
+            macro_result = MacroWorkflow(store=self.store).run(now=observed)
+            macro_context = macro_result.payload
         if cot_context is None and cot_regime in {"bullish", "bearish", "neutral"}:
             cot_context = {
                 "status": "OVERRIDE",
@@ -809,6 +817,22 @@ class CryptoWorkflow:
                     "status": cot_status,
                     "retrieved_at": observed.isoformat(),
                     "failure_kind": cot_context.get("failure_kind"),
+                }
+            )
+        if macro_result is not None:
+            providers.extend(item.to_dict() for item in macro_result.operational.providers)
+        else:
+            if macro_is_usable(macro_context, observed):
+                macro_status = OperationalStatus.HEALTHY
+            elif (macro_context or {}).get("status") == "UNAVAILABLE":
+                macro_status = OperationalStatus.UNAVAILABLE
+            else:
+                macro_status = OperationalStatus.PARTIAL
+            providers.append(
+                {
+                    "name": "macro",
+                    "status": macro_status.value,
+                    "retrieved_at": observed.isoformat(),
                 }
             )
         return self.scan_payload(
