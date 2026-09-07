@@ -16,8 +16,10 @@ from rocket.store import ResearchStore
 app = typer.Typer(add_completion=False, no_args_is_help=True, help="Rocket research engine")
 watch_app = typer.Typer(help="Deterministic price watches")
 portfolio_app = typer.Typer(help="Caller-owned portfolio review")
+crypto_app = typer.Typer(help="Crypto futures top-100 research")
 app.add_typer(watch_app, name="watch")
 app.add_typer(portfolio_app, name="portfolio")
+app.add_typer(crypto_app, name="crypto")
 
 
 def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -> None:
@@ -138,6 +140,69 @@ def portfolio_review(
         ),
         human=human,
     )
+
+
+@crypto_app.command("scan")
+def crypto_scan(
+    fixture: Path | None = typer.Option(None, "--fixture", exists=True, readable=True),
+    cot_regime: str = typer.Option("unknown", "--cot-regime"),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Top-100 market-cap universe plus liquid-perp funnel. Replay with --fixture."""
+    del json_out
+    from rocket.workflows.crypto import CryptoWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    workflow = CryptoWorkflow(store=store)
+    if fixture:
+        result = workflow.scan_from_fixture(fixture, cot_regime=cot_regime)
+    else:
+        result = workflow.scan_live(cot_regime=cot_regime)
+    emit_result(result, human=human)
+
+
+@crypto_app.command("evaluate")
+def crypto_evaluate(
+    outcomes: Path = typer.Option(..., "--outcomes", exists=True, readable=True),
+    scan_file: Path | None = typer.Option(None, "--scan-file", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.models import ResearchResult as Result
+    from rocket.workflows.crypto import CryptoWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    scan = Result.from_dict(json.loads(scan_file.read_text(encoding="utf-8"))) if scan_file else store.load_result("crypto.scan")
+    if scan is None:
+        raise typer.BadParameter("no scan result; pass --scan-file or run crypto scan")
+    raw = json.loads(outcomes.read_text(encoding="utf-8"))
+    rows = raw.get("outcomes", raw) if isinstance(raw, dict) else raw
+    emit_result(CryptoWorkflow(store=store).evaluate(scan, rows), human=human)
+
+
+@crypto_app.command("missed")
+def crypto_missed(
+    outcomes: Path = typer.Option(..., "--outcomes", exists=True, readable=True),
+    scan_file: Path | None = typer.Option(None, "--scan-file", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.models import ResearchResult as Result
+    from rocket.workflows.crypto import CryptoWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    scan = Result.from_dict(json.loads(scan_file.read_text(encoding="utf-8"))) if scan_file else store.load_result("crypto.scan")
+    if scan is None:
+        raise typer.BadParameter("no scan result; pass --scan-file or run crypto scan")
+    raw = json.loads(outcomes.read_text(encoding="utf-8"))
+    rows = raw.get("outcomes", raw) if isinstance(raw, dict) else raw
+    emit_result(CryptoWorkflow(store=store).missed(scan, rows), human=human)
 
 
 if __name__ == "__main__":
