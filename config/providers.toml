@@ -1,0 +1,57 @@
+# Capability → provider. Workflows depend on capabilities, not vendor modules.
+# Add a provider by implementing the protocol and adding a row here.
+
+[macro]
+primary = "openbb_fred"
+fallbacks = ["fred_csv"]
+env = ["FRED_API_KEY"]
+
+[quotes]
+primary = "yahoo"
+fallbacks = []
+env = []
+
+[fundamentals]
+primary = "fmp"
+fallbacks = ["massive"]
+env = ["FMP_API_KEY", "MASSIVE_API_KEY"]
+
+[universe]
+primary = "coingecko"
+fallbacks = []
+size = 100
+
+[perps]
+primary = "hyperliquid"
+fallbacks = []
+env = ["HL_WALLET"]
+
+[cot]
+primary = "openbb_cftc"
+fallbacks = ["cftc"]
+
+[ism]
+primary = "ism_publisher"
+fallbacks = []
+
+[disclosures_official]
+primary = "house_oge"
+fallbacks = []
+
+[disclosures_secondary]
+primary = "fmp"
+env = ["FMP_API_KEY"]
+
+[transcript]
+primary = "supadata"
+fallbacks = []
+env = ["SUPADATA_API_KEY", "SUPADATA_API_TOKEN"]
+
+[inventory]
+primary = "solana_ondo"
+fallbacks = []
+env = ["HELIUS_API_KEY", "ROCKET_INVENTORY_ADDRESS"]
+
+[memecoin_capture]
+primary = "pumpapi"
+fallbacks = []

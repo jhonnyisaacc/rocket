@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rocket"
+version = "0.1.0"
+description = "Read-only, bot-runtime-agnostic market research engine"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "orjson>=3.10",
+    "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
+[project.scripts]
+rocket = "rocket.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["rocket*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+extend-ignore = ["B008", "TRY004", "FURB162", "DTZ001", "SIM102"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "integration: live provider calls (deselect with -m 'not integration')",
+]
+addopts = "-q"
