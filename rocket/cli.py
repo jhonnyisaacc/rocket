@@ -17,9 +17,13 @@ app = typer.Typer(add_completion=False, no_args_is_help=True, help="Rocket resea
 watch_app = typer.Typer(help="Deterministic price watches")
 portfolio_app = typer.Typer(help="Caller-owned portfolio review")
 crypto_app = typer.Typer(help="Crypto futures top-100 research")
+options_app = typer.Typer(help="Options research primitives; never auto-validated")
+memecoin_app = typer.Typer(help="Memecoin primitives; no validated edge")
 app.add_typer(watch_app, name="watch")
 app.add_typer(portfolio_app, name="portfolio")
 app.add_typer(crypto_app, name="crypto")
+app.add_typer(options_app, name="options")
+app.add_typer(memecoin_app, name="memecoin")
 
 
 def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -> None:
@@ -203,6 +207,175 @@ def crypto_missed(
     raw = json.loads(outcomes.read_text(encoding="utf-8"))
     rows = raw.get("outcomes", raw) if isinstance(raw, dict) else raw
     emit_result(CryptoWorkflow(store=store).missed(scan, rows), human=human)
+
+
+@app.command("ism")
+def ism(
+    manufacturing_html: Path | None = typer.Option(None, "--manufacturing-html", exists=True, readable=True),
+    services_html: Path | None = typer.Option(None, "--services-html", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Manufacturing and services ISM. Headline stays separate from rankings."""
+    del json_out
+    from rocket.providers.ism import parse_ism_html
+    from rocket.workflows.ism import IsmWorkflow
+
+    reports = {}
+    if manufacturing_html:
+        reports["manufacturing"] = parse_ism_html(
+            manufacturing_html.read_text(encoding="utf-8"),
+            kind="manufacturing",
+            source_url=str(manufacturing_html),
+        )
+    if services_html:
+        reports["services"] = parse_ism_html(
+            services_html.read_text(encoding="utf-8"),
+            kind="services",
+            source_url=str(services_html),
+        )
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(IsmWorkflow(store=store).run(reports=reports or None), human=human)
+
+
+@app.command("disclosures")
+def disclosures(
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Official House + OGE filings. Healthy no-new is not a provider failure."""
+    del json_out
+    from rocket.providers.disclosures import (
+        OfficialHouseDisclosureProvider,
+        OfficialOGEExecutiveDisclosureProvider,
+    )
+    from rocket.workflows.disclosures import DisclosureWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    congress, executive = [], []
+    status = {}
+    try:
+        congress = OfficialHouseDisclosureProvider().fetch()
+        status["congress"] = {"status": "OK"}
+    except Exception as exc:
+        status["congress"] = {"status": "UNAVAILABLE", "failure_kind": type(exc).__name__}
+    try:
+        executive = OfficialOGEExecutiveDisclosureProvider().fetch()
+        status["executive"] = {"status": "OK"}
+    except Exception as exc:
+        status["executive"] = {"status": "UNAVAILABLE", "failure_kind": type(exc).__name__}
+    emit_result(
+        DisclosureWorkflow(store=store).run(
+            congress_records=congress,
+            executive_records=executive,
+            provider_status=status,
+        ),
+        human=human,
+    )
+
+
+@app.command("shorts")
+def shorts(
+    input_file: Path | None = typer.Option(None, "--input-file", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Autonomous multi-factor short scan. Macro alone cannot select."""
+    del json_out
+    from rocket.providers.shorts import acquire_short_snapshot
+    from rocket.workflows.shorts import ShortsWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    if input_file:
+        raw = json.loads(input_file.read_text(encoding="utf-8"))
+        rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
+    else:
+        rows = acquire_short_snapshot()
+    emit_result(ShortsWorkflow(store=store).scan(rows), human=human)
+
+
+@options_app.command("scan")
+def options_scan(
+    domain: str = typer.Option("crypto", "--domain"),
+    input_file: Path = typer.Option(..., "--input-file", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.workflows.options import OptionsWorkflow
+
+    raw = json.loads(input_file.read_text(encoding="utf-8"))
+    rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(OptionsWorkflow(store=store).scan(domain, rows), human=human)
+
+
+@options_app.command("evaluate")
+def options_evaluate(
+    domain: str = typer.Option("crypto", "--domain"),
+    outcomes: Path = typer.Option(..., "--outcomes", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.workflows.options import OptionsWorkflow
+
+    raw = json.loads(outcomes.read_text(encoding="utf-8"))
+    rows = raw.get("outcomes", raw) if isinstance(raw, dict) else raw
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(OptionsWorkflow(store=store).evaluate(domain, rows), human=human)
+
+
+@memecoin_app.command("status")
+def memecoin_status(
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.workflows.memecoin import MemecoinWorkflow
+
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(MemecoinWorkflow(store=store).status(), human=human)
+
+
+@memecoin_app.command("scan")
+def memecoin_scan(
+    input_file: Path = typer.Option(..., "--input", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    del json_out
+    from rocket.workflows.memecoin import MemecoinWorkflow
+
+    raw = json.loads(input_file.read_text(encoding="utf-8"))
+    rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(MemecoinWorkflow(store=store).scan(rows), human=human)
+
+
+@memecoin_app.command("collect")
+def memecoin_collect(
+    spool: Path = typer.Option(..., "--spool"),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Open the raw spool. Hot path is append/fsync only; not a strategy job."""
+    del json_out
+    from rocket.capture.spool import RawCaptureSpool
+    from rocket.workflows.memecoin import MemecoinWorkflow
+
+    writer = RawCaptureSpool(spool, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
+    writer.close()
+    store = ResearchStore(state_dir or rocket_home())
+    emit_result(MemecoinWorkflow(store=store).status(), human=human)
 
 
 if __name__ == "__main__":

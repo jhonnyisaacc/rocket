@@ -14,9 +14,14 @@ from rocket.models import (
 from rocket.pit import Availability
 from rocket.workflows.cava import CavaWorkflow
 from rocket.workflows.crypto import CryptoWorkflow
+from rocket.workflows.disclosures import DisclosureWorkflow
 from rocket.workflows.fixture import FixtureWorkflow
+from rocket.workflows.ism import IsmWorkflow
 from rocket.workflows.macro import MacroWorkflow
+from rocket.workflows.memecoin import MemecoinWorkflow
+from rocket.workflows.options import OptionsWorkflow
 from rocket.workflows.portfolio import PortfolioWorkflow
+from rocket.workflows.shorts import ShortsWorkflow
 from rocket.workflows.watch import WatchWorkflow
 
 WORKFLOWS: dict[str, type] = {
@@ -26,6 +31,11 @@ WORKFLOWS: dict[str, type] = {
     "watch.check": WatchWorkflow,
     "portfolio.review": PortfolioWorkflow,
     "crypto.scan": CryptoWorkflow,
+    "ism": IsmWorkflow,
+    "disclosures": DisclosureWorkflow,
+    "shorts": ShortsWorkflow,
+    "options.scan": OptionsWorkflow,
+    "memecoin.scan": MemecoinWorkflow,
 }
 
 FORBIDDEN_SUBSTRINGS = (
