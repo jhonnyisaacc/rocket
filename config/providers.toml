@@ -24,6 +24,8 @@ size = 100
 [perps]
 primary = "hyperliquid"
 fallbacks = []
+# HL_WALLET exists in this environment and is listed so Rocket never drops it.
+# Live research uses public POST /info only and does not read the wallet.
 env = ["HL_WALLET"]
 
 [cot]

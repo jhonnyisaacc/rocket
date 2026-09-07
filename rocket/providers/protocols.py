@@ -30,3 +30,7 @@ class Quotes(Protocol):
 
 class Inventory(Protocol):
     def fetch(self, *, address: str, now: datetime | None = None) -> ProviderResult: ...
+
+
+class Perps(Protocol):
+    def fetch(self, *, now: datetime | None = None) -> ProviderResult: ...
