@@ -10,7 +10,7 @@ import orjson
 import typer
 
 from rocket.config import rocket_home
-from rocket.models import ResearchResult, exit_code
+from rocket.models import OperationalStatus, ResearchResult, exit_code
 from rocket.store import ResearchStore
 
 app = typer.Typer(add_completion=False, no_args_is_help=True, help="Rocket research engine")
@@ -254,8 +254,9 @@ def disclosures(
     from rocket.workflows.disclosures import DisclosureWorkflow
 
     store = ResearchStore(state_dir or rocket_home())
-    congress, executive = [], []
+    congress, executive, secondary = [], [], []
     status = {}
+    extra_warnings: list[str] = []
     try:
         congress = OfficialHouseDisclosureProvider().fetch()
         status["congress"] = {"status": "OK"}
@@ -266,11 +267,25 @@ def disclosures(
         status["executive"] = {"status": "OK"}
     except Exception as exc:
         status["executive"] = {"status": "UNAVAILABLE", "failure_kind": type(exc).__name__}
+    from rocket.providers.fmp import FMPClient
+
+    fmp = FMPClient()
+    if not fmp.configured():
+        extra_warnings.append("FMP_API_KEY unset; secondary disclosures skipped")
+    else:
+        trades = fmp.politician_trades()
+        if trades.status is OperationalStatus.UNAVAILABLE:
+            status["secondary"] = {"status": "UNAVAILABLE", "failure_kind": trades.failure_kind}
+        else:
+            secondary = list(trades.records)
+            status["secondary"] = {"status": "OK", "source": "fmp"}
     emit_result(
         DisclosureWorkflow(store=store).run(
             congress_records=congress,
             executive_records=executive,
+            secondary_records=secondary,
             provider_status=status,
+            warnings=extra_warnings,
         ),
         human=human,
     )
@@ -285,7 +300,7 @@ def shorts(
 ) -> None:
     """Autonomous multi-factor short scan. Macro alone cannot select."""
     del json_out
-    from rocket.providers.shorts import acquire_short_snapshot
+    from rocket.providers.shorts import acquire_short_snapshot, live_fundamentals_fetcher
     from rocket.workflows.shorts import ShortsWorkflow
 
     store = ResearchStore(state_dir or rocket_home())
@@ -293,7 +308,7 @@ def shorts(
         raw = json.loads(input_file.read_text(encoding="utf-8"))
         rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
     else:
-        rows = acquire_short_snapshot()
+        rows = acquire_short_snapshot(fundamentals=live_fundamentals_fetcher())
     emit_result(ShortsWorkflow(store=store).scan(rows), human=human)
 
 

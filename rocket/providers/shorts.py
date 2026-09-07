@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping
 from datetime import UTC, datetime, timedelta
+from typing import Any
 
 import httpx
 
@@ -23,7 +25,13 @@ def _closes(symbol: str, http: httpx.Client) -> tuple[list[float], str | None]:
     return closes, stamp
 
 
-def acquire_short_snapshot(*, now: datetime | None = None, universe=None, http: httpx.Client | None = None) -> list[dict]:
+def acquire_short_snapshot(
+    *,
+    now: datetime | None = None,
+    universe=None,
+    http: httpx.Client | None = None,
+    fundamentals: Callable[[str], Mapping[str, Any]] | None = None,
+) -> list[dict]:
     now = now or datetime.now(UTC)
     universe = universe or UNIVERSE
     symbols = sorted(set(universe) | set(universe.values()) | {"SPY"})
@@ -59,7 +67,7 @@ def acquire_short_snapshot(*, now: datetime | None = None, universe=None, http: 
             "event_time": observed,
             "available_at": now.isoformat() if valid else None,
             "acquisition_mode": "LIVE",
-            "required_factors": ["company_fundamentals", "technical_breakdown", "catalyst"],
+            "required_factors": ["company_fundamentals", "technical_breakdown"],
             "provider_health": "HEALTHY" if valid else "DATA_UNAVAILABLE",
             "company_fundamentals": None,
             "catalyst": None,
@@ -69,6 +77,19 @@ def acquire_short_snapshot(*, now: datetime | None = None, universe=None, http: 
         }
         if valid and series:
             row["technical_breakdown"] = series[-1] < min(series[-21:-1])
+        if fundamentals is not None:
+            extra = fundamentals(ticker)
+            if isinstance(extra, Mapping):
+                for key in (
+                    "company_fundamentals",
+                    "earnings_revision_deterioration",
+                    "valuation_support",
+                    "pe_ttm",
+                    "eps_growth",
+                    "fundamentals_source",
+                ):
+                    if key in extra:
+                        row[key] = extra[key]
         if spy[3] and spy[0]:
             bench = spy[0]
             row["macro_regime"] = "risk_off" if bench[-1] < sum(bench[-20:]) / 20 else "neutral"
@@ -78,3 +99,19 @@ def acquire_short_snapshot(*, now: datetime | None = None, universe=None, http: 
             row["sector_weakness"] = sector_return < 0 and sector_return < bench_return
         rows.append(row)
     return rows
+
+
+def live_fundamentals_fetcher() -> Callable[[str], Mapping[str, Any]] | None:
+    from rocket.providers.fmp import FMPClient
+
+    client = FMPClient()
+    if not client.configured():
+        return None
+
+    def _fetch(symbol: str) -> Mapping[str, Any]:
+        result = client.fundamentals(symbol)
+        if not result.records:
+            return {}
+        return result.records[0]
+
+    return _fetch

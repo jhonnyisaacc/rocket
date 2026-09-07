@@ -34,3 +34,11 @@ class Inventory(Protocol):
 
 class Perps(Protocol):
     def fetch(self, *, now: datetime | None = None) -> ProviderResult: ...
+
+
+class Cot(Protocol):
+    def fetch(self, *, now: datetime | None = None) -> ProviderResult: ...
+
+
+class Fundamentals(Protocol):
+    def fetch(self, symbol: str, *, now: datetime | None = None) -> ProviderResult: ...

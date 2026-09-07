@@ -8,6 +8,7 @@ from rocket.workflows.crypto import (
     build_funnel,
     build_live_observation,
     cot_regime_passes,
+    setup_from_candles,
 )
 from rocket.workflows.macro import MacroWorkflow
 from tests.harness import assert_research_result, is_registered
@@ -186,6 +187,7 @@ def test_scan_live_joins_hyperliquid_without_imputing_setups(tmp_path):
     result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_live(
         universe=universe,
         perps=perps,
+        candles={},
         macro_context=_macro(),
         cot_regime="neutral",
         now=NOW,
@@ -218,6 +220,7 @@ def test_scan_live_hyperliquid_down_is_partial(tmp_path):
     result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_live(
         universe=universe,
         perps=perps,
+        candles={},
         macro_context=_macro(),
         cot_regime="neutral",
         now=NOW,
@@ -228,3 +231,59 @@ def test_scan_live_hyperliquid_down_is_partial(tmp_path):
     assert "hyperliquid perpetual metadata unavailable" in result.warnings
     assert result.payload["funnel"]["eligible"] == 0
     assert result.payload["observations"][0]["candidates"][0]["liquidity"]["state"] == "REJECT"
+
+
+def _rising_4h(n=30):
+    start_ms = int(NOW.timestamp() * 1000) - n * 4 * 3600 * 1000
+    rows = []
+    for index in range(n):
+        base = 100.0 + index
+        ts = start_ms + index * 4 * 3600 * 1000
+        rows.append(
+            {
+                "timestamp_ms": ts,
+                "timestamp": datetime.fromtimestamp(ts / 1000, UTC).isoformat(),
+                "open": base,
+                "high": base + 2,
+                "low": base - 0.4,
+                "close": base + 1,
+                "volume": 10.0,
+            }
+        )
+    return rows
+
+
+def test_setup_from_rising_structure_is_long():
+    setup = setup_from_candles(_rising_4h())
+    assert setup["valid"] is True
+    assert setup["direction"] == "long"
+    assert setup["entry_zone"][0] < setup["entry_zone"][1]
+
+
+def test_setup_without_history_stays_invalid():
+    setup = setup_from_candles(_rising_4h(3))
+    assert setup["valid"] is False
+    assert setup["reason"] == "insufficient_4h_history"
+
+
+def test_scan_live_uses_injected_candles_for_setup(tmp_path):
+    from rocket.store import ResearchStore
+
+    universe = ProviderResult(
+        status=OperationalStatus.HEALTHY,
+        records=(_cap("BTC", "bitcoin", 1),),
+        source="coingecko",
+    )
+    perps = ProviderResult(status=OperationalStatus.HEALTHY, records=(_perp("BTC"),), source="hyperliquid")
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_live(
+        universe=universe,
+        perps=perps,
+        candles={"BTC": _rising_4h()},
+        macro_context=_macro(),
+        cot_regime="neutral",
+        now=NOW,
+    )
+    assert_research_result(result)
+    assert result.status is ResearchStatus.SETUP_FOUND
+    assert result.payload["funnel"]["momentum_pass"] == 1
+    assert result.payload["final_candidates"][0]["direction"] == "long"

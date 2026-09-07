@@ -27,6 +27,7 @@ WORKFLOW = "disclosures"
 class SourceFamily(StrEnum):
     CONGRESS = "congress"
     EXECUTIVE = "executive"
+    SECONDARY = "secondary"
 
 
 def _clean(value: Any) -> str | None:
@@ -54,17 +55,19 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
     }
     return {
         "subject_filer": subject,
-        "owner": None,
+        "owner": _clean(record.get("owner")),
         "asset": asset,
         "transaction_type": tx_type,
-        "transaction_date": None,
-        "disclosure_date": None,
+        "transaction_date": _clean(record.get("transaction_date")),
+        "disclosure_date": _clean(record.get("disclosure_date")),
         "source_url_reference": source,
         "source_family": family.value,
         "provider": record.get("provider"),
         "index_added_at": record.get("index_added_at"),
-        "unique_id": _stable_id(fields),
-        "record_semantics": "FILING_NOT_TRADE_ROW",
+        "unique_id": _stable_id({**fields, "provider": record.get("provider")}),
+        "record_semantics": "SECONDARY_TRANSACTION_ROW"
+        if family is SourceFamily.SECONDARY
+        else "FILING_NOT_TRADE_ROW",
     }
 
 
@@ -79,13 +82,18 @@ class DisclosureWorkflow:
         *,
         congress_records: Iterable[Mapping[str, Any]] = (),
         executive_records: Iterable[Mapping[str, Any]] = (),
+        secondary_records: Iterable[Mapping[str, Any]] = (),
         now: datetime | None = None,
         provider_status: Mapping[str, Any] | None = None,
         warnings: Iterable[str] = (),
     ) -> ResearchResult:
         decided = now or datetime.now(UTC)
         unique: dict[str, dict[str, Any]] = {}
-        for family, rows in ((SourceFamily.CONGRESS, congress_records), (SourceFamily.EXECUTIVE, executive_records)):
+        for family, rows in (
+            (SourceFamily.CONGRESS, congress_records),
+            (SourceFamily.EXECUTIVE, executive_records),
+            (SourceFamily.SECONDARY, secondary_records),
+        ):
             for record in rows:
                 normalized = normalize_record(record, family=family)
                 if normalized:

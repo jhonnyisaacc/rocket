@@ -33,6 +33,9 @@ MIN_QUOTE_VOLUME_24H = 5_000_000.0
 MIN_OPEN_INTEREST_USD = 1_000_000.0
 MAX_SPREAD_BPS = 20.0
 MAX_SLIPPAGE_BPS = 25.0
+STRUCTURE_BARS = 6
+MIN_SETUP_BARS = 24
+NO_CHASE_PCT = 0.02
 
 
 def _asset_key(candidate: Mapping[str, Any]) -> str:
@@ -331,6 +334,128 @@ def assess_live_liquidity(perp: Mapping[str, Any] | None) -> dict[str, Any]:
     }
 
 
+def _ohlc(bars: Sequence[Mapping[str, Any]]) -> list[dict[str, float]]:
+    parsed: list[dict[str, float]] = []
+    for bar in bars:
+        try:
+            high = float(bar["high"])
+            low = float(bar["low"])
+            close = float(bar["close"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if high <= 0 or low <= 0 or close <= 0 or high < low:
+            continue
+        parsed.append({"high": high, "low": low, "close": close})
+    return parsed
+
+
+def structure_state(bars: Sequence[Mapping[str, float]]) -> str:
+    window = list(bars)[-STRUCTURE_BARS:]
+    if len(window) < STRUCTURE_BARS:
+        return "INSUFFICIENT_DATA"
+    highs = [row["high"] for row in window]
+    lows = [row["low"] for row in window]
+    higher = all(highs[index] > highs[index - 1] for index in range(1, len(highs))) and all(
+        lows[index] > lows[index - 1] for index in range(1, len(lows))
+    )
+    lower = all(highs[index] < highs[index - 1] for index in range(1, len(highs))) and all(
+        lows[index] < lows[index - 1] for index in range(1, len(lows))
+    )
+    if higher:
+        return "HIGHER_HIGH_HIGHER_LOW"
+    if lower:
+        return "LOWER_HIGH_LOWER_LOW"
+    return "MIXED"
+
+
+def setup_from_candles(bars: Sequence[Mapping[str, Any]] | None) -> dict[str, Any]:
+    """Conservative 4h structure setup. Missing bars stay invalid; nothing is imputed."""
+    parsed = _ohlc(bars or ())
+    if len(parsed) < MIN_SETUP_BARS:
+        return {
+            "valid": False,
+            "reason": "insufficient_4h_history",
+            "bars": len(parsed),
+        }
+    structure = structure_state(parsed)
+    window = parsed[-STRUCTURE_BARS:]
+    close = window[-1]["close"]
+    swing_high = max(row["high"] for row in window)
+    swing_low = min(row["low"] for row in window)
+    if structure == "HIGHER_HIGH_HIGHER_LOW":
+        if close > swing_high * (1 + NO_CHASE_PCT):
+            return {
+                "valid": False,
+                "reason": "extended_beyond_retest_band",
+                "direction": "long",
+                "structure": structure,
+            }
+        return {
+            "valid": True,
+            "direction": "long",
+            "structure": structure,
+            "entry_zone": [swing_low, (swing_low + swing_high) / 2],
+            "invalidation": swing_low,
+            "reason": None,
+        }
+    if structure == "LOWER_HIGH_LOWER_LOW":
+        if close < swing_low * (1 - NO_CHASE_PCT):
+            return {
+                "valid": False,
+                "reason": "extended_beyond_retest_band",
+                "direction": "short",
+                "structure": structure,
+            }
+        return {
+            "valid": True,
+            "direction": "short",
+            "structure": structure,
+            "entry_zone": [(swing_low + swing_high) / 2, swing_high],
+            "invalidation": swing_high,
+            "reason": None,
+        }
+    return {"valid": False, "reason": "mixed_or_insufficient_structure", "structure": structure}
+
+
+def apply_setup_candles(
+    observation: dict[str, Any],
+    candles_by_coin: Mapping[str, Sequence[Mapping[str, Any]]],
+) -> dict[str, Any]:
+    from rocket.providers.hyperliquid import MAX_SETUP_MARKETS
+
+    ranked: list[dict[str, Any]] = []
+    for candidate in observation.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        liquid = (
+            isinstance(candidate.get("liquidity"), Mapping)
+            and candidate["liquidity"].get("state") == "PASS"
+        )
+        if candidate.get("ranking_state") == "ELIGIBLE" and liquid and candidate.get("contract_symbol"):
+            ranked.append(candidate)
+    ranked.sort(key=lambda row: (row.get("universe_rank") is None, row.get("universe_rank") or 10**9))
+    allowed = {str(row.get("contract_symbol")).upper() for row in ranked[:MAX_SETUP_MARKETS]}
+    for candidate in observation.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        coin = str(candidate.get("contract_symbol") or "").upper()
+        if coin not in allowed:
+            continue
+        setup = setup_from_candles(candles_by_coin.get(coin))
+        candidate["setup_validation"] = setup
+        features = dict(candidate.get("features") or {})
+        last = None
+        series = candles_by_coin.get(coin) or ()
+        if series:
+            last = series[-1].get("timestamp") if isinstance(series[-1], Mapping) else None
+        if last:
+            features["data_timestamp"] = last
+            features["data_source"] = "hyperliquid"
+        features["structure_4h"] = setup.get("structure")
+        candidate["features"] = features
+    return observation
+
+
 def _candidate_row(
     *,
     symbol: str,
@@ -561,6 +686,7 @@ class CryptoWorkflow:
                 "mode": mode.value,
                 "funnel": funnel,
                 "macro_context": dict(macro_context or {}),
+                "cot_context": dict(cot_context or {}),
                 "cava_context_status": cava_status,
                 "final_candidates": candidates,
                 "observations": list(observations),
@@ -585,10 +711,13 @@ class CryptoWorkflow:
         macro_context: Mapping[str, Any] | None = None,
         universe=None,
         perps=None,
+        candles: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
         cot_regime: str = "unknown",
+        cot_context: Mapping[str, Any] | None = None,
     ) -> ResearchResult:
+        from rocket.providers.cftc import fetch_cot_context
         from rocket.providers.coingecko import fetch_top_universe
-        from rocket.providers.hyperliquid import fetch_perp_markets
+        from rocket.providers.hyperliquid import fetch_perp_markets, fetch_setup_candles
         from rocket.workflows.macro import MacroWorkflow
 
         observed = now or datetime.now(UTC)
@@ -626,34 +755,72 @@ class CryptoWorkflow:
         perps_result = perps or fetch_perp_markets(now=observed)
         if macro_context is None:
             macro_context = MacroWorkflow(store=self.store).run(now=observed).payload
+        if cot_context is None and cot_regime in {"bullish", "bearish", "neutral"}:
+            cot_context = {
+                "status": "OVERRIDE",
+                "regime": cot_regime,
+                "scope": "market/regime context; no per-altcoin COT signal",
+                "override": True,
+            }
+        elif cot_context is None:
+            cot_context = fetch_cot_context(now=observed)
         cava = self.store.load_context("cava") if self.store else None
         perp_records = perps_result.records if perps_result.status is OperationalStatus.HEALTHY else ()
         observation = build_live_observation(discovery.records, perp_records, now=observed)
+        if candles is None:
+            coins = [
+                str(row.get("contract_symbol"))
+                for row in observation.get("candidates") or []
+                if isinstance(row, Mapping)
+                and row.get("ranking_state") == "ELIGIBLE"
+                and isinstance(row.get("liquidity"), Mapping)
+                and row["liquidity"].get("state") == "PASS"
+                and row.get("contract_symbol")
+            ]
+            candles = fetch_setup_candles(coins, now=observed)
+        apply_setup_candles(observation, candles)
         live_warnings: list[str] = []
         if perps_result.status is not OperationalStatus.HEALTHY:
             live_warnings.append("hyperliquid perpetual metadata unavailable")
+        live_warnings.extend(str(item) for item in (cot_context or {}).get("warnings") or () if item)
+        providers = [
+            {
+                "name": "coingecko",
+                "status": discovery.status.value,
+                "retrieved_at": observed.isoformat(),
+                "failure_kind": discovery.failure_kind,
+            },
+            {
+                "name": "hyperliquid",
+                "status": perps_result.status.value,
+                "retrieved_at": (perps_result.retrieved_at or observed).isoformat(),
+                "failure_kind": perps_result.failure_kind,
+            },
+        ]
+        if cot_context and cot_context.get("status") != "OVERRIDE":
+            cot_status = {
+                "OK": OperationalStatus.HEALTHY.value,
+                "PARTIAL": OperationalStatus.PARTIAL.value,
+                "STALE": OperationalStatus.PARTIAL.value,
+            }.get(str(cot_context.get("status")), OperationalStatus.UNAVAILABLE.value)
+            providers.append(
+                {
+                    "name": "cftc",
+                    "status": cot_status,
+                    "retrieved_at": observed.isoformat(),
+                    "failure_kind": cot_context.get("failure_kind"),
+                }
+            )
         return self.scan_payload(
             {
                 "observations": [observation],
                 "window": {"mode": "LIVE"},
                 "warnings": live_warnings,
-                "providers": [
-                    {
-                        "name": "coingecko",
-                        "status": discovery.status.value,
-                        "retrieved_at": observed.isoformat(),
-                        "failure_kind": discovery.failure_kind,
-                    },
-                    {
-                        "name": "hyperliquid",
-                        "status": perps_result.status.value,
-                        "retrieved_at": (perps_result.retrieved_at or observed).isoformat(),
-                        "failure_kind": perps_result.failure_kind,
-                    },
-                ],
+                "providers": providers,
             },
             macro_context=macro_context,
             cot_regime=cot_regime,
+            cot_context=cot_context,
             cava_context=cava,
             mode=Mode.LIVE,
             now=observed,

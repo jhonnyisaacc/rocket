@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from collections.abc import Iterable, Mapping, Sequence
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import httpx
@@ -13,6 +13,12 @@ from rocket.models import OperationalStatus
 from rocket.providers.protocols import ProviderResult
 
 MAINNET_INFO_URL = "https://api.hyperliquid.xyz/info"
+SETUP_CANDLE_INTERVAL = "4h"
+SETUP_LOOKBACK_DAYS = 14
+MAX_SETUP_MARKETS = 25
+SUPPORTED_CANDLE_INTERVALS = frozenset(
+    {"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "8h", "12h", "1d", "3d", "1w"}
+)
 
 
 def _finite(value: Any) -> float | None:
@@ -142,6 +148,117 @@ class HyperliquidPerps:
 
     def fetch(self, *, now: datetime | None = None) -> ProviderResult:
         return fetch_perp_markets(http=self.http, now=now)
+
+
+def parse_candles(payload: Any) -> tuple[dict[str, Any], ...]:
+    if not isinstance(payload, list):
+        raise ValueError("candleSnapshot payload must be a list")
+    rows: list[dict[str, Any]] = []
+    for raw in payload:
+        if not isinstance(raw, Mapping):
+            continue
+        try:
+            ts_ms = int(raw["t"])
+            item = {
+                "timestamp_ms": ts_ms,
+                "timestamp": datetime.fromtimestamp(ts_ms / 1000, UTC).isoformat(),
+                "open": float(raw["o"]),
+                "high": float(raw["h"]),
+                "low": float(raw["l"]),
+                "close": float(raw["c"]),
+                "volume": float(raw["v"]),
+                "coin": str(raw.get("s") or ""),
+                "interval": str(raw.get("i") or ""),
+                "source": "hyperliquid",
+            }
+        except (KeyError, TypeError, ValueError):
+            continue
+        if item["high"] <= 0 or item["low"] <= 0 or item["close"] <= 0:
+            continue
+        rows.append(item)
+    rows.sort(key=lambda row: row["timestamp_ms"])
+    return tuple(rows)
+
+
+def fetch_candles(
+    coin: str,
+    *,
+    interval: str = SETUP_CANDLE_INTERVAL,
+    start_ms: int,
+    end_ms: int,
+    http: httpx.Client | None = None,
+) -> ProviderResult:
+    if interval not in SUPPORTED_CANDLE_INTERVALS:
+        return ProviderResult(
+            status=OperationalStatus.UNAVAILABLE,
+            failure_kind="ValueError",
+            source="hyperliquid",
+            extras={"coin": coin, "interval": interval},
+        )
+    owns = http is None
+    client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
+    retrieved = datetime.now(UTC)
+    try:
+        response = client.post(
+            MAINNET_INFO_URL,
+            json={
+                "type": "candleSnapshot",
+                "req": {
+                    "coin": coin.upper(),
+                    "interval": interval,
+                    "startTime": int(start_ms),
+                    "endTime": int(end_ms),
+                },
+            },
+        )
+        response.raise_for_status()
+        records = parse_candles(response.json())
+    except (httpx.HTTPError, TypeError, ValueError, KeyError) as exc:
+        if owns:
+            client.close()
+        return ProviderResult(
+            status=OperationalStatus.UNAVAILABLE,
+            failure_kind=type(exc).__name__,
+            source="hyperliquid",
+            extras={"coin": coin, "interval": interval},
+        )
+    if owns:
+        client.close()
+    return ProviderResult(
+        status=OperationalStatus.HEALTHY if records else OperationalStatus.UNAVAILABLE,
+        records=records,
+        retrieved_at=retrieved,
+        source="hyperliquid",
+        extras={"coin": coin.upper(), "interval": interval, "signing": False},
+    )
+
+
+def fetch_setup_candles(
+    coins: Iterable[str],
+    *,
+    now: datetime | None = None,
+    http: httpx.Client | None = None,
+    limit: int = MAX_SETUP_MARKETS,
+) -> dict[str, tuple[Mapping[str, Any], ...]]:
+    """4h candles for liquid names only. Per-coin failure stays missing, not fatal."""
+    observed = now or datetime.now(UTC)
+    end_ms = int(observed.timestamp() * 1000)
+    start_ms = int((observed - timedelta(days=SETUP_LOOKBACK_DAYS)).timestamp() * 1000)
+    owns = http is None
+    client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
+    output: dict[str, tuple[Mapping[str, Any], ...]] = {}
+    try:
+        for coin in list(coins)[: max(0, limit)]:
+            name = str(coin or "").upper()
+            if not name:
+                continue
+            result = fetch_candles(name, start_ms=start_ms, end_ms=end_ms, http=client)
+            if result.status is OperationalStatus.HEALTHY:
+                output[name] = result.records
+    finally:
+        if owns:
+            client.close()
+    return output
 
 
 def overlay_l2_spread(records: Sequence[Mapping[str, Any]], books: Mapping[str, Mapping[str, Any]]) -> tuple[dict[str, Any], ...]:

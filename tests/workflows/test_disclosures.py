@@ -42,3 +42,24 @@ def test_all_providers_failed_is_not_no_setup(tmp_path):
     assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
     assert result.payload["research_result"] == "PROVIDER_FAILURE"
     assert result.payload["disclosure_is_not_a_buy_signal"] is True
+
+
+def test_secondary_fmp_rows_are_not_official_filings(tmp_path):
+    result = DisclosureWorkflow(store=ResearchStore(tmp_path)).run(
+        secondary_records=[
+            {
+                "subject": "Jane Doe",
+                "asset": "AAPL",
+                "transaction_type": "Purchase",
+                "transaction_date": "2026-08-01",
+                "source_url": "https://efdsearch.senate.gov/x",
+                "provider": "fmp",
+            }
+        ],
+        now=NOW,
+        provider_status={"congress": {"status": "OK"}, "executive": {"status": "OK"}, "secondary": {"status": "OK"}},
+    )
+    assert_research_result(result)
+    assert result.payload["records"][0]["source_family"] == "secondary"
+    assert result.payload["records"][0]["record_semantics"] == "SECONDARY_TRANSACTION_ROW"
+    assert result.payload["disclosure_is_not_a_buy_signal"] is True

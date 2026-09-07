@@ -8,6 +8,7 @@ from rocket.providers.hyperliquid import (
     HyperliquidPerps,
     fetch_perp_markets,
     overlay_l2_spread,
+    parse_candles,
     parse_meta_and_asset_ctxs,
     spread_bps_from_book,
     spread_bps_from_impact,
@@ -122,6 +123,18 @@ def test_fetch_failure_is_unavailable():
     result = fetch_perp_markets(http=_Client(), now=NOW)
     assert result.status is OperationalStatus.UNAVAILABLE
     assert result.failure_kind == "ValueError"
+
+
+def test_parse_candles_sorts_and_drops_invalid():
+    rows = parse_candles(
+        [
+            {"t": 2_000, "o": "2", "h": "3", "l": "1", "c": "2.5", "v": "10", "s": "BTC", "i": "4h"},
+            {"t": 1_000, "o": "1", "h": "1.5", "l": "0.5", "c": "1.2", "v": "8", "s": "BTC", "i": "4h"},
+            {"t": 3_000, "o": "0", "h": "0", "l": "0", "c": "0", "v": "1"},
+        ]
+    )
+    assert [row["timestamp_ms"] for row in rows] == [1_000, 2_000]
+    assert rows[0]["source"] == "hyperliquid"
 
 
 def test_module_never_signs():

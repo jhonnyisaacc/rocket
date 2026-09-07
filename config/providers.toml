@@ -29,8 +29,9 @@ fallbacks = []
 env = ["HL_WALLET"]
 
 [cot]
-primary = "openbb_cftc"
-fallbacks = ["cftc"]
+# OpenBB is optional. The durable source is the official CFTC futures report.
+primary = "cftc"
+fallbacks = ["openbb_cftc"]
 
 [ism]
 primary = "ism_publisher"
