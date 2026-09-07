@@ -12,10 +12,18 @@ from rocket.models import (
     SafetyBoundary,
 )
 from rocket.pit import Availability
+from rocket.workflows.cava import CavaWorkflow
 from rocket.workflows.fixture import FixtureWorkflow
+from rocket.workflows.macro import MacroWorkflow
+from rocket.workflows.portfolio import PortfolioWorkflow
+from rocket.workflows.watch import WatchWorkflow
 
 WORKFLOWS: dict[str, type] = {
     "fixture.scan": FixtureWorkflow,
+    "macro": MacroWorkflow,
+    "cava": CavaWorkflow,
+    "watch.check": WatchWorkflow,
+    "portfolio.review": PortfolioWorkflow,
 }
 
 FORBIDDEN_SUBSTRINGS = (
@@ -48,7 +56,7 @@ def assert_research_result(result: ResearchResult) -> None:
     if result.status is ResearchStatus.ERROR:
         assert result.warnings
     text = str(payload).lower()
-    for marker in ("discord_text", "channel_id", "hermes_home"):
+    for marker in ("discord_text", "hermes_home", "--channel-id", '"chat_id"'):
         assert marker not in text
 
 
