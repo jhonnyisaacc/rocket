@@ -10,6 +10,19 @@ Official House + OGE = **filings**. FMP senate/house-latest = **secondary transa
 House search + OGE API + optional FMP (FMP_API_KEY) → normalize → new vs seen
 ```
 
+Trump history additionally uses the free [Open Cabinet JSON export](https://open-cabinet.org/download),
+with its source OGE PDFs. These remain `secondary` rows with
+`underlying_source_family=executive`. Only checked/human-verified common-stock
+rows with T1 ticker resolution enter independent equity research. Bonds, funds,
+unresolved symbols and disputed rows remain review items. Values remain reported
+ranges. Distinct provider record IDs preserve separate same-day transactions.
+The export covers published 278-T reports, not all holdings or annual disclosures.
+
+Each row is joined to the exact person's official OGE PDF URL for the index
+posting date. `disclosure_date_basis=OGE_INDEX_POSTED_DATE` identifies this date;
+it is not the signature date or an assumed historical availability timestamp.
+Missing joins remain unknown. Exports over 14 days old or future-dated fail closed.
+
 Healthy `NO_NEW_RECORDS` is success. All providers down is `PROVIDER_FAILURE`, not “no news”.
 
 ## Filters

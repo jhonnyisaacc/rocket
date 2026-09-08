@@ -46,6 +46,11 @@ fallbacks = []
 primary = "fmp"
 env = ["FMP_API_KEY"]
 
+[disclosures_executive_history]
+primary = "open_cabinet"
+fallbacks = []
+env = []
+
 [transcript]
 primary = "supadata"
 fallbacks = []

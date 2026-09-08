@@ -1,4 +1,4 @@
-# Outputs implementation: draft review
+# Outputs implementation and PR #17 follow-up review
 
 This branch starts at PR #16 head d0ec688771dc3dd9847e259c29f1afac4bbc9891.
 It preserves the parent's typed reasons, missing dimensions, retryability,
@@ -21,7 +21,7 @@ acceptance criteria. No issue should close based on this draft.
 - Shorts consumes upstream candidates; successful empty scans have compact output.
 
 Synthetic REPLAY examples are in [examples/outputs.json](examples/outputs.json).
-Generate them with `.venv/bin/python scripts/output_examples.py`; these are
+Generate them with `.venv/bin/python -m scripts.output_examples`; these are
 contract illustrations, not live investment recommendations.
 
 ## Provider order and live observations
@@ -38,7 +38,7 @@ loaded only into child processes; no secrets or user portfolio files are include
 | Video discovery | YouTube RSS then Supadata metadata | RSS 404; Supadata exact-channel discovery and transcript succeeded. |
 | Exact macro indicators | FRED and exact market identifiers | CPI YoY, 10Y, date-aligned liquidity, DXY and BTC obtained. |
 | ISM | Official publisher then its PRNewswire releases | Official access challenge; exact current manufacturing/services releases acquired through issuer archive. |
-| Disclosures | Official House/OGE metadata; FMP structured Pelosi history | Official metadata worked; FMP history returned 402. Trump structured transaction history is not implemented. |
+| Disclosures | Official House/OGE metadata; FMP Pelosi history; free Open Cabinet Trump history | Official metadata worked; FMP history previously returned 402. Follow-up live Trump acquisition returned 8,940 transaction rows, all joined to OGE posting dates. |
 | Wallet RPC | Explicit RPC, Helius, public Solana, publicnode | Mainnet RPC reachability checked; actual caller wallet inventory unavailable for live validation. |
 
 OpenBB can use the configured `OPENBB_PYTHON` interpreter when installed outside
@@ -55,15 +55,21 @@ PDF/OCR transaction parser was removed: structured APIs are the preferred route.
 
 ## Remaining acceptance gaps
 
-- Trump historical opportunity acquisition needs a reliable structured transaction
-  source and exact instrument resolution. Official filing metadata is insufficient.
+- Trump structured acquisition now uses Open Cabinet's public JSON export. Of
+  8,940 live rows, 6,410 have checked common-stock/T1 identities eligible for
+  independent equity research. Other instruments remain review items. This is
+  secondary extraction, not an assertion of complete holdings or personal trade
+  decisions. OGE posting dates are labelled separately from filing signature dates.
 - Pelosi historical opportunity logic is fixture-tested; live FMP history requires
   entitlement. Do not claim complete historical coverage.
 - Actual wallet reconciliation and a populated caller portfolio still require live
   validation with caller configuration. RPC reachability is not holdings validation.
 - Cava parsing is intentionally bounded. Ambiguous indicators/windows remain
-  unverified. The latest acquired video was technical education without sufficient
-  named macro claims to form a macro review; it correctly did not advance the cursor.
+  unverified. With no supported exact measure, the full transcript is now handed
+  to the caller bot for a key-claims summary. Saving that handoff advances the
+  delivery cursor without creating a validated market overlay. A failed named
+  measure provider still cannot advance the cursor. Rocket does not host an LLM;
+  the caller bot renders the summary using the supplied transcript and instructions.
 - ISM industry mappings are curated and incomplete; unmapped industries remain explicit.
   Live company fundamentals were partial. Live Shorts could not establish required
   factors for the supplied candidates, so it returned diagnostic IE.
@@ -73,3 +79,58 @@ PDF/OCR transaction parser was removed: structured APIs are the preferred route.
 Issues #5–#11 and #13–#15 remain open for acceptance review. The required eventual
 integration order remains `feat/outputs -> fix/insufficient_evidence -> main`.
 Neither merge has been performed. Issues #1–#3 are outside this work.
+
+## Follow-up validation (2026-09-08)
+
+- Fresh full suite: 347 passed, 1 integration test deselected; Ruff, compilation
+  and whitespace checks passed, including the final examples and regression checks.
+- The free Trump CLI path ran end-to-end with isolated `/tmp` research state and
+  no API credentials: 21 official filing records plus 8,940 secondary transactions.
+  Every transaction joined to an exact OGE document. Independent research was
+  bounded to 30 listed assets, plus 10 unresolved-instrument examples. Missing
+  fundamentals produced NEEDS_REVIEW; old sales did not seed new shorts.
+- The live probe exposed timezone-free OGE index timestamps. The adapter now
+  uses their calendar date only, without inventing a PIT timestamp. It also
+  exposed misleading per-provider NO_NEW_RECORDS coverage; coverage now matches
+  the secondary provider's rows.
+- Regression checks cover stale/future exports, wrong people, bad PDF sources,
+  incomplete exports, duplicate same-day rows, unresolved instruments, future
+  transcripts, complete transcript delivery, repeat silence and named-provider
+  failures. The Cava example documents a bot handoff, not generated summary prose.
+- Focused source review covered dispatcher bounds, provider clocks, candidate
+  promotion, inventory zero confirmation, and Cava cursor/overlay separation.
+  This is not a claim that every linked issue's full acceptance audit is complete.
+
+The user confirmed that credentials and caller state are on the VPS and will
+perform the live review there. Fresh paid-provider entitlement, latest-video bot
+rendering, actual wallet and populated caller-portfolio acceptance are therefore
+reserved for that review. Earlier live observations above remain historical
+observations. PR #17 is conflict-free against `fix/insufficient_evidence`; leave
+the merge and issue closures pending the user's VPS review.
+
+### VPS review
+
+Use the existing credential launcher and a separate research state directory.
+Run `rocket disclosures --person 'Donald Trump' --state-dir <review-dir> --json`:
+check secondary attribution, original amount ranges, posted-date basis and
+independent opportunity decisions. Repeat it to check new-record deduplication.
+Run the same command with `--person 'Nancy Pelosi'` to check FMP entitlement.
+
+Run `rocket cava --state-dir <review-dir> --json`. For commentary-only output,
+the bot consumes `payload.summary_request`, summarizes the full transcript's key
+claims and attributes them to Cava. Confirm it does not claim verification or
+create a macro overlay. For a named-measure video, review `claims_checked` and
+provider failures. A failed required provider must not advance the cursor.
+
+Run the usual populated `rocket portfolio review --state <caller-file>` with
+the review state directory; repeat with `--refresh-inventory` for the real wallet.
+Check caller theses are preserved, stable HOLD is silent, unknown mints stay
+pending review, and an empty wallet requires independent confirmation. Then
+review ISM/Shorts with the VPS provider entitlements. This work does not modify
+the VPS bot adapter or claim that its summary rendering has already been tested.
+
+Source notes: [Open Cabinet export](https://open-cabinet.org/download),
+[methodology](https://open-cabinet.org/methodology), and
+[deterministic ticker rules](https://github.com/tbrown034/open-cabinet/blob/main/lib/asset-resolution.ts).
+OpenBB's [government trades reference](https://docs.openbb.co/odp/python/reference/equity/ownership/government_trades)
+documents Senate/House coverage; that does not establish presidential OGE coverage.

@@ -62,6 +62,9 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
         "disclosure_date": record.get("disclosure_date"),
         "owner": record.get("owner"),
     }
+    identity = ({"provider": record.get("provider"), "subject": person_id(subject) or subject,
+                 "source_record_id": record["source_record_id"]}
+                if record.get("source_record_id") else {**fields, "provider": record.get("provider")})
     return {
         "subject_filer": subject,
         "owner": _clean(record.get("owner")),
@@ -75,12 +78,18 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
         "asset_type": record.get("asset_type"),
         "eligible_equity_context": record.get("eligible_equity_context", True),
         "description": record.get("description"),
+        "amount_range": record.get("amount_range"),
+        "source_record_id": record.get("source_record_id"),
+        "underlying_source_family": record.get("underlying_source_family"),
+        "verification_state": record.get("verification_state"),
+        "resolution_tier": record.get("resolution_tier"),
+        "resolved_ticker": record.get("resolved_ticker"),
         "disclosure_date_basis": record.get("disclosure_date_basis"),
         "document_sha256": record.get("document_sha256"),
         "person_id": person_id(subject),
         "identity_status": "EXACT_ALIAS" if person_id(subject) else "UNRESOLVED",
         "index_added_at": record.get("index_added_at"),
-        "unique_id": _stable_id({**fields, "provider": record.get("provider")}),
+        "unique_id": _stable_id(identity),
         "record_semantics": record.get("record_semantics") or ("SECONDARY_TRANSACTION_ROW"
         if family is SourceFamily.SECONDARY
         else "FILING_NOT_TRADE_ROW"),
@@ -135,7 +144,9 @@ class DisclosureWorkflow:
             if isinstance(info, dict) and info.get("status") != "UNAVAILABLE":
                 info["research_result"] = (
                     "NEW_RECORDS"
-                    if any(record["source_family"] == family for record in new_records)
+                    if any(record["source_family"] == info.get("source_family", family.split(":")[0])
+                           and (not info.get("record_provider") or record["provider"] == info["record_provider"])
+                           for record in new_records)
                     else "NO_NEW_RECORDS"
                 )
         failed = sum(1 for value in health.values() if isinstance(value, dict) and value.get("status") == "UNAVAILABLE")
@@ -216,7 +227,7 @@ class DisclosureWorkflow:
             decided = now or datetime.now(UTC)
             unknown_count = 0
             for trade in trades:
-                if trade["asset"] not in tickers:
+                if not trade.get("eligible_equity_context") or trade["asset"] not in tickers:
                     unknown_count += 1
                     if unknown_count > 10:
                         continue

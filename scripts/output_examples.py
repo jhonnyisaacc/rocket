@@ -47,6 +47,10 @@ def generate(root):
     save('cava-review', CavaWorkflow(store=ResearchStore(root / 'cava')).run(rss_xml=RSS,
         transcript_provider=FixtureTranscript(transcript), now=NOW,
         corroborate=lambda v, c, t: verify_claims(c, t, fetcher=lambda m: {**data(m), 'retrieved_at': NOW.isoformat()})))
+    save('cava-summary', CavaWorkflow(store=ResearchStore(root / 'cava-summary')).run(rss_xml=RSS,
+        transcript_provider=FixtureTranscript(Transcript(
+            'La disciplina importa. Definir el riesgo antes de entrar evita decisiones impulsivas.',
+            'es', 'fixture', NOW)), now=NOW))
     reports = {'manufacturing': ISMReport('manufacturing', 'August 2026', 52,
                [ISMIndustryRanking('machinery', 'expanding', 1)], [ISMIndustryRanking('wood products', 'contracting', 1)], 'https://fixture.test/ism')}
     exposures = {'machinery': [{'ticker': 'CAT', 'exposure': 'Equipment manufacturing', 'source': 'https://fixture.test/company'}],

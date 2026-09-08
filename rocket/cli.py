@@ -97,7 +97,7 @@ def cava(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Cava overlay: RSS → transcript → claims → corroboration."""
+    """Cava review: verify exact measures or hand commentary to the bot for summary."""
     del json_out
     from rocket.providers.supadata import SupadataTranscriptProvider
     from rocket.workflows.cava import CavaWorkflow
@@ -323,13 +323,24 @@ def disclosures(
             status["executive"] = {"status": "OK"}
         except Exception as exc:
             status["executive"] = {"status": "UNAVAILABLE", "failure_kind": failure_kind(exc)}
+    trump_history = None
     if "donald_trump" in selected:
-        status["trump_transaction_history"] = {"status": "UNAVAILABLE", "failure_kind": "UnsupportedCapability"}
+        from rocket.providers.open_cabinet import OpenCabinetProvider
+        trump_history = OpenCabinetProvider().person_history(official_records=executive)
+        status["trump_transaction_history"] = {
+            "status": "UNAVAILABLE" if trump_history.status is OperationalStatus.UNAVAILABLE else "OK",
+            "failure_kind": trump_history.failure_kind,
+            "source_family": "secondary", "record_provider": "open_cabinet",
+        }
     fmp = FMPClient()
     history = fmp.person_history() if "nancy_pelosi" in selected else None
     if history is not None:
-        status["pelosi_secondary_history"] = {"status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK", "failure_kind": history.failure_kind}
+        status["pelosi_secondary_history"] = {"status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK", "failure_kind": history.failure_kind,
+                                               "source_family": "secondary", "record_provider": "fmp"}
     historical_records = list(history.records) if history else []
+    if trump_history:
+        historical_records.extend(trump_history.records)
+        secondary.extend(trump_history.records)
     from rocket.candidates import caller_references
     references, reference_coverage = caller_references()
     emit_result(
@@ -344,7 +355,10 @@ def disclosures(
             history_acquisition={
                 "structured_provider": "fmp.house-trades-by-name" if history else None,
                 "official_documents": "filing metadata only; no PDF/OCR ingestion",
-                "trump_transaction_history": "not implemented",
+                "trump_transaction_history": {
+                    "provider": "open_cabinet", "status": trump_history.status.value,
+                    "failure_kind": trump_history.failure_kind, **trump_history.extras,
+                } if trump_history else None,
             },
             portfolio_tickers=references["portfolio"], watch_tickers=references["watch"],
             cross_system_coverage=reference_coverage,

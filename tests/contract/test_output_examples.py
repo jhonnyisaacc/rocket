@@ -3,7 +3,7 @@ from scripts.output_examples import generate
 
 def test_review_examples_have_intended_presentation(tmp_path):
     examples = generate(tmp_path)
-    assert len(examples) == 11
+    assert len(examples) == 12
     for name, row in examples.items():
         assert not row['payload']['execution_enabled']
         assert row['mode'] == 'REPLAY'
