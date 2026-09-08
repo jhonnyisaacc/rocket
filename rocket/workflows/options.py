@@ -15,6 +15,8 @@ from rocket.models import (
     OperationalReport,
     OperationalStatus,
     Provenance,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -50,7 +52,7 @@ class VolatilityInputs:
         self.implied_volatility = _number(row.get("implied_volatility"))
         self.realized_volatility = _number(row.get("realized_volatility"))
         self.defined_risk = row.get("defined_risk") is True
-        self.source = str(row.get("source") or "provided_snapshot")
+        self.source = str(row.get("source") or "").strip()
         self.source_url = row.get("source_url")
 
     @property
@@ -63,6 +65,8 @@ class VolatilityInputs:
 
     def missing_dimensions(self) -> list[str]:
         missing = []
+        if not self.source:
+            missing.append("source_provenance")
         if self.implied_volatility is None:
             missing.append("implied_volatility")
         if self.realized_volatility is None:
@@ -123,6 +127,9 @@ class OptionsWorkflow:
         normalized: list[VolatilityInputs] = []
         rejected: list[dict[str, Any]] = []
         for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                rejected.append({"row": index, "reason": "invalid_input"})
+                continue
             try:
                 item = VolatilityInputs(row, decision_time=decided)
             except ValueError as exc:
@@ -174,6 +181,13 @@ class OptionsWorkflow:
         result = ResearchResult(
             workflow=f"options.{definition['domain']}.scan",
             status=research,
+            reasons=(ResearchReason(
+                ReasonCode.CALLER_STATE_MISSING if not rows else ReasonCode.REQUIRED_EVIDENCE_MISSING
+                if not normalized else ReasonCode.STRATEGY_UNVALIDATED,
+                ("caller PIT snapshots",) if not rows else tuple(f"{row.get('asset', row.get('identity', row.get('row', 'UNKNOWN')))}:"
+                      f"{row.get('reason', 'missing_dimensions')}:"
+                      f"{','.join(row.get('dimensions', row.get('rejection_filters', [])))}" for row in rejected)
+                if not normalized else ("costed out-of-sample strategy validation and human review",)),),
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,
@@ -208,6 +222,7 @@ class OptionsWorkflow:
         result = ResearchResult(
             workflow=f"options.{definition['domain']}.evaluate",
             status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            reasons=(ResearchReason(ReasonCode.STRATEGY_UNVALIDATED, ("costed out-of-sample strategy validation and human review",)),),
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,

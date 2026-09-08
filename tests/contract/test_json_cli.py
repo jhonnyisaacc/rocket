@@ -33,3 +33,18 @@ def test_exit_code_two_on_unavailable(now):
         warnings=("provider down",),
     )
     assert exit_code(result) == 2
+
+
+def test_invalid_watch_json_is_structured_diagnostic(tmp_path):
+    import json
+
+    from typer.testing import CliRunner
+
+    from rocket.cli import app
+    path = tmp_path / 'watches.json'
+    path.write_text('{broken')
+    r = CliRunner().invoke(app, ['watch', 'check', '--watches', str(path), '--state-dir', str(tmp_path / 'store')])
+    assert r.exit_code != 0
+    data = json.loads(r.stdout)
+    assert data['presentation']['diagnostic_only']
+    assert data['reasons'][0]['code'] == 'INVALID_INPUT'

@@ -33,7 +33,7 @@ def test_private_state_age_not_market_missingness_and_per_position_failure():
             "GOOD": {
                 "macro_regime": "neutral",
                 "technical_condition": "healthy",
-                "market_state": {"current_price": 100, "as_of": NOW.isoformat(), "source": "fixture"},
+                "market_state": {"current_price": 100, "as_of": NOW.isoformat(), "available_at": NOW.isoformat(), "source": "fixture"},
             }
         },
         now=NOW,
@@ -67,7 +67,7 @@ def test_refresh_without_address_is_unavailable(tmp_path, monkeypatch):
     state = PortfolioState(positions=(PositionState("MSFT", thesis="keep", quantity=1),), updated_at=NOW.isoformat())
     result = PortfolioWorkflow(store=ResearchStore(tmp_path), inventory=FileInventory()).run(
         state,
-        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "source": "fixture"}}},
+        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "available_at": NOW.isoformat(), "source": "fixture"}}},
         now=NOW,
         refresh_inventory=True,
     )
@@ -90,7 +90,7 @@ def test_pending_ondo_mints_are_surfaced(tmp_path):
     )
     result = PortfolioWorkflow(store=ResearchStore(tmp_path), inventory=inventory).run(
         state,
-        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "source": "fixture"}}},
+        {"MSFT": {"macro_regime": "neutral", "technical_condition": "healthy", "market_state": {"current_price": 1, "as_of": NOW.isoformat(), "available_at": NOW.isoformat(), "source": "fixture"}}},
         now=NOW,
         refresh_inventory=True,
     )

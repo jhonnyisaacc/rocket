@@ -15,7 +15,7 @@ def test_map_short_factors_bearish_growth_and_cheap_pe():
     )
     assert factors["company_fundamentals"] is True
     assert factors["valuation_support"] is True
-    assert factors["earnings_revision_deterioration"] is True
+    assert factors["earnings_revision_deterioration"] is None  # Different periods are not forecast revisions.
 
 
 def test_map_short_factors_missing_stays_none():

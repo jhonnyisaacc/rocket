@@ -32,3 +32,9 @@ Paste the next `rocket portfolio review --state PATH --json` here.
 - [ ] Human decision required stays visible
 
 Contract: JSON `ResearchResult`. Operational ≠ research. `execution_enabled` false.
+
+Mixed results preserve valid action transitions even when another ticker lacks
+evidence. `position_diagnostics` identifies affected tickers; typed reasons name
+the missing dimensions or failed providers. Inventory diagnostics appear only
+when reconciliation was requested and failed. Diagnostic-only positions do not
+overwrite the previous action used for later transition detection.

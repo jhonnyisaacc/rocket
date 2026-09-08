@@ -28,6 +28,22 @@ class Registry:
     def factories(self, capability: str) -> dict[str, ProviderFactory]:
         return dict(self._factories.get(capability) or {})
 
+    def acquire(self, capability: str, *, required=True, sufficient=None, **kwargs):
+        from rocket.models import OperationalStatus
+        from rocket.providers.dispatch import acquire
+        from rocket.providers.protocols import ProviderResult
+
+        config = self.capability(capability)
+        factories = self.factories(capability)
+        def fetch(name):
+            if name not in factories:
+                return ProviderResult(OperationalStatus.UNAVAILABLE, source=name,
+                                      failure_kind="MissingImplementation")
+            return factories[name](**kwargs)
+        names = list(dict.fromkeys([config["primary"], *config.get("fallbacks", [])]))
+        return acquire(capability, [(name, lambda name=name: fetch(name)) for name in names],
+                       required=required, sufficient=sufficient)
+
 
 _REGISTRY: Registry | None = None
 

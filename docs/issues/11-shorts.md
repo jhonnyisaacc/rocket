@@ -19,7 +19,11 @@ Catalyst optional / UNKNOWN (no catalyst provider).
 Need `non_macro >= 2` and `total >= 3`.
 Yahoo quote PIT: `available_at` ≤ decision time, age ≤ 5d.
 
-Universe: AAPL, NVDA, TSLA, JPM.
+Live universe: bearish candidates produced by `rocket ism` or `rocket disclosures`
+in the same `--state-dir`. Run one of those upstream jobs first; there is no
+built-in AAPL/NVDA/TSLA/JPM fallback. Missing or stale candidate acquisition stays
+diagnostic. `--input-file` remains available for explicit research snapshots.
+The four-name universe in the historical captures below predates this change.
 
 ## Live output — 2026-09-07T17:35:46Z (`main` @ `2eaa8e9`)
 

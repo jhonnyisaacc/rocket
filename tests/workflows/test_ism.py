@@ -60,10 +60,12 @@ def test_ism_workflow_healthy_no_setup(tmp_path):
     result = IsmWorkflow(store=ResearchStore(tmp_path)).run(
         now=NOW,
         reports={"manufacturing": report, "services": ISMReport("services", "August 2026", 55.4)},
-        napm=54.6,
+        napm={"reference_month": "2026-08", "value": 54.6},
     )
     assert_research_result(result)
-    assert result.operational.status is OperationalStatus.HEALTHY
+    assert result.operational.status is OperationalStatus.PARTIAL
+    assert result.payload["reports"]["manufacturing"]["headline_status"] == "HEADLINE_VALID"
+    assert result.payload["reports"]["manufacturing"]["industry_rankings_status"] == "UNAVAILABLE"
     assert result.status is ResearchStatus.NO_SETUP
     assert result.payload["nmfbai_substituted_for_services_composite"] is False
 

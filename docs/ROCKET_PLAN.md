@@ -2,6 +2,10 @@
 
 Clean rebuild of NAVE as a bot-runtime-agnostic research engine.
 
+Implementation clarification: [the #12 IE audit](IE_AUDIT.md) supersedes historical
+status examples below, including disclosure inboxes, optional corroboration,
+Cava validation scope, capture/status primitives and the JSON v2 reason contract.
+
 Status: **PLAN ONLY**. No repo, no code, no cutover.
 
 Inspected as reference (read-only): `/home/david/nave`, `/home/david/agent/deployment/quant_nave/`, ABI provider-gate reports, memecoin collector redesign notes. Nothing in those trees is modified by this plan.

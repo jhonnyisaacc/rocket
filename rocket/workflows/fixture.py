@@ -11,6 +11,8 @@ from rocket.models import (
     OperationalReport,
     OperationalStatus,
     Provenance,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -67,4 +69,5 @@ class FixtureWorkflow:
             },
             evidence=evidence,
             warnings=warnings,
+            reasons=(ResearchReason(ReasonCode.REQUIRED_EVIDENCE_MISSING, ("fixture observation",)),) if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (),
         )

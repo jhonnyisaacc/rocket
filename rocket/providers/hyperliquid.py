@@ -15,7 +15,7 @@ from rocket.providers.protocols import ProviderResult
 MAINNET_INFO_URL = "https://api.hyperliquid.xyz/info"
 SETUP_CANDLE_INTERVAL = "4h"
 SETUP_LOOKBACK_DAYS = 14
-MAX_SETUP_MARKETS = 25
+MAX_SETUP_MARKETS = 100
 SUPPORTED_CANDLE_INTERVALS = frozenset(
     {"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "8h", "12h", "1d", "3d", "1w"}
 )
@@ -253,8 +253,12 @@ def fetch_setup_candles(
             if not name:
                 continue
             result = fetch_candles(name, start_ms=start_ms, end_ms=end_ms, http=client)
+            if result.status is OperationalStatus.UNAVAILABLE:
+                result = fetch_candles(name, start_ms=start_ms, end_ms=end_ms, http=client)
             if result.status is OperationalStatus.HEALTHY:
-                output[name] = result.records
+                # Only closed 4h bars were knowable at the scan cutoff.
+                output[name] = tuple(row for row in result.records
+                                     if row["timestamp_ms"] + 4 * 3600 * 1000 <= end_ms)
     finally:
         if owns:
             client.close()
