@@ -34,13 +34,16 @@ _FACTORS = (
     "positioning_crowding",
     "company_fundamentals",
 )
-UNIVERSE = {"AAPL": "XLK", "NVDA": "XLK", "TSLA": "XLY", "JPM": "XLF"}
+UNIVERSE = {}  # Production candidates come from the shared research index.
 
 
-def _flag(value: object) -> bool:
+def _flag(value: object) -> bool | None:
     if isinstance(value, str):
-        return value.strip().lower() in {"1", "true", "yes", "y", "bearish", "weak", "high"}
-    return bool(value)
+        value = value.strip().lower()
+        if value in {"1", "true", "yes", "y", "bearish", "weak", "high"}:
+            return True
+        return False if value in {"0", "false", "no", "n", "bullish", "strong", "low"} else None
+    return bool(value) if isinstance(value, (bool, int, float)) and value in (0, 1) else None
 
 
 def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
@@ -53,7 +56,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "earnings_revision_deterioration": None if row.get("earnings_revision_deterioration") is None else _flag(row.get("earnings_revision_deterioration")),
         "valuation_support": None if row.get("valuation_support") is None else _flag(row.get("valuation_support")),
         "technical_breakdown": None if row.get("technical_breakdown") is None else _flag(row.get("technical_breakdown")),
-        "catalyst": str(row.get("catalyst") or "").strip() or None,
+        "catalyst": None if str(row.get("catalyst") or "").strip().lower() in {"", "unknown", "none", "unavailable"} else str(row["catalyst"]).strip(),
         "positioning_crowding": None if row.get("positioning_crowding") is None else _flag(row.get("positioning_crowding")),
         "company_fundamentals": None if fundamentals is None else _flag(fundamentals),
     }
@@ -63,7 +66,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         if name not in {"macro_regime", "valuation_support"}
     )
     total = non_macro + int(macro in {"bearish", "risk_off", "contraction"})
-    missing = [name for name in dict.fromkeys(("company_fundamentals", "technical_breakdown", *row.get("required_factors", []))) if row.get(name) is None]
+    missing = [name for name in dict.fromkeys(("company_fundamentals", "technical_breakdown", *row.get("required_factors", []))) if factors.get(name, row.get(name)) is None]
     if missing:
         reason, selected = "insufficient_evidence", False
     elif factors["valuation_support"]:
@@ -85,6 +88,14 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "selected": selected,
         "rejection_reason": reason,
         "research_only": True,
+        "candidate_id": row.get("candidate_id"),
+        "sources": row.get("candidate_sources", []),
+        "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
+        "current_price": row.get("current_price"),
+        "technical_setup": row.get("technical_setup"),
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
+        "entry": row.get("entry"),
+        "invalidation": row.get("invalidation"),
     }
 
 
@@ -93,6 +104,52 @@ class ShortsWorkflow:
 
     def __init__(self, *, store: ResearchStore | None = None):
         self.store = store
+
+    def scan_live(self, *, now=None, inputs=None, snapshot_fetcher=None):
+        from rocket.candidates import bearish_inputs
+        from rocket.providers.shorts import acquire_short_snapshot, live_fundamentals_fetcher
+        decided = now or datetime.now(UTC)
+        if inputs is None:
+            state = self.store.load_state("research_candidates") if self.store else None
+            if state is None:
+                return self._missing_candidates(decided)
+            inputs = bearish_inputs(self.store, decided)
+            if not inputs:
+                try:
+                    updated = parse_datetime(state.get("updated_at"))
+                    if not updated or not timedelta(0) <= decided - updated <= timedelta(days=1):
+                        return self._missing_candidates(decided)
+                except ValueError:
+                    return self._missing_candidates(decided)
+        if not inputs:
+            result = ResearchResult(workflow=WORKFLOW, status=ResearchStatus.NO_SETUP,
+                                    operational=OperationalReport(OperationalStatus.HEALTHY),
+                                    decision_time=decided, started_at=decided, mode=Mode.LIVE,
+                                    payload={"universe_scanned": 0, "final_candidates": [], "execution_enabled": False,
+                                             "summary": "Shorts scan: no valid setup found today.",
+                                             "candidate_source": "canonical research candidates"},
+                                    presentation={"market_result": False, "silent": False, "diagnostic_only": False})
+            if self.store:
+                self.store.save_result(result)
+            return result
+        universe = {r["ticker"]: r.get("sector_etf") for r in inputs}
+        rows = (snapshot_fetcher or acquire_short_snapshot)(universe=universe,
+                                                            fundamentals=live_fundamentals_fetcher(), now=now)
+        by_ticker = {r["ticker"]: r for r in inputs}
+        for row in rows:
+            seed = by_ticker[row["ticker"]]
+            row["candidate_sources"] = seed["sources"]
+            row["candidate_id"] = seed["candidate_id"]
+        return self.scan(rows, now=now)
+
+    def _missing_candidates(self, decided):
+        result = ResearchResult(workflow=WORKFLOW, status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+                                operational=OperationalReport(OperationalStatus.HEALTHY), decision_time=decided, started_at=decided,
+                                mode=Mode.LIVE, payload={"universe_scanned": 0, "final_candidates": [], "execution_enabled": False},
+                                reasons=(ResearchReason(ReasonCode.CALLER_STATE_MISSING, ("current canonical bearish candidate acquisition",)),))
+        if self.store:
+            self.store.save_result(result)
+        return result
 
     def scan(self, rows: Sequence[Mapping[str, Any]], *, now: datetime | None = None) -> ResearchResult:
         decided = now or datetime.now(UTC)
@@ -188,9 +245,11 @@ class ShortsWorkflow:
                 "factor_definition": list(_FACTORS),
                 "snapshots": list(rows),
                 "execution_enabled": False,
+                "summary": "Shorts scan: no valid setup found today." if research is ResearchStatus.NO_SETUP else None,
             },
             evidence=tuple(evidence),
             warnings=warnings,
+            presentation={"market_result": bool(candidates), "silent": False, "diagnostic_only": False},
             reasons=(ResearchReason(ReasonCode.CALLER_STATE_MISSING if not rows
                                     else ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if live and operational is not OperationalStatus.HEALTHY
                                     else ReasonCode.REQUIRED_EVIDENCE_MISSING,

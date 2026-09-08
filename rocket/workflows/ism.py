@@ -50,8 +50,10 @@ def _report_payload(report: ISMReport, *, pmi: float | None, pmi_source: str, id
 class IsmWorkflow:
     name = WORKFLOW
 
-    def __init__(self, *, store: ResearchStore | None = None):
+    def __init__(self, *, store: ResearchStore | None = None, exposures=None, context_fetcher=None):
         self.store = store
+        self.exposures = exposures
+        self.context_fetcher = context_fetcher
 
     def run(
         self,
@@ -60,6 +62,7 @@ class IsmWorkflow:
         reports: Mapping[str, ISMReport] | None = None,
         napm: Mapping[str, Any] | None = None,
         provider_failures: Mapping[str, str] | None = None,
+        research_companies: bool = False,
     ) -> ResearchResult:
         started = now or datetime.now(UTC)
         warnings: list[str] = []
@@ -115,7 +118,7 @@ class IsmWorkflow:
             row = _report_payload(report, pmi=pmi, pmi_source=source, identity=identity)
             payload_reports[kind] = row
             row["provider_failures"] = list(report.provider_failures)
-            warnings.extend(f"{kind}:{failure}; official roundup retained" for failure in report.provider_failures)
+            warnings.extend(f"{kind}:{failure}; independently acquired source retained: {report.source_url}" for failure in report.provider_failures)
             headline_ok = row["headline_status"] == "HEADLINE_VALID"
             providers.append(
                 ProviderHealth(
@@ -161,6 +164,51 @@ class IsmWorkflow:
             if operational is OperationalStatus.UNAVAILABLE
             else ResearchStatus.NO_SETUP
         )
+        candidates, unmapped = [], []
+        if research_companies:
+            import json
+
+            from rocket.candidates import evaluate_long, persist_candidates
+            from rocket.config import DEFAULT_CONFIG_DIR
+            from rocket.providers.equity_research import acquire_equity_context
+            exposures = self.exposures if self.exposures is not None else json.loads((DEFAULT_CONFIG_DIR / "industry_exposure.json").read_text())
+            seeds = []
+            for kind, report in payload_reports.items():
+                if report.get("industry_rankings_status") != "INDUSTRY_RANKINGS_VALID":
+                    continue
+                for direction, field in (("long", "hottest_industries"), ("short", "worst_industries")):
+                    for industry in report[field]:
+                        matched = exposures.get(industry["industry"], [])
+                        if not matched:
+                            unmapped.append({"industry": industry["industry"], "reason": "no reviewed company exposure mapping"})
+                        for company in matched:
+                            if company.get("source") and company.get("exposure"):
+                                seeds.append({**company, "industry": industry["industry"], "report_type": kind,
+                                              "direction": direction, "report_reference": f"ism-{kind}-rankings",
+                                              "reference_month": report["identity"]["reference_month"]})
+            contexts = (self.context_fetcher or acquire_equity_context)([r["ticker"] for r in seeds if r["direction"] == "long"])
+            started = now or datetime.now(UTC)
+            for seed in seeds:
+                thesis = f"ISM {seed['reference_month']} {seed['report_type']}: {seed['industry']} is {'expanding' if seed['direction'] == 'long' else 'contracting'}. Company exposure: {seed['exposure']}."
+                if seed["direction"] == "short":
+                    candidate = {**seed, "classification": "SHORT_INPUT", "thesis": thesis,
+                                 "requires_canonical_short_evaluation": True}
+                else:
+                    candidate = {**seed, **evaluate_long(seed["ticker"], contexts.get(seed["ticker"], {}),
+                                                        thesis=thesis, source_reference=seed["source"], now=started)}
+                candidates.append(candidate)
+            if research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
+                persist_candidates(self.store, "ism", candidates, now=started)
+            if any(r["classification"] in {"BUY_CANDIDATE", "WATCH"} for r in candidates):
+                research = ResearchStatus.ACTION_REQUIRED
+        missing_company = [r["ticker"] for r in candidates if r["classification"] == "NEEDS_REVIEW"]
+        if missing_company and operational is OperationalStatus.HEALTHY:
+            operational = OperationalStatus.PARTIAL
+        from dataclasses import replace
+        evidence = [replace(e, decision_time=started) for e in evidence]
+        report_ready = any(row.get("headline_status") == "HEADLINE_VALID"
+                           or row.get("industry_rankings_status") == "INDUSTRY_RANKINGS_VALID"
+                           for row in payload_reports.values())
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
@@ -171,17 +219,23 @@ class IsmWorkflow:
             mode=Mode.LIVE,
             payload={
                 "reports": payload_reports,
+                "candidates": candidates,
+                "unmapped_industries": unmapped,
                 "nmfbai_substituted_for_services_composite": False,
                 "execution_enabled": False,
             },
             evidence=tuple(evidence),
+            presentation={"market_result": report_ready,
+                          "silent": not report_ready,
+                          "diagnostic_only": not report_ready},
             warnings=tuple(warnings),
             reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE
                                     if any(p.status is OperationalStatus.UNAVAILABLE for p in providers)
                                     else ReasonCode.REQUIRED_EVIDENCE_MISSING,
                                     tuple(f"{kind}:{row['headline_status']}" for kind, row in payload_reports.items()
                                           if row["headline_status"] != "HEADLINE_VALID"), True),)
-            if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (),
+            if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (ResearchReason(ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                                                                                 tuple(f"{ticker}:current company research" for ticker in missing_company), True),) if missing_company else (),
         )
         if self.store:
             self.store.save_result(result)

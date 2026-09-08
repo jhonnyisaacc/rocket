@@ -71,7 +71,7 @@ def check_watch(
         if not condition_raw:
             invalid.append(ticker)
             continue
-        condition = str(condition_raw).upper()
+        condition = str(condition_raw).strip().upper()
         if condition not in CONDITIONS:
             invalid.append(ticker)
             continue
@@ -175,6 +175,12 @@ def check_watch(
                     "event": "ZONE_REACHED" if condition == "ZONE" else condition,
                     "thesis": watch.get("thesis"),
                     "source_reference": watch.get("source_reference"),
+                    "zone": [lower, upper] if condition == "ZONE" else None,
+                    "transition": "ENTERED",
+                    "previous_price": previous_prices.get(ticker),
+                    "interpretation": "The previously defined entry condition has now been met.",
+                    "evidence_reference": f"watch-{ticker}",
+                    "research_only": True,
                 }
             )
     reasons = []

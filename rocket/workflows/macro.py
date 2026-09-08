@@ -187,6 +187,37 @@ class MacroWorkflow:
             payload["net_liquidity_million_usd"] = (
                 factors["WALCL"]["value"] - factors["WDTGAL"]["value"] - factors["RRPONTSYD"]["value"] * 1000
             )
+            prior_net = factors["WALCL"]["prior_value"] - factors["WDTGAL"]["prior_value"] - factors["RRPONTSYD"]["prior_value"] * 1000
+            change = payload["net_liquidity_million_usd"] - prior_net
+            payload["liquidity_change_4w_million_usd"] = change
+            direction = lambda value: "rising" if value > 0 else "falling" if value < 0 else "unchanged"
+            for symbol, row in factors.items():
+                row["direction_4w"] = direction(row["change_4w"])
+                row["unit"] = "percent" if symbol == "EFFR" else "billion USD" if symbol == "RRPONTSYD" else "million USD"
+            payload["interpretation"] = {
+                "kind": "INFERENCE",
+                "liquidity": "improving" if change > 0 else "contracting" if change < 0 else "stable",
+                "rates": direction(rates),
+                "summary": f"Net liquidity is {direction(change)} over four weeks; effective policy rates are {direction(rates)}. The rates-based regime is {regime}.",
+                "limitations": "Liquidity components have different observation dates; this is a balance-sheet measure, not a causal estimate or trade signal.",
+            }
+        previous = self.store.load_state("macro_material") if self.store else None
+        changes = []
+        if ok:
+            if not previous or previous.get("regime") != regime:
+                changes.append("initial_state" if not previous else "regime_changed")
+            if previous:
+                old_net = previous.get("net_liquidity_million_usd", 0)
+                if abs(payload["net_liquidity_million_usd"] - old_net) >= max(abs(old_net) * .01, 50_000):
+                    changes.append("liquidity_material_change")
+                if abs(factors["EFFR"]["value"] - previous.get("rate", factors["EFFR"]["value"])) >= .25:
+                    changes.append("rates_material_change")
+                if payload["interpretation"]["liquidity"] != previous.get("liquidity_direction"):
+                    changes.append("liquidity_direction_changed")
+            if payload["net_liquidity_million_usd"] <= 0 and (not previous or previous.get("net_liquidity_million_usd", 1) > 0):
+                changes.append("nonpositive_net_liquidity")
+        payload["material_change"] = {"changed": bool(changes), "reasons": changes,
+                                      "basis": "versus last material state; liquidity >= max(1%, USD 50bn), rate >= 25bp, regime/direction changes"}
         failed = sum(item.status is OperationalStatus.UNAVAILABLE for item in providers)
         if failed == len(providers):
             operational = OperationalStatus.UNAVAILABLE
@@ -208,6 +239,7 @@ class MacroWorkflow:
             payload=payload,
             evidence=tuple(evidence),
             warnings=tuple(warnings),
+            presentation={"market_result": bool(changes), "silent": not bool(changes), "diagnostic_only": False},
             reasons=() if ok else (ResearchReason(
                 ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if failed else ReasonCode.REQUIRED_EVIDENCE_MISSING,
                 tuple(f"{symbol}:{row['status']}:{row.get('failure_kind', 'fresh PIT observation')}"
@@ -216,4 +248,11 @@ class MacroWorkflow:
         if self.store:
             self.store.save_result(result)
             self.store.save_context("macro", payload)
+            if ok and changes:
+                self.store.save_state("macro_material", {
+                    "regime": regime, "rate": factors["EFFR"]["value"],
+                    "net_liquidity_million_usd": payload["net_liquidity_million_usd"],
+                    "liquidity_direction": payload["interpretation"]["liquidity"],
+                    "decision_time": iso(decided),
+                })
         return result

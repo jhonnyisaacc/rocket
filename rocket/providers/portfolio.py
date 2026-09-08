@@ -10,7 +10,7 @@ from rocket.providers.shorts import _closes
 
 
 def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = None,
-                              http: httpx.Client | None = None) -> dict[str, Mapping]:
+                              http: httpx.Client | None = None, include_news: bool = True) -> dict[str, Mapping]:
     owns = http is None
     client = http or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0"})
     output = {}
@@ -41,7 +41,9 @@ def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = 
                 row["technical_condition"] = "breakdown" if closes[-1] < min(closes[-21:-1]) else (
                     "weak" if closes[-1] < sum(closes[-20:]) / 20 else "healthy")
                 row["technical_basis"] = {"source": "Yahoo Finance chart API", "observed_at": observed,
-                                           "bars": len(closes), "rule": "20-session low / moving average"}
+                                           "bars": len(closes), "rule": "20-session low / moving average",
+                                           "average_20": sum(closes[-20:]) / 20,
+                                           "low_20": min(closes[-21:-1]), "high_20": max(closes[-21:-1])}
                 row["provider_status"] = "HEALTHY"
                 row["provider_attempts"].append({"name": f"yahoo.history:{ticker}", "status": "HEALTHY",
                                                 "coverage": str(len(closes))})
@@ -49,6 +51,9 @@ def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = 
             except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError) as exc:
                 row["provider_attempts"].append({"name": f"yahoo.history:{ticker}", "status": "UNAVAILABLE",
                                                 "failure_kind": type(exc).__name__})
+            if http is None and include_news:
+                from rocket.providers.news import company_news_context
+                row.update(company_news_context(ticker))
     finally:
         if owns:
             client.close()

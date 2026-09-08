@@ -849,14 +849,14 @@ class CryptoWorkflow:
                 "PARTIAL": OperationalStatus.PARTIAL.value,
                 "STALE": OperationalStatus.PARTIAL.value,
             }.get(str(cot_context.get("status")), OperationalStatus.UNAVAILABLE.value)
-            providers.append(
+            providers.extend(cot_context.get("provider_attempts") or [
                 {
                     "name": "cftc",
                     "status": cot_status,
                     "retrieved_at": observed.isoformat(),
                     "failure_kind": cot_context.get("failure_kind"),
                 }
-            )
+            ])
         requested = [row for row in observation["candidates"] if row["ranking_state"] == "ELIGIBLE"
                      and row["liquidity"]["state"] == "PASS"]
         for row in requested:

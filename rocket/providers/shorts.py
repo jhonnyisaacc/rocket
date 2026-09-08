@@ -44,7 +44,7 @@ def acquire_short_snapshot(
     fixed_now = now
     now = now or datetime.now(UTC)
     universe = UNIVERSE if universe is None else universe
-    symbols = sorted(set(universe) | set(universe.values()) | {"SPY"})
+    symbols = sorted(set(universe) | {v for v in universe.values() if v} | {"SPY"})
     owns = http is None
     client = http or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0"})
     histories: dict[str, tuple[list[float] | None, str, str | None, bool]] = {}
@@ -70,7 +70,7 @@ def acquire_short_snapshot(
     rows = []
     for ticker, sector in universe.items():
         series, source, observed, valid = histories[ticker]
-        sec = histories[sector]
+        sec = histories.get(sector, (None, "unknown sector", None, False))
         row = {
             "ticker": ticker,
             "source": source,
@@ -87,10 +87,14 @@ def acquire_short_snapshot(
         }
         if valid and series:
             row["technical_breakdown"] = series[-1] < min(series[-21:-1])
+            row["current_price"] = series[-1]
+            row["technical_setup"] = {"rule": "close below prior 20-session low", "prior_low": min(series[-21:-1])}
+            row["entry"] = {"concept": "retest of broken 20-session support", "level": min(series[-21:-1])}
+            row["invalidation"] = max(series[-21:-1])
         row["provider_attempts"] = [{"name": f"yahoo.history:{symbol}",
                                      "status": "HEALTHY" if histories[symbol][3] else "UNAVAILABLE",
                                      "coverage": str(len(histories[symbol][0] or []))}
-                                    for symbol in dict.fromkeys((ticker, sector, "SPY"))]
+                                    for symbol in dict.fromkeys((ticker, sector, "SPY")) if symbol]
         if fundamentals is not None:
             try:
                 extra = fundamentals(ticker)
@@ -129,16 +133,6 @@ def acquire_short_snapshot(
 
 
 def live_fundamentals_fetcher() -> Callable[[str], Mapping[str, Any]] | None:
-    from rocket.providers.fmp import FMPClient
+    from rocket.providers.fundamentals import fundamentals_row
 
-    client = FMPClient()
-    if not client.configured():
-        return None
-
-    def _fetch(symbol: str) -> Mapping[str, Any]:
-        result = client.fundamentals(symbol)
-        if not result.records:
-            return {}
-        return result.records[0]
-
-    return _fetch
+    return fundamentals_row
