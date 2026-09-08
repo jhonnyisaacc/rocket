@@ -110,7 +110,10 @@ class IsmWorkflow:
             if kind == "manufacturing" and pmi is None and isinstance(napm, Mapping):
                 expected = identity["expected_reference_month"]
                 # NAPM only for the matching reference month; never NMFBAI for services.
-                if identity["reference_month"] == expected == napm.get("reference_month") and 0 < napm.get("value", 0) < 100:
+                value = napm.get("value")
+                if (identity["reference_month"] == expected == napm.get("reference_month")
+                        and isinstance(value, (int, float)) and not isinstance(value, bool)
+                        and 0 < value < 100):
                     pmi, source = napm["value"], "NAPM via FRED"
             row = _report_payload(report, pmi=pmi, pmi_source=source, identity=identity)
             payload_reports[kind] = row

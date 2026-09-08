@@ -46,6 +46,7 @@ _SERIES = {
     "copper": "PCOPPUSDM",
     "liquidity": "WALCL",
 }
+_STALE_DAYS = {"inflation": 62, "copper": 62, "liquidity": 14}
 
 
 @dataclass(frozen=True)
@@ -158,7 +159,7 @@ def corroborate_claims(
         if not series_id:
             continue  # Explicitly excluded commentary; never a corroborated claim.
         try:
-            raw, source = (series_fetcher(series_id), "injected") if series_fetcher else fetch_series(series_id, max_age_days={"inflation": 62, "copper": 62, "liquidity": 14}.get(topic, 7), now=decision_time)
+            raw, source = (series_fetcher(series_id), "injected") if series_fetcher else fetch_series(series_id, max_age_days=_STALE_DAYS.get(topic, 7), now=decision_time)
             records = raw.get("records") if isinstance(raw, Mapping) else []
             observations = []
             for item in records or []:
@@ -179,7 +180,7 @@ def corroborate_claims(
                 raise RuntimeError("series returned no numeric observations")
             latest_date, latest = observations[-1]
             prior = observations[-2][1] if len(observations) > 1 else None
-            stale_days = {"inflation": 62, "copper": 62, "liquidity": 14}.get(topic, 7)
+            stale_days = _STALE_DAYS.get(topic, 7)
             if (decision_time.date() - latest_date).days > stale_days:
                 raise RuntimeError("latest source observation is stale")
             retrieved_raw = raw.get("retrieved_at")
@@ -422,7 +423,7 @@ class CavaWorkflow:
             if item.kind is EvidenceKind.FACT and item.availability.value == "ELIGIBLE"
             and item.provenance is Provenance.PROVIDER_RESULT
             and item.event_time is not None
-            and decided - item.event_time <= timedelta(days={"inflation": 62, "copper": 62, "liquidity": 14}.get(item.metadata.get("topic"), 7))
+            and 0 <= (decided.date() - item.event_time.date()).days <= _STALE_DAYS.get(item.metadata.get("topic"), 7)
         }
         context_validated = bool(
             claims
