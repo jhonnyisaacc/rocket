@@ -693,7 +693,8 @@ class CryptoWorkflow:
         elif statuses - {OperationalStatus.HEALTHY}:
             operational = OperationalStatus.PARTIAL
         required_failures = [p.name for p in provider_health
-                             if p.status is OperationalStatus.UNAVAILABLE and p.name in {"coingecko", "hyperliquid"}]
+                             if p.status in {OperationalStatus.UNAVAILABLE, OperationalStatus.ERROR}
+                             and (p.name in {"coingecko", "hyperliquid"} or p.name.startswith("hyperliquid.candles:"))]
         if required_failures and not candidates:
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
         gaps = list(required_failures)

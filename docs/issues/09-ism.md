@@ -34,3 +34,9 @@ Roundups:
 - [ ] Display headline PMI and industry lists on separate lines
 
 Contract: JSON `ResearchResult`. Operational ≠ research. `execution_enabled` false.
+
+NAPM fallback is an explicit workflow input for callers with an independently
+acquired monthly observation: `napm={"reference_month": "YYYY-MM", "value": 54.6}`.
+It only fills a missing manufacturing headline for the matching month; it never
+overrides a publisher headline or supplies the services composite. The CLI uses
+publisher reports and does not acquire or imply a live NAPM fallback.
