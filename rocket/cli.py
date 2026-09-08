@@ -38,6 +38,20 @@ def emit_result(result: ResearchResult, *, human: bool) -> None:
     raise typer.Exit(exit_code(result))
 
 
+def configuration_failure(workflow, store, *, human):
+    from datetime import UTC, datetime
+
+    from rocket.models import OperationalReport, ReasonCode, ResearchReason, ResearchStatus
+    now = datetime.now(UTC)
+    result = ResearchResult(workflow=workflow, status=ResearchStatus.ERROR,
+                            operational=OperationalReport(OperationalStatus.ERROR), decision_time=now,
+                            started_at=now, warnings=("Caller input or configuration could not be parsed; operator correction is required.",),
+                            reasons=(ResearchReason(ReasonCode.INVALID_INPUT, ("valid caller input/configuration file",)),),
+                            payload={"execution_enabled": False})
+    store.save_result(result)
+    emit_result(result, human=human)
+
+
 @app.callback()
 def _root() -> None:
     """Rocket: read-only research. JSON on stdout."""
@@ -86,20 +100,21 @@ def cava(
     """Cava overlay: RSS → transcript → claims → corroboration."""
     del json_out
     from rocket.providers.supadata import SupadataTranscriptProvider
-    from rocket.workflows.cava import CAVA_RSS_URL, CavaWorkflow
+    from rocket.workflows.cava import CavaWorkflow
 
     store = ResearchStore(state_dir or rocket_home())
     workflow = CavaWorkflow(store=store)
     try:
         if rss_file:
             rss_xml = rss_file.read_text(encoding="utf-8")
+            result = workflow.run(rss_xml=rss_xml, transcript_provider=SupadataTranscriptProvider())
         else:
-            from rocket.providers.http import get_read
-            with httpx.Client(timeout=20.0, follow_redirects=True) as client:
-                response = get_read(client, CAVA_RSS_URL)
-            response.raise_for_status()
-            rss_xml = response.text
-        result = workflow.run(rss_xml=rss_xml, transcript_provider=SupadataTranscriptProvider())
+            from rocket.providers.cava_discovery import discover_videos
+            discovery = discover_videos()
+            if discovery.result:
+                result = workflow.run(discovery=discovery, transcript_provider=SupadataTranscriptProvider())
+            else:
+                result = workflow.unavailable("Video discovery exhausted: " + ", ".join(f"{a.name}:{a.failure_kind}" for a in discovery.attempts), providers=discovery.attempts)
     except httpx.HTTPError as exc:
         result = workflow.unavailable(f"Cava RSS unavailable: {type(exc).__name__}")
     emit_result(result, human=human)
@@ -118,11 +133,16 @@ def watch_check(
     from rocket.workflows.watch import WatchWorkflow, load_watches
 
     store = ResearchStore(state_dir or rocket_home())
-    rows = load_watches(watches)
-    prices = None
-    if prices_file is not None:
-        payload = json.loads(prices_file.read_text(encoding="utf-8"))
-        prices = payload.get("prices", payload) if isinstance(payload, dict) else {}
+    try:
+        rows = load_watches(watches)
+        prices = None
+        if prices_file is not None:
+            payload = json.loads(prices_file.read_text(encoding="utf-8"))
+            prices = payload.get("prices", payload) if isinstance(payload, dict) else None
+            if not isinstance(prices, dict):
+                raise ValueError("prices must be a mapping")
+    except (ValueError, TypeError, OSError):
+        configuration_failure("watch.check", store, human=human)
     emit_result(WatchWorkflow(store=store).run(rows, prices=prices), human=human)
 
 
@@ -141,10 +161,16 @@ def portfolio_review(
     from rocket.workflows.portfolio import PortfolioWorkflow, load_portfolio_state
 
     store = ResearchStore(state_dir or rocket_home())
-    book = load_portfolio_state(state)
-    evidence = json.loads(evidence_file.read_text(encoding="utf-8")) if evidence_file else None
+    try:
+        book = load_portfolio_state(state)
+        evidence = json.loads(evidence_file.read_text(encoding="utf-8")) if evidence_file else None
+        if evidence is not None and (not isinstance(evidence, dict) or any(not isinstance(v, dict) for v in evidence.values())):
+            raise ValueError("position evidence must be a mapping")
+        inventory = SolanaOndoInventory() if refresh_inventory else None
+    except (ValueError, TypeError, OSError):
+        configuration_failure("portfolio.review", store, human=human)
     emit_result(
-        PortfolioWorkflow(store=store, inventory=SolanaOndoInventory() if refresh_inventory else None).run(
+        PortfolioWorkflow(store=store, inventory=inventory).run(
             book,
             evidence,
             refresh_inventory=refresh_inventory,
@@ -251,11 +277,13 @@ def ism(
                 provider_failures[kind] = type(exc).__name__
                 continue
     store = ResearchStore(state_dir or rocket_home())
-    emit_result(IsmWorkflow(store=store).run(reports=reports or None, provider_failures=provider_failures), human=human)
+    emit_result(IsmWorkflow(store=store).run(reports=reports or None, provider_failures=provider_failures,
+                                           research_companies=not (manufacturing_html or services_html)), human=human)
 
 
 @app.command("disclosures")
 def disclosures(
+    person: list[str] | None = typer.Option(None, "--person", help="Exact person name; repeat to select several. Defaults to Nancy Pelosi and Donald Trump."),
     state_dir: Path | None = typer.Option(None, "--state-dir"),
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
@@ -270,30 +298,40 @@ def disclosures(
 
     store = ResearchStore(state_dir or rocket_home())
     congress, executive, secondary = [], [], []
+    subjects = person or ["Nancy Pelosi", "Donald Trump"]
     status = {}
     extra_warnings: list[str] = []
-    try:
-        congress = OfficialHouseDisclosureProvider().fetch()
-        status["congress"] = {"status": "OK"}
-    except Exception as exc:
-        status["congress"] = {"status": "UNAVAILABLE", "failure_kind": type(exc).__name__}
-    try:
-        executive = OfficialOGEExecutiveDisclosureProvider().fetch()
-        status["executive"] = {"status": "OK"}
-    except Exception as exc:
-        status["executive"] = {"status": "UNAVAILABLE", "failure_kind": type(exc).__name__}
+    from datetime import UTC, datetime
+
+    from rocket.people import person_id
+    from rocket.providers.dispatch import failure_kind
     from rocket.providers.fmp import FMPClient
 
+    selected = {person_id(s) for s in subjects}
+    if None in selected:
+        status["person_filter"] = {"status": "UNAVAILABLE", "failure_kind": "UnsupportedPersonIdentity"}
+    if "nancy_pelosi" in selected:
+        for year in range(datetime.now(UTC).year, datetime.now(UTC).year - 3, -1):
+            try:
+                congress.extend(OfficialHouseDisclosureProvider(filing_year=year).fetch())
+                status[f"congress:{year}"] = {"status": "OK"}
+            except Exception as exc:
+                status[f"congress:{year}"] = {"status": "UNAVAILABLE", "failure_kind": failure_kind(exc)}
+    if "donald_trump" in selected:
+        try:
+            executive = OfficialOGEExecutiveDisclosureProvider().fetch()
+            status["executive"] = {"status": "OK"}
+        except Exception as exc:
+            status["executive"] = {"status": "UNAVAILABLE", "failure_kind": failure_kind(exc)}
+    if "donald_trump" in selected:
+        status["trump_transaction_history"] = {"status": "UNAVAILABLE", "failure_kind": "UnsupportedCapability"}
     fmp = FMPClient()
-    if not fmp.configured():
-        extra_warnings.append("FMP_API_KEY unset; secondary disclosures skipped")
-    else:
-        trades = fmp.politician_trades()
-        if trades.status is OperationalStatus.UNAVAILABLE:
-            status["secondary"] = {"status": "UNAVAILABLE", "failure_kind": trades.failure_kind}
-        else:
-            secondary = list(trades.records)
-            status["secondary"] = {"status": "OK", "source": "fmp"}
+    history = fmp.person_history() if "nancy_pelosi" in selected else None
+    if history is not None:
+        status["pelosi_secondary_history"] = {"status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK", "failure_kind": history.failure_kind}
+    historical_records = list(history.records) if history else []
+    from rocket.candidates import caller_references
+    references, reference_coverage = caller_references()
     emit_result(
         DisclosureWorkflow(store=store).run(
             congress_records=congress,
@@ -301,6 +339,16 @@ def disclosures(
             secondary_records=secondary,
             provider_status=status,
             warnings=extra_warnings,
+            subjects=subjects,
+            historical_records=historical_records,
+            history_acquisition={
+                "structured_provider": "fmp.house-trades-by-name" if history else None,
+                "official_documents": "filing metadata only; no PDF/OCR ingestion",
+                "trump_transaction_history": "not implemented",
+            },
+            portfolio_tickers=references["portfolio"], watch_tickers=references["watch"],
+            cross_system_coverage=reference_coverage,
+            research_opportunities=True,
         ),
         human=human,
     )
@@ -315,7 +363,6 @@ def shorts(
 ) -> None:
     """Autonomous multi-factor short scan. Macro alone cannot select."""
     del json_out
-    from rocket.providers.shorts import acquire_short_snapshot, live_fundamentals_fetcher
     from rocket.workflows.shorts import ShortsWorkflow
 
     store = ResearchStore(state_dir or rocket_home())
@@ -323,7 +370,8 @@ def shorts(
         raw = json.loads(input_file.read_text(encoding="utf-8"))
         rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
     else:
-        rows = acquire_short_snapshot(fundamentals=live_fundamentals_fetcher())
+        emit_result(ShortsWorkflow(store=store).scan_live(), human=human)
+        return
     emit_result(ShortsWorkflow(store=store).scan(rows), human=human)
 
 

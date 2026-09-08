@@ -86,7 +86,7 @@ def parse_cftc_report(html: str) -> dict[str, dict[str, Any]]:
             "pct_oi_non_com": pct_oi,
             "bias": bias_from_speculator_pct(pct_oi),
             "as_of_date": as_of.date().isoformat() if as_of else None,
-            "release_date": as_of.date().isoformat() if as_of else None,
+            "release_date": None,
             "source": "cftc_direct",
         }
     return markets
@@ -157,7 +157,7 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
                 continue
     freshest = min(as_of_dates) if as_of_dates else None
     freshness_days = (observed.date() - freshest).days if freshest else None
-    stale = freshness_days is None or freshness_days > STALE_AFTER_DAYS
+    stale = freshness_days is None or not 0 <= freshness_days <= STALE_AFTER_DAYS
     incomplete = result.status is not OperationalStatus.HEALTHY or len(markets) < 2
     regime = regime_from_markets(markets)
     status = "UNAVAILABLE"
@@ -182,7 +182,7 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
         "status": status,
         "regime": regime,
         "scope": "market/regime context; no per-altcoin COT signal",
-        "source": "CFTC futures-only report",
+        "source": "OpenBB/CFTC futures-only report" if result.source == "OpenBB/CFTC" else "CFTC futures-only report",
         "as_of_date": freshest.isoformat() if freshest else None,
         "freshness_days": freshness_days,
         "markets": markets,
@@ -192,4 +192,17 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
 
 
 def fetch_cot_context(*, now: datetime | None = None, http: httpx.Client | None = None) -> dict[str, Any]:
-    return cot_context_from_result(fetch_cftc_direct(http=http), now=now)
+    from rocket.providers.openbb_cftc import OpenBBCFTC
+    from rocket.providers.registry import Registry
+
+    registry = Registry()
+    registry.register("cot", "cftc", lambda: fetch_cftc_direct(http=http))
+    registry.register("cot", "openbb_cftc", lambda: OpenBBCFTC().fetch(now=now))
+    acquisition = registry.acquire("cot", required=False,
+                                   sufficient=lambda r: cot_context_from_result(r, now=now)["status"] == "OK")
+    result = acquisition.result or ProviderResult(OperationalStatus.UNAVAILABLE, source="cot",
+                                                 failure_kind="SourcesExhausted")
+    context = cot_context_from_result(result, now=now)
+    context["provider_attempts"] = [p.to_dict() for p in acquisition.attempts]
+    context["required"] = False
+    return context

@@ -230,7 +230,7 @@ def latest_roundup_url(sitemap_xml: str, kind: ReportKind) -> str | None:
     return max(roundups, key=reference) if roundups else None
 
 
-def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None) -> ISMReport:
+def _fetch_roundup(kind: ReportKind, *, http: httpx.Client | None = None) -> ISMReport:
     """Publisher path: sitemap roundup → PR Newswire body when unique, else roundup HTML."""
     owns = http is None
     client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"}, follow_redirects=True)
@@ -260,6 +260,58 @@ def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None) -> I
                 raise ValueError("neither publisher nor roundup supplied usable content") from None
             fallback.provider_failures = (f"publisher:{type(exc).__name__}",)
             return fallback
+    finally:
+        if owns:
+            client.close()
+
+
+def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None,
+                     now: datetime | None = None) -> ISMReport:
+    """Official roundup first; issuer's syndicated publisher archive second.
+
+    The archive is discovery only. Numbers and industry ranks must come from
+    the fetched release body with the exact current reference month and kind.
+    """
+    from rocket.models import OperationalStatus
+    from rocket.providers.dispatch import acquire
+    from rocket.providers.protocols import ProviderResult
+
+    now = now or datetime.now(UTC)
+    owns = http is None
+    client = http or httpx.Client(timeout=20, follow_redirects=True,
+                                  headers={"User-Agent": "rocket-research"})
+    reports = {}
+    def capture(name, report):
+        identity = release_identity(report, now)
+        if identity["release_status"] != "CURRENT" or (report.pmi is None and not (report.expanding or report.contracting)):
+            raise ValueError("current ISM report content unavailable")
+        reports[name] = report
+        return ProviderResult(OperationalStatus.HEALTHY, (identity,), now, source=name)
+    def official():
+        return capture("ism.official", _fetch_roundup(kind, http=client))
+    def publisher():
+        archive = "https://www.prnewswire.com/news/institute-for-supply-management/"
+        response = get_read(client, archive)
+        response.raise_for_status()
+        marker = expected_reference(kind, now).strftime("%B-%Y").lower()
+        links = set(re.findall(r'[\"\']((?:https://www\.prnewswire\.com)?/news-releases/[^\"\'<>]+)', response.text))
+        links = sorted(link for link in links if marker in link.lower() and f"{kind}-pmi" in link.lower())
+        if len(links) != 1:
+            raise ValueError("publisher archive has no unique current ISM release")
+        url = unescape(links[0])
+        if url.startswith("/"):
+            url = "https://www.prnewswire.com" + url
+        response = get_read(client, url)
+        response.raise_for_status()
+        return capture("ism.publisher", parse_ism_html(response.text, kind=kind, source_url=url))
+    try:
+        acquisition = acquire("ism." + kind, [("ism.official", official), ("ism.publisher", publisher)], retries=0)
+        if acquisition.result is None:
+            failures = ", ".join(f"{a.name}:{a.failure_kind}" for a in acquisition.attempts)
+            raise ValueError("ISM acquisition exhausted: " + failures)
+        report = reports[acquisition.result.source]
+        report.provider_failures += tuple(f"{a.name}:{a.failure_kind}" for a in acquisition.attempts if a.failure_kind)
+        return report
     finally:
         if owns:
             client.close()

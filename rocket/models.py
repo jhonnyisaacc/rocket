@@ -214,6 +214,7 @@ class ResearchResult:
     warnings: tuple[str, ...] = ()
     reasons: tuple[ResearchReason, ...] = ()
     safety_boundary: SafetyBoundary = SafetyBoundary.READ_ONLY_RESEARCH_ONLY_HUMAN_GATED
+    presentation: Mapping[str, bool] | None = None
 
     def validate(self) -> None:
         if not self.workflow.strip():
@@ -270,18 +271,24 @@ class ResearchResult:
             "evidence": [item.to_dict() for item in self.evidence],
             "warnings": list(self.warnings),
             "reasons": [reason.to_dict() for reason in self.reasons],
-            "presentation": {
-                "market_result": self.status not in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR}
-                and (self.status in {ResearchStatus.SETUP_FOUND, ResearchStatus.ACTION_REQUIRED}
-                     or self.workflow in {"macro", "ism"}),
-                "silent": self.status not in {ResearchStatus.SETUP_FOUND, ResearchStatus.ACTION_REQUIRED}
-                and self.workflow not in {"macro", "ism"}
-                or self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR},
-                "diagnostic_only": self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR},
-            },
+            "presentation": self.presentation_metadata(),
             "payload": dict(self.payload),
             "safety_boundary": self.safety_boundary.value,
         }
+
+    def presentation_metadata(self) -> dict[str, bool]:
+        diagnostic = self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR}
+        if diagnostic:
+            return {"market_result": False, "silent": True, "diagnostic_only": True}
+        market = self.status in {ResearchStatus.SETUP_FOUND, ResearchStatus.ACTION_REQUIRED} or self.workflow in {"macro", "ism"}
+        result = dict(self.presentation) if self.presentation is not None else {
+            "market_result": market, "silent": not market, "diagnostic_only": False}
+        # Partial research can coexist with operator diagnostics. Never hide typed errors.
+        if any(r.code in {ReasonCode.INVALID_INPUT, ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE}
+               for r in self.reasons):
+            result["diagnostic_only"] = not result["market_result"]
+            result["silent"] = not result["market_result"]
+        return result
 
     def to_json(self) -> bytes:
         return orjson.dumps(self.to_dict(), option=orjson.OPT_INDENT_2)
@@ -309,6 +316,7 @@ class ResearchResult:
             evidence=tuple(Evidence.from_dict(item) for item in value.get("evidence") or []),
             warnings=tuple(str(item) for item in value.get("warnings") or []),
             reasons=reasons,
+            presentation=value.get("presentation"),
             safety_boundary=SafetyBoundary(
                 str(value.get("safety_boundary") or SafetyBoundary.READ_ONLY_RESEARCH_ONLY_HUMAN_GATED)
             ),

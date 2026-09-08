@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
+from html import unescape
 from urllib.parse import urljoin
 
 import httpx
@@ -51,12 +52,21 @@ class OfficialHouseDisclosureProvider:
                 ".pdf" in url.lower() for url in _links(response.text, base_url=HOUSE_SEARCH_URL)
             ):
                 raise ValueError("House results schema unavailable")
-            for link in _links(response.text, base_url=HOUSE_SEARCH_URL):
+            from rocket.people import person_id
+            for tr in re.findall(r"<tr\b[^>]*>.*?</tr>", response.text, re.IGNORECASE | re.DOTALL):
+                name_cell = re.search(r'<td[^>]*data-label="Name"[^>]*>(.*?)</td>', tr, re.IGNORECASE | re.DOTALL)
+                name = unescape(re.sub(r"<[^>]+>", " ", name_cell[1])).strip() if name_cell else "UNKNOWN"
+                if person_id(subject) and person_id(name) != person_id(subject):
+                    continue
+                links = _links(tr, base_url=HOUSE_SEARCH_URL)
+                if len(links) != 1:
+                    continue
+                link = links[0]
                 if "ptr-pdf" not in link.lower() and not link.lower().endswith(".pdf"):
                     continue
                 output.append(
                     {
-                        "subject": "UNKNOWN",
+                        "subject": name,
                         "requested_subject": subject,
                         "owner": None,
                         "asset": "FINANCIAL_DISCLOSURE_FILING",
@@ -105,6 +115,9 @@ class OfficialOGEExecutiveDisclosureProvider:
                 name = row["name"]
                 if self.subject.split()[-1].lower() not in name.lower():
                     raise ValueError("OGE server ignored the subject filter")
+                from rocket.people import person_id
+                if person_id(self.subject) and person_id(name) != person_id(self.subject):
+                    continue
                 for url in _links(row["type"], base_url=self.index_url):
                     if url.lower().endswith(".pdf"):
                         output.append(self._filing(url, name, row["docDate"]))

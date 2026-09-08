@@ -1,0 +1,122 @@
+{
+  "machinery": [
+    {
+      "ticker": "CAT",
+      "sector_etf": "XLI",
+      "exposure": "Construction, mining and energy equipment manufacturing",
+      "source": "https://www.caterpillar.com/en/company.html",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "primary metals": [
+    {
+      "ticker": "NUE",
+      "sector_etf": "XLB",
+      "exposure": "Steel and steel products manufacturing",
+      "source": "https://nucor.com/",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "chemical products": [
+    {
+      "ticker": "DOW",
+      "sector_etf": "XLB",
+      "exposure": "Materials science and chemicals production",
+      "source": "https://corporate.dow.com/en-us/about-dow.html",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "wood products": [
+    {
+      "ticker": "WY",
+      "sector_etf": "XLRE",
+      "exposure": "Timberlands and wood products manufacturing",
+      "source": "https://www.weyerhaeuser.com/woodproducts/",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "computer & electronic products": [
+    {
+      "ticker": "TXN",
+      "sector_etf": "XLK",
+      "exposure": "Analog and embedded processing semiconductors",
+      "source": "https://www.ti.com/about-ti.html",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "petroleum & coal products": [
+    {
+      "ticker": "VLO",
+      "sector_etf": "XLE",
+      "exposure": "Petroleum refining and renewable fuels production",
+      "source": "https://www.valero.com/refining/fuels",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "transportation equipment": [
+    {
+      "ticker": "F",
+      "sector_etf": "XLY",
+      "exposure": "Automobile and commercial vehicle manufacturing",
+      "source": "https://corporate.ford.com/operations.html",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "food, beverage & tobacco products": [
+    {
+      "ticker": "PEP",
+      "sector_etf": "XLP",
+      "exposure": "Beverages and packaged foods",
+      "source": "https://www.pepsico.com/en/about",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "retail trade": [
+    {
+      "ticker": "WMT",
+      "sector_etf": "XLP",
+      "exposure": "Retail stores and ecommerce",
+      "source": "https://corporate.walmart.com/about",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "transportation & warehousing": [
+    {
+      "ticker": "UPS",
+      "sector_etf": "XLI",
+      "exposure": "Package transportation and supply chain logistics",
+      "source": "https://about.ups.com/gb/en/our-company/our-strategy.html",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "finance & insurance": [
+    {
+      "ticker": "JPM",
+      "sector_etf": "XLF",
+      "exposure": "Consumer, commercial and investment banking",
+      "source": "https://www.jpmorganchase.com/about",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ],
+  "information": [
+    {
+      "ticker": "GOOGL",
+      "sector_etf": "XLC",
+      "exposure": "Digital information, advertising and cloud services",
+      "source": "https://abc.xyz/",
+      "reviewed_at": "2026-09-08",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+    }
+  ]
+}

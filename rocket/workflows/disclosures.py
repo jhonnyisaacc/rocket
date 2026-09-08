@@ -21,6 +21,7 @@ from rocket.models import (
     ResearchResult,
     ResearchStatus,
 )
+from rocket.people import person_id
 from rocket.store import ResearchStore
 
 WORKFLOW = "disclosures"
@@ -30,6 +31,9 @@ class SourceFamily(StrEnum):
     CONGRESS = "congress"
     EXECUTIVE = "executive"
     SECONDARY = "secondary"
+    INSIDER = "company_insider"
+    CAMPAIGN = "campaign"
+    OTHER = "other_official"
 
 
 def _clean(value: Any) -> str | None:
@@ -54,6 +58,9 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
         "family": family.value,
         "source": source,
         "index_added_at": record.get("index_added_at"),
+        "transaction_date": record.get("transaction_date"),
+        "disclosure_date": record.get("disclosure_date"),
+        "owner": record.get("owner"),
     }
     return {
         "subject_filer": subject,
@@ -65,11 +72,18 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
         "source_url_reference": source,
         "source_family": family.value,
         "provider": record.get("provider"),
+        "asset_type": record.get("asset_type"),
+        "eligible_equity_context": record.get("eligible_equity_context", True),
+        "description": record.get("description"),
+        "disclosure_date_basis": record.get("disclosure_date_basis"),
+        "document_sha256": record.get("document_sha256"),
+        "person_id": person_id(subject),
+        "identity_status": "EXACT_ALIAS" if person_id(subject) else "UNRESOLVED",
         "index_added_at": record.get("index_added_at"),
         "unique_id": _stable_id({**fields, "provider": record.get("provider")}),
-        "record_semantics": "SECONDARY_TRANSACTION_ROW"
+        "record_semantics": record.get("record_semantics") or ("SECONDARY_TRANSACTION_ROW"
         if family is SourceFamily.SECONDARY
-        else "FILING_NOT_TRADE_ROW",
+        else "FILING_NOT_TRADE_ROW"),
     }
 
 
@@ -88,6 +102,15 @@ class DisclosureWorkflow:
         now: datetime | None = None,
         provider_status: Mapping[str, Any] | None = None,
         warnings: Iterable[str] = (),
+        subjects=None,
+        historical_records: Iterable[Mapping[str, Any]] = (),
+        context_fetcher=None,
+        research_opportunities: bool = False,
+        portfolio_tickers=None,
+        watch_tickers=None,
+        cross_system_coverage=None,
+        historical_price_fetcher=None,
+        history_acquisition=None,
     ) -> ResearchResult:
         decided = now or datetime.now(UTC)
         unique: dict[str, dict[str, Any]] = {}
@@ -100,6 +123,10 @@ class DisclosureWorkflow:
                 normalized = normalize_record(record, family=family)
                 if normalized:
                     unique.setdefault(normalized["unique_id"], normalized)
+        from rocket.people import person_id
+        selected_people = {person_id(s) or s for s in subjects} if subjects is not None else None
+        if selected_people is not None:
+            unique = {key: row for key, row in unique.items() if row["person_id"] in selected_people}
         seen_state = self.store.load_state("disclosures_seen") or {}
         seen = {str(item) for item in seen_state.get("unique_ids", [])}
         new_records = [record for record in unique.values() if record["unique_id"] not in seen]
@@ -153,6 +180,94 @@ class DisclosureWorkflow:
         ) or (
             ProviderHealth(name="disclosures", status=operational, retrieved_at=decided),
         )
+        opportunities = []
+        historical_scope = None
+        if research_opportunities and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
+            from rocket.candidates import evaluate_long, overlap, persist_candidates
+            from rocket.providers.equity_research import acquire_equity_context
+            history = dict(self.store.load_state("disclosure_history") or {})
+            history.update(unique)
+            for raw in historical_records:
+                family = SourceFamily(raw.get("source_family", "secondary"))
+                normalized = normalize_record(raw, family=family)
+                if normalized and (selected_people is None or normalized["person_id"] in selected_people):
+                    history[normalized["unique_id"]] = normalized
+            trades = [r for r in history.values() if r["transaction_type"].lower() in {"purchase", "sale", "sale (full)", "sale (partial)"}
+                      and r["asset"] not in {"UNKNOWN", "FINANCIAL_DISCLOSURE_FILING", "PUBLIC_FINANCIAL_DISCLOSURE"}
+                      and (selected_people is None or r["person_id"] in selected_people)]
+            # Bound fresh research to 30 distinct assets, newest disclosed first.
+            trades.sort(key=lambda r: r.get("disclosure_date") or "", reverse=True)
+            latest = {}
+            for trade in trades:
+                latest.setdefault((trade["person_id"], trade["asset"], trade["transaction_type"].lower().startswith("sale")), trade)
+            historical_scope = {"transaction_records": len(trades), "distinct_person_asset_directions": len(latest),
+                                "unknown_asset_examples_limit": 10, "listed_research_limit": 30}
+            trades = list(latest.values())
+            import re
+            tickers = list(dict.fromkeys(r["asset"] for r in trades if r.get("eligible_equity_context") and re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", r["asset"])))[:30]
+            contexts = (context_fetcher or acquire_equity_context)(tickers)
+            from rocket.providers.historical_prices import price_history, transaction_context
+            histories = {}
+            for ticker in tickers:
+                try:
+                    histories[ticker] = (historical_price_fetcher or price_history)(ticker) if context_fetcher is None or historical_price_fetcher else {}
+                except Exception:
+                    histories[ticker] = {}
+            decided = now or datetime.now(UTC)
+            unknown_count = 0
+            for trade in trades:
+                if trade["asset"] not in tickers:
+                    unknown_count += 1
+                    if unknown_count > 10:
+                        continue
+                    opportunities.append({"ticker": None, "asset": trade["asset"], "direction": "unknown", "classification": "NEEDS_REVIEW",
+                                          "original_transaction": trade, "reason": "Instrument identity or extracted transaction requires human review; not promoted to a listed-security candidate."})
+                    continue
+                ticker = trade["asset"]
+                thesis = f"Historical {trade['subject_filer']} disclosure is context only; current company and price evidence must independently justify an opportunity."
+                if trade["transaction_type"].lower().startswith("sale"):
+                    candidate = {"ticker": ticker, "direction": "short", "classification": "SHORT_INPUT",
+                                 "thesis": thesis, "requires_canonical_short_evaluation": True}
+                else:
+                    candidate = evaluate_long(ticker, contexts.get(ticker, {}), thesis=thesis,
+                                               source_reference=trade["source_url_reference"], now=decided)
+                tx_date, filing_date = trade.get("transaction_date"), trade.get("disclosure_date")
+                try:
+                    lag = (datetime.fromisoformat(filing_date) - datetime.fromisoformat(tx_date)).days
+                    valid_dates = 0 <= lag and datetime.fromisoformat(filing_date).date() <= decided.date()
+                except (ValueError, TypeError):
+                    lag, valid_dates = None, False
+                if not valid_dates:
+                    candidate["classification"] = "NEEDS_REVIEW"
+                    candidate["direction"] = "unknown"
+                elif candidate["direction"] == "short" and (decided.date() - datetime.fromisoformat(tx_date).date()).days > 45:
+                    candidate.update(classification="NOT_INTERESTING", direction="unknown",
+                                     reason="Historical sale is too old to seed a new bearish evaluation by itself")
+                candidate.update(original_transaction=trade, disclosure_lag_days=lag,
+                                 overlap=overlap(self.store, ticker, portfolio=portfolio_tickers or (), watches=watch_tickers or ()),
+                                 historical_price=None, move_since_transaction=None,
+                                 historical_price_status="UNVERIFIED", opportunity_is_independent_of_person=True)
+                candidate.update(transaction_context(histories.get(ticker, {}), tx_date, now=decided))
+                candidate["already_considered"] = bool(candidate["overlap"])
+                if set(candidate["overlap"]) & {"portfolio", "watch"}:
+                    candidate["watch_proposal"] = None
+                    candidate["disposition"] = "EXISTING_POSITION_OR_WATCH_CONTEXT"
+                average = contexts.get(ticker, {}).get("technical_basis", {}).get("average_20")
+                price = candidate.get("current_price")
+                if candidate["classification"] == "WATCH" and candidate.get("move_since_transaction", 0) is not None and candidate.get("move_since_transaction", 0) > .30 and average and price and price > average * 1.10:
+                    candidate.update(classification="TOO_LATE", watch_proposal=None,
+                                     timing_reason="Adjusted price advanced over 30% and is more than 10% above 20-session support; current entry is extended.")
+                opportunities.append(candidate)
+            self.store.save_state("disclosure_history", history)
+            persist_candidates(self.store, "disclosures", [r for r in opportunities if r.get("ticker")], now=decided)
+            if opportunities and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
+                research = ResearchStatus.ACTION_REQUIRED
+        import json
+
+        from rocket.candidates import content_id
+        material_id = content_id(json.dumps([(r.get("ticker"), r.get("asset"), r["classification"], r["original_transaction"]["unique_id"]) for r in opportunities], sort_keys=True))
+        previous_material = self.store.load_state("disclosure_material") or {}
+        material_change = bool(new_records) or bool(opportunities and material_id != previous_material.get("id"))
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
@@ -169,9 +284,18 @@ class DisclosureWorkflow:
                 "disclosure_is_not_a_buy_signal": True,
                 "research_result": research_result,
                 "provider_status": health,
+                "selected_people": sorted(selected_people) if selected_people is not None else None,
+                "opportunities": opportunities,
+                "historical_acquisition": history_acquisition,
+                "historical_scope": historical_scope,
+                "cross_system_coverage": cross_system_coverage or {"portfolio": "AVAILABLE" if portfolio_tickers is not None else "NOT_CONFIGURED",
+                                                                   "watch": "AVAILABLE" if watch_tickers is not None else "NOT_CONFIGURED"},
+                "material_change": material_change,
                 "execution_enabled": False,
             },
             evidence=tuple(evidence),
+            presentation={"market_result": material_change, "silent": not material_change,
+                          "diagnostic_only": bool(failed and not material_change)},
             reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
                                     tuple(health), True),) if operational is OperationalStatus.UNAVAILABLE else (),
             warnings=(
@@ -190,4 +314,5 @@ class DisclosureWorkflow:
             "disclosures_seen",
             {"unique_ids": sorted(seen | set(unique)), "updated_at": decided.isoformat()},
         )
+        self.store.save_state("disclosure_material", {"id": material_id})
         return result

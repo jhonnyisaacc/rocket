@@ -13,8 +13,7 @@ env = []
 
 [fundamentals]
 primary = "fmp"
-# Massive adapter is not implemented; tracked in #13.
-fallbacks = []
+fallbacks = ["massive"]
 env = ["FMP_API_KEY", "MASSIVE_API_KEY"]
 
 [universe]
@@ -32,12 +31,12 @@ env = ["HL_WALLET"]
 [cot]
 # OpenBB is optional. The durable source is the official CFTC futures report.
 primary = "cftc"
-# OpenBB CFTC adapter is not implemented; tracked in #13.
-fallbacks = []
+fallbacks = ["openbb_cftc"]
+env = ["OPENBB_PYTHON"]
 
 [ism]
-primary = "ism_publisher"
-fallbacks = []
+primary = "ism_official_roundup"
+fallbacks = ["ism_prnewswire_archive"]
 
 [disclosures_official]
 primary = "house_oge"
@@ -55,7 +54,17 @@ env = ["SUPADATA_API_KEY", "SUPADATA_API_TOKEN"]
 [inventory]
 primary = "solana_ondo"
 fallbacks = []
-env = ["HELIUS_API_KEY", "ROCKET_INVENTORY_ADDRESS"]
+env = ["SOLANA_RPC_URL", "HELIUS_API_KEY", "ROCKET_INVENTORY_ADDRESS", "ROCKET_ASSET_REGISTRY"]
+
+[cava_discovery]
+primary = "youtube_rss"
+fallbacks = ["supadata_metadata"]
+env = ["SUPADATA_API_KEY"]
+
+[news]
+primary = "fmp_news"
+fallbacks = ["openbb_news"]
+env = ["FMP_API_KEY", "OPENBB_PYTHON"]
 
 [memecoin_capture]
 primary = "pumpapi"
