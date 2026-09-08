@@ -21,6 +21,12 @@ generated model prose. The persisted run is the retry source if bot presentation
 fails. A named measure whose provider fails stays diagnostic; it cannot take this
 summary shortcut. Unsupported commentary remains unverified.
 
+Exact-measure daily reports separately expose `delivery_cursor_advanced` and
+`overlay_validated`. A completed contradicted report is persisted and delivered
+once through `cava_delivered`, while `cursor_advanced` stays false and no validated
+overlay is created. Failed required acquisition does not mark delivery complete
+and remains retryable. These delivery records are independent of forecast history.
+
 ## Filters
 
 - Dedup RSS ids; newest first

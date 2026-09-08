@@ -91,7 +91,7 @@ def test_historical_extended_opportunity_too_late(tmp_path):
     history = {'source': 'quotes', 'citation': 'https://quote.test/history', 'retrieved_at': NOW.isoformat(),
                'records': [{'date': '2026-08-04', 'close': 80, 'adjusted_close': 80}, {'date': NOW.date().isoformat(), 'close': 120, 'adjusted_close': 120}]}
     r = DisclosureWorkflow(store=ResearchStore(tmp_path)).run(historical_records=[trade()], research_opportunities=True,
-        context_fetcher=lambda tickers: {'CAT': context(120)}, historical_price_fetcher=lambda t: history, now=NOW)
+        context_fetcher=lambda tickers: {'CAT': context(120)}, historical_price_fetcher=lambda t: history, now=NOW, portfolio_tickers=(), watch_tickers=())
     c = r.payload['opportunities'][0]
     assert c['classification'] == 'TOO_LATE'
     assert c['move_since_transaction'] == .5

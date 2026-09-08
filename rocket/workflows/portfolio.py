@@ -379,19 +379,25 @@ class PortfolioWorkflow:
         )
         previous_review = self.store.load_state("portfolio_review") if self.store else None
         prior_actions = (previous_review or {}).get("actions", {})
+        missing_dimensions = {"price_missing_stale_or_invalid", "technical_evidence_missing",
+                              "thesis_missing", "thesis_draft_requires_validation", "ledger_history_incomplete"}
+        position_diagnostics = {row["ticker"]: [r for r in row["reasons"] if r in missing_dimensions]
+                                for row in result.payload["positions"]
+                                if any(r in missing_dimensions for r in row["reasons"])}
         transitions = []
         for row in result.payload["positions"]:
             old = prior_actions.get(row["ticker"])
             row["previous_action"] = old
             row["action_changed"] = old != row["action"]
-            if row["action_changed"] and (old is not None or row["action"] != "HOLD"):
+            if (row["ticker"] not in position_diagnostics and row["action_changed"]
+                    and (old is not None or row["action"] != "HOLD")):
                 transitions.append({"ticker": row["ticker"], "from": old, "to": row["action"]})
         inventory_changes = [{"ticker": before.ticker, "expected_quantity": before.quantity,
                               "wallet_quantity": after.quantity, "thesis_preserved": True}
                              for before, after in zip(original_state.positions, state.positions, strict=True)
                              if before.quantity != after.quantity]
-        diagnostic = bool(refresh_inventory and inventory_status is not OperationalStatus.HEALTHY) or any(
-            any(reason in row["reasons"] for reason in ("price_missing_stale_or_invalid", "technical_evidence_missing", "thesis_missing", "thesis_draft_requires_validation")) for row in result.payload["positions"])
+        inventory_failed = bool(refresh_inventory and inventory_status is not OperationalStatus.HEALTHY)
+        diagnostic = inventory_failed or bool(position_diagnostics)
         import json
 
         from rocket.candidates import content_id
@@ -402,17 +408,32 @@ class PortfolioWorkflow:
         new_pending = set(pending_ids) - set((previous_review or {}).get("pending_mints", []))
         changed_inventory = bool(inventory_changes) and inventory_id != (previous_review or {}).get("inventory_id")
         speak = bool(transitions or changed_inventory or new_pending or material_news)
-        reasons = result.reasons
-        if diagnostic and not reasons:
-            reasons = (ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE, ("requested inventory reconciliation",), True),)
+        reasons = []
+        for ticker, missing in position_diagnostics.items():
+            attempts = (evidence_by_ticker or {}).get(ticker, {}).get("provider_attempts", [])
+            failed_providers = [p["name"] for p in attempts
+                                if p.get("status") in {"UNAVAILABLE", "ERROR"}]
+            market_missing = [m for m in missing if m in {"price_missing_stale_or_invalid", "technical_evidence_missing"}]
+            if failed_providers and market_missing:
+                reasons.append(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
+                    tuple(f"{ticker}:{p}" for p in failed_providers), True))
+            other_missing = [m for m in missing if not failed_providers or m not in market_missing]
+            if other_missing:
+                reasons.append(ResearchReason(ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                    tuple(f"{ticker}:{m}" for m in other_missing), bool(market_missing)))
+        if inventory_failed:
+            reasons.append(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
+                                          ("requested inventory reconciliation",), True))
+        reasons = tuple(reasons) or result.reasons
         result = replace(result, payload={**result.payload, "transitions": transitions,
                                           "inventory": inventory_payload, "inventory_changes": inventory_changes,
+                                          "position_diagnostics": position_diagnostics,
                                           "material_change": speak}, reasons=reasons,
-                         presentation={"market_result": speak and not diagnostic,
-                                       "silent": not speak or diagnostic, "diagnostic_only": diagnostic})
+                         presentation={"market_result": speak,
+                                       "silent": not speak, "diagnostic_only": diagnostic and not speak})
         if self.store:
             self.store.save_result(result)
             if result.status is not ResearchStatus.INSUFFICIENT_EVIDENCE:
-                self.store.save_state("portfolio_review", {"actions": {r["ticker"]: r["action"] for r in result.payload["positions"]}, "news_id": news_id,
+                self.store.save_state("portfolio_review", {"actions": {**prior_actions, **{r["ticker"]: r["action"] for r in result.payload["positions"] if r["ticker"] not in position_diagnostics}}, "news_id": news_id,
                                                           "pending_mints": pending_ids, "inventory_id": inventory_id})
         return result

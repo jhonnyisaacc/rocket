@@ -61,6 +61,7 @@ def generate(root):
     for name, person, family in [('pelosi', 'Nancy Pelosi', 'congress'), ('trump', 'Donald J. Trump', 'executive')]:
         save(name + '-opportunity', DisclosureWorkflow(store=ResearchStore(root / name)).run(subjects=[person],
              historical_records=[trade(person, source_family=family)], research_opportunities=True,
+             portfolio_tickers=(), watch_tickers=(),
              context_fetcher=lambda ts: {t: context() for t in ts}, now=NOW))
     save('shorts-no-setup', ShortsWorkflow().scan_live(inputs=[], now=NOW))
     save('short-candidate', ShortsWorkflow().scan([{'ticker': 'XYZ', 'source': 'fixture',

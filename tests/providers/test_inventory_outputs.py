@@ -138,3 +138,21 @@ def test_two_stale_rpcs_cannot_confirm_zero():
         result = SolanaOndoInventory(http=http, urls=['https://primary.test', 'https://secondary.test']).fetch(address=ADDRESS, now=NOW)
     assert result.status is O.UNAVAILABLE
     assert result.failure_kind == 'StaleRPCSnapshot'
+
+
+@pytest.mark.parametrize('approved', ['yes', 'true', 1, False, None])
+def test_registry_approval_must_be_literal_true(tmp_path, approved):
+    from rocket.providers.inventory import FileInventory
+    from rocket.store import ResearchStore
+    from rocket.workflows.portfolio import PortfolioState, PortfolioWorkflow, PositionState
+    from tests.workflows.test_outputs import context
+    registry = {MINT: {**REGISTRY[MINT], 'approved': approved}}
+    rows, errors = parse_accounts([account()], program=TOKEN_PROGRAMS[0], address=ADDRESS, registry=registry)
+    assert not errors
+    assert rows[MINT]['pending_review']
+    assert not rows[MINT]['managed_eligible']
+    book = PortfolioState(wallet_address=ADDRESS, positions=(PositionState('BE', thesis='Caller thesis', quantity=9),))
+    result = PortfolioWorkflow(store=ResearchStore(tmp_path), inventory=FileInventory(tuple(rows.values()))).run(
+        book, {'BE': context()}, refresh_inventory=True, now=NOW)
+    assert result.payload['positions'][0]['quantity'] == 9
+    assert result.payload['pending_review'][0]['mint'] == MINT

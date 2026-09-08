@@ -89,7 +89,7 @@ def parse_accounts(rows, *, program, address, registry):
                     ticker=identity.get("ticker", "UNKNOWN"),
                     classification=identity.get("classification", "unknown"),
                     identity_source=identity.get("source"),
-                    pending_review=not bool(identity.get("approved")),
+                    pending_review=identity.get("approved") is not True,
                     managed_eligible=identity.get("approved") is True)
     return balances, errors
 

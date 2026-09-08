@@ -326,7 +326,8 @@ class CavaWorkflow:
                 providers=(ProviderHealth(name="youtube.rss", status=OperationalStatus.UNAVAILABLE, failure_kind="ParseError"),),
             )
         seen = self._cursor()
-        new_videos = [video for video in videos if video.video_id not in seen
+        delivered = set((self.store.load_state("cava_delivered") or {}).get("video_ids", []))
+        new_videos = [video for video in videos if video.video_id not in seen | delivered
                       and timedelta(0) <= started - video.published_at < timedelta(days=3)]
         rss_evidence = Evidence(
             source=discovery_source,
@@ -542,6 +543,7 @@ class CavaWorkflow:
             "evidence_quality": "TRANSCRIPT_ONLY",
             "overlay_validated": False,
             "cursor_advanced": ready,
+            "delivery_cursor_advanced": ready,
         }
         result = self._result(
             research=ResearchStatus.ACTION_REQUIRED if ready else ResearchStatus.INSUFFICIENT_EVIDENCE,
@@ -570,8 +572,9 @@ class CavaWorkflow:
         transcript_ok = video.published_at <= transcript.available_at <= decided
         ready = bool(eligible) and transcript_ok
         failed = any(p.status is not OperationalStatus.HEALTHY for p in corroboration.providers)
-        # A partial daily report is useful, but failed required acquisition and
-        # contradictions still cannot advance the parent branch's overlay cursor.
+        # A completed report can be delivered once even when it contradicts the
+        # speaker. Failed acquisition remains retryable; only validation grants an overlay.
+        delivered = ready and not failed
         validated = ready and not failed and not corroboration.contradictions
         import json
 
@@ -604,7 +607,8 @@ class CavaWorkflow:
                                     for c in checks if c["status"] == "VERIFIED"],
                    "validation_scope": "exact measures and explicit windows; current data vintage, unresolved forecasts and causality",
                    "corroboration_status": "VALIDATED" if validated else "PARTIAL" if ready else "UNAVAILABLE",
-                   "cursor_advanced": validated, "report_ready": ready, "execution_enabled": False}
+                   "cursor_advanced": validated, "delivery_cursor_advanced": delivered,
+                   "overlay_validated": validated, "report_ready": ready, "execution_enabled": False}
         result = self._result(research=ResearchStatus.ACTION_REQUIRED if ready else ResearchStatus.INSUFFICIENT_EVIDENCE,
                               operational=OperationalStatus.PARTIAL if failed else OperationalStatus.HEALTHY,
                               started_at=started, decision_time=decided, payload=payload,
@@ -615,6 +619,9 @@ class CavaWorkflow:
                               presentation={"market_result": changed, "silent": not changed, "diagnostic_only": failed and not changed})
         if ready:
             self.store.save_state("cava_report_material", {"id": material_id, "video_id": video.video_id})
+        if delivered:
+            previous_deliveries = set((self.store.load_state("cava_delivered") or {}).get("video_ids", []))
+            self.store.save_state("cava_delivered", {"video_ids": sorted(previous_deliveries | {video.video_id})})
         if transcript_ok:
             history = dict(self.store.load_state("cava_forecasts") or {})
             for forecast in forecasts:

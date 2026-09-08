@@ -134,3 +134,27 @@ Source notes: [Open Cabinet export](https://open-cabinet.org/download),
 [deterministic ticker rules](https://github.com/tbrown034/open-cabinet/blob/main/lib/asset-resolution.ts).
 OpenBB's [government trades reference](https://docs.openbb.co/odp/python/reference/equity/ownership/government_trades)
 documents Senate/House coverage; that does not establish presidential OGE coverage.
+
+## VPS review findings addressed
+
+The pasted Grok review was checked against each PR's own base. Parent fixes are
+in commit `372a5ff` on PR #16 and integrated into PR #17. No GitHub PR was merged,
+no pending review was submitted, and issue checklists remain intact.
+
+| PR / finding | Resolution |
+| --- | --- |
+| #16 Cava freshness | Shared stale-days map and inclusive calendar-date eligibility, tested at and beyond the 7/14/62-day boundaries through the real corroborator. |
+| #16 candle outages | Failed `hyperliquid.candles:*` providers yield REQUIRED_PROVIDER_UNAVAILABLE with the provider name. |
+| #16 NAPM | Matching-month mapping and numeric-value tests, publisher precedence, and explicit documentation that CLI does not acquire NAPM. |
+| #17 ISM presentation | Valid headlines or industry rankings remain visible, including replay, unmapped and contraction-only reports. |
+| #17 portfolio diagnostics | Per-ticker missing dimensions and provider reasons; usable action transitions remain visible beside diagnostics. Missing-data reviews do not replace action baselines. |
+| #17 caller references | Unknown/invalid portfolio or watch coverage forces NEEDS_REVIEW and suppresses proposals; explicit empty lists are distinguished. |
+| #17 inventory approval | Only literal boolean true removes pending review; truthy strings and numbers cannot update caller quantities. |
+| #17 Shorts run order | CLI help and workflow documentation name the upstream ISM/disclosures requirement and explicit snapshot input. |
+| #17 Cava delivery | Completed contradictory reports are delivered once without overlay validation; failed acquisition remains retryable. |
+
+Validation: PR #16 separately **220 passed, 1 integration test deselected**;
+PR #17 combined **384 passed, 1 integration test deselected**. Ruff, compilation,
+example regeneration and diff whitespace checks passed. These are deterministic
+regression checks; VPS credentials and caller-state live acceptance remain with
+the reviewer as requested.

@@ -23,6 +23,12 @@ posting date. `disclosure_date_basis=OGE_INDEX_POSTED_DATE` identifies this date
 it is not the signature date or an assumed historical availability timestamp.
 Missing joins remain unknown. Exports over 14 days old or future-dated fail closed.
 
+Caller portfolio/watch coverage must be known before proposing an entry or watch.
+Absent, unreadable or malformed caller reference files leave listed opportunities
+`NEEDS_REVIEW`, clear `watch_proposal`, and expose `missing_reference_coverage`.
+Only an explicitly supplied, valid empty list establishes an empty book/watch
+list. Known matches may still be shown, but do not imply complete overlap coverage.
+
 Healthy `NO_NEW_RECORDS` is success. All providers down is `PROVIDER_FAILURE`, not “no news”.
 
 ## Filters

@@ -485,6 +485,7 @@
       ],
       "inventory": null,
       "inventory_changes": [],
+      "position_diagnostics": {},
       "material_change": true
     },
     "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
@@ -934,6 +935,8 @@
       "validation_scope": "exact measures and explicit windows; current data vintage, unresolved forecasts and causality",
       "corroboration_status": "PARTIAL",
       "cursor_advanced": false,
+      "delivery_cursor_advanced": true,
+      "overlay_validated": false,
       "report_ready": true,
       "execution_enabled": false
     },
@@ -1096,6 +1099,7 @@
       "evidence_quality": "TRANSCRIPT_ONLY",
       "overlay_validated": false,
       "cursor_advanced": true,
+      "delivery_cursor_advanced": true,
       "execution_enabled": false
     },
     "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
@@ -1656,7 +1660,11 @@
           "move_since_transaction": null,
           "historical_price_status": "UNVERIFIED",
           "opportunity_is_independent_of_person": true,
-          "already_considered": false
+          "already_considered": false,
+          "overlap_coverage": {
+            "portfolio": "AVAILABLE",
+            "watch": "AVAILABLE"
+          }
         }
       ],
       "historical_acquisition": null,
@@ -1667,8 +1675,8 @@
         "listed_research_limit": 30
       },
       "cross_system_coverage": {
-        "portfolio": "NOT_CONFIGURED",
-        "watch": "NOT_CONFIGURED"
+        "portfolio": "AVAILABLE",
+        "watch": "AVAILABLE"
       },
       "material_change": true,
       "execution_enabled": false
@@ -1787,7 +1795,11 @@
           "move_since_transaction": null,
           "historical_price_status": "UNVERIFIED",
           "opportunity_is_independent_of_person": true,
-          "already_considered": false
+          "already_considered": false,
+          "overlap_coverage": {
+            "portfolio": "AVAILABLE",
+            "watch": "AVAILABLE"
+          }
         }
       ],
       "historical_acquisition": null,
@@ -1798,8 +1810,8 @@
         "listed_research_limit": 30
       },
       "cross_system_coverage": {
-        "portfolio": "NOT_CONFIGURED",
-        "watch": "NOT_CONFIGURED"
+        "portfolio": "AVAILABLE",
+        "watch": "AVAILABLE"
       },
       "material_change": true,
       "execution_enabled": false

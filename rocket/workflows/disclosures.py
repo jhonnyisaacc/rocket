@@ -122,6 +122,12 @@ class DisclosureWorkflow:
         history_acquisition=None,
     ) -> ResearchResult:
         decided = now or datetime.now(UTC)
+        reference_coverage = cross_system_coverage or {
+            "portfolio": "AVAILABLE" if portfolio_tickers is not None else "NOT_CONFIGURED",
+            "watch": "AVAILABLE" if watch_tickers is not None else "NOT_CONFIGURED",
+        }
+        unknown_references = [name for name, rows in (("portfolio", portfolio_tickers), ("watch", watch_tickers))
+                              if reference_coverage.get(name) != "AVAILABLE" or rows is None]
         unique: dict[str, dict[str, Any]] = {}
         for family, rows in (
             (SourceFamily.CONGRESS, congress_records),
@@ -263,6 +269,11 @@ class DisclosureWorkflow:
                 if set(candidate["overlap"]) & {"portfolio", "watch"}:
                     candidate["watch_proposal"] = None
                     candidate["disposition"] = "EXISTING_POSITION_OR_WATCH_CONTEXT"
+                if unknown_references:
+                    candidate.update(classification="NEEDS_REVIEW", direction="unknown", watch_proposal=None, entry=None,
+                                     disposition="CALLER_REFERENCE_COVERAGE_UNKNOWN",
+                                     missing_reference_coverage=unknown_references)
+                candidate["overlap_coverage"] = reference_coverage
                 average = contexts.get(ticker, {}).get("technical_basis", {}).get("average_20")
                 price = candidate.get("current_price")
                 if candidate["classification"] == "WATCH" and candidate.get("move_since_transaction", 0) is not None and candidate.get("move_since_transaction", 0) > .30 and average and price and price > average * 1.10:
@@ -299,8 +310,7 @@ class DisclosureWorkflow:
                 "opportunities": opportunities,
                 "historical_acquisition": history_acquisition,
                 "historical_scope": historical_scope,
-                "cross_system_coverage": cross_system_coverage or {"portfolio": "AVAILABLE" if portfolio_tickers is not None else "NOT_CONFIGURED",
-                                                                   "watch": "AVAILABLE" if watch_tickers is not None else "NOT_CONFIGURED"},
+                "cross_system_coverage": reference_coverage,
                 "material_change": material_change,
                 "execution_enabled": False,
             },

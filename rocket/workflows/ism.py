@@ -206,6 +206,9 @@ class IsmWorkflow:
             operational = OperationalStatus.PARTIAL
         from dataclasses import replace
         evidence = [replace(e, decision_time=started) for e in evidence]
+        report_ready = any(row.get("headline_status") == "HEADLINE_VALID"
+                           or row.get("industry_rankings_status") == "INDUSTRY_RANKINGS_VALID"
+                           for row in payload_reports.values())
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
@@ -222,9 +225,9 @@ class IsmWorkflow:
                 "execution_enabled": False,
             },
             evidence=tuple(evidence),
-            presentation={"market_result": research is ResearchStatus.ACTION_REQUIRED,
-                          "silent": research is not ResearchStatus.ACTION_REQUIRED,
-                          "diagnostic_only": bool(missing_company and research is not ResearchStatus.ACTION_REQUIRED)},
+            presentation={"market_result": report_ready,
+                          "silent": not report_ready,
+                          "diagnostic_only": not report_ready},
             warnings=tuple(warnings),
             reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE
                                     if any(p.status is OperationalStatus.UNAVAILABLE for p in providers)

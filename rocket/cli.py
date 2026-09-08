@@ -375,7 +375,11 @@ def shorts(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Autonomous multi-factor short scan. Macro alone cannot select."""
+    """Scan bearish candidates from a prior ISM/disclosures run in the same state directory.
+
+    Run rocket ism or rocket disclosures first. There is no built-in ticker universe.
+    Use --input-file for explicit research snapshots. Macro alone cannot select.
+    """
     del json_out
     from rocket.workflows.shorts import ShortsWorkflow
 
