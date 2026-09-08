@@ -16,6 +16,8 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -116,11 +118,11 @@ class DisclosureWorkflow:
             research_result = "PROVIDER_FAILURE"
         elif failed:
             operational = OperationalStatus.PARTIAL
-            research = ResearchStatus.INSUFFICIENT_EVIDENCE if new_records else ResearchStatus.NO_SETUP
+            research = ResearchStatus.ACTION_REQUIRED if new_records else ResearchStatus.NO_SETUP
             research_result = "NEW_RECORDS" if new_records else "NO_NEW_RECORDS"
         else:
             operational = OperationalStatus.HEALTHY
-            research = ResearchStatus.INSUFFICIENT_EVIDENCE if new_records else ResearchStatus.NO_SETUP
+            research = ResearchStatus.ACTION_REQUIRED if new_records else ResearchStatus.NO_SETUP
             research_result = "NEW_RECORDS" if new_records else "NO_NEW_RECORDS"
         evidence = [
             Evidence(
@@ -144,6 +146,8 @@ class DisclosureWorkflow:
                 if isinstance(info, dict) and info.get("status") == "UNAVAILABLE"
                 else OperationalStatus.HEALTHY,
                 retrieved_at=decided,
+                failure_kind=info.get("failure_kind") if isinstance(info, dict) else None,
+                coverage=info.get("research_result") if isinstance(info, dict) else None,
             )
             for name, info in health.items()
         ) or (
@@ -168,6 +172,8 @@ class DisclosureWorkflow:
                 "execution_enabled": False,
             },
             evidence=tuple(evidence),
+            reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
+                                    tuple(health), True),) if operational is OperationalStatus.UNAVAILABLE else (),
             warnings=(
                 *warnings,
                 *(
@@ -178,6 +184,8 @@ class DisclosureWorkflow:
             ),
         )
         self.store.save_result(result)
+        if research is ResearchStatus.INSUFFICIENT_EVIDENCE:
+            return result
         self.store.save_state(
             "disclosures_seen",
             {"unique_ids": sorted(seen | set(unique)), "updated_at": decided.isoformat()},

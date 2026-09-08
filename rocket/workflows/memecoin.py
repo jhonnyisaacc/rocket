@@ -15,10 +15,12 @@ from rocket.models import (
     OperationalReport,
     OperationalStatus,
     Provenance,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
-from rocket.pit import parse_datetime
+from rocket.pit import Availability, PointInTime, parse_datetime
 from rocket.store import ResearchStore
 
 WORKFLOW = "memecoin.scan"
@@ -113,7 +115,7 @@ class MemecoinWorkflow:
         decided = now or datetime.now(UTC)
         result = ResearchResult(
             workflow="memecoin.status",
-            status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            status=ResearchStatus.NO_SETUP,
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,
@@ -136,8 +138,19 @@ class MemecoinWorkflow:
         evidence = []
         seen: set[str] = set()
         for row in rows:
+            if not isinstance(row, Mapping):
+                rejected.append({"reason": "invalid_input"})
+                continue
             identity = canonical_identity(row)
-            ok, blockers = _eligible(row)
+            try:
+                ok, blockers = _eligible(row)
+                stamp = parse_datetime(row.get("decision_time"))
+                pit = PointInTime(parse_datetime(row.get("event_time")) or stamp,
+                                  parse_datetime(row.get("available_at")), stamp)
+                if stamp is None or stamp > decided or pit.availability is not Availability.ELIGIBLE:
+                    ok, blockers = False, ["invalid_point_in_time"]
+            except ValueError:
+                ok, blockers = False, ["invalid_input"]
             if identity is None:
                 rejected.append({"reason": "unknown_identity", "overfit_guard": "no asset-specific rule added"})
                 continue
@@ -166,6 +179,13 @@ class MemecoinWorkflow:
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
+            reasons=(ResearchReason(
+                ReasonCode.CALLER_STATE_MISSING if not rows else ReasonCode.REQUIRED_EVIDENCE_MISSING
+                if not selected else ReasonCode.STRATEGY_UNVALIDATED,
+                ("caller PIT snapshots",) if not rows else tuple(f"{row.get('asset', row.get('identity', row.get('row', 'UNKNOWN')))}:"
+                      f"{row.get('reason', 'missing_dimensions')}:"
+                      f"{','.join(row.get('dimensions', row.get('rejection_filters', [])))}" for row in rejected)
+                if not selected else ("costed out-of-sample strategy validation and human review",)),),
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,
@@ -190,7 +210,7 @@ class MemecoinWorkflow:
         receipts = spool.append_batch(frames)
         result = ResearchResult(
             workflow="memecoin.collect",
-            status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            status=ResearchStatus.NO_SETUP,
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,
@@ -238,6 +258,7 @@ class MemecoinWorkflow:
         result = ResearchResult(
             workflow="memecoin.evaluate",
             status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            reasons=(ResearchReason(ReasonCode.STRATEGY_UNVALIDATED, ("costed out-of-sample strategy validation and human review",)),),
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=decided,
             started_at=decided,

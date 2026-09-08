@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Mapping
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -14,6 +15,8 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -59,7 +62,9 @@ def macro_is_usable(context: Mapping[str, Any] | None, now: datetime) -> bool:
                 or stamp is None
                 or not isinstance(row.get("value"), (int, float))
                 or isinstance(row.get("value"), bool)
-                or not timedelta(0) <= now - stamp <= timedelta(days=days)
+                or not math.isfinite(row["value"])
+                or stamp > now
+                or not 0 <= (now.date() - stamp.date()).days <= days
             ):
                 return False
         return True
@@ -80,8 +85,10 @@ class MacroWorkflow:
         warnings: list[str] = []
         providers: list[ProviderHealth] = []
         evidence: list[Evidence] = []
+        acquired = {symbol: self.series.fetch(symbol, now=now) for symbol in FACTORS}
+        decided = now or datetime.now(UTC)
         for symbol, days in FACTORS.items():
-            result = self.series.fetch(symbol, now=started)
+            result = acquired[symbol]
             providers.append(
                 ProviderHealth(
                     name=f"fred:{symbol}",
@@ -96,7 +103,7 @@ class MacroWorkflow:
                 continue
             values: dict[datetime, float] = {}
             for row in result.records:
-                stamp = _stamp(_record_date(row), now=started)
+                stamp = _stamp(_record_date(row), now=decided)
                 value = _record_value(row, symbol)
                 if stamp is None or value is None:
                     continue
@@ -120,7 +127,7 @@ class MacroWorkflow:
                 warnings.append(f"{symbol}: no observation at least 28 days before the latest print")
                 continue
             prior = prior_dates[-1]
-            fresh = started - stamp <= timedelta(days=days)
+            fresh = 0 <= (decided.date() - stamp.date()).days <= days and (result.retrieved_at is not None and result.retrieved_at <= decided)
             retrieved = result.retrieved_at or started
             factors[symbol] = {
                 "value": values[stamp],
@@ -135,6 +142,7 @@ class MacroWorkflow:
                 "change_4w": values[stamp] - values[prior],
                 "status": "OK" if fresh else "STALE",
                 "max_observation_age_days": days,
+                "freshness_basis": "inclusive calendar dates for date-only source observations",
             }
             if not fresh:
                 warnings.append(f"{symbol}: stale observation")
@@ -149,7 +157,7 @@ class MacroWorkflow:
                         observed_at=stamp,
                         available_at=retrieved,
                         retrieved_at=retrieved,
-                        decision_time=started,
+                        decision_time=decided,
                         provenance=Provenance.PROVIDER_RESULT,
                     )
                 )
@@ -169,9 +177,9 @@ class MacroWorkflow:
             ),
             "factors": factors,
             "warnings": warnings,
-            "retrieved_at": iso(started),
-            "available_at": iso(started),
-            "expires_at": iso(started + timedelta(hours=6)),
+            "retrieved_at": iso(decided),
+            "available_at": iso(decided),
+            "expires_at": iso(decided + timedelta(hours=6)),
             "scope": "US rates and monetary liquidity; no Cava validation implied",
             "execution_enabled": False,
         }
@@ -193,13 +201,17 @@ class MacroWorkflow:
             workflow=WORKFLOW,
             status=research,
             operational=OperationalReport(status=operational, providers=tuple(providers)),
-            decision_time=started,
+            decision_time=decided,
             started_at=started,
-            completed_at=started,
+            completed_at=decided,
             mode=Mode.LIVE,
             payload=payload,
             evidence=tuple(evidence),
             warnings=tuple(warnings),
+            reasons=() if ok else (ResearchReason(
+                ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if failed else ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                tuple(f"{symbol}:{row['status']}:{row.get('failure_kind', 'fresh PIT observation')}"
+                      for symbol, row in factors.items() if row.get("status") != "OK"), True),),
         )
         if self.store:
             self.store.save_result(result)

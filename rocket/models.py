@@ -22,6 +22,31 @@ class ResearchStatus(StrEnum):
     ERROR = "ERROR"
 
 
+class ReasonCode(StrEnum):
+    CALLER_STATE_MISSING = "CALLER_STATE_MISSING"
+    INVALID_INPUT = "INVALID_INPUT"
+    REQUIRED_PROVIDER_UNAVAILABLE = "REQUIRED_PROVIDER_UNAVAILABLE"
+    REQUIRED_EVIDENCE_MISSING = "REQUIRED_EVIDENCE_MISSING"
+    CORROBORATION_INSUFFICIENT = "CORROBORATION_INSUFFICIENT"
+    STRATEGY_UNVALIDATED = "STRATEGY_UNVALIDATED"
+    WARMUP_STATE = "WARMUP_STATE"
+    LEGACY_UNCLASSIFIED = "LEGACY_UNCLASSIFIED"
+
+
+@dataclass(frozen=True)
+class ResearchReason:
+    code: ReasonCode
+    missing: tuple[str, ...]
+    retryable: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return {"code": self.code.value, "missing": list(self.missing), "retryable": self.retryable}
+
+    @classmethod
+    def from_dict(cls, value: Mapping[str, Any]) -> ResearchReason:
+        return cls(ReasonCode(value["code"]), tuple(value["missing"]), bool(value.get("retryable")))
+
+
 class OperationalStatus(StrEnum):
     HEALTHY = "HEALTHY"
     PARTIAL = "PARTIAL"
@@ -187,6 +212,7 @@ class ResearchResult:
     payload: Mapping[str, Any] = field(default_factory=dict)
     evidence: tuple[Evidence, ...] = ()
     warnings: tuple[str, ...] = ()
+    reasons: tuple[ResearchReason, ...] = ()
     safety_boundary: SafetyBoundary = SafetyBoundary.READ_ONLY_RESEARCH_ONLY_HUMAN_GATED
 
     def validate(self) -> None:
@@ -200,6 +226,14 @@ class ResearchResult:
             raise ValueError("payload must be a mapping")
         if self.payload.get("execution_enabled") is True:
             raise ValueError("execution_enabled must be false")
+        if self.status is ResearchStatus.INSUFFICIENT_EVIDENCE and not self.reasons:
+            raise ValueError("INSUFFICIENT_EVIDENCE requires machine-readable reasons")
+        if any(not reason.missing or not all(reason.missing) for reason in self.reasons):
+            raise ValueError("research reasons require explicit missing dimensions")
+        if self.status is ResearchStatus.INSUFFICIENT_EVIDENCE and self.payload.get("cursor_advanced"):
+            raise ValueError("INSUFFICIENT_EVIDENCE cannot advance a research cursor")
+        if self.operational.status is OperationalStatus.HEALTHY and self.payload.get("coverage_status") == "DATA_UNAVAILABLE":
+            raise ValueError("HEALTHY cannot claim DATA_UNAVAILABLE coverage")
         if self.status is ResearchStatus.ERROR and not self.warnings:
             raise ValueError("ERROR requires a visible warning")
         if self.operational.status is OperationalStatus.UNAVAILABLE and self.status in {
@@ -224,7 +258,7 @@ class ResearchResult:
     def to_dict(self) -> dict[str, Any]:
         self.validate()
         return {
-            "schema_version": 1,
+            "schema_version": 2,
             "run_id": self.run_id,
             "workflow": self.workflow,
             "mode": self.mode.value,
@@ -235,6 +269,16 @@ class ResearchResult:
             "completed_at": iso(self.completed_at),
             "evidence": [item.to_dict() for item in self.evidence],
             "warnings": list(self.warnings),
+            "reasons": [reason.to_dict() for reason in self.reasons],
+            "presentation": {
+                "market_result": self.status not in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR}
+                and (self.status in {ResearchStatus.SETUP_FOUND, ResearchStatus.ACTION_REQUIRED}
+                     or self.workflow in {"macro", "ism"}),
+                "silent": self.status not in {ResearchStatus.SETUP_FOUND, ResearchStatus.ACTION_REQUIRED}
+                and self.workflow not in {"macro", "ism"}
+                or self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR},
+                "diagnostic_only": self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR},
+            },
             "payload": dict(self.payload),
             "safety_boundary": self.safety_boundary.value,
         }
@@ -248,6 +292,10 @@ class ResearchResult:
         started_at = parse_datetime(value.get("started_at"))
         if decision_time is None or started_at is None:
             raise ValueError("decision_time and started_at are required")
+        reasons = tuple(ResearchReason.from_dict(item) for item in value.get("reasons") or [])
+        if value.get("schema_version", 1) == 1 and value.get("status") == ResearchStatus.INSUFFICIENT_EVIDENCE and not reasons:
+            reasons = (ResearchReason(ReasonCode.LEGACY_UNCLASSIFIED,
+                                      ("legacy run did not record missing dimensions; rerun for classification",)),)
         result = cls(
             workflow=str(value.get("workflow") or ""),
             status=ResearchStatus(str(value.get("status") or "")),
@@ -260,6 +308,7 @@ class ResearchResult:
             payload=value.get("payload") or {},
             evidence=tuple(Evidence.from_dict(item) for item in value.get("evidence") or []),
             warnings=tuple(str(item) for item in value.get("warnings") or []),
+            reasons=reasons,
             safety_boundary=SafetyBoundary(
                 str(value.get("safety_boundary") or SafetyBoundary.READ_ONLY_RESEARCH_ONLY_HUMAN_GATED)
             ),

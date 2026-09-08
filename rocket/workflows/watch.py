@@ -17,6 +17,8 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -39,7 +41,7 @@ def load_watches(path: Path) -> list[dict[str, Any]]:
     rows = raw.get("watches", raw) if isinstance(raw, dict) else raw
     if not isinstance(rows, list):
         raise ValueError("watch file must contain a list or watches array")
-    return [dict(item) for item in rows if isinstance(item, dict)]
+    return [dict(item) if isinstance(item, dict) else {} for item in rows]
 
 
 def check_watch(
@@ -61,8 +63,9 @@ def check_watch(
     decision_time = now or datetime.now(UTC)
     checked: dict[str, float | None] = {}
     for watch in watches:
-        ticker = str(watch.get("ticker") or "").upper()
+        ticker = str(watch.get("ticker") or "").strip().upper()
         if not ticker:
+            invalid.append("UNKNOWN")
             continue
         condition_raw = watch.get("condition")
         if not condition_raw:
@@ -94,7 +97,19 @@ def check_watch(
             price = prices.get(ticker)
             price_ok = positive_number(price)
             if quote_evidence is not None:
-                price_ok = price_ok and quote_evidence.get(ticker, {}).get("status") == "OK"
+                from rocket.clock import equity_observation_fresh
+                from rocket.pit import Availability, PointInTime, parse_datetime
+
+                quote = quote_evidence.get(ticker, {})
+                try:
+                    pit = PointInTime(parse_datetime(quote.get("observation_at")),
+                                      parse_datetime(quote.get("available_at")), decision_time)
+                    price_ok = price_ok and quote.get("status") == "OK" and bool(quote.get("source")) and (
+                        pit.availability is Availability.ELIGIBLE
+                        and equity_observation_fresh(quote.get("observation_at"), decision_time, daily=False)
+                    )
+                except (ValueError, TypeError):
+                    price_ok = False
             if not price_ok:
                 checked[ticker] = None
                 unavailable.append(ticker)
@@ -111,6 +126,8 @@ def check_watch(
             checked[ticker] = current
             if condition in {"CROSS_ABOVE", "CROSS_BELOW"} and not positive_number(previous_prices.get(ticker)):
                 missing_previous.append(ticker)
+                evaluations.append({"ticker": ticker, "condition": condition, "price": current,
+                                    "status": "WARMUP", "triggered": False})
                 continue
             if condition == "ABOVE":
                 reached = current >= float(threshold)
@@ -160,25 +177,28 @@ def check_watch(
                     "source_reference": watch.get("source_reference"),
                 }
             )
-    if events:
-        research = ResearchStatus.ACTION_REQUIRED
-        operational = OperationalStatus.PARTIAL if unavailable else OperationalStatus.HEALTHY
-    elif evaluated_count:
-        research = ResearchStatus.NO_SETUP
-        operational = OperationalStatus.PARTIAL if unavailable else OperationalStatus.HEALTHY
-    elif missing_previous:
-        research = ResearchStatus.INSUFFICIENT_EVIDENCE
-        operational = OperationalStatus.PARTIAL
+    reasons = []
+    if invalid:
+        reasons.append(ResearchReason(ReasonCode.INVALID_INPUT, tuple(sorted(set(invalid)))))
+    if unavailable:
+        reasons.append(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
+                                      tuple(f"quote:{ticker}" for ticker in unavailable), True))
+    if missing_previous:
+        reasons.append(ResearchReason(ReasonCode.WARMUP_STATE, tuple(missing_previous), True))
+    if events or evaluated_count or missing_previous:
+        research = ResearchStatus.ACTION_REQUIRED if events else ResearchStatus.NO_SETUP
+        operational = OperationalStatus.PARTIAL if unavailable or invalid else OperationalStatus.HEALTHY
     elif valid_watch_count:
         research = ResearchStatus.INSUFFICIENT_EVIDENCE
-        operational = OperationalStatus.UNAVAILABLE if unavailable else OperationalStatus.HEALTHY
+        operational = OperationalStatus.UNAVAILABLE
+    elif invalid:
+        research = ResearchStatus.ERROR
+        operational = OperationalStatus.ERROR
     else:
-        research = ResearchStatus.INSUFFICIENT_EVIDENCE
+        research = ResearchStatus.NO_SETUP
         operational = OperationalStatus.HEALTHY
-        if not watches:
-            operational = OperationalStatus.HEALTHY
     warnings = []
-    if not valid_watch_count:
+    if watches and not valid_watch_count:
         warnings.append("no valid deterministic watch conditions were supplied")
     if invalid:
         warnings.append("watch conditions are incomplete or invalid for: " + ", ".join(sorted(set(invalid))))
@@ -193,7 +213,7 @@ def check_watch(
         if price is None:
             continue
         quote = (quote_evidence or {}).get(ticker, {})
-        available = quote.get("available_at") or quote.get("observation_at")
+        available = quote.get("available_at")
         from rocket.pit import parse_datetime
 
         stamp = parse_datetime(available) if available else decision_time
@@ -203,12 +223,12 @@ def check_watch(
                 reference=f"watch-{ticker}",
                 claim=f"{ticker} quoted {price}",
                 kind=EvidenceKind.FACT,
-                event_time=stamp,
-                observed_at=stamp,
+                event_time=parse_datetime(quote.get("observation_at")) if quote else stamp,
+                observed_at=parse_datetime(quote.get("observation_at")) if quote else stamp,
                 available_at=stamp,
                 retrieved_at=decision_time,
                 decision_time=decision_time,
-                provenance=Provenance.PROVIDER_RESULT,
+                provenance=Provenance.PROVIDER_RESULT if quote else Provenance.CALLER_STATE,
             )
         )
     return ResearchResult(
@@ -219,11 +239,11 @@ def check_watch(
             providers=(
                 ProviderHealth(
                     name="quotes",
-                    status=operational,
+                    status=OperationalStatus.PARTIAL if unavailable and any(checked.values()) else OperationalStatus.UNAVAILABLE if unavailable else OperationalStatus.HEALTHY,
                     retrieved_at=decision_time,
                     coverage=f"{evaluated_count}/{valid_watch_count}" if valid_watch_count else "0",
                 ),
-            ),
+            ) if valid_watch_count else (),
         ),
         decision_time=decision_time,
         started_at=decision_time,
@@ -233,11 +253,10 @@ def check_watch(
             "events": events,
             "evaluations": evaluations,
             "evaluated_count": evaluated_count,
-            "coverage_status": "OK"
-            if evaluated_count and evaluated_count == len(watches)
-            else "PARTIAL"
-            if evaluated_count
-            else "DATA_UNAVAILABLE",
+            "coverage_status": "NOT_APPLICABLE" if not watches else "INVALID_INPUT" if not valid_watch_count
+            else "DATA_UNAVAILABLE" if unavailable and not any(checked.values())
+            else "PARTIAL" if unavailable or invalid else "WARMUP" if missing_previous else "OK",
+            "silent": not bool(events),
             "checked": len(watches),
             "valid_watch_count": valid_watch_count,
             "invalid_watches": sorted(set(invalid)),
@@ -249,6 +268,7 @@ def check_watch(
         },
         evidence=tuple(evidence),
         warnings=tuple(warnings),
+        reasons=tuple(reasons),
     )
 
 
@@ -272,12 +292,17 @@ class WatchWorkflow:
         if self.store:
             previous = dict((self.store.load_state("watch_last_quotes") or {}).get("prices") or {})
         if prices is None:
-            quote_evidence = self.quote_fetcher(watches, now=decision_time)
+            # Validate definitions before spending provider requests on caller errors.
+            preflight = check_watch(watches, {}, now=decision_time)
+            valid_tickers = {row["ticker"] for row in preflight.payload["evaluations"]}
+            configured = [row for row in watches if str(row.get("ticker") or "").strip().upper() in valid_tickers]
+            quote_evidence = self.quote_fetcher(configured, now=now) if configured else {}
             prices = {
                 ticker: row["price"]
                 for ticker, row in quote_evidence.items()
                 if isinstance(row, Mapping) and row.get("status") == "OK"
             }
+        decision_time = now or datetime.now(UTC)
         result = check_watch(
             watches,
             prices,

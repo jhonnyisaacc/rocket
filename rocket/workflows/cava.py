@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 import xml.etree.ElementTree as ET
 from collections.abc import Callable, Iterable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -17,6 +17,8 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -31,7 +33,7 @@ WORKFLOW = "cava"
 
 _TOPICS: dict[str, tuple[str, ...]] = {
     "inflation": ("inflación", "inflacion", "cpi", "precios", "inflation"),
-    "rates": ("tipo", "tasas", "fed", "bono", "interés", "interes", "rates", "yield"),
+    "rates": ("tipos de interés", "tipos de interes", "tasas", "fed", "rates"),
     "dollar": ("dólar", "dolar", "dxy", "dollar"),
     "copper": ("cobre", "copper"),
     "gold": ("oro", "gold"),
@@ -61,6 +63,7 @@ class CavaCorroboration:
     contradictions: tuple[Mapping[str, Any], ...] = ()
     warnings: tuple[str, ...] = ()
     sources: tuple[str, ...] = ()
+    providers: tuple[ProviderHealth, ...] = ()
 
 
 def parse_rss(xml_text: str) -> list[CavaVideo]:
@@ -68,6 +71,8 @@ def parse_rss(xml_text: str) -> list[CavaVideo]:
         root = ET.fromstring(xml_text)
     except ET.ParseError as exc:
         raise ValueError(f"invalid YouTube RSS XML: {exc}") from exc
+    if root.tag != f"{_ATOM}feed":
+        raise ValueError("YouTube RSS response is not an Atom feed")
     videos: dict[str, CavaVideo] = {}
     for entry in root.findall(f"{_ATOM}entry"):
         video_id = (entry.findtext(f"{_ATOM}id") or "").strip()
@@ -90,6 +95,8 @@ def parse_rss(xml_text: str) -> list[CavaVideo]:
             published_at=published_at,
             url=f"https://www.youtube.com/watch?v={video_id}",
         )
+    if root.findall(f"{_ATOM}entry") and not videos:
+        raise ValueError("YouTube RSS entries could not be normalized")
     return sorted(videos.values(), key=lambda item: item.published_at, reverse=True)
 
 
@@ -104,16 +111,16 @@ def _classify_claim(text: str) -> EvidenceKind:
 
 def _topics_for(claim: str) -> list[str]:
     lowered = claim.lower()
-    return [topic for topic, terms in _TOPICS.items() if any(term in lowered for term in terms)]
+    return [topic for topic, terms in _TOPICS.items() if any(re.search(r"(?<!\w)" + re.escape(term) + r"(?!\w)", lowered) for term in terms)]
 
 
 def transcript_claims(video: CavaVideo, transcript: Transcript, decision_time: datetime) -> list[Evidence]:
     sentences = [part.strip() for part in re.split(r"(?<=[.!?])\s+|\n+", transcript.text) if part.strip()]
     claims: list[Evidence] = []
-    for index, sentence in enumerate(sentences[:80], start=1):
+    for index, sentence in enumerate(sentences, start=1):
         claims.append(
             Evidence(
-                source="supadata.transcript",
+                source=f"{transcript.source}.transcript",
                 reference=f"cava-{video.video_id}-claim-{index}",
                 claim=sentence,
                 kind=_classify_claim(sentence),
@@ -139,6 +146,7 @@ def corroborate_claims(
     contradictions: list[Mapping[str, Any]] = []
     warnings: list[str] = []
     sources: list[str] = []
+    providers: list[ProviderHealth] = []
     topics: dict[str, Evidence] = {}
     for claim in claims:
         for topic in _topics_for(claim.claim):
@@ -147,10 +155,9 @@ def corroborate_claims(
     for topic, transcript_claim in topics.items():
         series_id = _SERIES.get(topic)
         if not series_id:
-            warnings.append(f"corroboration unavailable for {topic}: no supported reliable series")
-            continue
+            continue  # Explicitly excluded commentary; never a corroborated claim.
         try:
-            raw, source = (series_fetcher(series_id), "injected") if series_fetcher else fetch_series(series_id)
+            raw, source = (series_fetcher(series_id), "injected") if series_fetcher else fetch_series(series_id, max_age_days={"inflation": 62, "copper": 62, "liquidity": 14}.get(topic, 7), now=decision_time)
             records = raw.get("records") if isinstance(raw, Mapping) else []
             observations = []
             for item in records or []:
@@ -160,7 +167,10 @@ def corroborate_claims(
                 value = _record_value(item, series_id)
                 if date_text is None or value is None:
                     continue
-                day = datetime.fromisoformat(str(date_text).replace("Z", "+00:00")).date()
+                try:
+                    day = datetime.fromisoformat(str(date_text).replace("Z", "+00:00")).date()
+                except ValueError:
+                    continue
                 if day <= decision_time.date():
                     observations.append((day, value))
             observations = sorted(observations)
@@ -176,8 +186,10 @@ def corroborate_claims(
                 datetime.fromisoformat(str(retrieved_raw).replace("Z", "+00:00")) if retrieved_raw else None
             )
             if retrieved is None or retrieved.tzinfo is None:
-                retrieved = decision_time
+                raise ValueError("source retrieval availability is unknown")
             source_label = f"{source}:{series_id}"
+            providers.append(ProviderHealth(name=source_label, status=OperationalStatus.HEALTHY,
+                                            retrieved_at=retrieved, coverage=f"{len(observations)} observations"))
             sources.append(source_label)
             evidence.append(
                 Evidence(
@@ -191,13 +203,15 @@ def corroborate_claims(
                     retrieved_at=retrieved,
                     decision_time=decision_time,
                     provenance=Provenance.PROVIDER_RESULT,
-                    metadata={"topic": topic, "series_id": series_id},
+                    metadata={"topic": topic, "series_id": series_id,
+                              "claim_references": [claim.reference for claim in claims if topic in _topics_for(claim.claim)],
+                              "scope": "indicator context, not verification of forecasts or causal claims"},
                 )
             )
             indicators.append({"topic": topic, "series_id": series_id, "latest": latest, "prior": prior})
             lowered = transcript_claim.claim.lower()
-            claimed_up = any(word in lowered for word in ("alta", "sube", "aumenta", "rise", "high"))
-            claimed_down = any(word in lowered for word in ("baja", "cae", "fall", "low"))
+            claimed_up = any(re.search(r"(?<!\w)" + word + r"(?!\w)", lowered) for word in ("sube", "aumenta", "rise"))
+            claimed_down = any(re.search(r"(?<!\w)" + word + r"(?!\w)", lowered) for word in ("baja", "cae", "fall"))
             if prior is not None and latest != prior and (claimed_up ^ claimed_down):
                 observed = "up" if latest > prior else "down"
                 claimed = "up" if claimed_up else "down"
@@ -206,6 +220,8 @@ def corroborate_claims(
                         {"topic": topic, "claim": transcript_claim.claim, "observed_direction": observed}
                     )
         except Exception as exc:
+            providers.append(ProviderHealth(name=f"fred:{series_id}", status=OperationalStatus.UNAVAILABLE,
+                                            failure_kind=type(exc).__name__, coverage="0 usable observations"))
             warnings.append(f"{topic}: {type(exc).__name__}")
     return CavaCorroboration(
         evidence=tuple(evidence),
@@ -213,6 +229,7 @@ def corroborate_claims(
         contradictions=tuple(contradictions),
         warnings=tuple(warnings),
         sources=tuple(sources),
+        providers=tuple(providers),
     )
 
 
@@ -247,18 +264,21 @@ class CavaWorkflow:
         evidence: Iterable[Evidence] = (),
         warnings: Iterable[str] = (),
         providers: tuple[ProviderHealth, ...] = (),
+        reasons: tuple[ResearchReason, ...] = (),
+        decision_time: datetime | None = None,
     ) -> ResearchResult:
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
             operational=OperationalReport(status=operational, providers=providers),
-            decision_time=started_at,
+            decision_time=decision_time or started_at,
             started_at=started_at,
-            completed_at=started_at,
+            completed_at=decision_time or started_at,
             mode=Mode.LIVE,
             payload={**dict(payload), "execution_enabled": False},
             evidence=tuple(evidence),
             warnings=tuple(warnings),
+            reasons=reasons,
         )
         self.store.save_result(result)
         return result
@@ -267,12 +287,13 @@ class CavaWorkflow:
         started = now or datetime.now(UTC)
         return self._result(
             research=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE, ("youtube.rss",), True),),
             operational=OperationalStatus.UNAVAILABLE,
             started_at=started,
             payload={"source": CAVA_RSS_URL, "videos_seen": 0, "cursor_advanced": False},
             warnings=(message,),
             providers=(
-                ProviderHealth(name="youtube.rss", status=OperationalStatus.UNAVAILABLE, failure_kind="HTTPError"),
+                ProviderHealth(name="youtube.rss", status=OperationalStatus.UNAVAILABLE, failure_kind="HTTPError", retrieved_at=started, coverage="0 usable feeds"),
             ),
         )
 
@@ -291,6 +312,7 @@ class CavaWorkflow:
         except ValueError as exc:
             return self._result(
                 research=ResearchStatus.INSUFFICIENT_EVIDENCE,
+                reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE, ("valid youtube.rss",), True),),
                 operational=OperationalStatus.UNAVAILABLE,
                 started_at=started,
                 payload={"source": CAVA_RSS_URL, "videos_seen": 0, "cursor_advanced": False},
@@ -298,7 +320,8 @@ class CavaWorkflow:
                 providers=(ProviderHealth(name="youtube.rss", status=OperationalStatus.UNAVAILABLE, failure_kind="ParseError"),),
             )
         seen = self._cursor()
-        new_videos = [video for video in videos if video.video_id not in seen]
+        new_videos = [video for video in videos if video.video_id not in seen
+                      and timedelta(0) <= started - video.published_at < timedelta(days=3)]
         rss_evidence = Evidence(
             source="youtube.rss",
             reference="cava-rss",
@@ -319,6 +342,7 @@ class CavaWorkflow:
                     "source": CAVA_RSS_URL,
                     "videos_seen": len(videos),
                     "new_videos": 0,
+                    "outside_overlay_window": sum(not timedelta(0) <= started - v.published_at < timedelta(days=3) for v in videos),
                     "cursor_advanced": False,
                     "silent": True,
                 },
@@ -331,9 +355,13 @@ class CavaWorkflow:
         self.store.save_state("cava_attempts", attempts)
         try:
             transcript = transcript_provider.fetch(video.video_id)
-        except TranscriptUnavailable as exc:
+            if (not isinstance(transcript, Transcript) or not transcript.text.strip()
+                    or transcript.available_at.tzinfo is None):
+                raise TranscriptUnavailable("transcript content or availability is invalid")
+        except (TranscriptUnavailable, ValueError, TypeError) as exc:
             return self._result(
                 research=ResearchStatus.INSUFFICIENT_EVIDENCE,
+                reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE, ("video transcript",), True),),
                 operational=OperationalStatus.PARTIAL,
                 started_at=started,
                 payload={
@@ -349,31 +377,39 @@ class CavaWorkflow:
                     ProviderHealth(name="supadata", status=OperationalStatus.UNAVAILABLE, failure_kind="TranscriptUnavailable"),
                 ),
             )
-        claims = transcript_claims(video, transcript, started)
+        decided = now or datetime.now(UTC)
+        claims = transcript_claims(video, transcript, decided)
         if corroborate is None:
-            corroboration = corroborate_claims(claims, started)
+            corroboration = corroborate_claims(claims, decided)
         else:
-            raw = corroborate(video, claims, started)
+            raw = corroborate(video, claims, decided)
             corroboration = raw if isinstance(raw, CavaCorroboration) else CavaCorroboration(evidence=tuple(raw or ()))
+        decided = now or datetime.now(UTC)
+        claims = [replace(item, decision_time=decided) for item in claims]
+        corroboration = replace(corroboration, evidence=tuple(replace(item, decision_time=decided) for item in corroboration.evidence))
         warnings = list(corroboration.warnings)
         if not corroboration.evidence:
             warnings.append(
                 "no eligible authoritative corroboration was found; transcript claims remain unverified commentary"
             )
         indicators = sorted({topic for claim in claims for topic in _topics_for(claim.claim)})
+        required = set(indicators) & set(_SERIES)
+        excluded = sorted(set(indicators) - required)
         covered = {
             item.metadata.get("topic")
             for item in corroboration.evidence
             if item.kind is EvidenceKind.FACT and item.availability.value == "ELIGIBLE"
+            and item.provenance is Provenance.PROVIDER_RESULT
+            and item.event_time is not None
+            and decided - item.event_time <= timedelta(days={"inflation": 62, "copper": 62, "liquidity": 14}.get(item.metadata.get("topic"), 7))
         }
         context_validated = bool(
             claims
-            and indicators
-            and set(indicators) <= covered
-            and not warnings
+            and required
+            and required <= covered
             and not corroboration.contradictions
-            and video.published_at <= transcript.available_at <= started
-            and started - video.published_at < timedelta(days=3)
+            and video.published_at <= transcript.available_at <= decided
+            and decided - video.published_at < timedelta(days=3)
         )
         payload = {
             "source": CAVA_RSS_URL,
@@ -385,6 +421,10 @@ class CavaWorkflow:
                 "characters": len(transcript.text),
             },
             "relevant_indicators": indicators,
+            "required_indicators": sorted(required),
+            "excluded_commentary_topics": excluded,
+            "validation_scope": "supported indicator context only; transcript forecasts and causal claims remain unverified",
+            "missing_indicators": sorted(required - covered),
             "contradictions": list(corroboration.contradictions),
             "corroboration_status": "VALIDATED"
             if context_validated
@@ -398,17 +438,34 @@ class CavaWorkflow:
             else "TRANSCRIPT_ONLY",
             "cursor_advanced": context_validated,
         }
-        evidence = (rss_evidence, *claims, *corroboration.evidence)
+        evidence = (replace(rss_evidence, decision_time=decided), *claims, *corroboration.evidence)
+        failed = any(p.status is not OperationalStatus.HEALTHY for p in corroboration.providers)
+        missing = sorted(required - covered)
+        if not claims:
+            missing.append("nonempty transcript claims")
+        if not required:
+            missing.append("supported indicator topics")
+        if corroboration.contradictions:
+            missing.append("noncontradictory indicator context")
+        if not video.published_at <= transcript.available_at <= decided:
+            missing.append("point-in-time transcript")
+        if decided - video.published_at >= timedelta(days=3):
+            missing.append("video younger than 3 days")
         result = self._result(
             research=ResearchStatus.SETUP_FOUND if context_validated else ResearchStatus.INSUFFICIENT_EVIDENCE,
-            operational=OperationalStatus.HEALTHY,
+            operational=OperationalStatus.PARTIAL if failed else OperationalStatus.HEALTHY,
+            reasons=() if context_validated else (ResearchReason(
+                ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if failed else ReasonCode.CORROBORATION_INSUFFICIENT,
+                tuple(missing), failed or bool(required - covered)),),
             started_at=started,
+            decision_time=decided,
             payload=payload,
             evidence=evidence,
             warnings=warnings,
             providers=(
                 rss_health,
-                ProviderHealth(name="supadata", status=OperationalStatus.HEALTHY, retrieved_at=started),
+                ProviderHealth(name="supadata", status=OperationalStatus.HEALTHY, retrieved_at=transcript.available_at),
+                *corroboration.providers,
             ),
         )
         if context_validated:
@@ -418,12 +475,12 @@ class CavaWorkflow:
                     "validated": True,
                     "source_video_id": video.video_id,
                     "published_at": video.published_at.isoformat(),
-                    "validated_at": started.isoformat(),
+                    "validated_at": decided.isoformat(),
                     "expires_at": (video.published_at + timedelta(days=3)).isoformat(),
                     "corroboration_status": "VALIDATED",
                 },
             )
-            self._save_cursor(seen | {video.video_id}, last=video, decision_time=started)
+            self._save_cursor(seen | {video.video_id}, last=video, decision_time=decided)
         else:
             previous = self.store.load_context("cava")
             if previous:

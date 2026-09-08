@@ -11,6 +11,7 @@ import httpx
 
 from rocket.config import env
 from rocket.models import OperationalStatus
+from rocket.providers.http import get_read
 from rocket.providers.protocols import ProviderResult
 
 FMP_STABLE_URL = "https://financialmodelingprep.com/stable"
@@ -50,23 +51,22 @@ def map_short_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
     next_eps = None
     if estimates:
         next_eps = _finite(
-            estimates[0].get("estimatedEpsAvg")
+            estimates[0].get("epsAvg")
+            or estimates[0].get("estimatedEpsAvg")
             or estimates[0].get("estimatedEPSAvg")
             or estimates[0].get("estimatedEps")
         )
     eps_growth = None
     if current_eps not in (None, 0) and next_eps is not None:
         eps_growth = (next_eps - current_eps) / abs(current_eps)
-    prior_eps = None
-    if len(estimates) >= 2:
-        prior_eps = _finite(
-            estimates[1].get("estimatedEpsAvg")
-            or estimates[1].get("estimatedEPSAvg")
-            or estimates[1].get("estimatedEps")
-        )
+    # Different fiscal-period estimates are not revisions of the same forecast.
     revision = None
-    if next_eps is not None and prior_eps is not None:
-        revision = next_eps < prior_eps
+    growth_basis = "forward EPS versus current EPS"
+    growth = _record(payload.get("income_growth"))
+    reported_growth = _finite(growth.get("growthEPS"))
+    if eps_growth is None and reported_growth is not None:
+        eps_growth = reported_growth
+        growth_basis = "reported annual EPS growth"
     valuation_support = None
     if pe is not None and pe > 0:
         valuation_support = pe <= 15
@@ -79,6 +79,7 @@ def map_short_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
         "valuation_support": valuation_support,
         "pe_ttm": pe,
         "eps_growth": eps_growth,
+        "eps_growth_basis": growth_basis if eps_growth is not None else None,
         "fundamentals_source": "fmp",
     }
 
@@ -121,7 +122,7 @@ class FMPClient:
         owns = self.http is None
         client = self.http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
         try:
-            response = client.get(
+            response = get_read(client,
                 f"{FMP_STABLE_URL}{path}",
                 params={"apikey": self.api_key, **(params or {})},
             )
@@ -143,26 +144,39 @@ class FMPClient:
                 source="fmp",
                 extras={"symbol": symbol, "reason": "FMP_API_KEY unset"},
             )
-        try:
-            payload = {
-                "profile": self._get("/profile", params={"symbol": symbol}),
-                "ratios_ttm": self._get("/ratios-ttm", params={"symbol": symbol}),
-                "analyst_estimates": self._get(
-                    "/analyst-estimates",
-                    params={"symbol": symbol, "period": "annual", "page": 0, "limit": 4},
-                ),
-            }
-        except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
-            return ProviderResult(
-                status=OperationalStatus.UNAVAILABLE,
-                failure_kind=type(exc).__name__,
-                source="fmp",
-                extras={"symbol": symbol},
-            )
+        payload = {}
+        attempts = []
+        for name, endpoint, params in (
+            ("profile", "/profile", {"symbol": symbol}),
+            ("ratios_ttm", "/ratios-ttm", {"symbol": symbol}),
+            ("analyst_estimates", "/analyst-estimates", {"symbol": symbol, "period": "annual", "page": 0, "limit": 4}),
+        ):
+            try:
+                payload[name] = self._get(endpoint, params=params)
+                attempts.append({"name": f"fmp:{name}", "status": "HEALTHY", "coverage": str(len(_rows(payload[name])))})
+            except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
+                attempts.append({"name": f"fmp:{name}", "status": "UNAVAILABLE", "failure_kind": type(exc).__name__})
+        if map_short_factors(payload)["company_fundamentals"] is None:
+            try:
+                growth = _rows(self._get("/income-statement-growth", params={"symbol": symbol, "period": "annual", "limit": 2}))
+                eligible = []
+                for row in growth:
+                    try:
+                        day = datetime.fromisoformat(str(row.get("date"))).replace(tzinfo=UTC)
+                        if row.get("symbol", symbol).upper() == symbol.upper() and 0 <= (retrieved - day).days <= 550:
+                            eligible.append(row)
+                    except (ValueError, TypeError):
+                        continue
+                payload["income_growth"] = sorted(eligible, key=lambda row: row["date"], reverse=True)
+                attempts.append({"name": "fmp:income_growth", "status": "HEALTHY", "coverage": str(len(eligible))})
+            except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
+                attempts.append({"name": "fmp:income_growth", "status": "UNAVAILABLE", "failure_kind": type(exc).__name__})
         factors = map_short_factors(payload)
+        factors["provider_attempts"] = attempts
+        factors["available_at"] = datetime.now(UTC).isoformat()
         observed = any(factors[key] is not None for key in ("company_fundamentals", "valuation_support", "earnings_revision_deterioration"))
         return ProviderResult(
-            status=OperationalStatus.HEALTHY if observed else OperationalStatus.PARTIAL,
+            status=OperationalStatus.PARTIAL if any(a["status"] == "UNAVAILABLE" for a in attempts) else OperationalStatus.HEALTHY if observed else OperationalStatus.PARTIAL,
             records=(factors,),
             retrieved_at=retrieved,
             source="fmp",

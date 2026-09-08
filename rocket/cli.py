@@ -91,10 +91,17 @@ def cava(
     store = ResearchStore(state_dir or rocket_home())
     workflow = CavaWorkflow(store=store)
     try:
-        rss_xml = rss_file.read_text(encoding="utf-8") if rss_file else httpx.get(CAVA_RSS_URL, timeout=20.0).text
+        if rss_file:
+            rss_xml = rss_file.read_text(encoding="utf-8")
+        else:
+            from rocket.providers.http import get_read
+            with httpx.Client(timeout=20.0, follow_redirects=True) as client:
+                response = get_read(client, CAVA_RSS_URL)
+            response.raise_for_status()
+            rss_xml = response.text
         result = workflow.run(rss_xml=rss_xml, transcript_provider=SupadataTranscriptProvider())
     except httpx.HTTPError as exc:
-        result = workflow.unavailable(f"Cava RSS unavailable: {exc}")
+        result = workflow.unavailable(f"Cava RSS unavailable: {type(exc).__name__}")
     emit_result(result, human=human)
 
 
@@ -135,7 +142,7 @@ def portfolio_review(
 
     store = ResearchStore(state_dir or rocket_home())
     book = load_portfolio_state(state)
-    evidence = json.loads(evidence_file.read_text(encoding="utf-8")) if evidence_file else {}
+    evidence = json.loads(evidence_file.read_text(encoding="utf-8")) if evidence_file else None
     emit_result(
         PortfolioWorkflow(store=store, inventory=SolanaOndoInventory() if refresh_inventory else None).run(
             book,
@@ -223,6 +230,7 @@ def ism(
     from rocket.workflows.ism import IsmWorkflow
 
     reports = {}
+    provider_failures = {}
     if manufacturing_html:
         reports["manufacturing"] = parse_ism_html(
             manufacturing_html.read_text(encoding="utf-8"),
@@ -239,10 +247,11 @@ def ism(
         for kind in ("manufacturing", "services"):
             try:
                 reports[kind] = fetch_ism_report(kind)
-            except (httpx.HTTPError, TypeError, ValueError):
+            except (httpx.HTTPError, TypeError, ValueError) as exc:
+                provider_failures[kind] = type(exc).__name__
                 continue
     store = ResearchStore(state_dir or rocket_home())
-    emit_result(IsmWorkflow(store=store).run(reports=reports or None), human=human)
+    emit_result(IsmWorkflow(store=store).run(reports=reports or None, provider_failures=provider_failures), human=human)
 
 
 @app.command("disclosures")

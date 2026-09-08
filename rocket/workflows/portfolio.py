@@ -20,10 +20,12 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
-from rocket.pit import parse_datetime
+from rocket.pit import Availability, PointInTime, parse_datetime
 from rocket.store import ResearchStore
 
 WORKFLOW = "portfolio.review"
@@ -54,9 +56,12 @@ def load_portfolio_state(path: Path) -> PortfolioState:
     payload = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(payload, Mapping):
         raise ValueError("portfolio state must be a JSON object")
+    rows = payload.get("positions", [])
+    if not isinstance(rows, list) or any(not isinstance(item, Mapping) or not str(item.get("ticker") or "").strip() for item in rows):
+        raise ValueError("portfolio positions must be objects with caller-owned tickers")
     positions = tuple(
         PositionState(
-            ticker=str(item.get("ticker") or "").upper(),
+            ticker=str(item.get("ticker") or "").strip().upper(),
             thesis=str(item.get("thesis") or ""),
             thesis_status=str(item.get("thesis_status") or "RECORDED"),
             thesis_reference=item.get("thesis_reference"),
@@ -139,9 +144,15 @@ def review_positions(
             missing.append("thesis_draft_requires_validation")
         if state.ledger_history_complete is False:
             missing.append("ledger_history_incomplete")
-        if not positive_number(market.get("current_price")) or not equity_observation_fresh(
-            market.get("as_of"), decision_time
-        ):
+        try:
+            pit = PointInTime(parse_datetime(market.get("as_of")),
+                              parse_datetime(market.get("available_at") or market.get("retrieved_at")), decision_time)
+            market_eligible = (positive_number(market.get("current_price")) and pit.availability is Availability.ELIGIBLE and bool(market.get("source"))
+                               and equity_observation_fresh(market.get("as_of"), decision_time,
+                                                            daily=market.get("daily", True)))
+        except ValueError:
+            market_eligible = False
+        if not positive_number(market.get("current_price")) or not market_eligible:
             missing.append("price_missing_stale_or_invalid")
         if observed.get("technical_condition") not in {"healthy", "weak", "breakdown"}:
             missing.append("technical_evidence_missing")
@@ -157,9 +168,6 @@ def review_positions(
         elif observed.get("technical_condition") in {"weak", "breakdown"}:
             action = "REDUCE_CANDIDATE"
             reasons.append("technical_weakness")
-        elif observed.get("macro_regime") in {None, "unknown", "UNKNOWN"}:
-            action = "REVIEW_REQUIRED"
-            reasons.append("macro_context_missing")
         else:
             action = "HOLD"
             reasons.append("thesis_and_current_evidence_have_no_recorded_break")
@@ -189,7 +197,7 @@ def review_positions(
                 metadata={"updated_at": state.updated_at, "source_path": state.source_path},
             )
         )
-        if market.get("as_of") and market.get("source"):
+        if market_eligible:
             market_stamp = parse_datetime(market.get("as_of"))
             evidence.append(
                 Evidence(
@@ -198,7 +206,7 @@ def review_positions(
                     claim=f"{ticker} latest supported close {market.get('current_price')}",
                     kind=EvidenceKind.FACT,
                     event_time=market_stamp,
-                    available_at=parse_datetime(market.get("retrieved_at")) or market_stamp,
+                    available_at=parse_datetime(market.get("available_at") or market.get("retrieved_at")),
                     retrieved_at=decision_time,
                     decision_time=decision_time,
                     provenance=Provenance.PROVIDER_RESULT,
@@ -219,6 +227,17 @@ def review_positions(
         operational = OperationalStatus.HEALTHY
         warnings = extra
     providers = [ProviderHealth(name="caller_state", status=OperationalStatus.HEALTHY, retrieved_at=decision_time)]
+    market_providers = [ProviderHealth.from_dict(p) for row in evidence_by_ticker.values()
+                        for p in row.get("provider_attempts", [])]
+    providers.extend(market_providers)
+    if market_providers and any(p.status is not OperationalStatus.HEALTHY for p in market_providers):
+        operational = OperationalStatus.PARTIAL if any(p.status is OperationalStatus.HEALTHY for p in market_providers) else OperationalStatus.UNAVAILABLE
+        if all(row["action"] == "REVIEW_REQUIRED" and "price_missing_stale_or_invalid" in row["reasons"] for row in decisions):
+            research = ResearchStatus.INSUFFICIENT_EVIDENCE
+    if decisions and all(row["action"] == "REVIEW_REQUIRED" and
+                         any(r in row["reasons"] for r in ("price_missing_stale_or_invalid", "technical_evidence_missing"))
+                         for row in decisions):
+        research = ResearchStatus.INSUFFICIENT_EVIDENCE
     if inventory_status is not None:
         providers.append(ProviderHealth(name="inventory", status=inventory_status, retrieved_at=decision_time))
         if inventory_status is OperationalStatus.UNAVAILABLE:
@@ -253,15 +272,20 @@ def review_positions(
         },
         evidence=tuple(evidence),
         warnings=warnings,
+        reasons=(ResearchReason(ReasonCode.CALLER_STATE_MISSING, ("caller portfolio positions",)),)
+        if not state.positions else (ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if operational is not OperationalStatus.HEALTHY else ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                                                   ("requested inventory refresh",) if inventory_status is OperationalStatus.UNAVAILABLE else ("current position market evidence",), True),)
+        if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (),
     )
 
 
 class PortfolioWorkflow:
     name = WORKFLOW
 
-    def __init__(self, *, store: ResearchStore | None = None, inventory=None):
+    def __init__(self, *, store: ResearchStore | None = None, inventory=None, market_fetcher=None):
         self.store = store
         self.inventory = inventory
+        self.market_fetcher = market_fetcher
 
     def run(
         self,
@@ -296,6 +320,10 @@ class PortfolioWorkflow:
                     )
                 else:
                     extra_warnings = ("inventory provider did not return a healthy snapshot",)
+        if evidence_by_ticker is None and state.positions:
+            from rocket.providers.portfolio import acquire_position_evidence
+            fetcher = self.market_fetcher or acquire_position_evidence
+            evidence_by_ticker = fetcher([p.ticker for p in state.positions], now=now)
         result = review_positions(
             state,
             evidence_by_ticker,

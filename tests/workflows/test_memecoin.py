@@ -34,7 +34,8 @@ def test_status_is_no_edge_validated():
     result = MemecoinWorkflow().status(now=NOW)
     assert_research_result(result)
     assert result.payload["edge"] == "NO_EDGE_VALIDATED"
-    assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
+    assert result.status is ResearchStatus.NO_SETUP
+    assert result.to_dict()["presentation"]["silent"] is True
 
 
 def test_duplicate_identity_rejected():

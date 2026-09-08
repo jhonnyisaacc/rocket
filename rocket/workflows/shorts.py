@@ -14,6 +14,8 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
@@ -47,12 +49,12 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     fundamentals = row.get("company_fundamentals")
     factors = {
         "macro_regime": macro or None,
-        "sector_weakness": _flag(row.get("sector_weakness")),
-        "earnings_revision_deterioration": _flag(row.get("earnings_revision_deterioration")),
-        "valuation_support": _flag(row.get("valuation_support")),
-        "technical_breakdown": _flag(row.get("technical_breakdown")),
+        "sector_weakness": None if row.get("sector_weakness") is None else _flag(row.get("sector_weakness")),
+        "earnings_revision_deterioration": None if row.get("earnings_revision_deterioration") is None else _flag(row.get("earnings_revision_deterioration")),
+        "valuation_support": None if row.get("valuation_support") is None else _flag(row.get("valuation_support")),
+        "technical_breakdown": None if row.get("technical_breakdown") is None else _flag(row.get("technical_breakdown")),
         "catalyst": str(row.get("catalyst") or "").strip() or None,
-        "positioning_crowding": _flag(row.get("positioning_crowding")),
+        "positioning_crowding": None if row.get("positioning_crowding") is None else _flag(row.get("positioning_crowding")),
         "company_fundamentals": None if fundamentals is None else _flag(fundamentals),
     }
     non_macro = sum(
@@ -61,7 +63,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         if name not in {"macro_regime", "valuation_support"}
     )
     total = non_macro + int(macro in {"bearish", "risk_off", "contraction"})
-    missing = [name for name in row.get("required_factors", []) if row.get(name) is None]
+    missing = [name for name in dict.fromkeys(("company_fundamentals", "technical_breakdown", *row.get("required_factors", []))) if row.get(name) is None]
     if missing:
         reason, selected = "insufficient_evidence", False
     elif factors["valuation_support"]:
@@ -98,6 +100,9 @@ class ShortsWorkflow:
         rejected: list[dict[str, Any]] = []
         evidence: list[Evidence] = []
         for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                rejected.append({"row": index, "reason": "invalid_input"})
+                continue
             ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
             try:
                 available_at = parse_datetime(row.get("available_at"))
@@ -109,7 +114,10 @@ class ShortsWorkflow:
                 if available_at > decided:
                     rejected.append({"asset": ticker, "reason": "available_after_decision_time"})
                     continue
-                observed = parse_datetime(row.get("event_time")) or available_at
+                observed = parse_datetime(row.get("event_time"))
+                if observed is None or not row.get("source"):
+                    rejected.append({"asset": ticker, "reason": "observation_or_provenance_unknown"})
+                    continue
                 if observed > decided or decided - observed > timedelta(days=5):
                     rejected.append({"asset": ticker, "reason": "stale_or_future_observation"})
                     continue
@@ -134,11 +142,11 @@ class ShortsWorkflow:
                 candidates.append(candidate)
             else:
                 rejected.append({**candidate, "reason": candidate["rejection_reason"]})
-        live = any(row.get("acquisition_mode") == "LIVE" for row in rows)
+        live = any(isinstance(row, Mapping) and row.get("acquisition_mode") == "LIVE" for row in rows)
         if live:
-            if all(row.get("provider_health") == "HEALTHY" for row in rows):
+            if all(isinstance(row, Mapping) and row.get("provider_health") == "HEALTHY" for row in rows):
                 operational = OperationalStatus.HEALTHY
-            elif any(row.get("provider_health") == "HEALTHY" for row in rows):
+            elif any(isinstance(row, Mapping) and row.get("provider_health") in {"HEALTHY", "PARTIAL"} for row in rows):
                 operational = OperationalStatus.PARTIAL
             else:
                 operational = OperationalStatus.UNAVAILABLE
@@ -146,7 +154,7 @@ class ShortsWorkflow:
             operational = OperationalStatus.HEALTHY
         if candidates:
             research = ResearchStatus.SETUP_FOUND
-        elif operational is OperationalStatus.UNAVAILABLE or any(row.get("reason") == "insufficient_evidence" for row in rejected):
+        elif operational is OperationalStatus.UNAVAILABLE or any(row.get("reason") in {"insufficient_evidence", "invalid_input", "availability_unknown", "available_after_decision_time", "stale_or_future_observation", "observation_or_provenance_unknown"} for row in rejected):
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
         elif rows and evidence:
             research = ResearchStatus.NO_SETUP
@@ -164,7 +172,9 @@ class ShortsWorkflow:
             status=research,
             operational=OperationalReport(
                 status=operational,
-                providers=(ProviderHealth(name="shorts.live" if live else "shorts.replay", status=operational, retrieved_at=decided),),
+                providers=tuple(ProviderHealth.from_dict(p) for row in rows if isinstance(row, Mapping) for p in row.get("provider_attempts", []))
+                or (ProviderHealth(name="shorts.live" if live else "shorts.replay", status=operational, retrieved_at=decided,
+                                   coverage=f"{len(evidence)}/{len(rows)} eligible snapshots"),),
             ),
             decision_time=decided,
             started_at=decided,
@@ -176,10 +186,17 @@ class ShortsWorkflow:
                 "final_candidates": candidates,
                 "rejected_candidates": rejected,
                 "factor_definition": list(_FACTORS),
+                "snapshots": list(rows),
                 "execution_enabled": False,
             },
             evidence=tuple(evidence),
             warnings=warnings,
+            reasons=(ResearchReason(ReasonCode.CALLER_STATE_MISSING if not rows
+                                    else ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE if live and operational is not OperationalStatus.HEALTHY
+                                    else ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                                    tuple(f"{r.get('asset', 'UNKNOWN')}:{r.get('reason')}:{','.join(r.get('missing_required_factors', []))}"
+                                          for r in rejected) or ("caller stock snapshots",), live),)
+            if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (),
         )
         if self.store:
             self.store.save_result(result)

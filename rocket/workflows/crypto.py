@@ -18,10 +18,12 @@ from rocket.models import (
     OperationalStatus,
     Provenance,
     ProviderHealth,
+    ReasonCode,
+    ResearchReason,
     ResearchResult,
     ResearchStatus,
 )
-from rocket.pit import parse_datetime
+from rocket.pit import Availability, PointInTime, parse_datetime
 from rocket.store import ResearchStore
 from rocket.workflows.macro import macro_is_usable
 
@@ -91,6 +93,7 @@ def build_funnel(
         "final_candidates": 0,
         "invalid_observations": 0,
         "unavailable_instruments": 0,
+        "incomplete_evaluations": 0,
     }
     final_candidates: list[dict[str, Any]] = []
     evidence: list[Evidence] = []
@@ -106,6 +109,10 @@ def build_funnel(
             continue
         observation_time = parse_datetime(observation.get("observation_timestamp"))
         if observation_time is None:
+            counts["invalid_observations"] += 1
+            continue
+        source_time = parse_datetime(observation.get("source_timestamp"))
+        if (not observation.get("source") or PointInTime(observation_time, source_time, observation_time).availability is not Availability.ELIGIBLE):
             counts["invalid_observations"] += 1
             continue
         macro_checks.append(macro_is_usable(macro_context, context_decision_time or observation_time))
@@ -145,11 +152,15 @@ def build_funnel(
             if macro_pass and (macro_context or {}).get("contract") == "current_macro_v1":
                 macro_pass = cot_regime_passes(str(macro_context.get("regime")), direction)
             features = raw_candidate.get("features") if isinstance(raw_candidate.get("features"), Mapping) else {}
+            if eligible and (liquidity.get("state") == "UNKNOWN" or
+                             liquid and isinstance(setup, Mapping) and setup.get("reason") in {
+                                 "insufficient_4h_history", "candle_provider_unavailable", "not_evaluated"}):
+                counts["incomplete_evaluations"] += 1
             if state == "UNKNOWN" and not features:
                 counts["unavailable_instruments"] += 1
                 continue
             available = parse_datetime(features.get("data_timestamp"))
-            if _asset_key(raw_candidate) == "unknown" or available is None or available > observation_time:
+            if _asset_key(raw_candidate) == "unknown" or not features.get("data_source") or available is None or available > observation_time:
                 counts["invalid_observations"] += 1
                 continue
             cot_pass = True if effective_cot == "unknown" else cot_regime_passes(effective_cot, direction)
@@ -343,7 +354,7 @@ def _ohlc(bars: Sequence[Mapping[str, Any]]) -> list[dict[str, float]]:
             close = float(bar["close"])
         except (KeyError, TypeError, ValueError):
             continue
-        if high <= 0 or low <= 0 or close <= 0 or high < low:
+        if not all(math.isfinite(v) for v in (high, low, close)) or high <= 0 or low <= 0 or close <= 0 or high < low:
             continue
         parsed.append({"high": high, "low": low, "close": close})
     return parsed
@@ -448,6 +459,8 @@ def apply_setup_candles(
         if coin not in allowed:
             continue
         setup = setup_from_candles(candles_by_coin.get(coin))
+        if coin not in candles_by_coin:
+            setup["reason"] = "candle_provider_unavailable"
         candidate["setup_validation"] = setup
         features = dict(candidate.get("features") or {})
         last = None
@@ -499,7 +512,7 @@ def _candidate_row(
         "liquidity": assess_live_liquidity(contract),
         "setup_validation": {
             "valid": False,
-            "reason": "live scan does not impute momentum setups; replay fixtures may include them",
+            "reason": "not_evaluated",
         },
         "observation_timestamp": stamp,
     }
@@ -656,7 +669,9 @@ class CryptoWorkflow:
         warnings.extend(str(item) for item in extra_warnings if item)
         if candidates:
             research = ResearchStatus.SETUP_FOUND
-        elif warnings or funnel.get("invalid_observations"):
+        elif (funnel.get("invalid_observations") or funnel.get("incomplete_evaluations")
+              or funnel.get("unavailable_instruments")
+              or funnel["momentum_pass"] and not funnel["macro_context_validated"]):
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
         else:
             research = ResearchStatus.NO_SETUP
@@ -677,9 +692,28 @@ class CryptoWorkflow:
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
         elif statuses - {OperationalStatus.HEALTHY}:
             operational = OperationalStatus.PARTIAL
+        required_failures = [p.name for p in provider_health
+                             if p.status is OperationalStatus.UNAVAILABLE and p.name in {"coingecko", "hyperliquid"}]
+        if required_failures and not candidates:
+            research = ResearchStatus.INSUFFICIENT_EVIDENCE
+        gaps = list(required_failures)
+        if funnel["momentum_pass"] and not funnel["macro_context_validated"]:
+            gaps.append("current macro context for otherwise eligible setup")
+        for field in ("invalid_observations", "incomplete_evaluations", "unavailable_instruments"):
+            if funnel.get(field):
+                gaps.append(f"{field}:{funnel[field]}")
+        if operational is OperationalStatus.UNAVAILABLE and not gaps:
+            gaps.append("current universe provider")
+        if funnel.get("incomplete_evaluations") and mode is Mode.LIVE and operational is OperationalStatus.HEALTHY:
+            operational = OperationalStatus.PARTIAL
         result = ResearchResult(
             workflow=WORKFLOW_SCAN,
             status=research,
+            reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE
+                                    if required_failures or operational is OperationalStatus.UNAVAILABLE
+                                    else ReasonCode.REQUIRED_EVIDENCE_MISSING,
+                                    tuple(gaps), mode is Mode.LIVE),)
+            if research is ResearchStatus.INSUFFICIENT_EVIDENCE else (),
             operational=OperationalReport(
                 status=operational,
                 providers=provider_health,
@@ -732,6 +766,7 @@ class CryptoWorkflow:
             result = ResearchResult(
                 workflow=WORKFLOW_SCAN,
                 status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+                reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE, ("current top-100 universe",), True),),
                 operational=OperationalReport(
                     status=OperationalStatus.UNAVAILABLE,
                     providers=(
@@ -761,7 +796,7 @@ class CryptoWorkflow:
         perps_result = perps or fetch_perp_markets(now=observed)
         macro_result = None
         if macro_context is None:
-            macro_result = MacroWorkflow(store=self.store).run(now=observed)
+            macro_result = MacroWorkflow(store=self.store).run(now=now)
             macro_context = macro_result.payload
         if cot_context is None and cot_regime in {"bullish", "bearish", "neutral"}:
             cot_context = {
@@ -786,6 +821,8 @@ class CryptoWorkflow:
                 and row.get("contract_symbol")
             ]
             candles = fetch_setup_candles(coins, now=observed)
+        observed = now or datetime.now(UTC)
+        observation["observation_timestamp"] = observed.isoformat()
         apply_setup_candles(observation, candles)
         live_warnings: list[str] = []
         if perps_result.status is not OperationalStatus.HEALTHY:
@@ -819,6 +856,14 @@ class CryptoWorkflow:
                     "failure_kind": cot_context.get("failure_kind"),
                 }
             )
+        requested = [row for row in observation["candidates"] if row["ranking_state"] == "ELIGIBLE"
+                     and row["liquidity"]["state"] == "PASS"]
+        for row in requested:
+            coin = str(row["contract_symbol"])
+            providers.append({"name": f"hyperliquid.candles:{coin}",
+                              "status": "HEALTHY" if coin in candles else "UNAVAILABLE",
+                              "failure_kind": None if coin in candles else "CandleAcquisitionFailed",
+                              "coverage": str(len(candles.get(coin, ())))})
         if macro_result is not None:
             providers.extend(item.to_dict() for item in macro_result.operational.providers)
         else:
@@ -870,6 +915,7 @@ class CryptoWorkflow:
         result = ResearchResult(
             workflow=WORKFLOW_EVAL,
             status=ResearchStatus.INSUFFICIENT_EVIDENCE,
+            reasons=(ResearchReason(ReasonCode.STRATEGY_UNVALIDATED, ("costed out-of-sample strategy validation and human review",)),),
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=now,
             started_at=now,
@@ -895,7 +941,7 @@ class CryptoWorkflow:
         now = datetime.now(UTC)
         result = ResearchResult(
             workflow=WORKFLOW_MISSED,
-            status=ResearchStatus.NO_SETUP if not missed else ResearchStatus.INSUFFICIENT_EVIDENCE,
+            status=ResearchStatus.NO_SETUP if not missed else ResearchStatus.ACTION_REQUIRED,
             operational=OperationalReport(status=OperationalStatus.HEALTHY),
             decision_time=now,
             started_at=now,

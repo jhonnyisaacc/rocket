@@ -10,6 +10,7 @@ import httpx
 
 from rocket.config import env
 from rocket.models import OperationalStatus
+from rocket.providers.http import get_read
 from rocket.providers.protocols import ProviderResult
 
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"
@@ -76,7 +77,7 @@ def fetch_fred_csv(series_id: str, *, http: httpx.Client | None = None) -> Mappi
     if api_key:
         params["api_key"] = api_key
     try:
-        response = client.get(FRED_CSV_URL, params=params)
+        response = get_read(client, FRED_CSV_URL, params=params)
         response.raise_for_status()
         records = parse_fred_csv(response.text, series_id)
     finally:
@@ -119,9 +120,25 @@ def fetch_openbb_fred(series_id: str) -> Mapping[str, Any]:
     }
 
 
-def fetch_series(series_id: str, *, http: httpx.Client | None = None) -> tuple[Mapping[str, Any], str]:
+def fetch_series(series_id: str, *, http: httpx.Client | None = None, minimum_history_days: int = 0,
+                 max_age_days: int | None = None, now: datetime | None = None) -> tuple[Mapping[str, Any], str]:
     try:
         payload = fetch_openbb_fred(series_id)
+        records = payload.get("records") or []
+        if not any(isinstance(row, Mapping) and _record_date(row) and _record_value(row, series_id) is not None for row in records):
+            raise ValueError("OpenBB returned no usable observations")
+        dates = []
+        for row in records:
+            try:
+                stamp = datetime.fromisoformat(str(_record_date(row))[:10]).date()
+                if _record_value(row, series_id) is not None:
+                    dates.append(stamp)
+            except (ValueError, TypeError):
+                continue
+        if not dates or (max(dates) - min(dates)).days < minimum_history_days:
+            raise ValueError("OpenBB history is too short")
+        if max_age_days is not None and not 0 <= ((now or datetime.now(UTC)).date() - max(dates)).days <= max_age_days:
+            raise ValueError("OpenBB observations stale or future dated")
         return payload, str(payload.get("source") or "OpenBB/FRED")
     except Exception:
         payload = fetch_fred_csv(series_id, http=http)
@@ -134,12 +151,12 @@ class FredMacroSeries:
         self.http = http
 
     def fetch(self, symbol: str, *, now: datetime | None = None) -> ProviderResult:
-        del now
         try:
             if self.fetcher is not None:
                 payload, source = self.fetcher(symbol)
             else:
-                payload, source = fetch_series(symbol, http=self.http)
+                payload, source = fetch_series(symbol, http=self.http, minimum_history_days=28,
+                                              max_age_days={"EFFR": 5, "WDTGAL": 10, "RRPONTSYD": 5, "WALCL": 10}.get(symbol), now=now)
             records = tuple(payload.get("records") or ())
             retrieved = payload.get("retrieved_at")
             return ProviderResult(

@@ -11,6 +11,7 @@ from typing import Any, Protocol
 import httpx
 
 from rocket.config import env
+from rocket.providers.http import get_read
 
 SUPADATA_TRANSCRIPT_URL = "https://api.supadata.ai/v1/transcript"
 
@@ -77,7 +78,7 @@ class SupadataTranscriptProvider:
         if not self.api_key:
             raise TranscriptUnavailable("SUPADATA_API_KEY is not configured")
         try:
-            response = self._client().get(
+            response = get_read(self._client(),
                 url,
                 params=params,
                 headers={"x-api-key": self.api_key, "Accept": "application/json"},
@@ -85,7 +86,7 @@ class SupadataTranscriptProvider:
             response.raise_for_status()
             payload = response.json()
         except (httpx.HTTPError, ValueError) as exc:
-            raise TranscriptUnavailable(f"Supadata transcript request failed: {exc}") from exc
+            raise TranscriptUnavailable(f"Supadata transcript request failed: {type(exc).__name__}") from exc
         if not isinstance(payload, dict):
             raise TranscriptUnavailable("Supadata returned a non-object transcript payload")
         return payload

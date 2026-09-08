@@ -13,7 +13,8 @@ env = []
 
 [fundamentals]
 primary = "fmp"
-fallbacks = ["massive"]
+# Massive adapter is not implemented; tracked in #13.
+fallbacks = []
 env = ["FMP_API_KEY", "MASSIVE_API_KEY"]
 
 [universe]
@@ -31,7 +32,8 @@ env = ["HL_WALLET"]
 [cot]
 # OpenBB is optional. The durable source is the official CFTC futures report.
 primary = "cftc"
-fallbacks = ["openbb_cftc"]
+# OpenBB CFTC adapter is not implemented; tracked in #13.
+fallbacks = []
 
 [ism]
 primary = "ism_publisher"

@@ -24,8 +24,8 @@ def acquire_quotes(
     http = client or httpx.Client(timeout=15, headers={"User-Agent": "Mozilla/5.0"})
     try:
         for watch in watches:
-            ticker = str(watch.get("ticker") or "").upper()
-            symbol = str(watch.get("price_symbol") or ticker)
+            ticker = str(watch.get("ticker") or "").strip().upper()
+            symbol = str(watch.get("price_symbol") or ticker).strip().upper()
             row = {
                 "ticker": ticker,
                 "symbol": symbol,
@@ -67,6 +67,7 @@ def acquire_quotes(
                     if expected_exchange and expected_exchange != meta.get("exchangeName"):
                         row["classification"] = "PROVIDER_MAPPING_REQUIRED"
                         break
+                    current = now or datetime.now(UTC)
                     stamp = datetime.fromtimestamp(meta["regularMarketTime"], UTC)
                     price = float(meta["regularMarketPrice"])
                     row.update(

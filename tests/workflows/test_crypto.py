@@ -193,8 +193,10 @@ def test_scan_live_joins_hyperliquid_without_imputing_setups(tmp_path):
         now=NOW,
     )
     assert_research_result(result)
-    assert result.status is ResearchStatus.NO_SETUP
-    assert result.operational.status is OperationalStatus.HEALTHY
+    assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
+    assert result.payload["funnel"]["incomplete_evaluations"] == 1
+    assert any(p.name == "hyperliquid.candles:BTC" and p.status is OperationalStatus.UNAVAILABLE for p in result.operational.providers)
+    assert result.operational.status is OperationalStatus.PARTIAL
     funnel = result.payload["funnel"]
     assert funnel["universe"] == 2
     assert funnel["eligible"] == 2
