@@ -100,11 +100,12 @@ def test_pending_ondo_mints_are_surfaced(tmp_path):
 
 
 def test_draft_thesis_does_not_repeat_same_inventory_notification(tmp_path):
-    from rocket.providers.inventory import FileInventory
-    from tests.workflows.test_outputs import context
-    from rocket.store import ResearchStore
-    from rocket.workflows.portfolio import PortfolioState, PositionState, PortfolioWorkflow
     from datetime import UTC, datetime
+
+    from rocket.providers.inventory import FileInventory
+    from rocket.store import ResearchStore
+    from rocket.workflows.portfolio import PortfolioState, PortfolioWorkflow, PositionState
+    from tests.workflows.test_outputs import context
     now = datetime(2026,9,8,15,tzinfo=UTC)
     book = PortfolioState(wallet_address='wallet-one',positions=(PositionState('BE',quantity=3,thesis='Draft thesis',thesis_status='DRAFT'),))
     provider = FileInventory(({'ticker':'BE','mint':'mint','quantity':2,'pending_review':False},))
@@ -117,3 +118,20 @@ def test_draft_thesis_does_not_repeat_same_inventory_notification(tmp_path):
     other = PortfolioState(wallet_address='wallet-two',positions=book.positions)
     third = workflow.run(other,{'BE':context()},refresh_inventory=True,now=now)
     assert third.payload['material_change']  # another wallet must not inherit notification state
+
+
+def test_inventory_outage_and_recovery_notify_once(tmp_path):
+    book = PortfolioState(wallet_address='wallet', positions=(PositionState('MSFT', quantity=1),))
+    store = ResearchStore(tmp_path)
+    workflow = PortfolioWorkflow(store=store, inventory=None)
+    first = workflow.run(book, {}, now=NOW, refresh_inventory=True)
+    repeat = workflow.run(book, {}, now=NOW, refresh_inventory=True)
+    assert first.payload['inventory_health_changed']
+    assert not first.presentation['silent']
+    assert not first.presentation['market_result']
+    assert repeat.presentation['silent']
+    workflow.inventory = FileInventory(({'ticker':'MSFT','mint':'mint','quantity':1},))
+    recovered = workflow.run(book, {}, now=NOW, refresh_inventory=True)
+    assert recovered.payload['inventory_health_changed']
+    assert not recovered.presentation['silent']
+    assert workflow.run(book, {}, now=NOW, refresh_inventory=True).presentation['silent']

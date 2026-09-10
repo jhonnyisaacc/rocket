@@ -410,7 +410,12 @@ class PortfolioWorkflow:
         inventory_id = content_id(json.dumps(inventory_changes, sort_keys=True))
         new_pending = set(pending_ids) - set((previous_review or {}).get("pending_mints", []))
         changed_inventory = bool(inventory_changes) and inventory_id != (previous_review or {}).get("inventory_id")
-        speak = bool(transitions or changed_inventory or new_pending or material_news)
+        prior_health = (previous_review or {}).get("inventory_health")
+        current_health = inventory_status.value if inventory_status is not None else None
+        health_changed = bool(refresh_inventory and current_health != prior_health
+                              and (inventory_failed or prior_health is not None))
+        market_change = bool(transitions or changed_inventory or new_pending or material_news)
+        speak = market_change or health_changed
         reasons = []
         for ticker, missing in position_diagnostics.items():
             attempts = (evidence_by_ticker or {}).get(ticker, {}).get("provider_attempts", [])
@@ -431,14 +436,16 @@ class PortfolioWorkflow:
         result = replace(result, payload={**result.payload, "transitions": transitions,
                                           "inventory": inventory_payload, "inventory_changes": inventory_changes,
                                           "position_diagnostics": position_diagnostics,
-                                          "material_change": speak}, reasons=reasons,
-                         presentation={"market_result": speak,
+                                          "material_change": speak,
+                                          "inventory_health_changed": health_changed}, reasons=reasons,
+                         presentation={"market_result": market_change,
                                        "silent": not speak, "diagnostic_only": diagnostic and not speak})
         if self.store:
             self.store.save_result(result)
             # Observation deduplication must advance even when a thesis remains draft.
             # Never promote diagnostic rows to approved investment actions.
             self.store.save_state("portfolio_review", {"owner": review_owner,
+                "inventory_health": current_health if refresh_inventory else prior_health,
                 "actions": {**prior_actions, **{r["ticker"]: r["action"] for r in result.payload["positions"] if r["ticker"] not in position_diagnostics}},
                 "news_id": news_id, "pending_mints": pending_ids if not inventory_failed else (previous_review or {}).get("pending_mints", []),
                 "inventory_id": inventory_id if not inventory_failed else (previous_review or {}).get("inventory_id")})
