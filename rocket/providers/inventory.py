@@ -154,7 +154,19 @@ class SolanaOndoInventory:
                 if not row.get("err") and row.get("signature"):
                     signatures[row["signature"]] = row
         movements = []
-        for signature in list(signatures)[:20]:
+        inspected = 0
+        since = previous.get("observed_at")
+        since_ms = None
+        if since:
+            try:
+                since_ms = datetime.fromisoformat(str(since).replace("Z", "+00:00")).timestamp()
+            except (ValueError, TypeError):
+                pass
+        ordered = sorted(signatures, key=lambda s: signatures[s].get("blockTime") or 0, reverse=True)
+        for signature in ordered[:20]:
+            if since_ms and signatures[signature].get("blockTime") and signatures[signature]["blockTime"] < since_ms:
+                continue
+            inspected += 1
             tx = self._rpc(client, url, "getTransaction", [signature, {"encoding": "jsonParsed", "maxSupportedTransactionVersion": 0, "commitment": "finalized"}])
             if not isinstance(tx, dict) or not isinstance(tx.get("meta"), dict) or tx["meta"].get("err"):
                 continue
@@ -170,11 +182,16 @@ class SolanaOndoInventory:
                 only_transfers = bool(instructions) and all(
                     i.get("parsed", {}).get("type") in {"transfer", "transferChecked", "closeAccount"}
                     and i.get("programId") in TOKEN_PROGRAMS for i in instructions)
-                movements.append({"signature": signature, "delta": str(delta), "block_time": tx.get("blockTime"),
+                block_time = tx.get("blockTime")
+                if since_ms and block_time and block_time < since_ms:
+                    continue
+                movements.append({"signature": signature, "mint": mint, "delta": str(delta), "block_time": block_time,
+                                  "timestamp": datetime.fromtimestamp(block_time, UTC).isoformat() if block_time else None,
                                   "kind": "TRANSFER" if only_transfers else "OUTFLOW_UNCLASSIFIED" if delta < 0 else "INFLOW_UNCLASSIFIED"})
-        return {"kind": movements[0]["kind"] if movements else "CONFIRMED_ZERO_CAUSE_UNKNOWN",
+        return {"kind": movements[0]["kind"] if movements else "BALANCE_CHANGE_CAUSE_UNKNOWN",
                 "history_inspected": True, "history_complete": False, "transactions": movements,
-                "scope": "bounded 20 transactions; not proof of sale or user intent"}
+                "since": since, "transactions_inspected": inspected,
+                "scope": "up to 20 transactions across up to 5 accounts; not proof of sale or complete history"}
 
     def fetch(self, *, address: str, now=None, previous=None) -> ProviderResult:
         from rocket.providers.dispatch import failure_kind
@@ -225,9 +242,19 @@ class SolanaOndoInventory:
                     raise ValueError("RPCDisagreement")
             for mint, old in previous.items():
                 if float(old.get("quantity", 0)) > 0 and float(balances.get(mint, {}).get("quantity", 0)) == 0:
-                    movement = self._movement(client, url, address, mint, old)
                     balances[mint] = {**old, **balances.get(mint, {}), "quantity": 0, "raw_amount": "0",
-                                      "zero_confirmed": True, "movement": movement}
+                                      "zero_confirmed": True}
+                row = balances.get(mint)
+                if row is not None and Decimal(str(old.get("quantity", 0))) != Decimal(str(row["quantity"])):
+                    try:
+                        movement = self._movement(client, url, address, mint, old)
+                    except Exception as exc:
+                        # A history outage does not invalidate independently verified balances.
+                        movement = {"kind": "BALANCE_CHANGE_CAUSE_UNKNOWN", "history_inspected": False,
+                                    "history_complete": False, "transactions": [],
+                                    "failure_kind": failure_kind(exc)}
+                    row["movement"] = {**movement, "previous_quantity": old.get("quantity"),
+                                       "current_quantity": row["quantity"]}
             # Unknown metadata is descriptive only and cannot authorize promotion.
             for mint, row in balances.items():
                 if row["ticker"] == "UNKNOWN":
@@ -245,6 +272,7 @@ class SolanaOndoInventory:
                     except Exception:
                         row["identification_failure"] = "MintMetadataUnavailable"
                 row["snapshot_slot"] = slot
+                row["observed_at"] = (now or datetime.now(UTC)).isoformat()
                 row["confirmed_by"] = [s[0] for s in snapshots]
             return ProviderResult(OperationalStatus.HEALTHY, tuple(balances.values()), now or datetime.now(UTC), source="solana",
                                   extras={"provider_attempts": attempts, "parser_errors": parser_errors,

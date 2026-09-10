@@ -38,3 +38,23 @@ evidence. `position_diagnostics` identifies affected tickers; typed reasons name
 the missing dimensions or failed providers. Inventory diagnostics appear only
 when reconciliation was requested and failed. Diagnostic-only positions do not
 overwrite the previous action used for later transition detection.
+
+## Movement evidence and caller ownership
+
+The caller owns the configured wallet, position list, and approved theses; pass
+`wallet_address` in the state file and request `--refresh-inventory`. Rocket's
+inventory and review caches are wallet-associated observations, not portfolio
+configuration. Do not duplicate caller configuration in the environment.
+
+Inventory records include `observed_at`. A changed known mint, including a partial
+increase/decrease, includes `movement` with previous/current quantities, bounded
+transaction evidence (signature, mint, delta, block time/timestamp), and explicit
+history coverage. Signatures shared by owner/token accounts are deduplicated;
+transactions older than the prior observation are excluded where timestamped.
+History failures do not invalidate independently verified balances. Zero-balance
+confirmation still requires agreeing fresh RPC snapshots. Transfers and
+unclassified flows are never silently converted into sales or realized P&L.
+
+Review notification state advances even if a thesis remains draft, preventing
+unchanged inventory from repeatedly generating an alert. Diagnostic rows never
+become approved investment actions. Changing wallet input resets review dedupe.
