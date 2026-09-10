@@ -97,3 +97,23 @@ def test_pending_ondo_mints_are_surfaced(tmp_path):
     assert_research_result(result)
     assert result.payload["positions"][0]["quantity"] == 4
     assert result.payload["pending_review"][0]["mint"] == "mysteryondo"
+
+
+def test_draft_thesis_does_not_repeat_same_inventory_notification(tmp_path):
+    from rocket.providers.inventory import FileInventory
+    from tests.workflows.test_outputs import context
+    from rocket.store import ResearchStore
+    from rocket.workflows.portfolio import PortfolioState, PositionState, PortfolioWorkflow
+    from datetime import UTC, datetime
+    now = datetime(2026,9,8,15,tzinfo=UTC)
+    book = PortfolioState(wallet_address='wallet-one',positions=(PositionState('BE',quantity=3,thesis='Draft thesis',thesis_status='DRAFT'),))
+    provider = FileInventory(({'ticker':'BE','mint':'mint','quantity':2,'pending_review':False},))
+    workflow = PortfolioWorkflow(store=ResearchStore(tmp_path),inventory=provider)
+    first = workflow.run(book,{'BE':context()},refresh_inventory=True,now=now)
+    second = workflow.run(book,{'BE':context()},refresh_inventory=True,now=now)
+    assert first.payload['material_change']
+    assert second.presentation['silent']
+    assert 'thesis_draft_requires_validation' in second.payload['positions'][0]['reasons']
+    other = PortfolioState(wallet_address='wallet-two',positions=book.positions)
+    third = workflow.run(other,{'BE':context()},refresh_inventory=True,now=now)
+    assert third.payload['material_change']  # another wallet must not inherit notification state

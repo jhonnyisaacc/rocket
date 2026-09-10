@@ -378,6 +378,9 @@ class PortfolioWorkflow:
             extra_warnings=extra_warnings,
         )
         previous_review = self.store.load_state("portfolio_review") if self.store else None
+        review_owner = state.wallet_address or env("ROCKET_INVENTORY_ADDRESS") or state.source_path
+        if previous_review and previous_review.get("owner") != review_owner:
+            previous_review = None
         prior_actions = (previous_review or {}).get("actions", {})
         missing_dimensions = {"price_missing_stale_or_invalid", "technical_evidence_missing",
                               "thesis_missing", "thesis_draft_requires_validation", "ledger_history_incomplete"}
@@ -433,7 +436,10 @@ class PortfolioWorkflow:
                                        "silent": not speak, "diagnostic_only": diagnostic and not speak})
         if self.store:
             self.store.save_result(result)
-            if result.status is not ResearchStatus.INSUFFICIENT_EVIDENCE:
-                self.store.save_state("portfolio_review", {"actions": {**prior_actions, **{r["ticker"]: r["action"] for r in result.payload["positions"] if r["ticker"] not in position_diagnostics}}, "news_id": news_id,
-                                                          "pending_mints": pending_ids, "inventory_id": inventory_id})
+            # Observation deduplication must advance even when a thesis remains draft.
+            # Never promote diagnostic rows to approved investment actions.
+            self.store.save_state("portfolio_review", {"owner": review_owner,
+                "actions": {**prior_actions, **{r["ticker"]: r["action"] for r in result.payload["positions"] if r["ticker"] not in position_diagnostics}},
+                "news_id": news_id, "pending_mints": pending_ids if not inventory_failed else (previous_review or {}).get("pending_mints", []),
+                "inventory_id": inventory_id if not inventory_failed else (previous_review or {}).get("inventory_id")})
         return result
