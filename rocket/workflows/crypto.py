@@ -74,6 +74,48 @@ def cot_regime_passes(regime: str, direction: str | None) -> bool:
     return True
 
 
+def trade_decision(
+    candidates: Sequence[Mapping[str, Any]],
+    *,
+    research: ResearchStatus,
+    operational: OperationalStatus,
+) -> dict[str, Any]:
+    """Return a conservative direction summary for CLI consumers.
+
+    This is a research summary, not an order instruction. A direction is only
+    emitted when the funnel found candidates with one unambiguous direction and
+    all required live providers were healthy. Everything else is NO_TRADE.
+    """
+    if research is not ResearchStatus.SETUP_FOUND:
+        return {
+            "direction": "NO_TRADE",
+            "reason": research.value.lower(),
+            "candidate_count": len(candidates),
+        }
+    if operational is not OperationalStatus.HEALTHY:
+        return {
+            "direction": "NO_TRADE",
+            "reason": "operational_data_not_healthy",
+            "candidate_count": len(candidates),
+        }
+    directions = {
+        str(candidate.get("direction")).upper()
+        for candidate in candidates
+        if candidate.get("direction") in {"long", "short"}
+    }
+    if len(directions) != 1:
+        return {
+            "direction": "NO_TRADE",
+            "reason": "ambiguous_candidate_directions" if directions else "missing_candidate_direction",
+            "candidate_count": len(candidates),
+        }
+    return {
+        "direction": directions.pop(),
+        "reason": "eligible_funnel_setup",
+        "candidate_count": len(candidates),
+    }
+
+
 def build_funnel(
     payload: Mapping[str, Any],
     *,
@@ -145,9 +187,13 @@ def build_funnel(
             liquidity = raw_candidate.get("liquidity") if isinstance(raw_candidate.get("liquidity"), Mapping) else {}
             eligible = state == "ELIGIBLE"
             liquid = liquidity.get("state") == "PASS"
-            setup = raw_candidate.get("setup_validation")
-            setup_valid = bool(isinstance(setup, Mapping) and setup.get("valid") is True)
             direction = _direction(raw_candidate)
+            setup = raw_candidate.get("setup_validation")
+            setup_valid = bool(
+                isinstance(setup, Mapping)
+                and setup.get("valid") is True
+                and direction in {"long", "short"}
+            )
             macro_pass = macro_checks[-1]
             if macro_pass and (macro_context or {}).get("contract") == "current_macro_v1":
                 macro_pass = cot_regime_passes(str(macro_context.get("regime")), direction)
@@ -184,6 +230,13 @@ def build_funnel(
                 "entry_research_zone": setup.get("entry_zone") if isinstance(setup, Mapping) else None,
                 "invalidation": setup.get("invalidation") if isinstance(setup, Mapping) else None,
                 "rank_score": raw_candidate.get("rank_score"),
+                "mark_price": features.get("mark_px"),
+                "funding": features.get("funding"),
+                "quote_volume_24h": liquidity.get("quote_volume_24h"),
+                "open_interest_usd": liquidity.get("open_interest"),
+                "spread_bps": liquidity.get("spread_bps"),
+                "slippage_bps": liquidity.get("slippage_bps"),
+                "structure_4h": setup.get("structure") if isinstance(setup, Mapping) else None,
                 "observation_timestamp": observation_time.isoformat(),
             }
             final_candidates.append(candidate)
@@ -707,6 +760,7 @@ class CryptoWorkflow:
             gaps.append("current universe provider")
         if funnel.get("incomplete_evaluations") and mode is Mode.LIVE and operational is OperationalStatus.HEALTHY:
             operational = OperationalStatus.PARTIAL
+        decision = trade_decision(candidates, research=research, operational=operational)
         result = ResearchResult(
             workflow=WORKFLOW_SCAN,
             status=research,
@@ -730,6 +784,7 @@ class CryptoWorkflow:
                 "cot_context": dict(cot_context or {}),
                 "cava_context_status": cava_status,
                 "final_candidates": candidates,
+                "trade_decision": decision,
                 "observations": list(observations),
                 "execution_enabled": False,
                 "loaded_live_context": False,
@@ -787,6 +842,11 @@ class CryptoWorkflow:
                     "mode": "LIVE",
                     "funnel": {"universe": 0, "final_candidates": 0, "universe_size_target": UNIVERSE_SIZE},
                     "final_candidates": [],
+                    "trade_decision": {
+                        "direction": "NO_TRADE",
+                        "reason": "required_provider_unavailable",
+                        "candidate_count": 0,
+                    },
                     "execution_enabled": False,
                 },
                 warnings=("live current-universe discovery is unavailable",),

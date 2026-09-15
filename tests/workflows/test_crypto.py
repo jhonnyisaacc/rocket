@@ -9,6 +9,7 @@ from rocket.workflows.crypto import (
     build_live_observation,
     cot_regime_passes,
     setup_from_candles,
+    trade_decision,
 )
 from rocket.workflows.macro import MacroWorkflow
 from tests.harness import assert_research_result, is_registered
@@ -66,6 +67,31 @@ def test_crypto_is_registered():
     assert is_registered("crypto.scan")
 
 
+def test_trade_decision_normalizes_single_direction():
+    assert trade_decision(
+        [{"direction": "long"}],
+        research=ResearchStatus.SETUP_FOUND,
+        operational=OperationalStatus.HEALTHY,
+    ) == {
+        "direction": "LONG",
+        "reason": "eligible_funnel_setup",
+        "candidate_count": 1,
+    }
+
+
+def test_trade_decision_fails_closed_for_ambiguity_or_partial_data():
+    assert trade_decision(
+        [{"direction": "long"}, {"direction": "short"}],
+        research=ResearchStatus.SETUP_FOUND,
+        operational=OperationalStatus.HEALTHY,
+    )["direction"] == "NO_TRADE"
+    assert trade_decision(
+        [{"direction": "short"}],
+        research=ResearchStatus.SETUP_FOUND,
+        operational=OperationalStatus.PARTIAL,
+    )["reason"] == "operational_data_not_healthy"
+
+
 def test_cot_is_market_regime_not_alt_signal():
     assert cot_regime_passes("bullish", "long") is True
     assert cot_regime_passes("bearish", "long") is False
@@ -96,6 +122,8 @@ def test_macro_and_cot_produce_candidate(tmp_path):
     assert result.status is ResearchStatus.SETUP_FOUND
     assert result.payload["funnel"]["final_candidates"] == 1
     assert result.payload["funnel"]["universe_policy"] == "top_100_market_cap_plus_liquid_perps"
+    assert result.payload["trade_decision"]["direction"] == "LONG"
+    assert result.payload["final_candidates"][0]["mark_price"] is None
 
 
 def test_cava_missing_does_not_block_scan(tmp_path):
@@ -292,6 +320,8 @@ def test_scan_live_uses_injected_candles_for_setup(tmp_path):
     assert result.payload["funnel"]["momentum_pass"] == 1
     assert result.payload["funnel"]["derivatives_pass"] == 1
     assert result.payload["final_candidates"][0]["direction"] == "long"
+    assert result.payload["trade_decision"]["direction"] == "LONG"
+    assert result.payload["final_candidates"][0]["mark_price"] == 100.0
 
 
 def test_unknown_cot_does_not_veto_valid_setup():
