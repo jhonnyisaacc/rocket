@@ -6,7 +6,26 @@
       "exposure": "Construction, mining and energy equipment manufacturing",
       "source": "https://www.caterpillar.com/en/company.html",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "DE",
+      "sector_etf": "XLI",
+      "exposure": "Agricultural, construction and forestry equipment manufacturing",
+      "source": "https://www.deere.com/en/our-company/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "CMI",
+      "sector_etf": "XLI",
+      "exposure": "Diesel and natural-gas engines, power generation and related components",
+      "source": "https://www.cummins.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "primary metals": [
@@ -16,7 +35,26 @@
       "exposure": "Steel and steel products manufacturing",
       "source": "https://nucor.com/",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "STLD",
+      "sector_etf": "XLB",
+      "exposure": "Carbon steel production from electric-arc furnaces and related metals",
+      "source": "https://www.steeldynamics.com/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "RS",
+      "sector_etf": "XLB",
+      "exposure": "Metals processing and distribution of carbon, stainless and alloy products",
+      "source": "https://www.rsac.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "chemical products": [
@@ -26,7 +64,26 @@
       "exposure": "Materials science and chemicals production",
       "source": "https://corporate.dow.com/en-us/about-dow.html",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "LYB",
+      "sector_etf": "XLB",
+      "exposure": "Olefins, polyolefins and other chemical and polymer manufacturing",
+      "source": "https://www.lyondellbasell.com/en/about-us/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "DD",
+      "sector_etf": "XLB",
+      "exposure": "Specialty chemicals, advanced materials and related industrial products",
+      "source": "https://www.dupont.com/about.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "wood products": [
@@ -36,7 +93,26 @@
       "exposure": "Timberlands and wood products manufacturing",
       "source": "https://www.weyerhaeuser.com/woodproducts/",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "LPX",
+      "sector_etf": "XLB",
+      "exposure": "Engineered wood products including OSB and siding",
+      "source": "https://lpcorp.com/about-lp",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "UFPI",
+      "sector_etf": "XLI",
+      "exposure": "Wood and wood-alternative building products manufacturing",
+      "source": "https://www.ufpi.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "computer & electronic products": [
@@ -46,7 +122,26 @@
       "exposure": "Analog and embedded processing semiconductors",
       "source": "https://www.ti.com/about-ti.html",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "AVGO",
+      "sector_etf": "XLK",
+      "exposure": "Semiconductor and infrastructure software products",
+      "source": "https://www.broadcom.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "ADI",
+      "sector_etf": "XLK",
+      "exposure": "Analog, mixed-signal and digital signal processing semiconductors",
+      "source": "https://www.analog.com/en/about-adi.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "petroleum & coal products": [
@@ -56,7 +151,26 @@
       "exposure": "Petroleum refining and renewable fuels production",
       "source": "https://www.valero.com/refining/fuels",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "MPC",
+      "sector_etf": "XLE",
+      "exposure": "Petroleum refining, midstream and marketing of refined products",
+      "source": "https://www.marathonpetroleum.com/About/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "PSX",
+      "sector_etf": "XLE",
+      "exposure": "Petroleum refining, midstream and chemicals operations",
+      "source": "https://www.phillips66.com/about/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "transportation equipment": [
@@ -66,7 +180,26 @@
       "exposure": "Automobile and commercial vehicle manufacturing",
       "source": "https://corporate.ford.com/operations.html",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "GM",
+      "sector_etf": "XLY",
+      "exposure": "Automobile and related vehicle manufacturing",
+      "source": "https://www.gm.com/company/about-gm",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "BA",
+      "sector_etf": "XLI",
+      "exposure": "Commercial airplanes and defense aerospace manufacturing",
+      "source": "https://www.boeing.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "food, beverage & tobacco products": [
@@ -76,7 +209,188 @@
       "exposure": "Beverages and packaged foods",
       "source": "https://www.pepsico.com/en/about",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "KO",
+      "sector_etf": "XLP",
+      "exposure": "Nonalcoholic beverage concentrates and finished beverages",
+      "source": "https://www.coca-colacompany.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "MDLZ",
+      "sector_etf": "XLP",
+      "exposure": "Snacks, chocolate, gum and baked snack manufacturing",
+      "source": "https://www.mondelezinternational.com/about-us/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "electrical equipment, appliances & components": [
+    {
+      "ticker": "EMR",
+      "sector_etf": "XLI",
+      "exposure": "Industrial automation, controls and electrical equipment",
+      "source": "https://www.emerson.com/en-us/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "ETN",
+      "sector_etf": "XLI",
+      "exposure": "Electrical products, power management and industrial components",
+      "source": "https://www.eaton.com/us/en-us/company.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "ROK",
+      "sector_etf": "XLI",
+      "exposure": "Industrial automation hardware, control systems and related software",
+      "source": "https://www.rockwellautomation.com/en-us/company.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "paper products": [
+    {
+      "ticker": "IP",
+      "sector_etf": "XLB",
+      "exposure": "Fiber-based packaging and paper products manufacturing",
+      "source": "https://www.internationalpaper.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "PKG",
+      "sector_etf": "XLB",
+      "exposure": "Containerboard and corrugated packaging manufacturing",
+      "source": "https://www.packagingcorp.com/our-company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "plastics & rubber products": [
+    {
+      "ticker": "SEE",
+      "sector_etf": "XLB",
+      "exposure": "Protective packaging, food packaging and related plastic materials",
+      "source": "https://www.sealedair.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "AVY",
+      "sector_etf": "XLB",
+      "exposure": "Pressure-sensitive materials, labels and functional adhesives",
+      "source": "https://www.averydennison.com/en/home/about-us.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "furniture & related products": [
+    {
+      "ticker": "LEG",
+      "sector_etf": "XLY",
+      "exposure": "Engineered components for bedding, furniture and related products",
+      "source": "https://www.leggett.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "LZB",
+      "sector_etf": "XLY",
+      "exposure": "Upholstered furniture and related residential furnishings manufacturing",
+      "source": "https://www.la-z-boy.com/content/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "nonmetallic mineral products": [
+    {
+      "ticker": "VMC",
+      "sector_etf": "XLB",
+      "exposure": "Construction aggregates and related nonmetallic mineral products",
+      "source": "https://www.vulcanmaterials.com/about-vulcan",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "MLM",
+      "sector_etf": "XLB",
+      "exposure": "Aggregates, cement and related construction materials",
+      "source": "https://www.martinmarietta.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "textile mills": [
+    {
+      "ticker": "UFI",
+      "sector_etf": "XLY",
+      "exposure": "Polyester and recycled polyester yarns and related textile manufacturing",
+      "source": "https://unifi.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "apparel, leather & allied products": [
+    {
+      "ticker": "HBI",
+      "sector_etf": "XLY",
+      "exposure": "Innerwear, activewear and related apparel manufacturing",
+      "source": "https://www.hanes.com/investor-relations",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "MEDIUM"
+    },
+    {
+      "ticker": "PVH",
+      "sector_etf": "XLY",
+      "exposure": "Branded apparel design, sourcing and wholesale of Calvin Klein and Tommy Hilfiger products",
+      "source": "https://www.pvh.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "fabricated metal products": [
+    {
+      "ticker": "MLI",
+      "sector_etf": "XLI",
+      "exposure": "Copper, brass and other fabricated metal products",
+      "source": "https://www.muellerindustries.com/about/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "miscellaneous manufacturing": [
+    {
+      "ticker": "MMM",
+      "sector_etf": "XLI",
+      "exposure": "Diversified industrial products spanning safety, adhesives, abrasives and related categories",
+      "source": "https://www.3m.com/3M/en_US/company-us/about-3m/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "retail trade": [
@@ -86,7 +400,26 @@
       "exposure": "Retail stores and ecommerce",
       "source": "https://corporate.walmart.com/about",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "TGT",
+      "sector_etf": "XLY",
+      "exposure": "General merchandise retail stores and digital commerce",
+      "source": "https://corporate.target.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "HD",
+      "sector_etf": "XLY",
+      "exposure": "Home improvement retail stores and related services",
+      "source": "https://corporate.homedepot.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "transportation & warehousing": [
@@ -96,7 +429,26 @@
       "exposure": "Package transportation and supply chain logistics",
       "source": "https://about.ups.com/gb/en/our-company/our-strategy.html",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "FDX",
+      "sector_etf": "XLI",
+      "exposure": "Express package transportation, freight and logistics",
+      "source": "https://www.fedex.com/en-us/about.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "UNP",
+      "sector_etf": "XLI",
+      "exposure": "Freight rail transportation across western North America",
+      "source": "https://www.up.com/aboutup/index.htm",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "finance & insurance": [
@@ -106,7 +458,26 @@
       "exposure": "Consumer, commercial and investment banking",
       "source": "https://www.jpmorganchase.com/about",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "BAC",
+      "sector_etf": "XLF",
+      "exposure": "Consumer and commercial banking and related financial services",
+      "source": "https://about.bankofamerica.com/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "WFC",
+      "sector_etf": "XLF",
+      "exposure": "Consumer and commercial banking, mortgage and related financial services",
+      "source": "https://www.wellsfargo.com/about/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ],
   "information": [
@@ -116,7 +487,282 @@
       "exposure": "Digital information, advertising and cloud services",
       "source": "https://abc.xyz/",
       "reviewed_at": "2026-09-08",
-      "mapping_basis": "Reviewed issuer business description, not industry name similarity"
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "META",
+      "sector_etf": "XLC",
+      "exposure": "Social media platforms, digital advertising and related apps",
+      "source": "https://www.metacareers.com/company",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "NFLX",
+      "sector_etf": "XLC",
+      "exposure": "Subscription streaming entertainment and related content services",
+      "source": "https://about.netflix.com/en",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "agriculture, forestry, fishing & hunting": [
+    {
+      "ticker": "ADM",
+      "sector_etf": "XLP",
+      "exposure": "Agricultural origination, processing and related merchandising of crops and ingredients",
+      "source": "https://www.adm.com/en-us/about-adm/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "BG",
+      "sector_etf": "XLP",
+      "exposure": "Agribusiness: oilseeds, grains, sugar and related agricultural processing",
+      "source": "https://www.bunge.com/who-we-are",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "CTVA",
+      "sector_etf": "XLB",
+      "exposure": "Seeds, crop protection and related agricultural inputs",
+      "source": "https://www.corteva.com/who-we-are.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "construction": [
+    {
+      "ticker": "DHI",
+      "sector_etf": "XLY",
+      "exposure": "Homebuilding and related residential construction",
+      "source": "https://www.drhorton.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "LEN",
+      "sector_etf": "XLY",
+      "exposure": "Homebuilding and related residential construction",
+      "source": "https://www.lennar.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "PHM",
+      "sector_etf": "XLY",
+      "exposure": "Homebuilding and related residential construction",
+      "source": "https://www.pultegroupinc.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "management of companies & support services": [
+    {
+      "ticker": "ADP",
+      "sector_etf": "XLI",
+      "exposure": "Human capital management, payroll and related employer support services",
+      "source": "https://www.adp.com/about-adp.aspx",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "PAYX",
+      "sector_etf": "XLI",
+      "exposure": "Payroll, HR and related employer administrative support services",
+      "source": "https://www.paychex.com/corporate/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "CTAS",
+      "sector_etf": "XLI",
+      "exposure": "Uniform rental, facility services and related business support",
+      "source": "https://www.cintas.com/company/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "health care & social assistance": [
+    {
+      "ticker": "UNH",
+      "sector_etf": "XLV",
+      "exposure": "Health benefits and health-care services",
+      "source": "https://www.unitedhealthgroup.com/who-we-are.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "CVS",
+      "sector_etf": "XLV",
+      "exposure": "Pharmacy, clinic and related health-care services",
+      "source": "https://www.cvshealth.com/about.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "HCA",
+      "sector_etf": "XLV",
+      "exposure": "Hospital and related health-care facility operations",
+      "source": "https://hcahealthcare.com/about/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "real estate, rental & leasing": [
+    {
+      "ticker": "PLD",
+      "sector_etf": "XLRE",
+      "exposure": "Industrial logistics real estate ownership and leasing",
+      "source": "https://www.prologis.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "SPG",
+      "sector_etf": "XLRE",
+      "exposure": "Retail real estate ownership, development and leasing",
+      "source": "https://www.simon.com/corporate",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "AMT",
+      "sector_etf": "XLRE",
+      "exposure": "Communications site real estate and related leasing",
+      "source": "https://www.americantower.com/about-us",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "mining": [
+    {
+      "ticker": "FCX",
+      "sector_etf": "XLB",
+      "exposure": "Copper mining and related mineral production",
+      "source": "https://www.fcx.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "NEM",
+      "sector_etf": "XLB",
+      "exposure": "Gold and related mineral mining",
+      "source": "https://www.newmont.com/about-us/default.aspx",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "wholesale trade": [
+    {
+      "ticker": "SYY",
+      "sector_etf": "XLP",
+      "exposure": "Foodservice product distribution to restaurants and other operators",
+      "source": "https://www.sysco.com/about.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "GPC",
+      "sector_etf": "XLY",
+      "exposure": "Automotive and industrial parts distribution",
+      "source": "https://www.genpt.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "professional, scientific & technical services": [
+    {
+      "ticker": "ACN",
+      "sector_etf": "XLK",
+      "exposure": "Professional services including strategy, consulting and technology implementation",
+      "source": "https://www.accenture.com/us-en/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "IBM",
+      "sector_etf": "XLK",
+      "exposure": "Hybrid cloud, software and related professional technology services",
+      "source": "https://www.ibm.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "educational services": [
+    {
+      "ticker": "LRN",
+      "sector_etf": "XLY",
+      "exposure": "Online and blended K-12 education programs and related services",
+      "source": "https://www.stridelearning.com/about.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "MEDIUM"
+    },
+    {
+      "ticker": "ATGE",
+      "sector_etf": "XLY",
+      "exposure": "Postsecondary education and related professional training services",
+      "source": "https://www.adtalem.com/about",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "arts, entertainment & recreation": [
+    {
+      "ticker": "LYV",
+      "sector_etf": "XLY",
+      "exposure": "Live music events, ticketing and related entertainment operations",
+      "source": "https://www.livenationentertainment.com/about/",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    }
+  ],
+  "accommodation & food services": [
+    {
+      "ticker": "MCD",
+      "sector_etf": "XLY",
+      "exposure": "Limited-service restaurants and related franchising",
+      "source": "https://corporate.mcdonalds.com/corpmcd/our-company.html",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
+    },
+    {
+      "ticker": "MAR",
+      "sector_etf": "XLY",
+      "exposure": "Lodging operations and related hotel franchising/management",
+      "source": "https://www.marriott.com/marriott/aboutmarriott.mi",
+      "reviewed_at": "2026-09-16",
+      "mapping_basis": "Reviewed issuer business description, not industry name similarity",
+      "confidence": "HIGH"
     }
   ]
 }
