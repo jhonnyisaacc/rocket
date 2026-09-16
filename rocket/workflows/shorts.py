@@ -171,25 +171,35 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _observed_deterioration(row: Mapping[str, Any]) -> bool | None:
+def _observed_deterioration(row: Mapping[str, Any], *, mode: str = "any") -> bool | None:
     flags: list[bool] = []
+    fund = None if row.get("company_fundamentals") is None else _flag(row.get("company_fundamentals"))
+    quality = row.get("cash_flow_quality")
+    quality_state = str((quality.get("state") if isinstance(quality, Mapping) else quality) or "").upper()
+    revisions = []
     for key in ("eps_revision_30d", "revenue_revision_30d"):
         value = str(row.get(key) or "").upper()
         if value == "DETERIORATING":
-            flags.append(True)
+            revisions.append(True)
         elif value in {"IMPROVING", "FLAT"}:
-            flags.append(False)
-    quality = row.get("cash_flow_quality")
-    quality_state = quality.get("state") if isinstance(quality, Mapping) else quality
-    if str(quality_state or "").upper() == "DETERIORATING":
+            revisions.append(False)
+    if mode == "fundamentals":
+        return fund
+    if mode == "cashflow_required":
+        if quality_state in {"", "UNKNOWN"}:
+            return None
+        if fund is False:
+            return False
+        return quality_state == "DETERIORATING"
+    if fund is True:
         flags.append(True)
-    elif str(quality_state or "").upper() in {"IMPROVING", "FLAT"}:
+    elif fund is False:
         flags.append(False)
-    fundamentals = None if row.get("company_fundamentals") is None else _flag(row.get("company_fundamentals"))
-    if fundamentals is True:
+    if quality_state == "DETERIORATING":
         flags.append(True)
-    elif fundamentals is False:
+    elif quality_state in {"IMPROVING", "FLAT"}:
         flags.append(False)
+    flags.extend(revisions)
     if not flags:
         return None
     return any(flags)
@@ -201,14 +211,17 @@ def score_shorts_v2(
     relative_threshold: float = 0.0,
     require_failed_retest: bool = False,
     rr_min: float | None = None,
+    deterioration_mode: str = "any",
+    require_bearish_catalyst: bool = False,
 ) -> dict[str, Any]:
     """ISM selects the universe; deterioration filters; technicals time the setup."""
+    from rocket.providers.short_events import bearish_catalysts
     from rocket.providers.short_quality import relative_weakness_flag, risk_reward
     from rocket.providers.tokenized_equities import RESEARCH_ELIGIBLE
 
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
     ism = _ism_contracting(row)
-    deterioration = _observed_deterioration(row)
+    deterioration = _observed_deterioration(row, mode=deterioration_mode)
     relative = relative_weakness_flag(row, threshold=relative_threshold)
     breakdown = None if row.get("technical_breakdown") is None else _flag(row.get("technical_breakdown"))
     retest = None if row.get("failed_retest") is None else _flag(row.get("failed_retest"))
@@ -233,9 +246,19 @@ def score_shorts_v2(
     )
     rr_value = rr.get("reward_to_risk")
     rr_ok = None if rr_value in (None, "UNKNOWN") else (rr_value >= rr_min if rr_min is not None else True)
-    catalysts = row.get("catalysts") if isinstance(row.get("catalysts"), list) else []
-    if not catalysts and row.get("catalyst") not in (None, "", "UNKNOWN", "unknown", "none"):
-        catalysts = [row.get("catalyst")]
+    raw_catalysts = row.get("catalysts") if isinstance(row.get("catalysts"), list) else []
+    if not raw_catalysts and isinstance(row.get("catalyst"), Mapping):
+        raw_catalysts = [row.get("catalyst")]
+    elif not raw_catalysts and row.get("catalyst") not in (None, "", "UNKNOWN", "unknown", "none"):
+        raw_catalysts = [{"type": row.get("catalyst"), "direction": "UNKNOWN", "summary": str(row.get("catalyst")),
+                          "event_time": row.get("event_time"), "available_at": row.get("available_at"),
+                          "source": row.get("source") or "caller"}]
+    try:
+        decided = parse_datetime(row.get("available_at") or row.get("event_time")) or datetime.now(UTC)
+        bearish = bearish_catalysts(raw_catalysts, now=decided)
+    except (TypeError, ValueError):
+        bearish = [item for item in raw_catalysts if isinstance(item, Mapping) and str(item.get("direction") or "").upper() == "BEARISH"]
+    catalysts = raw_catalysts
 
     if valuation_veto:
         state, reason = "BLOCKED", "valuation_support"
@@ -257,6 +280,8 @@ def score_shorts_v2(
         state, reason = "WATCH", "technical_breakdown_unknown"
     elif not breakdown:
         state, reason = "WATCH", None
+    elif require_bearish_catalyst and not bearish:
+        state, reason = "WATCH", "bearish_catalyst_missing"
     elif require_failed_retest and retest is None:
         state, reason = "ARMED", "failed_retest_unknown"
     elif require_failed_retest and not retest:
@@ -275,7 +300,8 @@ def score_shorts_v2(
         "relative_weakness": relative,
         "technical_breakdown": breakdown,
         "failed_retest": retest,
-        "catalyst": catalysts[0] if catalysts else None,
+        "catalyst": bearish[0] if bearish else None,
+        "catalyst_direction": (bearish[0].get("direction") if bearish else None),
         "regime": None if regime == "UNKNOWN" else regime,
         "reward_to_risk": rr_value,
         "valuation_support": None if row.get("valuation_support") is None else bool(row.get("valuation_support")),
@@ -317,7 +343,10 @@ def score_shorts_v2(
         "tokenized": row.get("tokenized"),
         "relative_threshold": relative_threshold,
         "require_failed_retest": require_failed_retest,
+        "require_bearish_catalyst": require_bearish_catalyst,
+        "deterioration_mode": deterioration_mode,
         "rr_min": rr_min,
+        "bearish_catalysts": bearish,
     }
 
 
@@ -355,8 +384,18 @@ class ShortsWorkflow:
                 self.store.save_result(result)
             return result
         universe = {r["ticker"]: r.get("sector_etf") for r in inputs}
-        rows = (snapshot_fetcher or acquire_short_snapshot)(universe=universe,
-                                                            fundamentals=live_fundamentals_fetcher(), now=now)
+        if snapshot_fetcher is not None:
+            rows = snapshot_fetcher(universe=universe, fundamentals=live_fundamentals_fetcher(), now=now)
+        elif strategy == "shorts_v2":
+            from rocket.providers.shorts import acquire_short_snapshot_v2
+            rows = acquire_short_snapshot_v2(
+                universe=universe,
+                now=now,
+                store=self.store,
+                fundamentals=live_fundamentals_fetcher(),
+            )
+        else:
+            rows = acquire_short_snapshot(universe=universe, fundamentals=live_fundamentals_fetcher(), now=now)
         by_ticker = {r["ticker"]: r for r in inputs}
         for row in rows:
             seed = by_ticker[row["ticker"]]

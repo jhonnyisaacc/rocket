@@ -64,12 +64,16 @@ def daily_bars(ticker, *, http=None, range="2y"):
             raise ValueError("historical asset identity mismatch")
         quote = data["indicators"]["quote"][0]
         records = []
-        for stamp, close, high, low in zip(data["timestamp"], quote["close"], quote["high"], quote["low"], strict=True):
+        opens = quote.get("open") or [None] * len(quote["close"])
+        for stamp, close, high, low, open_px in zip(
+            data["timestamp"], quote["close"], quote["high"], quote["low"], opens, strict=True,
+        ):
             if close is None:
                 continue
             day = datetime.fromtimestamp(stamp, UTC).date()
             records.append({
                 "date": day.isoformat(),
+                "open": None if open_px is None else float(open_px),
                 "close": float(close),
                 "high": None if high is None else float(high),
                 "low": None if low is None else float(low),

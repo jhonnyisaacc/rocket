@@ -164,3 +164,15 @@ def build_short_universe(
         "mapping_mode": mapping_mode,
         "universe_kind": "research",
     }
+
+
+def primary_seed(seeds: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
+    """One ticker may map to several ISM themes; pick the worst rank as the primary seed."""
+    rows = [dict(seed) for seed in seeds if str(seed.get("ticker") or "")]
+    if not rows:
+        raise ValueError("seeds required")
+    return min(rows, key=lambda seed: (
+        seed.get("ism_rank") is None,
+        seed.get("ism_rank") if seed.get("ism_rank") is not None else 10**9,
+        str(seed.get("industry") or ""),
+    ))

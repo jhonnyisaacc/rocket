@@ -1,163 +1,302 @@
 # Shorts v2 backtest
 
-Exploratory validation only. The sample is **nine ISM months** (December 2025
-through August 2026 reports, decisions from 6 January 2026 through 16 September
-2026). This is **not** proof of durable edge and is **not** a deployment
-recommendation.
+Exploratory validation only. Nine ISM months (December 2025 through August 2026
+reports; decisions 6 January 2026 through 16 September 2026). This is **not**
+proof of durable edge and is **not** a deployment recommendation.
 
-Assessment: **`PROMISING_BUT_INSUFFICIENT_SAMPLE`**
+| Layer | Verdict |
+|---|---|
+| Infrastructure | **useful** |
+| Historical edge vs production | **`EDGE_NOT_VALIDATED`** |
+
+Coverage is not alpha. Beating only an expanded-universe baseline is not
+enough. A0’s +2.3% five-day mean is a **ten-trade, WY-heavy book**, not a
+production edge that v2 failed to beat by bad luck.
 
 ## Methodology
 
-- Official ISM Manufacturing and Services contraction lists were taken from PR
+- Official ISM Manufacturing and Services contraction lists come from PR
   Newswire releases (`docs/analysis/data/ism_reports_2026.json`). Rank 1 is the
   most contracting industry.
 - A month is eligible only after **both** series have published. Publication is
-  the existing Rocket clock: first US business day (Manufacturing) or third
-  (Services) at 10:00 America/New_York.
-- Prices are Yahoo daily bars. `available_at` is approximated as NYSE session
-  close. A decision before that close cannot see that session.
+  the Rocket clock: first US business day (Manufacturing) or third (Services)
+  at 10:00 America/New_York.
+- Prices are Yahoo daily bars. `available_at` is NYSE session close. A decision
+  before that close cannot see that session.
 - Reported fundamentals and cash-flow quality use SEC company facts. Availability
   is the 10-K `filed` date. Restatements filed after the decision are excluded.
-- 8-K / S-1 / S-3 catalysts use SEC submissions `filingDate`, kept only if filed
-  in the prior 45 days.
-- One entry per ticker per ISM month, at the close of the first trigger session.
-- Short return is the negative of the underlying close-to-close return. Borrow,
-  locate, and funding are UNKNOWN and are **not** in the P&amp;L.
+- 8-K / S-1 / S-3 filings use SEC submissions `filingDate`, kept only if filed
+  in the prior 45 days. Generic items are **not** bearish.
+- One entry per ticker per ISM month, at the first trigger. Multi-theme names
+  (same ticker in manufacturing and services) are one trade with both themes
+  attributed.
+- Default entry is `CLOSE_SIGNAL`. `NEXT_SESSION_OPEN` is reported separately.
+- Short return is the negative of the underlying return. Borrow, locate, and
+  funding are UNKNOWN and are **not** in the P&amp;L.
 - MAE uses session highs after entry; MFE uses session lows.
 
 ## Assumptions that are labeled, not hidden
 
-### Backtest 1 — fixed reviewed universe
+### Fixed-universe research test
 
-`config/industry_exposure.json` was reviewed in September 2026. Backtest 1 uses
-that mapping in every historical month. That is a **fixed-universe research
-test**, not a claim that Rocket already had those names in January 2026.
+`config/industry_exposure.json` was reviewed on 2026-09-08 and 2026-09-16.
+Variants A0–A6 apply that mapping in every historical month. That is a
+**labeled fixed-universe test**, not a claim that Rocket already had those
+names in January 2026.
 
-### Backtest 2 — strict PIT mappings
+### Strict PIT mappings
 
-Only mappings with `reviewed_at` ≤ decision time. Those dates are 2026-09-08 and
-2026-09-16. Result: **zero mapped names** in every backtest month.
+Only mappings with `reviewed_at` ≤ decision time. Result: **zero mapped names**
+in every backtest month.
 
 ### Estimate revisions
 
-FMP current `/analyst-estimates` is not a vintage. No same-period snapshots exist
-for January–August 2026. Variant C is therefore identical to Variant B and is
-marked `HISTORICALLY_UNAVAILABLE`.
+FMP current `/analyst-estimates` is not a vintage. No same-period snapshots
+exist for January–August 2026. Revisions stay `HISTORICALLY_UNAVAILABLE`.
 
-### Tokenized execution (Backtest B)
+### Tokenized execution
 
-xStocks public listings and the current ONDO mint registry were observed at run
-time. They are **not** applied to historical entries. No current snapshot had
-`short_available=true`, so **zero** August 2026 research names are
+xStocks, Kraken xStock perps, and Ondo perps were observed at run time. Spot
+never implies a short. Kraken `openingDate` is a listing vintage only when
+present; it is not applied to historical entries. No current research name is
 `EXECUTION_ELIGIBLE`.
 
-## Variants
+## Production baseline
 
-| Variant | Rule | n | 5d short mean | 10d | 20d | 20d MAE median / max |
-|---|---|---:|---:|---:|---:|---|
-| A expanded | All contracting industries, expanded mapping, current ISM+breakdown+bearish 10-K gate | 47 | −0.61% | −0.35% | −0.34% | 6.6% / 28.8% |
-| A sparse | Same gate, original 12 tickers only | 10 | +2.24% | +2.27% | +1.56% | 3.1% / 9.7% |
-| B | Top-3 industries/series, relative &lt; 0 vs sector and SPY, same 10-K gate, 20d trigger | 40 | +0.84% | +0.67% | +0.13% | 5.6% / 39.6% |
-| B −5% | Relative &lt; −5% | 27 | +1.20% | +2.25% | −0.02% | 4.6% / 50.0% |
-| B retest | B plus failed retest required | 20 | +0.80% | +0.09% | −1.24% | 5.4% / 14.5% |
-| C revisions | B; revisions historically unavailable | 40 | same as B | same | same | same |
-| D catalyst | B, but TRIGGERED only if an 8-K/S-1/earnings-miss catalyst exists | 32 | +1.19% | +1.66% | +0.23% | 4.9% / 39.6% |
-| E R/R ≥ 1.5 | B plus observed R/R ≥ 1.5 | 19 | +1.36% | +0.84% | +0.38% | 4.6% / 13.2% |
-| E R/R ≥ 2.0 | B plus observed R/R ≥ 2.0 | 15 | +1.57% | +1.72% | +1.81% | 2.6% / 13.2% |
-| E R/R ≥ 2.5 | B plus observed R/R ≥ 2.5 | 12 | +2.17% | +1.65% | +1.54% | 4.5% / 13.2% |
-| Strict PIT | B with September 2026 mapping dates | 0 | — | — | — | — |
+**A0_PRODUCTION** is the original twelve-name sparse universe
+(`CAT`, `NUE`, `DOW`, `WY`, `TXN`, `VLO`, `F`, `PEP`, `WMT`, `UPS`, `JPM`,
+`GOOGL`) plus the live `ism_simple` gate: ISM contracting, 20-session
+breakdown, bearish reported fundamentals. Cheap valuation remains a veto.
 
-Win rates for A expanded were 58.7% / 53.8% / 57.9% at 5/10/20d with a 5d
-profit factor of **0.74**. B’s corresponding win rates were 67.5% / 57.6% /
-59.4% with a 5d profit factor of **1.74** and a 20d profit factor of **1.04**.
+This is the closest match to the **pre-expansion** Rocket shorts book. It is
+not a claim that live ISM discovery still uses only those twelve names today.
+Live `rocket ism --research-companies` already seeds from the expanded file
+and top-3 industries; that combination is **A2**, below.
 
-A sparse looks better than A expanded, but **n = 10**. That is the old
-one-name-per-industry universe, not evidence that sparsity is an edge.
+| | n | 5d mean | 10d | 20d | 5d win / PF | 20d MAE med / max |
+|---|---:|---:|---:|---:|---|---|
+| A0 close | 10 | **+2.33%** | +2.27% | +1.56% | 80% / 10.89 | 3.1% / 9.7% |
 
-## Month-by-month (Variant B)
+Six of the ten trades are `WY`. The rest are `PEP` (2), `UPS` (1), `DOW` (1).
+December 2025 and March 2026 produced **zero** A0 triggers. A0’s `watch` column
+is always zero because `ism_simple` is binary: selected or not. It has no
+WATCH state.
 
-| Month (ISM reference) | Mfg top industries | Svc top industries | Mapped | Deterioration | WATCH | TRIGGERED |
-|---|---|---|---:|---:|---:|---:|
-| 2025-12 | apparel; wood; textile | management support; professional services; agriculture | 14 | 7 | 5 | 4 |
-| 2026-01 | textile; wood; nonmetallic mineral | other services (unmapped); transportation; management support | 12 | 9 | 5 | 3 |
-| 2026-02 | apparel; furniture; petroleum | retail; arts; transportation | 14 | 11 | 8 | 7 |
-| 2026-03 | plastics; furniture; food | retail; agriculture; public admin (unmapped) | 13 | 8 | 7 | 4 |
-| 2026-04 | wood; petroleum; food | agriculture; real estate; retail | 18 | 12 | 9 | 6 |
-| 2026-05 | wood | real estate | 6 | 4 | 3 | 2 |
-| 2026-06 | paper; furniture; wood | agriculture; educational; management support | 15 | 8 | 6 | 3 |
-| 2026-07 | chemical | agriculture; other services (unmapped); health care | 9 | 6 | 6 | 4 |
-| 2026-08 | wood; chemical | agriculture; construction; management support | 15 | 10 | 8 | 7 |
+A0 looks clean because the book is tiny and concentrated. It is the baseline
+v2 must beat, not a reason to freeze the old twelve names.
 
-December 2025 Manufacturing had **15** contracting industries. The old path
-would have tried to map all of them; v2 keeps three. August 2026 Manufacturing
-had only two contracting industries, so v2 correctly uses two rather than
-forcing three.
+## Expanded-universe baseline
 
-## What improved
+**A1_EXPANDED_ONLY** keeps the same `ism_simple` gate and maps **every**
+contracting industry through the September 2026 file.
 
-- **Universe coverage.** December 2025 mapped 45 names with the expanded file
-  versus 7 with the original 12 tickers. August 2026 ISM no longer collapses to
-  a handful of one-name industries.
-- **Relative weakness.** Moving from A expanded to B flipped 5-day mean short
-  return from −0.61% to +0.84% and 5-day profit factor from 0.74 to 1.74, with
-  a slightly lower median 20-day MAE (6.6% → 5.6%).
-- **ISM as universe selection.** Top-3 per series is enough to populate a
-  watchlist every month in this sample. WATCH exists without requiring the
-  breakdown on day one.
+| | n | 5d mean | 10d | 20d | 5d win / PF | 20d MAE med / max |
+|---|---:|---:|---:|---:|---|---|
+| A0 sparse | 10 | +2.33% | +2.27% | +1.56% | 80% / 10.89 | 3.1% / 9.7% |
+| A1 expanded | 47 | **−0.59%** | −0.35% | −0.34% | 59% / 0.75 | 6.6% / 28.8% |
 
-## What did not improve / should not be implemented from this sample
+December 2025 mapped 45 names versus 7 under A0. Five-day mean fell 2.92
+points; 20-day MAE median rose 3.5 points. Expanding the universe without
+changing the gate **increased coverage and destroyed the apparent edge**.
 
-- **Failed retest as a required trigger.** n drops to 20 and 20-day mean short
-  return goes to **−1.24%**. Keep it as an optional flag, not a gate.
-- **Estimate revisions.** No honest history. Do not backfill from today’s FMP
-  consensus. Persist snapshots going forward.
-- **Hardcoded R/R ≥ 2.0.** The 20-day mean looks better (+1.81%) but n is 11–15.
-  That is curve-picking on nine months. Leave R/R as context; do not freeze a
-  threshold.
-- **Strict historical mappings.** Cannot be reconstructed before September 2026.
-  Do not pretend Backtest 1 is a perfect PIT simulation of the mapping file.
-- **Tokenized short overlay on history.** Current listings are long-biased and
-  `short_available` is UNKNOWN. Zero names are execution-eligible today.
-- **Switching the live default off `ism_simple`.** 20-day B vs A is +0.13% vs
-  −0.34% with max MAE **worse** in B (39.6% vs 28.8%). Apparel names can dominate.
+That is the point of keeping A0 and A1 separate. A1 is not “production plus
+more names.” It is a different, worse book under the same scorer.
 
-## Industries
+## Incremental factor attribution
 
-Useful in B (mean 20d short, n still tiny): professional services, management
-support, plastics, retail, transportation.
+Each row adds one idea. A6 is the live `shorts_v2` default
+(`deterioration_mode=any`), not a stricter gate on top of A5.
 
-Harmful in B: apparel (PVH/HBI), agriculture, arts/entertainment, real estate,
+| Variant | Rule | n | 5d | 10d | 20d | 5d PF | 20d MAE med / max |
+|---|---|---:|---:|---:|---:|---:|---|
+| A0 | Sparse 12 names + `ism_simple` | 10 | +2.33% | +2.27% | +1.56% | 10.89 | 3.1% / 9.7% |
+| A1 | Expanded mapping, all contracting, `ism_simple` | 47 | −0.59% | −0.35% | −0.34% | 0.75 | 6.6% / 28.8% |
+| A2 | Expanded + top-3 / series, `ism_simple` | 35 | −0.09% | +0.21% | −0.27% | 0.95 | 6.7% / 28.8% |
+| A3 | A2 + relative vs sector and SPY | 32 | +0.68% | +0.43% | +0.01% | 1.60 | 6.6% / 39.6% |
+| A4 | A3 + cash-flow quality required | 27 | +0.76% | +0.48% | +0.44% | 1.64 | 6.5% / 39.6% |
+| A5 | A4 + structured bearish catalyst | 0 | — | — | — | — | — |
+| A6 | Live v2 default: any observed deterioration + relative | 40 | +0.86% | +0.67% | +0.13% | 1.78 | 5.6% / 39.6% |
+
+### Does top-3 help?
+
+A1 → A2: n 47 → 35. Five-day mean −0.59% → −0.09%. Still negative. Top-3 is a
+**universe bound**, not an edge. It is still the right live discovery rule so
+ISM decides where to look. August 2026 Manufacturing had two contracting
+industries; v2 uses two rather than forcing three.
+
+### Does relative weakness help?
+
+A2 → A3: five-day mean −0.09% → **+0.68%**, profit factor 0.95 → 1.60. This is
+the first increment that is not just “fewer names.” Twenty-day mean is flat
+(+0.01%) and max MAE is **worse** (39.6%, `PVH` apparel). Versus A0, A3 is
+worse on every horizon and on MAE.
+
+Relative weakness is useful **versus the expanded current gate**. It does not
+recover the sparse production book.
+
+### Does cash-flow quality help?
+
+A3 → A4 requires an observed cash-flow-quality state of `DETERIORATING` and
+does not treat `UNKNOWN` as bearish. Dropped: `ADM` (flat), `DD` (unknown),
+`DHI` / `PHM` (improving). n 32 → 27. Twenty-day mean +0.01% → +0.44%. Small,
+same-direction increment. Still below A0, still carrying the `PVH` 39.6% MAE.
+
+### Does the live v2 default help?
+
+A6 accepts any observed deterioration (reported fundamentals **or** cash-flow
+**or** same-period revisions). Revisions were unavailable, so A6 mainly adds
+names whose cash-flow flag is deteriorating while reported EPS growth is not
+bearish: `ACN`, `UNP`, `AVY`, `SPG`, `AMT`, `WMT`, `LRN`. Mix of +12.9%
+(`ACN`) and −8.9% (`AMT`). n 40, five-day +0.86%, twenty-day +0.13%. Same
+shape as the old Variant B, and still not better than A0.
+
+## Catalyst correction
+
+The previous report’s Variant D (n = 32) treated a recent 8-K or S-1 as a
+catalyst. That was wrong.
+
+An 8-K is bearish **only** when the item itself is a structured downside
+event:
+
+| Item | Type | Direction |
+|---|---|---|
+| 2.02 | `EARNINGS_EVENT` | UNKNOWN unless EPS actual &lt; estimate |
+| 2.05 | `EXIT_OR_DISPOSAL_COST` | UNKNOWN |
+| 2.06 | `MATERIAL_IMPAIRMENT` | BEARISH |
+| 4.01 | `AUDITOR_CHANGE` | UNKNOWN |
+| 4.02 | `NON_RELIANCE` | BEARISH |
+| 5.02 | `MANAGEMENT_CHANGE` | UNKNOWN |
+| 8.01 | `OTHER_EVENT` | UNKNOWN |
+| S-1 / S-3 | `S1` / `S3` | UNKNOWN |
+
+A5 requires `direction=BEARISH`. Result: **zero trades**. None of the A3/A4
+names had a 2.06, 4.02, or earnings-miss in the 45-day PIT window. Earnings
+surprises were not reconstructed (no FMP/Massive key).
+
+Catalysts stay explanation, not a gate. Requiring one on this sample is a
+silent no-trade rule.
+
+## Entry
+
+Close-of-signal versus next-session open. No artificial intraday fill.
+
+| Book | Entry | n | 5d mean | 20d mean | 20d MAE med | 20d MFE med |
+|---|---|---:|---:|---:|---:|---:|
+| A0 | close | 10 | +2.33% | +1.56% | 3.12% | 7.03% |
+| A0 | next open | 10 | +2.45% | +1.67% | 3.56% | 6.34% |
+| A3 | close | 32 | +0.68% | +0.01% | 6.61% | 6.11% |
+| A3 | next open | 32 | +0.98% | +0.36% | 6.31% | 7.12% |
+| A6 | close | 40 | +0.86% | +0.13% | 5.56% | 6.81% |
+| A6 | next open | 40 | +1.10% | +0.40% | 5.93% | 7.14% |
+
+Next-open does **not** degrade the edge. On A3 it improves five-day mean by
+30 bp and raises MFE. Zero names were skipped for a missing open. Research
+P&amp;L may use next-session open; do not invent a same-bar fill.
+
+## Tokenized execution
+
+Present-tense snapshot at 2026-09-16:
+
+| Provider | Status | Coverage |
+|---|---|---|
+| xstocks.public.assets | HEALTHY | 777 |
+| kraken.futures.xstocks_perps | HEALTHY | 16 |
+| ondo.perps.contracts | HEALTHY | 81 |
+| ondo.current_registry | PARTIAL | reviewed mints; not historical |
+
+August 2026 research names: `ADM`, `ADP`, `BG`, `CTAS`, `CTVA`, `DD`, `DHI`,
+`DOW`, `LEN`, `LPX`, `LYB`, `PAYX`, `PHM`, `UFPI`, `WY`.
+
+`EXECUTION_ELIGIBLE` among those names: **none**. Tokenized spot does not
+count. Historical Backtest B is not run. The overlay is useful infrastructure
+for the caller; it is not a historical short book.
+
+## Month-by-month (A3 and A6)
+
+| Month | Mfg top | Svc top | Mapped | A3 WATCH / TRIG | A6 WATCH / TRIG |
+|---|---|---|---:|---|---|
+| 2025-12 | apparel; wood; textile | management support; professional; agriculture | 14 | 4 / 3 | 5 / 4 |
+| 2026-01 | textile; wood; nonmetallic | other services (unmapped); transportation; management | 12 | 4 / 3 | 5 / 3 |
+| 2026-02 | apparel; furniture; petroleum | retail; arts; transportation | 14 | 6 / 6 | 8 / 7 |
+| 2026-03 | plastics; furniture; food | retail; agriculture; public admin (unmapped) | 13 | 6 / 3 | 7 / 4 |
+| 2026-04 | wood; petroleum; food | agriculture; real estate; retail | 18 | 6 / 3 | 9 / 6 |
+| 2026-05 | wood | real estate | 6 | 2 / 1 | 3 / 2 |
+| 2026-06 | paper; furniture; wood | agriculture; educational; management | 15 | 4 / 2 | 6 / 3 |
+| 2026-07 | chemical | agriculture; other services (unmapped); health care | 9 | 6 / 4 | 6 / 4 |
+| 2026-08 | wood; chemical | agriculture; construction; management | 15 | 7 / 7 | 8 / 7 |
+
+Unmapped buckets stay unmapped: `other services`, `public administration`.
+
+## Industries (A6, 20-day short mean)
+
+Useful in this sample: professional services, management support, plastics,
+retail, transportation, wood.
+
+Harmful: apparel (`PVH` −38.8% in February), agriculture, arts, real estate,
 educational services.
 
-Those industry means are **one-to-four observations**. They are attribution,
-not a sector model.
+Those means are **one-to-six observations**. Attribution, not a sector model.
+`PVH` is why A3/A6 max MAE is 39.6% while A0 stayed under 10%.
 
 ## Factor attribution example
 
-`PVH`, ISM apparel rank 1, 2025-12 report, first trigger 2026-01-07 close:
+`PVH`, ISM apparel rank 1, 2025-12 report, first A3 trigger 2026-01-07 close:
 
-- relative vs sector −14.3%, vs SPY −12.7%
+- relative vs sector −14.3% band in the first report; February trigger is the
+  painful one (−38.8% 20-day short, 39.6% MAE)
 - EPS revision UNKNOWN (no vintage)
-- cash-flow quality deteriorating; reported EPS growth −1.9%
-- catalyst `EARNINGS_MISS`
-- 20d breakdown true, failed retest true
-- regime `SHORT_HOSTILE`
-- R/R 0.49 (no 1.5 filter)
-- 5d short +0.62%, 20d short +2.12%, 20d MAE 4.9%
+- cash-flow quality deteriorating
+- no structured bearish catalyst after the 8-K correction
+- R/R 0.18 on the February trigger (no 1.5 filter)
 
-Full triggered rows are in `docs/analysis/data/shorts_v2_backtest.json`.
+`WY` is the A0 backbone: six triggers, mixed 20-day outcomes (+10.1%, −3.0%,
+−5.3%, +0.3%, −7.8%, August incomplete). A concentrated name that happened to
+print a positive five-day mean is not a strategy.
+
+## What improved (infrastructure)
+
+- Incremental variants exist. A0 and A1 can no longer be confused.
+- Relative weakness is the only added factor that moved five-day mean from
+  negative to positive versus the expanded current gate.
+- 8-K item semantics are no longer “any filing is bearish.”
+- Downside targets are swing lows in the eligible window, not the
+  full-history low. After that fix, R/R ≥ 1.5 has **n = 1** (`FDX`) and
+  R/R ≥ 2.0 has **n = 0**. The old E-table was a target artifact.
+- Tokenized providers return HEALTHY coverage instead of an empty overlay.
+- Next-open P&amp;L is measured. It does not need a fantasy fill.
+- Live `--strategy shorts_v2` now acquires v2 snapshots and persists estimate
+  snapshots for a future vintage.
+
+## What did not improve / should not be implemented from this sample
+
+- **Do not replace live `ism_simple` with v2.** A3 and A6 lose to A0 on
+  20-day mean and on MAE. A2 (current live universe + current gate) is still
+  slightly negative.
+- **Do not treat A1’s coverage as a win.** n = 47 with PF 0.75 is a worse book.
+- **Do not require a bearish catalyst.** A5 is zero trades.
+- **Do not require a failed retest.** Prior sample: n = 20, 20-day mean
+  **−1.24%**. Keep it optional.
+- **Do not hardcode R/R ≥ 1.5 or 2.0.** After the target fix there is almost
+  no sample. Leave R/R as context.
+- **Do not backfill estimate revisions** from today’s FMP consensus.
+- **Do not pretend the September 2026 mapping is a PIT vintage.** Strict PIT
+  is n = 0.
+- **Do not backfill tokenized shorts** from today’s Kraken/Ondo lists.
 
 ## Data limitations
 
 - Yahoo session-close availability is an approximation.
-- SEC User-Agent policy required a contact-style header; facts are public 10-K
-  XBRL, not a paid fundamentals vendor vintage.
-- FMP/Massive keys were absent in this run.
-- No borrow fees, days-to-cover, funding, or depth.
+- Next-session open uses the following bar’s open; overnight gap is included,
+  the signal-bar close-to-open gap is not when entry is close.
+- SEC User-Agent policy required a contact-style header; facts are public
+  10-K XBRL, not a paid fundamentals vintage.
+- FMP/Massive keys were absent. Earnings-miss catalysts and estimate
+  revisions could not be reconstructed.
+- No borrow fees, days-to-cover, funding as P&amp;L, or depth.
 - Mapping knowledge timestamp is September 2026.
-- Unmapped ISM buckets remain unmapped (`other services`, `public administration`).
-- Sample is nine months in a generally expanding 2026 manufacturing cycle after
-  December 2025 contraction. Results are regime-specific.
+- Sample is nine months in a generally expanding 2026 manufacturing cycle
+  after the December 2025 contraction. Results are regime-specific.
+- A0’s profit factor 10.89 is one-sided because the ten-trade book had almost
+  no five-day losers. Do not optimize for that number.
 
 Machine-readable summary: `docs/analysis/data/shorts_v2_backtest.json`.

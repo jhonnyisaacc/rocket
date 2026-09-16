@@ -226,19 +226,91 @@ def risk_reward(entry: Any, invalidation: Any, target: Any) -> dict[str, Any]:
     }
 
 
-def history_target(closes: Sequence[Any] | None, *, near_band: float = 0.02) -> float | None:
-    """Lowest prior close in the eligible series, only if it is materially below the last close."""
-    if closes is None or len(closes) < 2:
-        return None
+def select_downside_target(
+    closes: Sequence[Any] | None,
+    *,
+    opens: Sequence[Any] | None = None,
+    near_band: float = 0.02,
+    support_window: int = 60,
+    swing_window: int = 120,
+    gap_band: float = 0.03,
+) -> dict[str, Any]:
+    """Defensible short target. Never the multi-year lowest close.
+
+    Preference:
+    1. nearest meaningful prior support (local trough) within 60 sessions
+    2. prior 120-session swing low
+    3. origin of a recent close-to-close or open gap
+    """
+    empty = {"target": None, "rule": None, "state": "UNKNOWN"}
+    if closes is None or len(closes) < 3:
+        return empty
     last = _positive(closes[-1])
-    prior = [_positive(value) for value in closes[:-1]]
-    values = [value for value in prior if value is not None]
-    if last is None or not values:
-        return None
-    floor = min(values)
-    if floor >= last * (1 - near_band):
-        return None
-    return floor
+    if last is None:
+        return empty
+    ceiling = last * (1 - near_band)
+
+    def _window(values: Sequence[Any], length: int) -> list[float]:
+        prior = values[:-1]
+        slice_ = prior[-length:] if len(prior) > length else prior
+        return [number for number in (_positive(value) for value in slice_) if number is not None]
+
+    support = _window(closes, support_window)
+    troughs = []
+    for index in range(1, len(support) - 1):
+        left, mid, right = support[index - 1], support[index], support[index + 1]
+        if mid < left and mid < right and mid < ceiling:
+            troughs.append(mid)
+    if troughs:
+        target = max(troughs)
+        return {"target": target, "rule": "prior_support_60", "state": "OBSERVED"}
+
+    swing = _window(closes, swing_window)
+    if swing:
+        floor = min(swing)
+        if floor < ceiling:
+            return {"target": floor, "rule": "swing_low_120", "state": "OBSERVED"}
+
+    lookback = min(len(closes) - 1, support_window)
+    for index in range(len(closes) - 1, len(closes) - 1 - lookback, -1):
+        prev_close = _positive(closes[index - 1])
+        this_close = _positive(closes[index])
+        this_open = _positive(opens[index]) if opens is not None and index < len(opens) else None
+        gapped = False
+        origin = None
+        if prev_close is not None and this_close is not None and this_close <= prev_close * (1 - gap_band):
+            gapped, origin = True, prev_close
+        if prev_close is not None and this_open is not None and this_open <= prev_close * (1 - gap_band):
+            gapped, origin = True, prev_close
+        if gapped and origin is not None and origin < ceiling:
+            return {"target": origin, "rule": "event_gap_origin", "state": "OBSERVED"}
+    return empty
+
+
+def history_target(
+    closes: Sequence[Any] | None,
+    *,
+    opens: Sequence[Any] | None = None,
+    near_band: float = 0.02,
+    support_window: int = 60,
+    swing_window: int = 120,
+) -> float | None:
+    return select_downside_target(
+        closes,
+        opens=opens,
+        near_band=near_band,
+        support_window=support_window,
+        swing_window=swing_window,
+    )["target"]
+
+
+def research_entry_price(*, signal_close: Any, next_open: Any, mode: str = "CLOSE_SIGNAL") -> dict[str, Any]:
+    """Close-of-signal is optimistic; next-session open is the realistic alternative."""
+    if mode == "CLOSE_SIGNAL":
+        price = _positive(signal_close)
+        return {"entry": price, "mode": "CLOSE_SIGNAL", "state": "UNKNOWN" if price is None else "OBSERVED"}
+    price = _positive(next_open)
+    return {"entry": price, "mode": "NEXT_SESSION_OPEN", "state": "UNKNOWN" if price is None else "OBSERVED"}
 
 
 def quality_state(latest: Any, prior: Any, *, falling_is_deteriorating: bool = True) -> str:

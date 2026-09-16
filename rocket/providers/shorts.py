@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -164,3 +164,117 @@ def live_fundamentals_fetcher() -> Callable[[str], Mapping[str, Any]] | None:
     from rocket.providers.fundamentals import fundamentals_row
 
     return fundamentals_row
+
+
+def _optional_call(fetcher, ticker, *, now):
+    if fetcher is None:
+        return None
+    try:
+        return fetcher(ticker, now=now)
+    except TypeError:
+        return fetcher(ticker)
+
+
+def acquire_short_snapshot_v2(
+    *,
+    now: datetime | None = None,
+    universe=None,
+    http: httpx.Client | None = None,
+    store=None,
+    fundamentals: Callable[[str], Mapping[str, Any]] | None = None,
+    market_fetcher: Callable[..., list[dict]] | None = None,
+    sec_fetcher: Callable[..., Mapping[str, Any]] | None = None,
+    catalyst_fetcher: Callable[..., list] | None = None,
+    estimates_fetcher: Callable[..., list] | None = None,
+    tokenized_fetcher: Callable[..., Sequence[Mapping[str, Any]]] | None = None,
+) -> list[dict]:
+    """Live Shorts v2 acquisition. Missing optional providers stay UNKNOWN."""
+    from rocket.providers.estimate_revisions import live_revisions
+    from rocket.providers.short_events import bearish_catalysts
+    from rocket.providers.tokenized_equities import acquire_tokenized_snapshot, eligibility
+
+    decided = now or datetime.now(UTC)
+    market = market_fetcher or acquire_short_snapshot
+    rows = market(universe=universe, now=now, http=http, fundamentals=fundamentals)
+    token_rows: Sequence[Mapping[str, Any]] = ()
+    token_attempts = []
+    try:
+        if tokenized_fetcher is not None:
+            token_rows = tokenized_fetcher()
+            token_attempts.append({"name": "tokenized_equities", "status": "HEALTHY", "coverage": str(len(token_rows))})
+        else:
+            snapshot = acquire_tokenized_snapshot(http=http, now=decided)
+            token_rows = snapshot.records
+            token_attempts.extend(list(snapshot.extras.get("provider_attempts") or []) or [{"name": "tokenized_equities", "status": snapshot.status.value}])
+    except Exception as exc:
+        token_attempts.append({"name": "tokenized_equities", "status": "UNAVAILABLE", "failure_kind": type(exc).__name__})
+
+    def default_sec(ticker: str, *, now: datetime) -> Mapping[str, Any]:
+        from rocket.providers.sec_facts import SecFacts
+        result = SecFacts(http=http).fundamentals(ticker, now=now)
+        row = dict(result.records[0]) if result.records else {}
+        row["provider_attempts"] = [{"name": "sec.companyfacts", "status": result.status.value, "failure_kind": result.failure_kind}]
+        return row
+
+    def default_catalysts(ticker: str, *, now: datetime) -> list:
+        from rocket.providers.sec_facts import SecFacts
+        result = SecFacts(http=http).catalysts(ticker, now=now)
+        return list(result.records)
+
+    def default_estimates(ticker: str, *, now: datetime) -> list:
+        del now
+        from rocket.providers.fmp import FMPClient
+        result = FMPClient().analyst_estimates(ticker)
+        return list(result.records)
+
+    for row in rows:
+        ticker = row["ticker"]
+        row.setdefault("provider_attempts", [])
+        row["provider_attempts"].extend(token_attempts)
+        try:
+            sec_row = _optional_call(sec_fetcher or default_sec, ticker, now=decided) or {}
+        except Exception as exc:
+            sec_row = {"provider_attempts": [{"name": "sec.companyfacts", "status": "UNAVAILABLE", "failure_kind": type(exc).__name__}]}
+        if isinstance(sec_row, Mapping):
+            row["provider_attempts"].extend(sec_row.get("provider_attempts") or [])
+            if sec_row.get("cash_flow_quality") is not None:
+                row["cash_flow_quality"] = sec_row["cash_flow_quality"]
+            if sec_row.get("company_fundamentals") is not None:
+                row["company_fundamentals"] = sec_row["company_fundamentals"]
+                for key in ("eps_growth", "eps_growth_basis", "fundamentals_source"):
+                    if sec_row.get(key) is not None:
+                        row[key] = sec_row[key]
+        try:
+            cats = _optional_call(catalyst_fetcher or default_catalysts, ticker, now=decided) or []
+        except Exception:
+            cats = []
+        row["catalysts"] = list(cats) if isinstance(cats, list) else []
+        bearish = bearish_catalysts(row["catalysts"], now=decided)
+        row["catalyst"] = bearish[0] if bearish else None
+        try:
+            estimates = _optional_call(estimates_fetcher or default_estimates, ticker, now=decided) or []
+        except Exception:
+            estimates = []
+        revisions = live_revisions(ticker, estimates if isinstance(estimates, list) else [], store=store, now=decided)
+        row["eps_revision_30d"] = revisions.get("eps_revision_30d")
+        row["revenue_revision_30d"] = revisions.get("revenue_revision_30d")
+        row["eps_revision_change"] = revisions.get("eps_revision_change")
+        row["revenue_revision_change"] = revisions.get("revenue_revision_change")
+        row["revision_reason"] = revisions.get("revision_reason")
+        row["snapshots_persisted"] = revisions.get("snapshots_persisted")
+        row["provider_attempts"].append({
+            "name": "estimate_snapshots",
+            "status": "HEALTHY" if revisions.get("snapshots_persisted") else "PARTIAL",
+            "coverage": str(revisions.get("snapshots_persisted") or 0),
+        })
+        elig = eligibility(ticker, token_rows, now=decided)
+        row["research_eligibility"] = elig["research"]["status"]
+        row["execution_eligibility"] = elig["execution"]["status"]
+        row["tokenized"] = elig
+        row["acquisition_path"] = "shorts_v2"
+        row["provider_health"] = (
+            "HEALTHY" if all(p.get("status") == "HEALTHY" for p in row["provider_attempts"])
+            else "PARTIAL" if row.get("technical_breakdown") is not None
+            else "UNAVAILABLE"
+        )
+    return rows

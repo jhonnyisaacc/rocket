@@ -44,7 +44,7 @@ short signal.
 | 20-session relative vs sector ETF and SPY | confirmation | `UNKNOWN` |
 | 20-session close below prior low | timing | `UNKNOWN` |
 | Failed retest of broken low | optional timing | `UNKNOWN` |
-| Structured catalyst | explanation, not a universal requirement | absent, never invented |
+| Structured catalyst (`direction=BEARISH` only: 2.06, 4.02, earnings miss, guidance/estimate cut) | explanation, not a gate | absent, never invented; generic 8-K/S-1 stay UNKNOWN |
 | SPY + sector vs 20-session average | regime / risk class | `UNKNOWN` |
 | Invalidation vs defensible downside reference | R/R context | `UNKNOWN` |
 | Cheap valuation (`valuation_support`) | veto / warning | not a short reason |
@@ -86,9 +86,10 @@ EXECUTION_ELIGIBLE    a venue snapshot proves short_available at decision_time
 The provider can represent venue, token symbol, long/short availability,
 spot/perp, funding, spread, volume, open interest, mark, basis, and clocks
 when known. xStocks public listings and the current ONDO mint registry are
-**present-tense**. They do not prove that a tokenized short existed in January
-2026. Historical Backtest B is therefore not run unless an independent vintage
-exists.
+**present-tense**. Tokenized spot never implies a short. Kraken xStock perps
+and Ondo perps can mark `short_available` only on a current snapshot; Kraken
+`openingDate` is a listing vintage, not a historical short book. Historical
+execution eligibility is not inferred backward.
 
 Traditional borrow (fee, shares available, days to cover) and tokenized-perp
 constraints (funding, OI, spread, basis) share the names `short_availability`,
@@ -119,8 +120,12 @@ where to look. Expanding industries are still mapped in full for the long path.
 - January–September 2026 is a small sample. Results are exploratory.
 - Estimate revisions cannot be backfilled from a current FMP pull.
 - Tokenized short availability cannot be backfilled from today's listings.
-- R/R targets use the lowest prior close in the eligible Yahoo window, not a
-  proprietary level. If no material downside reference exists, R/R is `UNKNOWN`.
+- R/R targets use a swing low in the eligible Yahoo window (not the
+  full-history low). If no material downside reference exists, R/R is `UNKNOWN`.
+- Research P&amp;L may use next-session open; it is measured and does not
+  degrade the sample versus close-of-signal.
 - No portfolio sizing is implemented. Regime changes confidence/risk class only.
+- Historical edge vs the sparse `ism_simple` book is **`EDGE_NOT_VALIDATED`**.
+  Keep the architecture; do not switch the live default.
 
-See `docs/analysis/shorts_v2_backtest.md` for the historical comparison.
+See `docs/analysis/shorts_v2_backtest.md` for the incremental comparison.
