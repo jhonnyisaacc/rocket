@@ -39,7 +39,6 @@ _ISM_SHORT_FACTORS = (
     "technical_breakdown",
     "company_fundamentals",
 )
-_V2_STATES = ("RESEARCH", "WATCH", "ARMED", "TRIGGERED", "BLOCKED", "REJECTED")
 UNIVERSE = {}  # Production candidates come from the shared research index.
 
 
@@ -171,163 +170,13 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _observed_deterioration(row: Mapping[str, Any]) -> bool | None:
-    flags: list[bool] = []
-    for key in ("eps_revision_30d", "revenue_revision_30d"):
-        value = str(row.get(key) or "").upper()
-        if value == "DETERIORATING":
-            flags.append(True)
-        elif value in {"IMPROVING", "FLAT"}:
-            flags.append(False)
-    quality = row.get("cash_flow_quality")
-    quality_state = quality.get("state") if isinstance(quality, Mapping) else quality
-    if str(quality_state or "").upper() == "DETERIORATING":
-        flags.append(True)
-    elif str(quality_state or "").upper() in {"IMPROVING", "FLAT"}:
-        flags.append(False)
-    fundamentals = None if row.get("company_fundamentals") is None else _flag(row.get("company_fundamentals"))
-    if fundamentals is True:
-        flags.append(True)
-    elif fundamentals is False:
-        flags.append(False)
-    if not flags:
-        return None
-    return any(flags)
-
-
-def score_shorts_v2(
-    row: Mapping[str, Any],
-    *,
-    relative_threshold: float = 0.0,
-    require_failed_retest: bool = False,
-    rr_min: float | None = None,
-) -> dict[str, Any]:
-    """ISM selects the universe; deterioration filters; technicals time the setup."""
-    from rocket.providers.short_quality import relative_weakness_flag, risk_reward
-    from rocket.providers.tokenized_equities import RESEARCH_ELIGIBLE
-
-    ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
-    ism = _ism_contracting(row)
-    deterioration = _observed_deterioration(row)
-    relative = relative_weakness_flag(row, threshold=relative_threshold)
-    breakdown = None if row.get("technical_breakdown") is None else _flag(row.get("technical_breakdown"))
-    retest = None if row.get("failed_retest") is None else _flag(row.get("failed_retest"))
-    valuation_veto = row.get("valuation_support") is True
-    regime = str(row.get("regime") or row.get("macro_regime") or "UNKNOWN").upper()
-    if regime in {"RISK_OFF", "BEARISH", "CONTRACTION"}:
-        regime = "SHORT_FRIENDLY"
-    elif regime in {"RISK_ON", "BULLISH"}:
-        regime = "SHORT_HOSTILE"
-    elif regime not in {"SHORT_FRIENDLY", "SHORT_HOSTILE", "NEUTRAL"}:
-        regime = "UNKNOWN"
-    price = row.get("current_price")
-    if price is None:
-        price = row["entry"].get("level") if isinstance(row.get("entry"), Mapping) else row.get("entry")
-    stop = row.get("invalidation")
-    if isinstance(stop, Mapping):
-        stop = stop.get("level")
-    rr = row.get("risk_reward") if isinstance(row.get("risk_reward"), Mapping) else risk_reward(
-        price,
-        stop,
-        row.get("target"),
-    )
-    rr_value = rr.get("reward_to_risk")
-    rr_ok = None if rr_value in (None, "UNKNOWN") else (rr_value >= rr_min if rr_min is not None else True)
-    catalysts = row.get("catalysts") if isinstance(row.get("catalysts"), list) else []
-    if not catalysts and row.get("catalyst") not in (None, "", "UNKNOWN", "unknown", "none"):
-        catalysts = [row.get("catalyst")]
-
-    if valuation_veto:
-        state, reason = "BLOCKED", "valuation_support"
-    elif ism is None or deterioration is None:
-        state, reason = "RESEARCH", "insufficient_evidence"
-    elif not ism:
-        state, reason = "REJECTED", "ism_not_contracting"
-    elif not deterioration:
-        state, reason = "REJECTED", "fundamentals_not_bearish"
-    elif relative is None:
-        state, reason = "RESEARCH", "relative_strength_unknown"
-    elif not relative:
-        state, reason = "REJECTED", "relative_strength_not_weak"
-    elif rr_min is not None and rr_ok is None:
-        state, reason = "RESEARCH", "reward_to_risk_unknown"
-    elif rr_min is not None and rr_ok is False:
-        state, reason = "BLOCKED", "reward_to_risk_below_threshold"
-    elif breakdown is None:
-        state, reason = "WATCH", "technical_breakdown_unknown"
-    elif not breakdown:
-        state, reason = "WATCH", None
-    elif require_failed_retest and retest is None:
-        state, reason = "ARMED", "failed_retest_unknown"
-    elif require_failed_retest and not retest:
-        state, reason = "ARMED", None
-    else:
-        state, reason = "TRIGGERED", None
-
-    risk_class = {
-        "SHORT_FRIENDLY": "standard",
-        "NEUTRAL": "elevated",
-        "SHORT_HOSTILE": "unattractive",
-    }.get(regime, "UNKNOWN")
-    factors = {
-        "ism_contracting": ism,
-        "company_deterioration": deterioration,
-        "relative_weakness": relative,
-        "technical_breakdown": breakdown,
-        "failed_retest": retest,
-        "catalyst": catalysts[0] if catalysts else None,
-        "regime": None if regime == "UNKNOWN" else regime,
-        "reward_to_risk": rr_value,
-        "valuation_support": None if row.get("valuation_support") is None else bool(row.get("valuation_support")),
-    }
-    return {
-        "asset": ticker,
-        "direction": "short",
-        "strategy": "shorts_v2",
-        "state": state,
-        "selected": state == "TRIGGERED",
-        "rejection_reason": reason,
-        "factors": factors,
-        "factor_states": {
-            name: "UNKNOWN" if factors.get(name) in (None, "UNKNOWN") else "OBSERVED"
-            for name in factors
-        },
-        "missing_required_factors": [name for name, value in (("ism_contracting", ism), ("company_deterioration", deterioration)) if value is None],
-        "research_eligibility": row.get("research_eligibility") or RESEARCH_ELIGIBLE,
-        "execution_eligibility": row.get("execution_eligibility") or "UNKNOWN",
-        "regime": regime,
-        "risk_class": risk_class,
-        "catalysts": catalysts,
-        "risk_reward": rr,
-        "relative_vs_sector": row.get("relative_vs_sector"),
-        "relative_vs_market": row.get("relative_vs_market"),
-        "eps_revision_30d": row.get("eps_revision_30d"),
-        "revenue_revision_30d": row.get("revenue_revision_30d"),
-        "cash_flow_quality": row.get("cash_flow_quality"),
-        "current_price": row.get("current_price"),
-        "technical_setup": row.get("technical_setup"),
-        "entry": rr.get("entry") or row.get("entry"),
-        "invalidation": rr.get("invalidation") or row.get("invalidation"),
-        "target": rr.get("target") or row.get("target"),
-        "research_only": True,
-        "candidate_id": row.get("candidate_id"),
-        "sources": row.get("candidate_sources", []),
-        "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
-        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
-        "tokenized": row.get("tokenized"),
-        "relative_threshold": relative_threshold,
-        "require_failed_retest": require_failed_retest,
-        "rr_min": rr_min,
-    }
-
-
 class ShortsWorkflow:
     name = WORKFLOW
 
     def __init__(self, *, store: ResearchStore | None = None):
         self.store = store
 
-    def scan_live(self, *, now=None, inputs=None, snapshot_fetcher=None, strategy="ism_simple"):
+    def scan_live(self, *, now=None, inputs=None, snapshot_fetcher=None):
         from rocket.candidates import bearish_inputs
         from rocket.providers.shorts import acquire_short_snapshot, live_fundamentals_fetcher
         decided = now or datetime.now(UTC)
@@ -362,8 +211,7 @@ class ShortsWorkflow:
             seed = by_ticker[row["ticker"]]
             row["candidate_sources"] = seed["sources"]
             row["candidate_id"] = seed["candidate_id"]
-        scorer = score_shorts_v2 if strategy == "shorts_v2" else score_ism_short_candidate if strategy == "ism_simple" else score_candidate
-        return self.scan(rows, now=now, scorer=scorer, strategy=strategy)
+        return self.scan(rows, now=now, scorer=score_ism_short_candidate, strategy="ism_simple")
 
     def _missing_candidates(self, decided):
         result = ResearchResult(workflow=WORKFLOW, status=ResearchStatus.INSUFFICIENT_EVIDENCE,
@@ -385,7 +233,6 @@ class ShortsWorkflow:
         decided = now or datetime.now(UTC)
         candidates: list[dict[str, Any]] = []
         rejected: list[dict[str, Any]] = []
-        watchlist: list[dict[str, Any]] = []
         evidence: list[Evidence] = []
         for index, row in enumerate(rows):
             if not isinstance(row, Mapping):
@@ -426,8 +273,6 @@ class ShortsWorkflow:
             except ValueError as exc:
                 rejected.append({"asset": ticker or "UNKNOWN", "reason": "invalid_input", "detail": str(exc)})
                 continue
-            if candidate.get("state") in {"WATCH", "ARMED", "TRIGGERED"}:
-                watchlist.append(candidate)
             if candidate["selected"]:
                 candidates.append(candidate)
             else:
@@ -444,18 +289,7 @@ class ShortsWorkflow:
             operational = OperationalStatus.HEALTHY
         if candidates:
             research = ResearchStatus.SETUP_FOUND
-        elif operational is OperationalStatus.UNAVAILABLE:
-            research = ResearchStatus.INSUFFICIENT_EVIDENCE
-        elif strategy == "shorts_v2":
-            pit_fail = {"invalid_input", "availability_unknown", "available_after_decision_time",
-                        "stale_or_future_observation", "observation_or_provenance_unknown"}
-            if any(row.get("reason") in pit_fail for row in rejected):
-                research = ResearchStatus.INSUFFICIENT_EVIDENCE
-            elif watchlist or any(row.get("state") in {"REJECTED", "BLOCKED", "ARMED", "WATCH"} for row in rejected):
-                research = ResearchStatus.NO_SETUP
-            else:
-                research = ResearchStatus.INSUFFICIENT_EVIDENCE
-        elif any(row.get("reason") in {"insufficient_evidence", "invalid_input", "availability_unknown", "available_after_decision_time", "stale_or_future_observation", "observation_or_provenance_unknown"} for row in rejected):
+        elif operational is OperationalStatus.UNAVAILABLE or any(row.get("reason") in {"insufficient_evidence", "invalid_input", "availability_unknown", "available_after_decision_time", "stale_or_future_observation", "observation_or_provenance_unknown"} for row in rejected):
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
         elif rows and evidence:
             research = ResearchStatus.NO_SETUP
@@ -486,17 +320,8 @@ class ShortsWorkflow:
                 "acquisition_mode": "LIVE" if live else "REPLAY",
                 "strategy": strategy,
                 "final_candidates": candidates,
-                "watchlist": watchlist,
                 "rejected_candidates": rejected,
-                "factor_definition": list(_ISM_SHORT_FACTORS if strategy == "ism_simple" else _FACTORS if strategy != "shorts_v2" else (
-                    "ism_contracting",
-                    "company_deterioration",
-                    "relative_weakness",
-                    "technical_breakdown",
-                    "failed_retest",
-                    "regime",
-                    "reward_to_risk",
-                )),
+                "factor_definition": list(_ISM_SHORT_FACTORS if strategy == "ism_simple" else _FACTORS),
                 "snapshots": list(rows),
                 "execution_enabled": False,
                 "summary": "Shorts scan: no valid setup found today." if research is ResearchStatus.NO_SETUP else None,

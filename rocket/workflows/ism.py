@@ -164,48 +164,28 @@ class IsmWorkflow:
             if operational is OperationalStatus.UNAVAILABLE
             else ResearchStatus.NO_SETUP
         )
-        candidates, unmapped, short_discovery = [], [], {}
+        candidates, unmapped = [], []
         if research_companies:
             import json
 
             from rocket.candidates import evaluate_long, persist_candidates
             from rocket.config import DEFAULT_CONFIG_DIR
             from rocket.providers.equity_research import acquire_equity_context
-            from rocket.providers.ism_universe import (
-                build_short_universe,
-                select_contracting_industries,
-            )
             exposures = self.exposures if self.exposures is not None else json.loads((DEFAULT_CONFIG_DIR / "industry_exposure.json").read_text())
             seeds = []
-            short_discovery = {}
             for kind, report in payload_reports.items():
                 if report.get("industry_rankings_status") != "INDUSTRY_RANKINGS_VALID":
                     continue
-                for industry in report.get("hottest_industries") or ():
-                    matched = exposures.get(industry["industry"], [])
-                    if not matched:
-                        unmapped.append({"industry": industry["industry"], "report_type": kind, "direction": "long",
-                                         "reason": "no reviewed company exposure mapping"})
-                    for company in matched:
-                        if company.get("source") and company.get("exposure"):
-                            seeds.append({**company, "industry": industry["industry"], "report_type": kind,
-                                          "direction": "long", "report_reference": f"ism-{kind}-rankings",
-                                          "reference_month": report["identity"]["reference_month"]})
-                selected = select_contracting_industries(report.get("worst_industries") or ())
-                short_discovery[kind] = selected
-            short_universe = build_short_universe(
-                short_discovery,
-                exposures,
-                now=started,
-                mapping_mode="fixed",
-                reference_month={
-                    kind: (payload_reports.get(kind) or {}).get("identity", {}).get("reference_month")
-                    for kind in ("manufacturing", "services")
-                },
-            )
-            for seed in short_universe["seeds"]:
-                seeds.append({**seed, "report_reference": f"ism-{seed['report_type']}-rankings"})
-            unmapped.extend(short_universe["unmapped"])
+                for direction, field in (("long", "hottest_industries"), ("short", "worst_industries")):
+                    for industry in report[field]:
+                        matched = exposures.get(industry["industry"], [])
+                        if not matched:
+                            unmapped.append({"industry": industry["industry"], "reason": "no reviewed company exposure mapping"})
+                        for company in matched:
+                            if company.get("source") and company.get("exposure"):
+                                seeds.append({**company, "industry": industry["industry"], "report_type": kind,
+                                              "direction": direction, "report_reference": f"ism-{kind}-rankings",
+                                              "reference_month": report["identity"]["reference_month"]})
             contexts = (self.context_fetcher or acquire_equity_context)([r["ticker"] for r in seeds if r["direction"] == "long"])
             started = now or datetime.now(UTC)
             for seed in seeds:
@@ -241,7 +221,6 @@ class IsmWorkflow:
                 "reports": payload_reports,
                 "candidates": candidates,
                 "unmapped_industries": unmapped,
-                "short_discovery": short_discovery,
                 "nmfbai_substituted_for_services_composite": False,
                 "execution_enabled": False,
             },
