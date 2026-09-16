@@ -372,6 +372,7 @@ def disclosures(
 def shorts(
     input_file: Path | None = typer.Option(None, "--input-file", exists=True, readable=True),
     state_dir: Path | None = typer.Option(None, "--state-dir"),
+    strategy: str = typer.Option("ism_simple", "--strategy", help="ism_simple keeps the current gate; shorts_v2 is research-only."),
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
@@ -387,10 +388,13 @@ def shorts(
     if input_file:
         raw = json.loads(input_file.read_text(encoding="utf-8"))
         rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
-    else:
-        emit_result(ShortsWorkflow(store=store).scan_live(), human=human)
+        if strategy == "shorts_v2":
+            from rocket.workflows.shorts import score_shorts_v2
+            emit_result(ShortsWorkflow(store=store).scan(rows, scorer=score_shorts_v2, strategy="shorts_v2"), human=human)
+            return
+        emit_result(ShortsWorkflow(store=store).scan(rows), human=human)
         return
-    emit_result(ShortsWorkflow(store=store).scan(rows), human=human)
+    emit_result(ShortsWorkflow(store=store).scan_live(strategy=strategy), human=human)
 
 
 @options_app.command("scan")

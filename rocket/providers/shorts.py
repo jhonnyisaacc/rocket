@@ -86,11 +86,16 @@ def acquire_short_snapshot(
             "valuation_support": None,
         }
         if valid and series:
-            row["technical_breakdown"] = series[-1] < min(series[-21:-1])
+            prior = series[-21:-1]
+            row["technical_breakdown"] = series[-1] < min(prior)
             row["current_price"] = series[-1]
-            row["technical_setup"] = {"rule": "close below prior 20-session low", "prior_low": min(series[-21:-1])}
-            row["entry"] = {"concept": "retest of broken 20-session support", "level": min(series[-21:-1])}
-            row["invalidation"] = max(series[-21:-1])
+            row["technical_setup"] = {"rule": "close below prior 20-session low", "prior_low": min(prior)}
+            row["entry"] = {"concept": "retest of broken 20-session support", "level": min(prior)}
+            row["invalidation"] = max(prior)
+            if len(series) >= 21:
+                row["stock_20d_return"] = series[-1] / series[-21] - 1
+            if len(series) >= 61:
+                row["stock_60d_return"] = series[-1] / series[-61] - 1
         row["provider_attempts"] = [{"name": f"yahoo.history:{symbol}",
                                      "status": "HEALTHY" if histories[symbol][3] else "UNAVAILABLE",
                                      "coverage": str(len(histories[symbol][0] or []))}
@@ -111,16 +116,39 @@ def acquire_short_snapshot(
                     "eps_growth",
                     "fundamentals_source",
                     "eps_growth_basis",
+                    "cash_flow_quality",
+                    "eps_revision_30d",
+                    "revenue_revision_30d",
+                    "catalysts",
                 ):
                     if key in extra:
                         row[key] = extra[key]
         if spy[3] and spy[0]:
             bench = spy[0]
             row["macro_regime"] = "risk_off" if bench[-1] < sum(bench[-20:]) / 20 else "neutral"
+            row["spy_20d_return"] = bench[-1] / bench[-21] - 1 if len(bench) >= 21 else None
+        if sec[3] and sec[0] and len(sec[0]) >= 21:
+            row["sector_20d_return"] = sec[0][-1] / sec[0][-21] - 1
         if sec[3] and spy[3] and sec[0] and spy[0]:
             sector_return = sec[0][-1] / sec[0][-21] - 1
             bench_return = spy[0][-1] / spy[0][-21] - 1
             row["sector_weakness"] = sector_return < 0 and sector_return < bench_return
+        if valid and series:
+            from rocket.providers.short_quality import (
+                classify_regime,
+                failed_retest,
+                history_target,
+                relative_strength,
+                risk_reward,
+            )
+            relative = relative_strength(series, sec[0] if sec[3] else None, spy[0] if spy[3] else None)
+            row["relative_vs_sector"] = relative["relative_vs_sector"]
+            row["relative_vs_market"] = relative["relative_vs_market"]
+            retest = failed_retest(series)
+            row["failed_retest"] = retest["failed_retest"]
+            row["regime"] = classify_regime(spy[0] if spy[3] else None, sec[0] if sec[3] else None)["regime"]
+            row["target"] = history_target(series)
+            row["risk_reward"] = risk_reward(series[-1], row.get("invalidation"), row.get("target"))
         if fundamentals is None:
             row["provider_attempts"].append({"name": f"fundamentals:{ticker}", "status": "UNAVAILABLE", "failure_kind": "NotConfigured"})
         row["provider_health"] = "HEALTHY" if all(p["status"] == "HEALTHY" for p in row["provider_attempts"]) else "PARTIAL" if valid else "UNAVAILABLE"
