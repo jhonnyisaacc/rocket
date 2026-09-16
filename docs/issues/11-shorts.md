@@ -4,19 +4,27 @@ One issue for this job only. Adapter: weekdays. Research only.
 
 ## Mental model
 
-Multi-factor short research. Bearish macro alone cannot select. Missing factor stays UNKNOWN, never false.
+ISM-specific live Shorts research is intentionally small and explainable. The
+canonical live path starts with an ISM contracting industry, then checks one
+Yahoo price condition and one FMP company-fundamentals condition. Missing data
+stays UNKNOWN, never false.
 
 ```
-Yahoo tape (+ FMP if FMP_API_KEY) → score → selected or rejected with reason
+ISM contracting → Yahoo technical breakdown + FMP bearish fundamentals → selected or rejected with reason
 ```
 
 ## Filters
 
-Required present (not None): `company_fundamentals`, `technical_breakdown`.
-Counted if true: sector weakness, earnings revision, technical breakdown, crowding, **bearish fundamentals**.
-Catalyst optional / UNKNOWN (no catalyst provider).
-`valuation_support` True **rejects** (too cheap to short).
-Need `non_macro >= 2` and `total >= 3`.
+Canonical ISM live path requires exactly three observed conditions:
+
+- `ism_contracting`: the stored ISM candidate source has `direction=short`.
+- `technical_breakdown`: Yahoo close is below the prior 20-session low.
+- `company_fundamentals`: FMP's current bearish EPS-growth flag is true.
+
+`valuation_support=True` remains a safety veto when FMP provides it. Sector
+weakness, catalyst, earnings revisions and positioning are retained as context
+but are not required for the ISM list. Explicit `--input-file` replay keeps the
+generic factor scorer for non-ISM snapshots.
 Yahoo quote PIT: `available_at` ≤ decision time, age ≤ 5d.
 
 Live universe: bearish candidates produced by `rocket ism` or `rocket disclosures`

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -32,6 +32,11 @@ _FACTORS = (
     "technical_breakdown",
     "catalyst",
     "positioning_crowding",
+    "company_fundamentals",
+)
+_ISM_SHORT_FACTORS = (
+    "ism_contracting",
+    "technical_breakdown",
     "company_fundamentals",
 )
 UNIVERSE = {}  # Production candidates come from the shared research index.
@@ -99,6 +104,72 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def _ism_contracting(row: Mapping[str, Any]) -> bool | None:
+    explicit = row.get("ism_contracting")
+    if explicit is not None:
+        return _flag(explicit)
+    sources = row.get("candidate_sources")
+    if not isinstance(sources, Sequence) or isinstance(sources, (str, bytes)):
+        return None
+    directions = {
+        str(source.get("direction") or "").strip().lower()
+        for source in sources
+        if isinstance(source, Mapping)
+    }
+    if "short" in directions:
+        return True
+    return False if directions else None
+
+
+def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
+    """Small, explainable ISM short gate using the canonical live inputs.
+
+    ISM supplies the contracting-industry signal, Yahoo supplies the price
+    breakdown, and FMP supplies the bearish company-fundamentals flag (currently
+    derived from its EPS-growth field). Optional valuation support remains a
+    safety veto when the provider has it.
+    """
+    ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
+    factors = {
+        "ism_contracting": _ism_contracting(row),
+        "technical_breakdown": None if row.get("technical_breakdown") is None else _flag(row.get("technical_breakdown")),
+        "company_fundamentals": None if row.get("company_fundamentals") is None else _flag(row.get("company_fundamentals")),
+    }
+    missing = [name for name, value in factors.items() if value is None]
+    if missing:
+        reason, selected = "insufficient_evidence", False
+    elif row.get("valuation_support") is True:
+        reason, selected = "valuation_support", False
+    elif not factors["ism_contracting"]:
+        reason, selected = "ism_not_contracting", False
+    elif not factors["technical_breakdown"]:
+        reason, selected = "technical_breakdown_missing", False
+    elif not factors["company_fundamentals"]:
+        reason, selected = "fundamentals_not_bearish", False
+    else:
+        reason, selected = None, True
+    return {
+        "asset": ticker,
+        "direction": "short",
+        "strategy": "ism_simple",
+        "factors": factors,
+        "factor_states": {name: "UNKNOWN" if value is None else "OBSERVED" for name, value in factors.items()},
+        "missing_required_factors": missing,
+        "factor_count": sum(value is True for value in factors.values()),
+        "selected": selected,
+        "rejection_reason": reason,
+        "research_only": True,
+        "candidate_id": row.get("candidate_id"),
+        "sources": row.get("candidate_sources", []),
+        "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
+        "current_price": row.get("current_price"),
+        "technical_setup": row.get("technical_setup"),
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
+        "entry": row.get("entry"),
+        "invalidation": row.get("invalidation"),
+    }
+
+
 class ShortsWorkflow:
     name = WORKFLOW
 
@@ -140,7 +211,7 @@ class ShortsWorkflow:
             seed = by_ticker[row["ticker"]]
             row["candidate_sources"] = seed["sources"]
             row["candidate_id"] = seed["candidate_id"]
-        return self.scan(rows, now=now)
+        return self.scan(rows, now=now, scorer=score_ism_short_candidate, strategy="ism_simple")
 
     def _missing_candidates(self, decided):
         result = ResearchResult(workflow=WORKFLOW, status=ResearchStatus.INSUFFICIENT_EVIDENCE,
@@ -151,7 +222,14 @@ class ShortsWorkflow:
             self.store.save_result(result)
         return result
 
-    def scan(self, rows: Sequence[Mapping[str, Any]], *, now: datetime | None = None) -> ResearchResult:
+    def scan(
+        self,
+        rows: Sequence[Mapping[str, Any]],
+        *,
+        now: datetime | None = None,
+        scorer: Callable[[Mapping[str, Any]], dict[str, Any]] = score_candidate,
+        strategy: str = "generic",
+    ) -> ResearchResult:
         decided = now or datetime.now(UTC)
         candidates: list[dict[str, Any]] = []
         rejected: list[dict[str, Any]] = []
@@ -178,12 +256,12 @@ class ShortsWorkflow:
                 if observed > decided or decided - observed > timedelta(days=5):
                     rejected.append({"asset": ticker, "reason": "stale_or_future_observation"})
                     continue
-                candidate = score_candidate(row)
+                candidate = scorer(row)
                 evidence.append(
                     Evidence(
                         source=str(row.get("source") or "short_snapshot"),
                         reference=f"short-{index + 1}",
-                        claim=f"{ticker} multi-factor short research snapshot",
+                        claim=f"{ticker} {strategy} short research snapshot",
                         kind=EvidenceKind.FACT,
                         event_time=observed,
                         available_at=available_at,
@@ -240,9 +318,10 @@ class ShortsWorkflow:
             payload={
                 "universe_scanned": len(rows),
                 "acquisition_mode": "LIVE" if live else "REPLAY",
+                "strategy": strategy,
                 "final_candidates": candidates,
                 "rejected_candidates": rejected,
-                "factor_definition": list(_FACTORS),
+                "factor_definition": list(_ISM_SHORT_FACTORS if strategy == "ism_simple" else _FACTORS),
                 "snapshots": list(rows),
                 "execution_enabled": False,
                 "summary": "Shorts scan: no valid setup found today." if research is ResearchStatus.NO_SETUP else None,
