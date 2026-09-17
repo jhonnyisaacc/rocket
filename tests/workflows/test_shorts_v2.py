@@ -363,6 +363,10 @@ def test_xstocks_pagination_and_spot_does_not_imply_short():
     )
     assert perps[0]["instrument_type"] == "tokenized_perp"
     assert perps[0]["short_available"] is True
+    assert perps[0]["listing_at"] == "2026-02-06T00:00:00+00:00"
+    assert perps[0]["observed_at"] == NOW.isoformat()
+    assert perps[0]["available_at"] == NOW.isoformat()
+    assert perps[0]["available_at"] != perps[0]["listing_at"]
     assert eligibility("AAPL", perps, now=NOW)["execution"]["status"] == EXECUTION_ELIGIBLE
     ondo = parse_ondo_perps({
         "result": [{"market": "AAPL-USD.P", "productType": "perpetual", "baseCurrency": "AAPL",
@@ -508,3 +512,146 @@ def test_scan_live_shorts_v2_defaults_to_v2_acquisition(monkeypatch, tmp_path):
     assert called.get("v2") is True
     assert called.get("store") is True
     assert result.payload["strategy"] == "shorts_v2"
+
+
+def _v2_row(**overrides):
+    row = {
+        "ticker": "WY",
+        "candidate_sources": [{"direction": "short", "industry": "wood products", "rank": 1}],
+        "company_fundamentals": True,
+        "cash_flow_quality": {"state": "DETERIORATING"},
+        "relative_vs_sector": -0.1,
+        "relative_vs_market": -0.1,
+        "technical_breakdown": True,
+        "failed_retest": False,
+        "current_price": 20,
+        "invalidation": 22,
+        "target": 16,
+        "available_at": NOW.isoformat(),
+        "event_time": NOW.isoformat(),
+        "source": "fixture",
+    }
+    row.update(overrides)
+    return row
+
+
+def test_kraken_opening_date_is_not_historical_shortability():
+    from rocket.providers.tokenized_equities import EXECUTION_ELIGIBLE, parse_kraken_xstock_perps
+
+    september = NOW
+    march = datetime(2026, 3, 15, tzinfo=UTC)
+    perps = parse_kraken_xstock_perps(
+        [{"symbol": "PF_AAPLXUSD", "base": "AAPLx", "tradeable": True, "openingDate": "2026-02-06T00:00:00Z"}],
+        [{"symbol": "PF_AAPLXUSD", "markPrice": 100, "indexPrice": 99, "suspended": False}],
+        retrieved_at=september,
+    )
+    assert perps[0]["listing_at"].startswith("2026-02-06")
+    assert eligibility("AAPL", perps, now=march)["execution"]["status"] == "UNKNOWN"
+    assert eligibility("AAPL", perps, now=september)["execution"]["status"] == EXECUTION_ELIGIBLE
+
+
+def test_historical_eligibility_requires_historical_observation():
+    from rocket.providers.tokenized_equities import EXECUTION_ELIGIBLE, instrument_record
+
+    march = datetime(2026, 3, 15, 21, tzinfo=UTC)
+    observed = instrument_record(
+        underlying="AAPL", venue="kraken_xstocks_perps", source="fixture",
+        observed_at=march, available_at=march, listing_at="2026-02-06T00:00:00Z",
+        instrument_type="tokenized_perp", short_available=True,
+    )
+    assert eligibility("AAPL", [observed], now=march)["execution"]["status"] == EXECUTION_ELIGIBLE
+    later = datetime(2026, 9, 16, tzinfo=UTC)
+    present = instrument_record(
+        underlying="AAPL", venue="kraken_xstocks_perps", source="fixture",
+        observed_at=later, available_at=later, listing_at="2026-02-06T00:00:00Z",
+        instrument_type="tokenized_perp", short_available=True,
+    )
+    assert eligibility("AAPL", [present], now=march)["execution"]["status"] == "UNKNOWN"
+
+
+def test_a4_requires_bearish_fundamentals_and_deteriorating_cashflow():
+    both = score_shorts_v2(_v2_row(), deterioration_mode="cashflow_required")
+    assert both["selected"] is True
+    unknown_fund = score_shorts_v2(
+        _v2_row(company_fundamentals=None), deterioration_mode="cashflow_required",
+    )
+    assert unknown_fund["factors"]["company_deterioration"] is None
+    assert unknown_fund["selected"] is False
+    false_fund = score_shorts_v2(
+        _v2_row(company_fundamentals=False), deterioration_mode="cashflow_required",
+    )
+    assert false_fund["factors"]["company_deterioration"] is False
+    assert false_fund["selected"] is False
+    unknown_cf = score_shorts_v2(
+        _v2_row(cash_flow_quality={"state": "UNKNOWN"}), deterioration_mode="cashflow_required",
+    )
+    assert unknown_cf["factors"]["company_deterioration"] is None
+    assert unknown_cf["selected"] is False
+    improving = score_shorts_v2(
+        _v2_row(cash_flow_quality={"state": "IMPROVING"}), deterioration_mode="cashflow_required",
+    )
+    assert improving["factors"]["company_deterioration"] is False
+    assert improving["selected"] is False
+
+
+def test_a3_vs_a4_incremental_semantics():
+    missing_cashflow = _v2_row(cash_flow_quality={"state": "UNKNOWN"})
+    a3 = score_shorts_v2(missing_cashflow, deterioration_mode="fundamentals", relative_threshold=0.0)
+    a4 = score_shorts_v2(missing_cashflow, deterioration_mode="cashflow_required", relative_threshold=0.0)
+    a6 = score_shorts_v2(missing_cashflow, deterioration_mode="any", relative_threshold=0.0)
+    assert a3["selected"] is True
+    assert a4["selected"] is False
+    assert a6["selected"] is True
+    cashflow_only = _v2_row(company_fundamentals=None, cash_flow_quality={"state": "DETERIORATING"})
+    assert score_shorts_v2(cashflow_only, deterioration_mode="fundamentals")["selected"] is False
+    assert score_shorts_v2(cashflow_only, deterioration_mode="cashflow_required")["selected"] is False
+    assert score_shorts_v2(cashflow_only, deterioration_mode="any")["selected"] is True
+
+
+def test_core_and_live_edge_assessments():
+    from rocket.workflows.shorts import classify_shorts_v2_edge
+
+    production = {"n": 10, "short_5d_mean": 0.02, "short_20d_mean": 0.015, "mae_20d_median": 0.03}
+    core = {"n": 32, "short_5d_mean": 0.006, "short_20d_mean": 0.0001, "mae_20d_median": 0.06}
+    live = {"n": 40, "short_5d_mean": 0.008, "short_20d_mean": 0.001, "mae_20d_median": 0.055}
+    classified = classify_shorts_v2_edge(production=production, core=core, live=live)
+    assert classified["core_edge_assessment"] == "EDGE_NOT_VALIDATED"
+    assert classified["live_v2_edge_assessment"] == "EDGE_NOT_VALIDATED"
+    assert classified["edge_assessment"] == classified["live_v2_edge_assessment"]
+    assert classified["infrastructure_assessment"] == "useful"
+    better_live = {"n": 16, "short_5d_mean": 0.03, "short_20d_mean": 0.03, "mae_20d_median": 0.03}
+    split = classify_shorts_v2_edge(production=production, core=core, live=better_live)
+    assert split["core_edge_assessment"] == "EDGE_NOT_VALIDATED"
+    assert split["live_v2_edge_assessment"] == "PROMISING_BUT_INSUFFICIENT_SAMPLE"
+    assert split["edge_assessment"] == "PROMISING_BUT_INSUFFICIENT_SAMPLE"
+
+
+def test_multi_theme_attribution_includes_every_theme_without_duplicating_trades():
+    from rocket.providers.ism_universe import THEME_ATTRIBUTION_NOTE, theme_attribution
+
+    trade = {
+        "ticker": "CAT",
+        "industry": "machinery",
+        "report_type": "manufacturing",
+        "short_20d": 0.10,
+        "themes": [
+            {"industry": "machinery", "report_type": "manufacturing"},
+            {"industry": "construction", "report_type": "services"},
+        ],
+    }
+    other = {
+        "ticker": "WY",
+        "industry": "wood products",
+        "report_type": "manufacturing",
+        "short_20d": -0.02,
+        "themes": [{"industry": "wood products", "report_type": "manufacturing"}],
+    }
+    attributed = theme_attribution([trade, other])
+    assert attributed["trade_count"] == 2
+    assert attributed["attributed_rows"] == 3
+    assert attributed["note"] == THEME_ATTRIBUTION_NOTE
+    assert attributed["industries"]["manufacturing:machinery"]["n"] == 1
+    assert attributed["industries"]["services:construction"]["n"] == 1
+    assert attributed["industries"]["manufacturing:wood products"]["n"] == 1
+    assert attributed["industries"]["manufacturing:machinery"]["mean_short_20d"] == 0.10
+    assert attributed["industries"]["services:construction"]["mean_short_20d"] == 0.10

@@ -31,6 +31,7 @@ def instrument_record(
     source: str,
     observed_at: datetime | str,
     available_at: datetime | str | None,
+    listing_at: datetime | str | None = None,
     token_symbol: str | None = None,
     instrument_type: str | None = None,
     long_available: bool | None = None,
@@ -43,6 +44,7 @@ def instrument_record(
     try:
         observed = parse_datetime(observed_at)
         available = parse_datetime(available_at)
+        listed = parse_datetime(listing_at) if listing_at not in (None, "") else None
     except ValueError:
         return None
     if observed is None:
@@ -64,6 +66,7 @@ def instrument_record(
         "basis": extras.get("basis") if extras else None,
         "observed_at": observed.isoformat(),
         "available_at": available.isoformat() if available else None,
+        "listing_at": listed.isoformat() if listed else None,
         "source": source,
     }
     if extras:
@@ -198,7 +201,8 @@ def parse_kraken_xstock_perps(
             venue="kraken_xstocks_perps",
             source=KRAKEN_FUTURES_INSTRUMENTS_URL,
             observed_at=retrieved_at,
-            available_at=listed or retrieved_at,
+            available_at=retrieved_at,
+            listing_at=listed,
             token_symbol=symbol or token,
             instrument_type="tokenized_perp",
             long_available=short_available,
@@ -214,7 +218,10 @@ def parse_kraken_xstock_perps(
                 "spread": spread,
                 "basis": None if mark is None or index in (None, 0) else mark / index - 1,
                 "opening_date": listed,
-                "availability_basis": "Kraken instrument openingDate when present; not inferred from spot listings",
+                "availability_basis": (
+                    "Kraken openingDate is listing_at only; short_available is the "
+                    "observed snapshot and does not backfill historical tradeability"
+                ),
             },
         )
         if record:
@@ -319,9 +326,11 @@ def eligibility(
     """Research eligibility is independent of venue shortability.
 
     Historical execution eligibility requires an instrument snapshot whose
-    `available_at` is known and <= decision time, and `short_available` is True.
+    `observed_at` is known and <= decision time, and `short_available` is True.
+    `listing_at` / `openingDate` only proves the contract existed by that date.
+    It does not prove later tradeability, short availability, or liquidity.
     Tokenized spot never implies a short. Present listings never backfill
-    January 2026 availability.
+    historical shortability.
     """
     del allow_current_as_historical
     ticker = underlying.strip().upper()
@@ -334,10 +343,10 @@ def eligibility(
     executable = []
     for row in matches:
         try:
-            available = parse_datetime(row.get("available_at"))
+            observed = parse_datetime(row.get("observed_at"))
         except ValueError:
-            available = None
-        if available is None or available > now:
+            observed = None
+        if observed is None or observed > now:
             continue
         if row.get("instrument_type") == "tokenized_spot" and row.get("short_available") is not True:
             continue

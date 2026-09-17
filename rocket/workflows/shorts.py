@@ -186,11 +186,14 @@ def _observed_deterioration(row: Mapping[str, Any], *, mode: str = "any") -> boo
     if mode == "fundamentals":
         return fund
     if mode == "cashflow_required":
-        if quality_state in {"", "UNKNOWN"}:
-            return None
-        if fund is False:
+        cashflow_true = quality_state == "DETERIORATING"
+        cashflow_false = quality_state in {"IMPROVING", "FLAT"}
+        cashflow_unknown = not cashflow_true and not cashflow_false
+        if fund is False or cashflow_false:
             return False
-        return quality_state == "DETERIORATING"
+        if fund is None or cashflow_unknown:
+            return None
+        return True
     if fund is True:
         flags.append(True)
     elif fund is False:
@@ -347,6 +350,48 @@ def score_shorts_v2(
         "deterioration_mode": deterioration_mode,
         "rr_min": rr_min,
         "bearish_catalysts": bearish,
+    }
+
+
+def assess_edge(production, expanded, candidate):
+    """Coverage is not alpha. Beating only the expanded baseline is not enough."""
+    del expanded
+    prod_n, cand_n = production.get("n") or 0, candidate.get("n") or 0
+    prod_20 = production.get("short_20d_mean")
+    cand_20 = candidate.get("short_20d_mean")
+    prod_5 = production.get("short_5d_mean")
+    cand_5 = candidate.get("short_5d_mean")
+    prod_mae = production.get("mae_20d_median")
+    cand_mae = candidate.get("mae_20d_median")
+    if prod_n < 5 or cand_n < 8:
+        return "EDGE_NOT_VALIDATED"
+    clearly_better = (
+        prod_20 is not None and cand_20 is not None and cand_20 > prod_20 + 0.005
+        and prod_5 is not None and cand_5 is not None and cand_5 >= prod_5
+        and (prod_mae is None or cand_mae is None or cand_mae <= prod_mae + 0.01)
+        and cand_n >= 15 and prod_n >= 8
+    )
+    clearly_worse = (
+        prod_20 is not None and cand_20 is not None and cand_20 < prod_20 - 0.01 and cand_n >= 15
+    )
+    if clearly_better and (prod_n + cand_n) >= 40:
+        return "IMPROVED_HISTORICAL_SIGNAL"
+    if clearly_better:
+        return "PROMISING_BUT_INSUFFICIENT_SAMPLE"
+    if clearly_worse and prod_n >= 15:
+        return "REGRESSION"
+    return "EDGE_NOT_VALIDATED"
+
+
+def classify_shorts_v2_edge(*, production, core, live):
+    """Core = A3 vs A0. Live = A6 vs A0. Top-level edge follows live v2."""
+    core_assessment = assess_edge(production, None, core)
+    live_assessment = assess_edge(production, None, live)
+    return {
+        "core_edge_assessment": core_assessment,
+        "live_v2_edge_assessment": live_assessment,
+        "edge_assessment": live_assessment,
+        "infrastructure_assessment": "useful",
     }
 
 

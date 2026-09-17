@@ -166,6 +166,9 @@ def build_short_universe(
     }
 
 
+THEME_ATTRIBUTION_NOTE = "theme attribution is non-additive: one trade may appear in multiple theme buckets"
+
+
 def primary_seed(seeds: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
     """One ticker may map to several ISM themes; pick the worst rank as the primary seed."""
     rows = [dict(seed) for seed in seeds if str(seed.get("ticker") or "")]
@@ -176,3 +179,56 @@ def primary_seed(seeds: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
         seed.get("ism_rank") if seed.get("ism_rank") is not None else 10**9,
         str(seed.get("industry") or ""),
     ))
+
+
+def theme_keys(row: Mapping[str, Any]) -> list[str]:
+    """Industry/theme keys for a single trade. Does not duplicate the trade."""
+    keys: list[str] = []
+    seen: set[str] = set()
+    themes = row.get("themes")
+    if not isinstance(themes, Sequence) or isinstance(themes, (str, bytes)):
+        themes = []
+    for theme in themes:
+        if not isinstance(theme, Mapping):
+            continue
+        industry = str(theme.get("industry") or row.get("industry") or "").strip()
+        report = str(theme.get("report_type") or row.get("report_type") or "").strip()
+        if not industry:
+            continue
+        key = f"{report}:{industry}"
+        if key not in seen:
+            seen.add(key)
+            keys.append(key)
+    if not keys:
+        industry = str(row.get("industry") or "").strip()
+        if industry:
+            keys.append(f"{row.get('report_type') or ''}:{industry}")
+    return keys
+
+
+def theme_attribution(signals: Sequence[Mapping[str, Any]], *, value_key: str = "short_20d") -> dict[str, Any]:
+    """Bucket 20d (or other) returns by every ISM theme. n can sum above trade count."""
+    import statistics
+    from collections import defaultdict
+
+    industry_pnl: dict[str, list[float]] = defaultdict(list)
+    for row in signals:
+        value = row.get(value_key)
+        if value is None:
+            continue
+        for key in theme_keys(row):
+            industry_pnl[key].append(value)
+    industries = {
+        key: {
+            "n": len(vals),
+            "mean_short_20d": statistics.fmean(vals),
+            "median_short_20d": statistics.median(vals),
+        }
+        for key, vals in sorted(industry_pnl.items())
+    }
+    return {
+        "industries": industries,
+        "note": THEME_ATTRIBUTION_NOTE,
+        "trade_count": len(signals),
+        "attributed_rows": sum(row["n"] for row in industries.values()),
+    }

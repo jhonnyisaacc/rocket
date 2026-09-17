@@ -7,7 +7,9 @@ proof of durable edge and is **not** a deployment recommendation.
 | Layer | Verdict |
 |---|---|
 | Infrastructure | **useful** |
-| Historical edge vs production | **`EDGE_NOT_VALIDATED`** |
+| Core edge (A3 vs A0) | **`EDGE_NOT_VALIDATED`** |
+| Live v2 edge (A6 vs A0) | **`EDGE_NOT_VALIDATED`** |
+| Top-level `edge_assessment` | **`EDGE_NOT_VALIDATED`** (follows live A6) |
 
 Coverage is not alpha. Beating only an expanded-universe baseline is not
 enough. A0’s +2.3% five-day mean is a **ten-trade, WY-heavy book**, not a
@@ -28,8 +30,9 @@ production edge that v2 failed to beat by bad luck.
 - 8-K / S-1 / S-3 filings use SEC submissions `filingDate`, kept only if filed
   in the prior 45 days. Generic items are **not** bearish.
 - One entry per ticker per ISM month, at the first trigger. Multi-theme names
-  (same ticker in manufacturing and services) are one trade with both themes
-  attributed.
+  (same ticker in manufacturing and services) remain **one trade** in P&amp;L,
+  n, win rate, and MAE/MFE. Theme/industry tables attribute that same return
+  to **every** contributing ISM theme. Theme attribution is non-additive.
 - Default entry is `CLOSE_SIGNAL`. `NEXT_SESSION_OPEN` is reported separately.
 - Short return is the negative of the underlying return. Borrow, locate, and
   funding are UNKNOWN and are **not** in the P&amp;L.
@@ -57,9 +60,11 @@ exist for January–August 2026. Revisions stay `HISTORICALLY_UNAVAILABLE`.
 ### Tokenized execution
 
 xStocks, Kraken xStock perps, and Ondo perps were observed at run time. Spot
-never implies a short. Kraken `openingDate` is a listing vintage only when
-present; it is not applied to historical entries. No current research name is
-`EXECUTION_ELIGIBLE`.
+never implies a short. Kraken `openingDate` is `listing_at` only.
+`available_at` equals `observed_at`. A February listing date on a September
+snapshot does **not** prove March shortability. Historical
+`EXECUTION_ELIGIBLE` requires `observed_at` ≤ decision time. No current
+research name is `EXECUTION_ELIGIBLE`.
 
 ## Production baseline
 
@@ -136,10 +141,18 @@ recover the sparse production book.
 
 ### Does cash-flow quality help?
 
-A3 → A4 requires an observed cash-flow-quality state of `DETERIORATING` and
-does not treat `UNKNOWN` as bearish. Dropped: `ADM` (flat), `DD` (unknown),
-`DHI` / `PHM` (improving). n 32 → 27. Twenty-day mean +0.01% → +0.44%. Small,
-same-direction increment. Still below A0, still carrying the `PVH` 39.6% MAE.
+A4 is strictly **A3 + deteriorating cash flow**: `company_fundamentals` must
+be True **and** `cash_flow_quality.state` must be `DETERIORATING`. Fundamentals
+UNKNOWN or cash-flow UNKNOWN stay UNKNOWN. Fundamentals False or cash-flow not
+deteriorating is False. Cash-flow-only names can still pass A6 (`any`); they
+cannot pass A4.
+
+Dropped from A3: `ADM` (flat), `DD` (unknown cash flow), `DHI` / `PHM`
+(improving). A4 has no extras versus A3. n 32 → 27. Twenty-day mean +0.01% →
++0.44%. Sample numbers did **not** change versus the previous A4 run, because
+this window had no fundamentals-UNKNOWN + cash-flow-DETERIORATING triggers.
+The semantics are now a clean increment. Still below A0, still carrying the
+`PVH` 39.6% MAE.
 
 ### Does the live v2 default help?
 
@@ -199,7 +212,7 @@ Present-tense snapshot at 2026-09-16:
 
 | Provider | Status | Coverage |
 |---|---|---|
-| xstocks.public.assets | HEALTHY | 777 |
+| xstocks.public.assets | HEALTHY | 827 |
 | kraken.futures.xstocks_perps | HEALTHY | 16 |
 | ondo.perps.contracts | HEALTHY | 81 |
 | ondo.current_registry | PARTIAL | reviewed mints; not historical |
@@ -208,8 +221,21 @@ August 2026 research names: `ADM`, `ADP`, `BG`, `CTAS`, `CTVA`, `DD`, `DHI`,
 `DOW`, `LEN`, `LPX`, `LYB`, `PAYX`, `PHM`, `UFPI`, `WY`.
 
 `EXECUTION_ELIGIBLE` among those names: **none**. Tokenized spot does not
-count. Historical Backtest B is not run. The overlay is useful infrastructure
-for the caller; it is not a historical short book.
+count. Historical execution overlay is not run. The overlay is useful
+infrastructure for the caller; it is not a historical short book.
+
+## Edge assessment
+
+| Assessment | Comparison | Result |
+|---|---|---|
+| `core_edge_assessment` | A3 vs A0 | `EDGE_NOT_VALIDATED` |
+| `live_v2_edge_assessment` | A6 vs A0 | `EDGE_NOT_VALIDATED` |
+| `edge_assessment` | follows live A6 | `EDGE_NOT_VALIDATED` |
+| `infrastructure_assessment` | architecture, not P&amp;L | `useful` |
+
+A3 is the core research increment (top-3 + fundamentals + relative). A6 is
+what `--strategy shorts_v2` actually runs (`deterioration_mode=any`). Live
+default remains `ism_simple`.
 
 ## Month-by-month (A3 and A6)
 
@@ -237,6 +263,11 @@ educational services.
 
 Those means are **one-to-six observations**. Attribution, not a sector model.
 `PVH` is why A3/A6 max MAE is 39.6% while A0 stayed under 10%.
+
+Theme/industry tables are **non-additive**: one ticker, one trade, one ISM
+month in P&amp;L; every contributing theme can show that same 20-day return.
+This nine-month TRIGGERED sample had **zero** multi-theme names, so bucket n
+still matches the 20-day-complete trade count.
 
 ## Factor attribution example
 

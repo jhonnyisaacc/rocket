@@ -87,9 +87,11 @@ The provider can represent venue, token symbol, long/short availability,
 spot/perp, funding, spread, volume, open interest, mark, basis, and clocks
 when known. xStocks public listings and the current ONDO mint registry are
 **present-tense**. Tokenized spot never implies a short. Kraken xStock perps
-and Ondo perps can mark `short_available` only on a current snapshot; Kraken
-`openingDate` is a listing vintage, not a historical short book. Historical
-execution eligibility is not inferred backward.
+and Ondo perps can mark `short_available` only on a current snapshot. Kraken
+`openingDate` is `listing_at` metadata; `available_at` equals `observed_at`.
+A February listing date on a September snapshot does not prove March
+shortability. Historical execution eligibility requires `observed_at` ≤
+decision time.
 
 Traditional borrow (fee, shares available, days to cover) and tokenized-perp
 constraints (funding, OI, spread, basis) share the names `short_availability`,
@@ -125,7 +127,8 @@ where to look. Expanding industries are still mapped in full for the long path.
 - Research P&amp;L may use next-session open; it is measured and does not
   degrade the sample versus close-of-signal.
 - No portfolio sizing is implemented. Regime changes confidence/risk class only.
-- Historical edge vs the sparse `ism_simple` book is **`EDGE_NOT_VALIDATED`**.
-  Keep the architecture; do not switch the live default.
+- Historical core edge (A3 vs A0) and live-v2 edge (A6 vs A0) are both
+  **`EDGE_NOT_VALIDATED`**. Top-level `edge_assessment` follows A6. Keep the
+  architecture; do not switch the live default.
 
 See `docs/analysis/shorts_v2_backtest.md` for the incremental comparison.

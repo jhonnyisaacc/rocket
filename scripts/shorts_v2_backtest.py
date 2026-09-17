@@ -7,7 +7,6 @@ import json
 import math
 import statistics
 import time
-from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -20,6 +19,7 @@ from rocket.providers.ism_universe import (
     build_short_universe,
     primary_seed,
     select_contracting_industries,
+    theme_attribution,
 )
 from rocket.providers.sec_facts import (
     SecFacts,
@@ -39,7 +39,7 @@ from rocket.providers.short_quality import (
     risk_reward,
 )
 from rocket.providers.tokenized_equities import acquire_tokenized_snapshot, eligibility
-from rocket.workflows.shorts import score_ism_short_candidate, score_shorts_v2
+from rocket.workflows.shorts import classify_shorts_v2_edge, score_ism_short_candidate, score_shorts_v2
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS_PATH = ROOT / "docs/analysis/data/ism_reports_2026.json"
@@ -406,16 +406,16 @@ def run_variant(name, pairs, exposures, prices, sec, spy_history, *, top_n, spar
         })
     summary = summarize(signals)
     summary["skipped_missing_open"] = skipped_open
-    industry_pnl = defaultdict(list)
-    for row in signals:
-        if row.get("short_20d") is None:
-            continue
-        industry_pnl[f"{row.get('report_type')}:{row.get('industry')}"].append(row["short_20d"])
-    industries = {
-        key: {"n": len(vals), "mean_short_20d": statistics.fmean(vals), "median_short_20d": statistics.median(vals)}
-        for key, vals in sorted(industry_pnl.items())
+    attributed = theme_attribution(signals)
+    return {
+        "name": name,
+        "summary": summary,
+        "monthly": monthly,
+        "signals": signals,
+        "industries": attributed["industries"],
+        "theme_attribution_note": attributed["note"],
+        "entry_mode": entry_mode,
     }
-    return {"name": name, "summary": summary, "monthly": monthly, "signals": signals, "industries": industries, "entry_mode": entry_mode}
 
 
 def compact_summary(summary):
@@ -438,36 +438,6 @@ def delta(left, right, key):
     if a is None or b is None:
         return None
     return b - a
-
-
-def assess_edge(production, expanded, v2):
-    """Coverage is not alpha. Beating only the expanded baseline is not enough."""
-    del expanded
-    prod_n, v2_n = production.get("n") or 0, v2.get("n") or 0
-    prod_20 = production.get("short_20d_mean")
-    v2_20 = v2.get("short_20d_mean")
-    prod_5 = production.get("short_5d_mean")
-    v2_5 = v2.get("short_5d_mean")
-    prod_mae = production.get("mae_20d_median")
-    v2_mae = v2.get("mae_20d_median")
-    if prod_n < 5 or v2_n < 8:
-        return "EDGE_NOT_VALIDATED"
-    clearly_better = (
-        prod_20 is not None and v2_20 is not None and v2_20 > prod_20 + 0.005
-        and prod_5 is not None and v2_5 is not None and v2_5 >= prod_5
-        and (prod_mae is None or v2_mae is None or v2_mae <= prod_mae + 0.01)
-        and v2_n >= 15 and prod_n >= 8
-    )
-    clearly_worse = (
-        prod_20 is not None and v2_20 is not None and v2_20 < prod_20 - 0.01 and v2_n >= 15
-    )
-    if clearly_better and (prod_n + v2_n) >= 40:
-        return "IMPROVED_HISTORICAL_SIGNAL"
-    if clearly_better:
-        return "PROMISING_BUT_INSUFFICIENT_SAMPLE"
-    if clearly_worse and prod_n >= 15:
-        return "REGRESSION"
-    return "EDGE_NOT_VALIDATED"
 
 
 def main():
@@ -543,7 +513,7 @@ def main():
     expanded = variants["A1_EXPANDED_ONLY"]["summary"]
     v2_core = variants["A3_TOP3_RELATIVE"]["summary"]
     live_v2 = variants["A6_FULL_V2"]["summary"]
-    assessment = assess_edge(production, expanded, v2_core)
+    classified = classify_shorts_v2_edge(production=production, core=v2_core, live=live_v2)
 
     comparisons = {
         "production_to_expanded": {
@@ -567,7 +537,7 @@ def main():
             "mae_20d_median_delta": delta(expanded, v2_core, "mae_20d_median"),
         },
         "production_to_v2": {
-            "question": "Did v2 improve signal quality versus the production baseline?",
+            "question": "Did core A3 improve signal quality versus the production baseline?",
             "from": "A0_PRODUCTION",
             "to": "A3_TOP3_RELATIVE",
             "from_n": production["n"],
@@ -575,6 +545,16 @@ def main():
             "short_5d_mean_delta": delta(production, v2_core, "short_5d_mean"),
             "short_20d_mean_delta": delta(production, v2_core, "short_20d_mean"),
             "mae_20d_median_delta": delta(production, v2_core, "mae_20d_median"),
+        },
+        "production_to_live_v2": {
+            "question": "Did live Shorts v2 (A6) improve signal quality versus the production baseline?",
+            "from": "A0_PRODUCTION",
+            "to": "A6_FULL_V2",
+            "from_n": production["n"],
+            "to_n": live_v2["n"],
+            "short_5d_mean_delta": delta(production, live_v2, "short_5d_mean"),
+            "short_20d_mean_delta": delta(production, live_v2, "short_20d_mean"),
+            "mae_20d_median_delta": delta(production, live_v2, "mae_20d_median"),
         },
         "close_vs_next_open_production": {
             "close": compact_summary(production),
@@ -597,7 +577,11 @@ def main():
         "months": [pair["reference_month"] for pair in pairs],
         "mapping_mode": "fixed unless named strict_pit",
         "estimate_revisions": "HISTORICALLY_UNAVAILABLE",
-        "tokenized_historical": "Kraken perp openingDate used only as listing vintage when present; xStocks/Ondo spot and Ondo perps are present-tense",
+        "tokenized_historical": (
+            "Kraken openingDate is listing_at only; available_at equals observed_at. "
+            "Present snapshots never backfill historical shortability. "
+            "xStocks/Ondo spot and Ondo perps are present-tense."
+        ),
         "tokenized_current_research_names": current_names,
         "tokenized_current_execution_eligible": executable_now,
         "tokenized_current_instruments": executable_instruments,
@@ -606,30 +590,41 @@ def main():
         "comparisons": comparisons,
         "variants": {name: {k: v for k, v in row.items() if k != "signals"} | {"signal_count": len(row["signals"]), "attributions": row["signals"][:80]}
                      for name, row in variants.items()},
+        "theme_attribution_note": variants["A6_FULL_V2"].get("theme_attribution_note"),
         "limitations": (
             "FMP/Massive keys were not present in this run, so live-style estimate revisions could not be reconstructed. "
             "SEC 10-K facts supply reported EPS/cash-flow quality with filing dates. "
             "Yahoo daily availability is approximated as NYSE session close; next-session open uses the following bar's open. "
             "Industry mappings were reviewed in September 2026; Backtest 1 applies them historically as a labeled fixed-universe test. "
             "Generic 8-K items are context unless the item itself is a structured bearish event (2.06, 4.02) or earnings actual < estimate. "
-            "Borrow fees, funding as P&L, and squeeze metrics were UNKNOWN."
+            "Borrow fees, funding as P&L, and squeeze metrics were UNKNOWN. "
+            "Theme attribution is non-additive: one trade may appear in multiple theme buckets."
         ),
-        "infrastructure_assessment": "useful",
-        "edge_assessment": assessment,
-        "assessment": assessment,
+        "infrastructure_assessment": classified["infrastructure_assessment"],
+        "core_edge_assessment": classified["core_edge_assessment"],
+        "live_v2_edge_assessment": classified["live_v2_edge_assessment"],
+        "edge_assessment": classified["edge_assessment"],
+        "assessment": classified["edge_assessment"],
         "live_v2_n": live_v2["n"],
     }
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     OUT_JSON.write_text(json.dumps(payload, indent=2, default=str) + "\n")
+    a4 = variants["A4_TOP3_RELATIVE_CASHFLOW"]["summary"]
     print(json.dumps({
-        "assessment": assessment,
+        "core_edge_assessment": classified["core_edge_assessment"],
+        "live_v2_edge_assessment": classified["live_v2_edge_assessment"],
+        "edge_assessment": classified["edge_assessment"],
+        "infrastructure_assessment": classified["infrastructure_assessment"],
         "months": payload["months"],
         "A0_n": production["n"],
         "A1_n": expanded["n"],
         "A3_n": v2_core["n"],
+        "A4_n": a4["n"],
+        "A6_n": live_v2["n"],
         "A0_short_5_10_20": [production.get("short_5d_mean"), production.get("short_10d_mean"), production.get("short_20d_mean")],
-        "A1_short_5_10_20": [expanded.get("short_5d_mean"), expanded.get("short_10d_mean"), expanded.get("short_20d_mean")],
         "A3_short_5_10_20": [v2_core.get("short_5d_mean"), v2_core.get("short_10d_mean"), v2_core.get("short_20d_mean")],
+        "A4_short_5_10_20": [a4.get("short_5d_mean"), a4.get("short_10d_mean"), a4.get("short_20d_mean")],
+        "A6_short_5_10_20": [live_v2.get("short_5d_mean"), live_v2.get("short_10d_mean"), live_v2.get("short_20d_mean")],
         "executable_now": executable_now,
         "json": str(OUT_JSON),
     }, indent=2))
