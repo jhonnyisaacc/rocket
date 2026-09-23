@@ -259,3 +259,64 @@ def test_helius_confirm_does_not_copy_the_key_into_the_result(monkeypatch):
     assert result.payload["selected"][0]["state"] == "WATCH"
     assert result.payload["selected"][0]["bundle_or_dev_hold"]["dev_hold"] == "UNKNOWN"
     assert result.payload["selected"][0]["bundle_or_dev_hold"]["top1_holder_bps"] == 25000 * 10_000 // supply
+
+
+def _json_documents(text: str) -> list[dict]:
+    decoder = json.JSONDecoder()
+    index = 0
+    documents = []
+    while index < len(text):
+        while index < len(text) and text[index].isspace():
+            index += 1
+        if index >= len(text):
+            break
+        document, index = decoder.raw_decode(text, index)
+        documents.append(document)
+    return documents
+
+
+def test_memecoin_scan_emits_one_json_document_per_path(tmp_path):
+    from typer.testing import CliRunner
+
+    from rocket.cli import app
+
+    runner = CliRunner()
+    legacy = {
+        "rows": [{
+            "asset": "SAME",
+            "chain_id": "eip155:1",
+            "contract_address": "0x" + "1" * 40,
+            "decision_time": NOW.isoformat(),
+            "available_at": NOW.isoformat(),
+            "features": {"volume_acceleration": 3, "liquidity_usd": 50_000},
+        }],
+    }
+    legacy_path = tmp_path / "legacy.json"
+    legacy_path.write_text(json.dumps(legacy), encoding="utf-8")
+    radar_path = tmp_path / "radar.json"
+    radar_path.write_text("[]", encoding="utf-8")
+    missing = tmp_path / "missing-spool"
+    cases = [
+        (["--input", str(legacy_path)], "legacy"),
+        (["--input", str(radar_path)], "radar"),
+        ([], "spool"),
+    ]
+    for extra, kind in cases:
+        result = runner.invoke(app, [
+            "memecoin", "scan", "--state-dir", str(tmp_path / kind), "--spool", str(missing), *extra,
+        ])
+        documents = _json_documents(result.stdout)
+        assert len(documents) == 1
+        payload = documents[0]["payload"]
+        assert payload["edge"] == "NO_EDGE_VALIDATED"
+        assert payload["execution_enabled"] is False
+        if kind == "legacy":
+            assert "coverage_status" not in payload
+            assert payload["selected"][0]["asset"] == "SAME"
+            assert "state" not in payload["selected"][0]
+        elif kind == "radar":
+            assert payload["coverage_status"] == "EMPTY_INTAKE"
+            assert payload["selected"] == []
+        else:
+            assert payload["coverage_status"] == "DATA_UNAVAILABLE"
+            assert documents[0]["operational"]["status"] == "UNAVAILABLE"

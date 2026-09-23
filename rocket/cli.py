@@ -478,31 +478,29 @@ def memecoin_scan(
 
     root = state_dir or rocket_home()
     store = ResearchStore(root)
-    if input_file is not None:
-        raw = json.loads(input_file.read_text(encoding="utf-8"))
-        if is_legacy_snapshot(raw):
-            rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
-            emit_result(MemecoinWorkflow(store=store).scan(rows), human=human)
-        decided = datetime.now(UTC)
-        helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
-        try:
-            rows = radar_rows_from_payload(raw)
-            if helius is not None:
-                rows, health = confirm_helius(rows, helius, now=decided)
-                providers = (health,)
-            else:
-                providers = (ProviderHealth(
-                    "helius", OperationalStatus.UNAVAILABLE, decided, "HELIUS_API_KEY_ABSENT", "not_called",
-                ),)
-            result = scan_feed(rows, now=decided, store=store, providers=providers)
-        finally:
-            if helius is not None:
-                helius.close()
-        emit_result(result, human=human)
-    spool_path = spool or default_spool_path(root)
-    helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+    helius = None
     try:
-        result = scan_spool(spool_path, store=store, helius_client=helius)
+        if input_file is not None:
+            raw = json.loads(input_file.read_text(encoding="utf-8"))
+            if is_legacy_snapshot(raw):
+                rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
+                result = MemecoinWorkflow(store=store).scan(rows)
+            else:
+                decided = datetime.now(UTC)
+                helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+                rows = radar_rows_from_payload(raw)
+                if helius is not None:
+                    rows, health = confirm_helius(rows, helius, now=decided)
+                    providers = (health,)
+                else:
+                    providers = (ProviderHealth(
+                        "helius", OperationalStatus.UNAVAILABLE, decided, "HELIUS_API_KEY_ABSENT", "not_called",
+                    ),)
+                result = scan_feed(rows, now=decided, store=store, providers=providers)
+        else:
+            spool_path = spool or default_spool_path(root)
+            helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+            result = scan_spool(spool_path, store=store, helius_client=helius)
     finally:
         if helius is not None:
             helius.close()
