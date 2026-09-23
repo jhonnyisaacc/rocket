@@ -1,0 +1,65 @@
+{
+  "coin": "ZEC",
+  "cutoff": 1779667200000,
+  "forward_bars": 0,
+  "frame": {
+    "blockers": [
+      "reaction_absent"
+    ],
+    "candidate": {
+      "band": [
+        275.8326,
+        328.75250000000005
+      ],
+      "ben": [
+        315.0,
+        318.0
+      ],
+      "factors": [
+        "swing",
+        "institutional",
+        "fvg"
+      ],
+      "pivot": {
+        "available": 1777521600000,
+        "price": 318.0,
+        "side": -1,
+        "t": 1777478400000
+      },
+      "zone": [
+        315.0,
+        318.0
+      ]
+    },
+    "coin": "ZEC",
+    "context": {
+      "cot": "UNKNOWN",
+      "historical_spread": "UNKNOWN",
+      "macro": "UNKNOWN"
+    },
+    "daily_direction": 1,
+    "direction": 1,
+    "eligible": false,
+    "index": 392,
+    "leg": {
+      "bos_time": 1779321600000,
+      "confirmed": true,
+      "direction": 1,
+      "origin": 208.48,
+      "origin_t": 1774742400000,
+      "terminal": 689.57,
+      "terminal_t": 1779235200000
+    },
+    "passive_stop": 651.3448589999999,
+    "status": "rejected",
+    "targets": [
+      323.0,
+      331.87
+    ],
+    "time": 1779667200000,
+    "weekly_direction": 1,
+    "weekly_velocity": 2.536416542205284
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "b9bd03e953ac885ed5c3a73ccd9e3015eabf0993c33da4f979352a92bb4d44c0"
+}

@@ -1,0 +1,27 @@
+test_ambiguity_paths (test_contract.ContractTests.test_ambiguity_paths) ... ok
+test_ben_adverse_side (test_contract.ContractTests.test_ben_adverse_side) ... ok
+test_closer_objective_rejects (test_contract.ContractTests.test_closer_objective_rejects) ... ok
+test_complete_periods_only (test_contract.ContractTests.test_complete_periods_only) ... ok
+test_daily_structure_not_sma (test_contract.ContractTests.test_daily_structure_not_sma) ... ok
+test_finer_bar_timestamps (test_contract.ContractTests.test_finer_bar_timestamps) ... ok
+test_flat_not_trigger (test_contract.ContractTests.test_flat_not_trigger) ... ok
+test_funding_partial_quantity (test_contract.ContractTests.test_funding_partial_quantity) ... ok
+test_future_frame_invariance (test_contract.ContractTests.test_future_frame_invariance) ... ok
+test_gap_stop (test_contract.ContractTests.test_gap_stop) ... ok
+test_missing_funding_not_zero (test_contract.ContractTests.test_missing_funding_not_zero) ... ok
+test_no_next_bar_unresolved (test_contract.ContractTests.test_no_next_bar_unresolved) ... ok
+test_partial_exit (test_contract.ContractTests.test_partial_exit) ... ok
+test_pending_expiry_boundary (test_contract.ContractTests.test_pending_expiry_boundary) ... ok
+test_pivot_confirmation (test_contract.ContractTests.test_pivot_confirmation) ... ok
+test_reaction_is_not_touch (test_contract.ContractTests.test_reaction_is_not_touch) ... ok
+test_release_availability (test_contract.ContractTests.test_release_availability) ... ok
+test_retest_after_break (test_contract.ContractTests.test_retest_after_break) ... ok
+test_schedule_boundary (test_contract.ContractTests.test_schedule_boundary) ... ok
+test_short_partial_exit (test_contract.ContractTests.test_short_partial_exit) ... ok
+test_target_before_limit_not_credited (test_contract.ContractTests.test_target_before_limit_not_credited) ... ok
+test_weekly_warmup_and_gap (test_contract.ContractTests.test_weekly_warmup_and_gap) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.002s
+
+OK

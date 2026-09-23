@@ -1,0 +1,19 @@
+{
+  "coin": "XRP",
+  "cutoff": 1774555200000,
+  "forward_bars": 60,
+  "frame": {
+    "blockers": [
+      "LEGACY BASELINE \u2014 not a primary-workflow trade"
+    ],
+    "candidate": {
+      "zone": [
+        1.3876499999999998,
+        1.4221
+      ]
+    },
+    "time": 1774555200000
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "66c77aca2bca81d5a97345f3134945ad44de624f47fa882466a056e79353615f"
+}

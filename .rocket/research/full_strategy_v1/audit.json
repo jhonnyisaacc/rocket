@@ -1,0 +1,83 @@
+{
+  "checks": {
+    "automation_status": "PAUSED",
+    "baseline_parity": {
+      "known_limitations": "Legacy overlap boundary and funding timestamp count issues intentionally reproduced; not corrected economic reference.",
+      "ledger_exact": true,
+      "rows": 316,
+      "summary_exact": true
+    },
+    "btc_exact_five_minute_hours": 293,
+    "coverage": {
+      "BTC": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      },
+      "ETH": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      },
+      "HYPE": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      },
+      "SOL": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      },
+      "XRP": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      },
+      "ZEC": {
+        "aggregation_exact": true,
+        "end": "2026-09-16T12:00:00+00:00",
+        "four_hour": 1080,
+        "funding": 4320,
+        "funding_missing": 0,
+        "hourly": 4320,
+        "start": "2026-03-20T12:00:00+00:00"
+      }
+    },
+    "fixture_tests": [
+      "Ran 33 tests in 0.028s",
+      "",
+      "OK"
+    ],
+    "fresh_frame_reproduction": 6480,
+    "future_perturbation_real_cutoffs": 18,
+    "historical_admitted_hypotheses": 0,
+    "new_btc_download_matches_frozen": true,
+    "non_overlap": "No historical admitted hypotheses; lifecycle fixture tests executed, historical check vacuous.",
+    "provider_response_hashes": true,
+    "sealed_contract_verified": true,
+    "tracked_diff_paths": []
+  },
+  "completed_at": "2026-09-21T19:54:23.701708+00:00",
+  "started_at": "2026-09-21T19:53:41.113608+00:00"
+}

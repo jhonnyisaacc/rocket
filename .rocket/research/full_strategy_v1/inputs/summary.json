@@ -1,0 +1,744 @@
+{
+  "execution_interval": "1h",
+  "raw_signals": {
+    "BTC": {
+      "signals": 10,
+      "in_zone": 0
+    },
+    "ETH": {
+      "signals": 8,
+      "in_zone": 0
+    },
+    "SOL": {
+      "signals": 10,
+      "in_zone": 0
+    },
+    "XRP": {
+      "signals": 11,
+      "in_zone": 0
+    },
+    "HYPE": {
+      "signals": 32,
+      "in_zone": 0
+    },
+    "ZEC": {
+      "signals": 8,
+      "in_zone": 0
+    }
+  },
+  "legacy": {
+    "ambiguous": 5,
+    "loss": 12,
+    "unresolved": 9,
+    "untriggered": 30,
+    "win": 23
+  },
+  "groups": {
+    "immediate/pessimistic/all": {
+      "n": 53,
+      "net_mean_r": {
+        "10": 0.05979488109655658,
+        "20": 0.037469368841606635,
+        "40": -0.0071816556682932475
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.15152863276894457,
+        0.22406908811586004
+      ],
+      "closed_trade_drawdown_r": 4.6138844138298705,
+      "exposure_asset_hours": 2026.0,
+      "missing_funding_trades": 1,
+      "timeouts": 32
+    },
+    "immediate/pessimistic/without_HYPE": {
+      "n": 34,
+      "net_mean_r": {
+        "10": 0.015461550821826238,
+        "20": -0.009903066139792076,
+        "40": -0.06063230006302869
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.25173954949607125,
+        0.21562723475603743
+      ],
+      "closed_trade_drawdown_r": 4.9920584441840425,
+      "exposure_asset_hours": 1320.0,
+      "missing_funding_trades": 0,
+      "timeouts": 21
+    },
+    "immediate/pessimistic/without_strongest": {
+      "n": 34,
+      "net_mean_r": {
+        "10": 0.015461550821826238,
+        "20": -0.009903066139792076,
+        "40": -0.06063230006302869
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.25173954949607125,
+        0.21562723475603743
+      ],
+      "closed_trade_drawdown_r": 4.9920584441840425,
+      "exposure_asset_hours": 1320.0,
+      "missing_funding_trades": 0,
+      "timeouts": 21
+    },
+    "immediate/pessimistic/early": {
+      "n": 30,
+      "net_mean_r": {
+        "10": 0.14915879878725985,
+        "20": 0.13125803528452767,
+        "40": 0.09545650827906334
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.11859745123781402,
+        0.3679037351175125
+      ],
+      "closed_trade_drawdown_r": 2.084210431845239,
+      "exposure_asset_hours": 1243.0,
+      "missing_funding_trades": 1,
+      "timeouts": 19
+    },
+    "immediate/pessimistic/later": {
+      "n": 16,
+      "net_mean_r": {
+        "10": -0.06160840565923205,
+        "20": -0.09348846291422468,
+        "40": -0.1572485774242099
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.4431654376989261,
+        0.2893279324862411
+      ],
+      "closed_trade_drawdown_r": 3.7648752318486824,
+      "exposure_asset_hours": 521.0,
+      "missing_funding_trades": 0,
+      "timeouts": 9
+    },
+    "immediate/pessimistic/BTC": {
+      "n": 6,
+      "net_mean_r": {
+        "10": 0.1415101501395165,
+        "20": 0.10912506935162042,
+        "40": 0.04435490777582821
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.6048905719022496,
+        0.814338986358856
+      ],
+      "closed_trade_drawdown_r": 1.1832970221751824,
+      "exposure_asset_hours": 162.0,
+      "missing_funding_trades": 0,
+      "timeouts": 1
+    },
+    "immediate/pessimistic/ETH": {
+      "n": 5,
+      "net_mean_r": {
+        "10": 0.48056438618771236,
+        "20": 0.44956945298967427,
+        "40": 0.38757958659359826
+      },
+      "naive_bootstrap95_mean_r": [
+        0.048109751904193886,
+        0.8169258084241029
+      ],
+      "closed_trade_drawdown_r": 0.2727073635012971,
+      "exposure_asset_hours": 170.0,
+      "missing_funding_trades": 0,
+      "timeouts": 3
+    },
+    "immediate/pessimistic/SOL": {
+      "n": 7,
+      "net_mean_r": {
+        "10": 0.19866567341709862,
+        "20": 0.1758632462697803,
+        "40": 0.13025839197514363
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.26741802475862275,
+        0.6752715336382702
+      ],
+      "closed_trade_drawdown_r": 1.155783096034014,
+      "exposure_asset_hours": 281.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "immediate/pessimistic/XRP": {
+      "n": 8,
+      "net_mean_r": {
+        "10": -0.35402943601725695,
+        "20": -0.384548250184895,
+        "40": -0.4455858785201711
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7061681611934525,
+        -0.05593474837563976
+      ],
+      "closed_trade_drawdown_r": 3.07638600147916,
+      "exposure_asset_hours": 362.0,
+      "missing_funding_trades": 0,
+      "timeouts": 7
+    },
+    "immediate/pessimistic/HYPE": {
+      "n": 19,
+      "net_mean_r": {
+        "10": 0.13912820895660036,
+        "20": 0.12224109459779382,
+        "40": 0.0884668658801807
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.19231444477155538,
+        0.4242627947674172
+      ],
+      "closed_trade_drawdown_r": 1.50102583099267,
+      "exposure_asset_hours": 706.0,
+      "missing_funding_trades": 1,
+      "timeouts": 11
+    },
+    "immediate/pessimistic/ZEC": {
+      "n": 8,
+      "net_mean_r": {
+        "10": -0.16057679120190044,
+        "20": -0.1742448315275408,
+        "40": -0.20158091217882154
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.6022802033572311,
+        0.2394675501396488
+      ],
+      "closed_trade_drawdown_r": 2.523983910197086,
+      "exposure_asset_hours": 345.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "immediate/optimistic/all": {
+      "n": 53,
+      "net_mean_r": {
+        "10": 0.05979488109655658,
+        "20": 0.037469368841606635,
+        "40": -0.0071816556682932475
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.15152863276894457,
+        0.22406908811586004
+      ],
+      "closed_trade_drawdown_r": 4.6138844138298705,
+      "exposure_asset_hours": 2026.0,
+      "missing_funding_trades": 1,
+      "timeouts": 32
+    },
+    "immediate/optimistic/without_HYPE": {
+      "n": 34,
+      "net_mean_r": {
+        "10": 0.015461550821826238,
+        "20": -0.009903066139792076,
+        "40": -0.06063230006302869
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.25173954949607125,
+        0.21562723475603743
+      ],
+      "closed_trade_drawdown_r": 4.9920584441840425,
+      "exposure_asset_hours": 1320.0,
+      "missing_funding_trades": 0,
+      "timeouts": 21
+    },
+    "immediate/optimistic/without_strongest": {
+      "n": 34,
+      "net_mean_r": {
+        "10": 0.015461550821826238,
+        "20": -0.009903066139792076,
+        "40": -0.06063230006302869
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.25173954949607125,
+        0.21562723475603743
+      ],
+      "closed_trade_drawdown_r": 4.9920584441840425,
+      "exposure_asset_hours": 1320.0,
+      "missing_funding_trades": 0,
+      "timeouts": 21
+    },
+    "immediate/optimistic/early": {
+      "n": 30,
+      "net_mean_r": {
+        "10": 0.14915879878725985,
+        "20": 0.13125803528452767,
+        "40": 0.09545650827906334
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.11859745123781402,
+        0.3679037351175125
+      ],
+      "closed_trade_drawdown_r": 2.084210431845239,
+      "exposure_asset_hours": 1243.0,
+      "missing_funding_trades": 1,
+      "timeouts": 19
+    },
+    "immediate/optimistic/later": {
+      "n": 16,
+      "net_mean_r": {
+        "10": -0.06160840565923205,
+        "20": -0.09348846291422468,
+        "40": -0.1572485774242099
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.4431654376989261,
+        0.2893279324862411
+      ],
+      "closed_trade_drawdown_r": 3.7648752318486824,
+      "exposure_asset_hours": 521.0,
+      "missing_funding_trades": 0,
+      "timeouts": 9
+    },
+    "immediate/optimistic/BTC": {
+      "n": 6,
+      "net_mean_r": {
+        "10": 0.1415101501395165,
+        "20": 0.10912506935162042,
+        "40": 0.04435490777582821
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.6048905719022496,
+        0.814338986358856
+      ],
+      "closed_trade_drawdown_r": 1.1832970221751824,
+      "exposure_asset_hours": 162.0,
+      "missing_funding_trades": 0,
+      "timeouts": 1
+    },
+    "immediate/optimistic/ETH": {
+      "n": 5,
+      "net_mean_r": {
+        "10": 0.48056438618771236,
+        "20": 0.44956945298967427,
+        "40": 0.38757958659359826
+      },
+      "naive_bootstrap95_mean_r": [
+        0.048109751904193886,
+        0.8169258084241029
+      ],
+      "closed_trade_drawdown_r": 0.2727073635012971,
+      "exposure_asset_hours": 170.0,
+      "missing_funding_trades": 0,
+      "timeouts": 3
+    },
+    "immediate/optimistic/SOL": {
+      "n": 7,
+      "net_mean_r": {
+        "10": 0.19866567341709862,
+        "20": 0.1758632462697803,
+        "40": 0.13025839197514363
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.26741802475862275,
+        0.6752715336382702
+      ],
+      "closed_trade_drawdown_r": 1.155783096034014,
+      "exposure_asset_hours": 281.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "immediate/optimistic/XRP": {
+      "n": 8,
+      "net_mean_r": {
+        "10": -0.35402943601725695,
+        "20": -0.384548250184895,
+        "40": -0.4455858785201711
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7061681611934525,
+        -0.05593474837563976
+      ],
+      "closed_trade_drawdown_r": 3.07638600147916,
+      "exposure_asset_hours": 362.0,
+      "missing_funding_trades": 0,
+      "timeouts": 7
+    },
+    "immediate/optimistic/HYPE": {
+      "n": 19,
+      "net_mean_r": {
+        "10": 0.13912820895660036,
+        "20": 0.12224109459779382,
+        "40": 0.0884668658801807
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.19231444477155538,
+        0.4242627947674172
+      ],
+      "closed_trade_drawdown_r": 1.50102583099267,
+      "exposure_asset_hours": 706.0,
+      "missing_funding_trades": 1,
+      "timeouts": 11
+    },
+    "immediate/optimistic/ZEC": {
+      "n": 8,
+      "net_mean_r": {
+        "10": -0.16057679120190044,
+        "20": -0.1742448315275408,
+        "40": -0.20158091217882154
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.6022802033572311,
+        0.2394675501396488
+      ],
+      "closed_trade_drawdown_r": 2.523983910197086,
+      "exposure_asset_hours": 345.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "retest/pessimistic/all": {
+      "n": 29,
+      "net_mean_r": {
+        "10": 0.12132631835729973,
+        "20": 0.06907171919562824,
+        "40": -0.035437479127714756
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.26304487301309865,
+        0.39433931322972926
+      ],
+      "closed_trade_drawdown_r": 4.593683672030179,
+      "exposure_asset_hours": 651.0,
+      "missing_funding_trades": 1,
+      "timeouts": 6
+    },
+    "retest/pessimistic/without_HYPE": {
+      "n": 22,
+      "net_mean_r": {
+        "10": 0.08749703415697056,
+        "20": 0.030140035250316725,
+        "40": -0.08457396256299098
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.3431420494995587,
+        0.3928644822358416
+      ],
+      "closed_trade_drawdown_r": 4.887417843828896,
+      "exposure_asset_hours": 541.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "retest/pessimistic/without_strongest": {
+      "n": 25,
+      "net_mean_r": {
+        "10": 0.07034651925227944,
+        "20": 0.019745401741013233,
+        "40": -0.0814568332815192
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.34454638316072417,
+        0.3726668625144692
+      ],
+      "closed_trade_drawdown_r": 4.26712411921638,
+      "exposure_asset_hours": 582.0,
+      "missing_funding_trades": 1,
+      "timeouts": 6
+    },
+    "retest/pessimistic/early": {
+      "n": 14,
+      "net_mean_r": {
+        "10": 0.33924238472421325,
+        "20": 0.29647045030700825,
+        "40": 0.21092658147259818
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.16421265488427464,
+        0.7192935850512419
+      ],
+      "closed_trade_drawdown_r": 2.2858306973545863,
+      "exposure_asset_hours": 301.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    },
+    "retest/pessimistic/later": {
+      "n": 11,
+      "net_mean_r": {
+        "10": 0.06653138653399543,
+        "20": -0.0017011776424238313,
+        "40": -0.1381663059952623
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.540903437949963,
+        0.5148072111411856
+      ],
+      "closed_trade_drawdown_r": 3.466444131898405,
+      "exposure_asset_hours": 218.0,
+      "missing_funding_trades": 1,
+      "timeouts": 2
+    },
+    "retest/pessimistic/BTC": {
+      "n": 2,
+      "net_mean_r": {
+        "10": 0.8713650719195021,
+        "20": 0.7520937316705394,
+        "40": 0.5135510511726141
+      },
+      "naive_bootstrap95_mean_r": [
+        0.724805425,
+        0.7793820383410788
+      ],
+      "closed_trade_drawdown_r": 0,
+      "exposure_asset_hours": 15.0,
+      "missing_funding_trades": 0,
+      "timeouts": 0
+    },
+    "retest/pessimistic/ETH": {
+      "n": 4,
+      "net_mean_r": {
+        "10": 0.43995006276367654,
+        "20": 0.3773612032869721,
+        "40": 0.252183484333563
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.5967728405680192,
+        0.9180021829808434
+      ],
+      "closed_trade_drawdown_r": 1.0976853067047077,
+      "exposure_asset_hours": 69.0,
+      "missing_funding_trades": 0,
+      "timeouts": 0
+    },
+    "retest/pessimistic/SOL": {
+      "n": 4,
+      "net_mean_r": {
+        "10": -0.00047333343924066407,
+        "20": -0.05426408401386512,
+        "40": -0.16184558516311398
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7999703784184725,
+        0.6778955397214181
+      ],
+      "closed_trade_drawdown_r": 1.572847415498297,
+      "exposure_asset_hours": 128.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    },
+    "retest/pessimistic/XRP": {
+      "n": 6,
+      "net_mean_r": {
+        "10": -0.1614551385323855,
+        "20": -0.23091980448544328,
+        "40": -0.36984913639155886
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.9063593833594613,
+        0.516523406248154
+      ],
+      "closed_trade_drawdown_r": 1.448304997422869,
+      "exposure_asset_hours": 144.0,
+      "missing_funding_trades": 0,
+      "timeouts": 1
+    },
+    "retest/pessimistic/HYPE": {
+      "n": 7,
+      "net_mean_r": {
+        "10": 0.22764692584404855,
+        "20": 0.1914284401666073,
+        "40": 0.11899146881172482
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.49689024165232276,
+        0.7850283352727642
+      ],
+      "closed_trade_drawdown_r": 1.1575270539906104,
+      "exposure_asset_hours": 110.0,
+      "missing_funding_trades": 1,
+      "timeouts": 1
+    },
+    "retest/pessimistic/ZEC": {
+      "n": 6,
+      "net_mean_r": {
+        "10": -0.10116191308151375,
+        "20": -0.12466272300231317,
+        "40": -0.17166434284391208
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7900992401721817,
+        0.5517979334148332
+      ],
+      "closed_trade_drawdown_r": 2.6852163260645643,
+      "exposure_asset_hours": 185.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    },
+    "retest/optimistic/all": {
+      "n": 29,
+      "net_mean_r": {
+        "10": 0.1903088025105962,
+        "20": 0.1380542033489247,
+        "40": 0.033545005025581706
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.19289768816441552,
+        0.4645748471572305
+      ],
+      "closed_trade_drawdown_r": 3.466444131898405,
+      "exposure_asset_hours": 650.0,
+      "missing_funding_trades": 1,
+      "timeouts": 6
+    },
+    "retest/optimistic/without_HYPE": {
+      "n": 22,
+      "net_mean_r": {
+        "10": 0.08751939963177045,
+        "20": 0.030162400725116608,
+        "40": -0.0845515970881911
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.34312141956124353,
+        0.3928868477106414
+      ],
+      "closed_trade_drawdown_r": 4.887417843828896,
+      "exposure_asset_hours": 540.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "retest/optimistic/without_strongest": {
+      "n": 22,
+      "net_mean_r": {
+        "10": 0.08751939963177045,
+        "20": 0.030162400725116608,
+        "40": -0.0845515970881911
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.34312141956124353,
+        0.3928868477106414
+      ],
+      "closed_trade_drawdown_r": 4.887417843828896,
+      "exposure_asset_hours": 540.0,
+      "missing_funding_trades": 0,
+      "timeouts": 5
+    },
+    "retest/optimistic/early": {
+      "n": 14,
+      "net_mean_r": {
+        "10": 0.33924238472421325,
+        "20": 0.29647045030700825,
+        "40": 0.21092658147259818
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.16421265488427464,
+        0.7192935850512419
+      ],
+      "closed_trade_drawdown_r": 2.2858306973545863,
+      "exposure_asset_hours": 301.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    },
+    "retest/optimistic/later": {
+      "n": 11,
+      "net_mean_r": {
+        "10": 0.248394299301777,
+        "20": 0.18016173512535774,
+        "40": 0.04369660677251927
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.3292258087003785,
+        0.6393311846758466
+      ],
+      "closed_trade_drawdown_r": 3.466444131898405,
+      "exposure_asset_hours": 217.0,
+      "missing_funding_trades": 1,
+      "timeouts": 2
+    },
+    "retest/optimistic/BTC": {
+      "n": 2,
+      "net_mean_r": {
+        "10": 0.8713650719195021,
+        "20": 0.7520937316705394,
+        "40": 0.5135510511726141
+      },
+      "naive_bootstrap95_mean_r": [
+        0.724805425,
+        0.7793820383410788
+      ],
+      "closed_trade_drawdown_r": 0,
+      "exposure_asset_hours": 15.0,
+      "missing_funding_trades": 0,
+      "timeouts": 0
+    },
+    "retest/optimistic/ETH": {
+      "n": 4,
+      "net_mean_r": {
+        "10": 0.43995006276367654,
+        "20": 0.3773612032869721,
+        "40": 0.252183484333563
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.5967728405680192,
+        0.9180021829808434
+      ],
+      "closed_trade_drawdown_r": 1.0976853067047077,
+      "exposure_asset_hours": 69.0,
+      "missing_funding_trades": 0,
+      "timeouts": 0
+    },
+    "retest/optimistic/SOL": {
+      "n": 4,
+      "net_mean_r": {
+        "10": -0.00035032332784132314,
+        "20": -0.05414107390246578,
+        "40": -0.16172257505171467
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7999703784184725,
+        0.6781415599442169
+      ],
+      "closed_trade_drawdown_r": 1.572847415498297,
+      "exposure_asset_hours": 127.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    },
+    "retest/optimistic/XRP": {
+      "n": 6,
+      "net_mean_r": {
+        "10": -0.1614551385323855,
+        "20": -0.23091980448544328,
+        "40": -0.36984913639155886
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.9063593833594613,
+        0.516523406248154
+      ],
+      "closed_trade_drawdown_r": 1.448304997422869,
+      "exposure_asset_hours": 144.0,
+      "missing_funding_trades": 0,
+      "timeouts": 1
+    },
+    "retest/optimistic/HYPE": {
+      "n": 7,
+      "net_mean_r": {
+        "10": 0.5133612115583343,
+        "20": 0.477142725880893,
+        "40": 0.40470575452601054
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.10403745451272396,
+        0.9292972904057831
+      ],
+      "closed_trade_drawdown_r": 1.0447519376293766,
+      "exposure_asset_hours": 110.0,
+      "missing_funding_trades": 1,
+      "timeouts": 1
+    },
+    "retest/optimistic/ZEC": {
+      "n": 6,
+      "net_mean_r": {
+        "10": -0.10116191308151375,
+        "20": -0.12466272300231317,
+        "40": -0.17166434284391208
+      },
+      "naive_bootstrap95_mean_r": [
+        -0.7900992401721817,
+        0.5517979334148332
+      ],
+      "closed_trade_drawdown_r": 2.6852163260645643,
+      "exposure_asset_hours": 185.0,
+      "missing_funding_trades": 0,
+      "timeouts": 2
+    }
+  },
+  "dataset_sha256": "553c6a3a69dbd9723dd40ba16340911d8fe2ec8fad43f2a56567410ca442c99d",
+  "rule_sha256": "be603d7a4a5d08a281d303e900ddec706ed71bb2d5add043a84c620e79d6d28c"
+}

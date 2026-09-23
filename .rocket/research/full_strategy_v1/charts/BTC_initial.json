@@ -1,0 +1,43 @@
+{
+  "coin": "BTC",
+  "cutoff": 1787299200000,
+  "forward_bars": 0,
+  "frame": {
+    "blockers": [
+      "weekly_neutral",
+      "impulse_unavailable",
+      "zone_unavailable",
+      "reaction_absent",
+      "two_objectives_unavailable"
+    ],
+    "candidate": null,
+    "coin": "BTC",
+    "context": {
+      "cot": "UNKNOWN",
+      "historical_spread": "UNKNOWN",
+      "macro": "UNKNOWN"
+    },
+    "daily_direction": 1,
+    "direction": 1,
+    "eligible": false,
+    "index": 922,
+    "leg": {
+      "bos_time": 1787184000000,
+      "confirmed": false,
+      "direction": 1,
+      "origin": 57768.0,
+      "origin_t": 1782864000000,
+      "terminal": 70224.0,
+      "terminal_failed": true,
+      "terminal_t": 1787097600000
+    },
+    "passive_stop": 72440.7552,
+    "status": "rejected",
+    "targets": [],
+    "time": 1787299200000,
+    "weekly_direction": 0,
+    "weekly_velocity": -0.43956043956043955
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "8c8bd438f7f61ee0729af1ab99ccf36c46e2469b9b3a8a9cb792a68248bd5600"
+}

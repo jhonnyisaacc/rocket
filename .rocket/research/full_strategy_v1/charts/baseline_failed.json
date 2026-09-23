@@ -1,0 +1,19 @@
+{
+  "coin": "HYPE",
+  "cutoff": 1776139200000,
+  "forward_bars": 60,
+  "frame": {
+    "blockers": [
+      "LEGACY BASELINE \u2014 not a primary-workflow trade"
+    ],
+    "candidate": {
+      "zone": [
+        40.784,
+        42.7005
+      ]
+    },
+    "time": 1776139200000
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "b81998044a9119a59dd5f042eb6ee7e93ba4e94b38d09212d471f9726e616ef8"
+}

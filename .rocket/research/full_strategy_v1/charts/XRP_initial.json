@@ -1,0 +1,67 @@
+{
+  "coin": "XRP",
+  "cutoff": 1776297600000,
+  "forward_bars": 0,
+  "frame": {
+    "blockers": [
+      "weekly_warmup_unknown",
+      "reaction_absent"
+    ],
+    "candidate": {
+      "band": [
+        1.308224,
+        1.3194
+      ],
+      "ben": [
+        1.3,
+        1.3187
+      ],
+      "factors": [
+        "swing",
+        "institutional",
+        "fvg",
+        "prior_touches"
+      ],
+      "pivot": {
+        "available": 1776096000000,
+        "price": 1.3187,
+        "side": -1,
+        "t": 1776052800000
+      },
+      "zone": [
+        1.308224,
+        1.3187
+      ]
+    },
+    "coin": "XRP",
+    "context": {
+      "cot": "UNKNOWN",
+      "historical_spread": "UNKNOWN",
+      "macro": "UNKNOWN"
+    },
+    "daily_direction": 1,
+    "direction": 1,
+    "eligible": false,
+    "index": 158,
+    "leg": {
+      "bos_time": 1775606400000,
+      "confirmed": true,
+      "direction": 1,
+      "origin": 1.294,
+      "origin_t": 1774742400000,
+      "terminal": 1.3956,
+      "terminal_t": 1775520000000
+    },
+    "passive_stop": 1.3799619900000002,
+    "status": "rejected",
+    "targets": [
+      1.322,
+      1.3345
+    ],
+    "time": 1776297600000,
+    "weekly_direction": null,
+    "weekly_velocity": null
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "f2f084a248dd36edc6e50d45682fb3439c8c4671c474432eadc2b836519133fc"
+}

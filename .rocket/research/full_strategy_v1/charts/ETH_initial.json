@@ -1,0 +1,66 @@
+{
+  "coin": "ETH",
+  "cutoff": 1786406400000,
+  "forward_bars": 0,
+  "frame": {
+    "blockers": [
+      "weekly_neutral",
+      "reaction_absent"
+    ],
+    "candidate": {
+      "band": [
+        1940.775,
+        1958.386
+      ],
+      "ben": [
+        1955.9,
+        1980
+      ],
+      "factors": [
+        "swing",
+        "institutional",
+        "fvg"
+      ],
+      "pivot": {
+        "available": 1784779200000,
+        "price": 1955.9,
+        "side": 1,
+        "t": 1784736000000
+      },
+      "zone": [
+        1955.9,
+        1958.386
+      ]
+    },
+    "coin": "ETH",
+    "context": {
+      "cot": "UNKNOWN",
+      "historical_spread": "UNKNOWN",
+      "macro": "UNKNOWN"
+    },
+    "daily_direction": -1,
+    "direction": -1,
+    "eligible": false,
+    "index": 860,
+    "leg": {
+      "bos_time": 1785628800000,
+      "confirmed": true,
+      "direction": -1,
+      "origin": 1980.8,
+      "origin_t": 1785110400000,
+      "terminal": 1820.7,
+      "terminal_t": 1785542400000
+    },
+    "passive_stop": 1880.48803,
+    "status": "rejected",
+    "targets": [
+      1954.8,
+      1935.2
+    ],
+    "time": 1786406400000,
+    "weekly_direction": 0,
+    "weekly_velocity": 0.5816542200929973
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "78ff279471a930af51518ff55bfbb8533a1dd408753da7dc6155a0afe12a5585"
+}
