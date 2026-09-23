@@ -249,6 +249,76 @@ def fetch_candles(
     )
 
 
+def parse_funding_history(payload: Any) -> tuple[dict[str, Any], ...]:
+    """One fundingHistory response. The venue caps a call at 500 rows; the caller paginates."""
+    if not isinstance(payload, list):
+        raise ValueError("fundingHistory payload must be a list")
+    rows: list[dict[str, Any]] = []
+    for raw in payload:
+        if not isinstance(raw, Mapping):
+            continue
+        try:
+            ts_ms = int(raw["time"])
+            rate = float(raw["fundingRate"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if not math.isfinite(rate):
+            continue
+        rows.append(
+            {
+                "timestamp_ms": ts_ms,
+                "timestamp": datetime.fromtimestamp(ts_ms / 1000, UTC).isoformat(),
+                "funding_rate": rate,
+                "coin": str(raw.get("coin") or ""),
+                "source": "hyperliquid",
+            }
+        )
+    rows.sort(key=lambda row: row["timestamp_ms"])
+    return tuple(rows)
+
+
+def fetch_funding_history(
+    coin: str,
+    *,
+    start_ms: int,
+    end_ms: int | None = None,
+    http: httpx.Client | None = None,
+) -> ProviderResult:
+    """One public fundingHistory request. No signing. Does not page past the venue's 500-row cap."""
+    owns = http is None
+    client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
+    retrieved = datetime.now(UTC)
+    body: dict[str, Any] = {
+        "type": "fundingHistory",
+        "coin": str(coin).strip(),
+        "startTime": int(start_ms),
+    }
+    if end_ms is not None:
+        body["endTime"] = int(end_ms)
+    try:
+        response = client.post(MAINNET_INFO_URL, json=body)
+        response.raise_for_status()
+        records = parse_funding_history(response.json())
+    except (httpx.HTTPError, TypeError, ValueError, KeyError) as exc:
+        if owns:
+            client.close()
+        return ProviderResult(
+            status=OperationalStatus.UNAVAILABLE,
+            failure_kind=type(exc).__name__,
+            source="hyperliquid",
+            extras={"coin": coin, "endpoint": "fundingHistory", "signing": False},
+        )
+    if owns:
+        client.close()
+    return ProviderResult(
+        status=OperationalStatus.HEALTHY if records else OperationalStatus.UNAVAILABLE,
+        records=records,
+        retrieved_at=retrieved,
+        source="hyperliquid",
+        extras={"coin": str(coin).strip(), "endpoint": "fundingHistory", "signing": False, "paged": False},
+    )
+
+
 def fetch_closed_candles(
     coins: Iterable[str],
     *,
