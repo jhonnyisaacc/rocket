@@ -1,0 +1,1304 @@
+[
+  {
+    "btc": [
+      {
+        "canonical_asset_id": "bitcoin",
+        "contract_symbol": "BTC",
+        "features": {
+          "data_source": "hyperliquid",
+          "data_timestamp": "2026-09-15T16:00:00+00:00",
+          "funding": 1.25e-05,
+          "mark_px": 75737.0,
+          "open_interest_usd": 2722859908.21714,
+          "quote_volume_24h": 5642468240.380009,
+          "structure_4h": "MIXED"
+        },
+        "liquidity": {
+          "open_interest": 2722859908.21714,
+          "quote_volume_24h": 5642468240.380009,
+          "reasons": [],
+          "slippage_bps": 0.06602534052569375,
+          "spread_bps": 0.1320506810513875,
+          "state": "PASS"
+        },
+        "observation_timestamp": "2026-09-15T23:29:15.949820+00:00",
+        "rank_score": null,
+        "ranking_state": "ELIGIBLE",
+        "setup_validation": {
+          "reason": "mixed_or_insufficient_structure",
+          "structure": "MIXED",
+          "valid": false
+        },
+        "symbol": "BTC",
+        "universe_rank": 1,
+        "universe_source": "current_top_market_cap",
+        "venue": "hyperliquid"
+      }
+    ],
+    "cot": {
+      "as_of_date": "2026-09-08",
+      "failure_kind": null,
+      "freshness_days": 7,
+      "markets": {
+        "BTC": {
+          "as_of_date": "2026-09-08",
+          "asset": "BTC",
+          "bias": "bearish",
+          "comm_long": 64,
+          "comm_short": 2125,
+          "market": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 1524,
+          "noncomm_long": 17600,
+          "noncomm_short": 16076,
+          "open_interest": 21083,
+          "pct_oi_non_com": 7.228572783759427,
+          "release_date": null,
+          "source": "cftc_direct"
+        },
+        "ETH": {
+          "as_of_date": "2026-09-08",
+          "asset": "ETH",
+          "bias": "bearish",
+          "comm_long": 75,
+          "comm_short": 3226,
+          "market": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 2670,
+          "noncomm_long": 24446,
+          "noncomm_short": 21776,
+          "open_interest": 26564,
+          "pct_oi_non_com": 10.051197108869147,
+          "release_date": null,
+          "source": "cftc_direct"
+        }
+      },
+      "provider_attempts": [
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-15T23:29:19.470007+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "regime": "bearish",
+      "required": false,
+      "scope": "market/regime context; no per-altcoin COT signal",
+      "source": "CFTC futures-only report",
+      "status": "OK",
+      "warnings": []
+    },
+    "decision_time": "2026-09-15T23:29:29.015191+00:00",
+    "funnel": {
+      "cava_context_status": "unavailable",
+      "cot_pass": 1,
+      "cot_regime": "bearish",
+      "cot_scope": "market/regime context; no per-altcoin COT signal",
+      "derivatives_pass": 1,
+      "eligible": 52,
+      "final_candidates": 1,
+      "incomplete_evaluations": 0,
+      "invalid_observations": 0,
+      "liquid": 25,
+      "macro_context_validated": true,
+      "macro_pass": 1,
+      "momentum_pass": 1,
+      "unavailable_instruments": 0,
+      "universe": 226,
+      "universe_policy": "top_100_market_cap_plus_liquid_perps",
+      "universe_size_target": 100
+    },
+    "macro": {
+      "available_at": "2026-09-15T23:29:19.422218+00:00",
+      "contract": "current_macro_v1",
+      "execution_enabled": false,
+      "expires_at": "2026-09-16T05:29:19.422218+00:00",
+      "factors": {
+        "EFFR": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T23:29:18.121210+00:00",
+          "change_4w": 0.0,
+          "citation": "https://fred.stlouisfed.org/series/EFFR",
+          "direction_4w": "unchanged",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-14T00:00:00+00:00",
+          "prior_observation_at": "2026-08-17T00:00:00+00:00",
+          "prior_value": 3.63,
+          "retrieved_at": "2026-09-15T23:29:18.121210+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "percent",
+          "value": 3.63
+        },
+        "RRPONTSYD": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T23:29:19.142331+00:00",
+          "change_4w": 0.5449999999999999,
+          "citation": "https://fred.stlouisfed.org/series/RRPONTSYD",
+          "direction_4w": "rising",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-15T00:00:00+00:00",
+          "prior_observation_at": "2026-08-18T00:00:00+00:00",
+          "prior_value": 0.155,
+          "retrieved_at": "2026-09-15T23:29:19.142331+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "billion USD",
+          "value": 0.7
+        },
+        "WALCL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T23:29:19.422100+00:00",
+          "change_4w": -19336.0,
+          "citation": "https://fred.stlouisfed.org/series/WALCL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 6759955.0,
+          "retrieved_at": "2026-09-15T23:29:19.422100+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 6740619.0
+        },
+        "WDTGAL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T23:29:18.812328+00:00",
+          "change_4w": -115700.0,
+          "citation": "https://fred.stlouisfed.org/series/WDTGAL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 959405.0,
+          "retrieved_at": "2026-09-15T23:29:18.812328+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 843705.0
+        }
+      },
+      "interpretation": {
+        "kind": "INFERENCE",
+        "limitations": "Liquidity components have different observation dates; this is a balance-sheet measure, not a causal estimate or trade signal.",
+        "liquidity": "improving",
+        "rates": "unchanged",
+        "summary": "Net liquidity is rising over four weeks; effective policy rates are unchanged. The rates-based regime is neutral."
+      },
+      "liquidity_change_4w_million_usd": 95819.0,
+      "material_change": {
+        "basis": "versus last material state; liquidity >= max(1%, USD 50bn), rate >= 25bp, regime/direction changes",
+        "changed": false,
+        "reasons": []
+      },
+      "net_liquidity_million_usd": 5896214.0,
+      "regime": "neutral",
+      "regime_basis": "4-week effective Fed funds direction: falling/supportive, rising/restrictive, unchanged/neutral",
+      "retrieved_at": "2026-09-15T23:29:19.422218+00:00",
+      "scope": "US rates and monetary liquidity; no Cava validation implied",
+      "status": "OK",
+      "warnings": []
+    },
+    "mode": "LIVE",
+    "operational": {
+      "providers": [
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "coingecko",
+          "retrieved_at": "2026-09-15T23:29:29.015191+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "hyperliquid",
+          "retrieved_at": "2026-09-15T23:29:15.949820+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-15T23:29:19.470007+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BTC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ETH",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BNB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XRP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SOL",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ZEC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:HYPE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:DOGE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XMR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LINK",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ADA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XLM",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:UNI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:NEAR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SUI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:TAO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:AAVE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:PUMP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ONDO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ENA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:WLD",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:VVV",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LIT",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ARB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ETHFI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:EFFR",
+          "retrieved_at": "2026-09-15T23:29:18.121210+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WDTGAL",
+          "retrieved_at": "2026-09-15T23:29:18.812328+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:RRPONTSYD",
+          "retrieved_at": "2026-09-15T23:29:19.142331+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WALCL",
+          "retrieved_at": "2026-09-15T23:29:19.422100+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "status": "HEALTHY"
+    },
+    "path": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+    "sha256": "204e9d7f1be5825593b6e4702951963f82b63128ac75a252a229317021a7c603",
+    "status": "SETUP_FOUND"
+  },
+  {
+    "btc": [
+      {
+        "canonical_asset_id": "bitcoin",
+        "contract_symbol": "BTC",
+        "features": {
+          "data_source": "hyperliquid",
+          "data_timestamp": "2026-09-15T12:00:00+00:00",
+          "funding": 1.25e-05,
+          "mark_px": 76022.0,
+          "open_interest_usd": 2826760806.0649996,
+          "quote_volume_24h": 5581368338.119127,
+          "structure_4h": "MIXED"
+        },
+        "liquidity": {
+          "open_interest": 2826760806.0649996,
+          "quote_volume_24h": 5581368338.119127,
+          "reasons": [],
+          "slippage_bps": 1.2300584179078804,
+          "spread_bps": 2.460116835815761,
+          "state": "PASS"
+        },
+        "observation_timestamp": "2026-09-15T19:11:48.080009+00:00",
+        "rank_score": null,
+        "ranking_state": "ELIGIBLE",
+        "setup_validation": {
+          "reason": "mixed_or_insufficient_structure",
+          "structure": "MIXED",
+          "valid": false
+        },
+        "symbol": "BTC",
+        "universe_rank": 1,
+        "universe_source": "current_top_market_cap",
+        "venue": "hyperliquid"
+      }
+    ],
+    "cot": {
+      "as_of_date": "2026-09-08",
+      "failure_kind": null,
+      "freshness_days": 7,
+      "markets": {
+        "BTC": {
+          "as_of_date": "2026-09-08",
+          "asset": "BTC",
+          "bias": "bearish",
+          "comm_long": 64,
+          "comm_short": 2125,
+          "market": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 1524,
+          "noncomm_long": 17600,
+          "noncomm_short": 16076,
+          "open_interest": 21083,
+          "pct_oi_non_com": 7.228572783759427,
+          "release_date": null,
+          "source": "cftc_direct"
+        },
+        "ETH": {
+          "as_of_date": "2026-09-08",
+          "asset": "ETH",
+          "bias": "bearish",
+          "comm_long": 75,
+          "comm_short": 3226,
+          "market": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 2670,
+          "noncomm_long": 24446,
+          "noncomm_short": 21776,
+          "open_interest": 26564,
+          "pct_oi_non_com": 10.051197108869147,
+          "release_date": null,
+          "source": "cftc_direct"
+        }
+      },
+      "provider_attempts": [
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-15T19:11:51.204022+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "regime": "bearish",
+      "required": false,
+      "scope": "market/regime context; no per-altcoin COT signal",
+      "source": "CFTC futures-only report",
+      "status": "OK",
+      "warnings": []
+    },
+    "decision_time": "2026-09-15T19:11:59.906685+00:00",
+    "funnel": {
+      "cava_context_status": "unavailable",
+      "cot_pass": 0,
+      "cot_regime": "bearish",
+      "cot_scope": "market/regime context; no per-altcoin COT signal",
+      "derivatives_pass": 0,
+      "eligible": 52,
+      "final_candidates": 0,
+      "incomplete_evaluations": 0,
+      "invalid_observations": 0,
+      "liquid": 24,
+      "macro_context_validated": true,
+      "macro_pass": 0,
+      "momentum_pass": 0,
+      "unavailable_instruments": 0,
+      "universe": 226,
+      "universe_policy": "top_100_market_cap_plus_liquid_perps",
+      "universe_size_target": 100
+    },
+    "macro": {
+      "available_at": "2026-09-15T19:11:51.171956+00:00",
+      "contract": "current_macro_v1",
+      "execution_enabled": false,
+      "expires_at": "2026-09-16T01:11:51.171956+00:00",
+      "factors": {
+        "EFFR": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T19:11:50.235292+00:00",
+          "change_4w": 0.0,
+          "citation": "https://fred.stlouisfed.org/series/EFFR",
+          "direction_4w": "unchanged",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-14T00:00:00+00:00",
+          "prior_observation_at": "2026-08-17T00:00:00+00:00",
+          "prior_value": 3.63,
+          "retrieved_at": "2026-09-15T19:11:50.235292+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "percent",
+          "value": 3.63
+        },
+        "RRPONTSYD": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T19:11:50.913900+00:00",
+          "change_4w": 0.5449999999999999,
+          "citation": "https://fred.stlouisfed.org/series/RRPONTSYD",
+          "direction_4w": "rising",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-15T00:00:00+00:00",
+          "prior_observation_at": "2026-08-18T00:00:00+00:00",
+          "prior_value": 0.155,
+          "retrieved_at": "2026-09-15T19:11:50.913900+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "billion USD",
+          "value": 0.7
+        },
+        "WALCL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T19:11:51.171912+00:00",
+          "change_4w": -19336.0,
+          "citation": "https://fred.stlouisfed.org/series/WALCL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 6759955.0,
+          "retrieved_at": "2026-09-15T19:11:51.171912+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 6740619.0
+        },
+        "WDTGAL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-15T19:11:50.648165+00:00",
+          "change_4w": -115700.0,
+          "citation": "https://fred.stlouisfed.org/series/WDTGAL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 959405.0,
+          "retrieved_at": "2026-09-15T19:11:50.648165+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 843705.0
+        }
+      },
+      "interpretation": {
+        "kind": "INFERENCE",
+        "limitations": "Liquidity components have different observation dates; this is a balance-sheet measure, not a causal estimate or trade signal.",
+        "liquidity": "improving",
+        "rates": "unchanged",
+        "summary": "Net liquidity is rising over four weeks; effective policy rates are unchanged. The rates-based regime is neutral."
+      },
+      "liquidity_change_4w_million_usd": 95819.0,
+      "material_change": {
+        "basis": "versus last material state; liquidity >= max(1%, USD 50bn), rate >= 25bp, regime/direction changes",
+        "changed": true,
+        "reasons": [
+          "initial_state"
+        ]
+      },
+      "net_liquidity_million_usd": 5896214.0,
+      "regime": "neutral",
+      "regime_basis": "4-week effective Fed funds direction: falling/supportive, rising/restrictive, unchanged/neutral",
+      "retrieved_at": "2026-09-15T19:11:51.171956+00:00",
+      "scope": "US rates and monetary liquidity; no Cava validation implied",
+      "status": "OK",
+      "warnings": []
+    },
+    "mode": "LIVE",
+    "operational": {
+      "providers": [
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "coingecko",
+          "retrieved_at": "2026-09-15T19:11:59.906685+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "hyperliquid",
+          "retrieved_at": "2026-09-15T19:11:48.080009+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-15T19:11:51.204022+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BTC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ETH",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BNB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XRP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SOL",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ZEC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:HYPE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:DOGE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XMR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LINK",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ADA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XLM",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:UNI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:NEAR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SUI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:TAO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:AAVE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:PUMP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ONDO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ENA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:WLD",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:VVV",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LIT",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ARB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:EFFR",
+          "retrieved_at": "2026-09-15T19:11:50.235292+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WDTGAL",
+          "retrieved_at": "2026-09-15T19:11:50.648165+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:RRPONTSYD",
+          "retrieved_at": "2026-09-15T19:11:50.913900+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WALCL",
+          "retrieved_at": "2026-09-15T19:11:51.171912+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "status": "HEALTHY"
+    },
+    "path": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+    "sha256": "2a2a506d62ea2e762d824b1afe7687aa45942458be54f90da09030fa35c7d9bd",
+    "status": "NO_SETUP"
+  },
+  {
+    "btc": [
+      {
+        "canonical_asset_id": "bitcoin",
+        "contract_symbol": "BTC",
+        "features": {
+          "data_source": "hyperliquid",
+          "data_timestamp": "2026-09-16T04:00:00+00:00",
+          "funding": 1.25e-05,
+          "mark_px": 75900.0,
+          "open_interest_usd": 2777353821.2640004,
+          "quote_volume_24h": 4988114087.436291,
+          "structure_4h": "MIXED"
+        },
+        "liquidity": {
+          "open_interest": 2777353821.2640004,
+          "quote_volume_24h": 4988114087.436291,
+          "reasons": [],
+          "slippage_bps": 0.0658765868022846,
+          "spread_bps": 0.1317531736045692,
+          "state": "PASS"
+        },
+        "observation_timestamp": "2026-09-16T11:14:31.729712+00:00",
+        "rank_score": null,
+        "ranking_state": "ELIGIBLE",
+        "setup_validation": {
+          "reason": "mixed_or_insufficient_structure",
+          "structure": "MIXED",
+          "valid": false
+        },
+        "symbol": "BTC",
+        "universe_rank": 1,
+        "universe_source": "current_top_market_cap",
+        "venue": "hyperliquid"
+      }
+    ],
+    "cot": {
+      "as_of_date": "2026-09-08",
+      "failure_kind": null,
+      "freshness_days": 8,
+      "markets": {
+        "BTC": {
+          "as_of_date": "2026-09-08",
+          "asset": "BTC",
+          "bias": "bearish",
+          "comm_long": 64,
+          "comm_short": 2125,
+          "market": "BITCOIN - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 1524,
+          "noncomm_long": 17600,
+          "noncomm_short": 16076,
+          "open_interest": 21083,
+          "pct_oi_non_com": 7.228572783759427,
+          "release_date": null,
+          "source": "cftc_direct"
+        },
+        "ETH": {
+          "as_of_date": "2026-09-08",
+          "asset": "ETH",
+          "bias": "bearish",
+          "comm_long": 75,
+          "comm_short": 3226,
+          "market": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
+          "net_non_commercial": 2670,
+          "noncomm_long": 24446,
+          "noncomm_short": 21776,
+          "open_interest": 26564,
+          "pct_oi_non_com": 10.051197108869147,
+          "release_date": null,
+          "source": "cftc_direct"
+        }
+      },
+      "provider_attempts": [
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-16T11:14:35.312773+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "regime": "bearish",
+      "required": false,
+      "scope": "market/regime context; no per-altcoin COT signal",
+      "source": "CFTC futures-only report",
+      "status": "OK",
+      "warnings": []
+    },
+    "decision_time": "2026-09-16T11:14:45.336449+00:00",
+    "funnel": {
+      "cava_context_status": "unavailable",
+      "cot_pass": 0,
+      "cot_regime": "bearish",
+      "cot_scope": "market/regime context; no per-altcoin COT signal",
+      "derivatives_pass": 0,
+      "eligible": 51,
+      "final_candidates": 0,
+      "incomplete_evaluations": 0,
+      "invalid_observations": 0,
+      "liquid": 24,
+      "macro_context_validated": true,
+      "macro_pass": 0,
+      "momentum_pass": 0,
+      "unavailable_instruments": 0,
+      "universe": 227,
+      "universe_policy": "top_100_market_cap_plus_liquid_perps",
+      "universe_size_target": 100
+    },
+    "macro": {
+      "available_at": "2026-09-16T11:14:35.266485+00:00",
+      "contract": "current_macro_v1",
+      "execution_enabled": false,
+      "expires_at": "2026-09-16T17:14:35.266485+00:00",
+      "factors": {
+        "EFFR": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-16T11:14:34.179195+00:00",
+          "change_4w": 0.0,
+          "citation": "https://fred.stlouisfed.org/series/EFFR",
+          "direction_4w": "unchanged",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-14T00:00:00+00:00",
+          "prior_observation_at": "2026-08-17T00:00:00+00:00",
+          "prior_value": 3.63,
+          "retrieved_at": "2026-09-16T11:14:34.179195+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "percent",
+          "value": 3.63
+        },
+        "RRPONTSYD": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-16T11:14:34.995640+00:00",
+          "change_4w": 0.5449999999999999,
+          "citation": "https://fred.stlouisfed.org/series/RRPONTSYD",
+          "direction_4w": "rising",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 5,
+          "observation_at": "2026-09-15T00:00:00+00:00",
+          "prior_observation_at": "2026-08-18T00:00:00+00:00",
+          "prior_value": 0.155,
+          "retrieved_at": "2026-09-16T11:14:34.995640+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "billion USD",
+          "value": 0.7
+        },
+        "WALCL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-16T11:14:35.266347+00:00",
+          "change_4w": -19336.0,
+          "citation": "https://fred.stlouisfed.org/series/WALCL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 6759955.0,
+          "retrieved_at": "2026-09-16T11:14:35.266347+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 6740619.0
+        },
+        "WDTGAL": {
+          "availability_basis": "first observed by current retrieval; not a historical release claim",
+          "available_at": "2026-09-16T11:14:34.653173+00:00",
+          "change_4w": -115700.0,
+          "citation": "https://fred.stlouisfed.org/series/WDTGAL",
+          "direction_4w": "falling",
+          "freshness_basis": "inclusive calendar dates for date-only source observations",
+          "max_observation_age_days": 10,
+          "observation_at": "2026-09-09T00:00:00+00:00",
+          "prior_observation_at": "2026-08-12T00:00:00+00:00",
+          "prior_value": 959405.0,
+          "retrieved_at": "2026-09-16T11:14:34.653173+00:00",
+          "source": "FRED direct",
+          "status": "OK",
+          "unit": "million USD",
+          "value": 843705.0
+        }
+      },
+      "interpretation": {
+        "kind": "INFERENCE",
+        "limitations": "Liquidity components have different observation dates; this is a balance-sheet measure, not a causal estimate or trade signal.",
+        "liquidity": "improving",
+        "rates": "unchanged",
+        "summary": "Net liquidity is rising over four weeks; effective policy rates are unchanged. The rates-based regime is neutral."
+      },
+      "liquidity_change_4w_million_usd": 95819.0,
+      "material_change": {
+        "basis": "versus last material state; liquidity >= max(1%, USD 50bn), rate >= 25bp, regime/direction changes",
+        "changed": false,
+        "reasons": []
+      },
+      "net_liquidity_million_usd": 5896214.0,
+      "regime": "neutral",
+      "regime_basis": "4-week effective Fed funds direction: falling/supportive, rising/restrictive, unchanged/neutral",
+      "retrieved_at": "2026-09-16T11:14:35.266485+00:00",
+      "scope": "US rates and monetary liquidity; no Cava validation implied",
+      "status": "OK",
+      "warnings": []
+    },
+    "mode": "LIVE",
+    "operational": {
+      "providers": [
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "coingecko",
+          "retrieved_at": "2026-09-16T11:14:45.336449+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "hyperliquid",
+          "retrieved_at": "2026-09-16T11:14:31.729712+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "2 records; attempt 1",
+          "failure_kind": null,
+          "name": "cftc",
+          "retrieved_at": "2026-09-16T11:14:35.312773+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BTC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ETH",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:BNB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XRP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SOL",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ZEC",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:HYPE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:DOGE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XMR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LINK",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ADA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:XLM",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:UNI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:NEAR",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:SUI",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:TAO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:AAVE",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:PUMP",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ONDO",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ENA",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:WLD",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:VVV",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:LIT",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": "84",
+          "failure_kind": null,
+          "name": "hyperliquid.candles:ARB",
+          "retrieved_at": null,
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:EFFR",
+          "retrieved_at": "2026-09-16T11:14:34.179195+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WDTGAL",
+          "retrieved_at": "2026-09-16T11:14:34.653173+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:RRPONTSYD",
+          "retrieved_at": "2026-09-16T11:14:34.995640+00:00",
+          "status": "HEALTHY"
+        },
+        {
+          "coverage": null,
+          "failure_kind": null,
+          "name": "fred:WALCL",
+          "retrieved_at": "2026-09-16T11:14:35.266347+00:00",
+          "status": "HEALTHY"
+        }
+      ],
+      "status": "HEALTHY"
+    },
+    "path": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+    "sha256": "73981b62326038616dd37085fbfd9e7ff627ec8ce8f647b024a8b214daf87542",
+    "status": "NO_SETUP"
+  }
+]

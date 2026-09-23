@@ -1,0 +1,11 @@
+{
+  "charts/BTC_initial.png": "6efed5a78c758c0f9f646f0a33da1b21a0a11729ce560cebaf4ff7bae480c757",
+  "charts/ETH_initial.png": "9b855e0c190de45b114f82a0584fec6ca6bc74ef42527f35d4d1eb14768caeca",
+  "charts/HYPE_initial.png": "5d2f22e670c1a2784fae986149c2bace7666a99c77b4367bb19dc8927a83bbcc",
+  "charts/SOL_initial.png": "1bdb0ff1ad8d4faa48ccaaf965d030e835ab9b2eaf1638f584d1b7cbb73dfd5b",
+  "charts/XRP_initial.png": "b5e06e14b3d1f387a0a0d18eac11b066a2037b6b639b4eaec307a9a2eb3d3675",
+  "charts/ZEC_initial.png": "eaf9cb0991cbc67d6ad2b390a3e7b2195126f93531c1c797ed37f23531b206fa",
+  "charts/baseline_failed.png": "0940c104e2bc6b5bdf03496bf71163623680f9453295fead50393427b09fecec",
+  "charts/baseline_successful.png": "4d2808f7bab213ed55fc4321506440af40aca51746902fa44cc0a216d19e11a2",
+  "charts/baseline_untriggered.png": "feeca1206d94c7ee4f8d5873a564f874974518000f380b8a9e6613fb9e4a5b59"
+}

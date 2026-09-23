@@ -1,0 +1,66 @@
+{
+  "contract_hashes": {
+    "CONTRACT.md": "30cb927ef779abaa4bcdbdc01b604058bc7b6c3e6cb4a013d3df6fe8ff48f381",
+    "engine.py": "636186f59c01173525663f0e12a668ddc00ad782df80e41c9bfa47a90840bf82",
+    "execution.py": "a365e87d3c15ac3ce96d23893079baf1e74088892b89b09c620a3d236f0c1c30",
+    "test_contract.py": "2c93e095b19403cd3f02b6b40fe53027d5760e75846ee600d3e57ccfb744d507"
+  },
+  "coverage": {
+    "BTC": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    },
+    "ETH": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    },
+    "HYPE": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    },
+    "SOL": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    },
+    "XRP": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    },
+    "ZEC": {
+      "aggregation_exact": true,
+      "end": "2026-09-16T12:00:00+00:00",
+      "four_hour": 1080,
+      "funding": 4320,
+      "funding_missing": 0,
+      "hourly": 4320,
+      "start": "2026-03-20T12:00:00+00:00"
+    }
+  },
+  "tests_pass": true,
+  "verified_at": "2026-09-21T19:55:50.445952+00:00"
+}

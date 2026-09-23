@@ -1,0 +1,34 @@
+{
+  "coin": "SOL",
+  "cutoff": 1780430400000,
+  "forward_bars": 0,
+  "frame": {
+    "blockers": [
+      "weekly_neutral",
+      "impulse_unavailable",
+      "zone_unavailable",
+      "reaction_absent",
+      "two_objectives_unavailable"
+    ],
+    "candidate": null,
+    "coin": "SOL",
+    "context": {
+      "cot": "UNKNOWN",
+      "historical_spread": "UNKNOWN",
+      "macro": "UNKNOWN"
+    },
+    "daily_direction": -1,
+    "direction": -1,
+    "eligible": false,
+    "index": 445,
+    "leg": null,
+    "passive_stop": 81.038103,
+    "status": "rejected",
+    "targets": [],
+    "time": 1780430400000,
+    "weekly_direction": 0,
+    "weekly_velocity": -0.16038060142725516
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "34f2bfadfa8bb2b03faea0ae83c5266792d3aeb7755b45c46fcaf6d58a483113"
+}

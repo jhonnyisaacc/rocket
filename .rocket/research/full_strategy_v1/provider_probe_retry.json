@@ -1,0 +1,32 @@
+{
+  "note": "Current metadata not historical metadata. Probe is not merged or labeled unseen validation.",
+  "results": [
+    {
+      "raw": "raw_probe_retry/0.json",
+      "request": {
+        "type": "meta"
+      },
+      "retrieved_at": "2026-09-21T19:50:02.827019+00:00",
+      "sha256": "aa725f96351e898c95ab7cbc4062208200ea4fa7346478a10f60748e928b82e5",
+      "status": 200
+    },
+    {
+      "count": 4321,
+      "first": 1774008000000,
+      "last": 1789560000000,
+      "raw": "raw_probe_retry/1.json",
+      "request": {
+        "req": {
+          "coin": "BTC",
+          "endTime": 1789560000000,
+          "interval": "1h",
+          "startTime": 1774008000000
+        },
+        "type": "candleSnapshot"
+      },
+      "retrieved_at": "2026-09-21T19:50:03.851094+00:00",
+      "sha256": "aa0eb4ea8f9610bb4cc10a4f0b5bab6f621c26a498bbfe323eb050a61cda5595",
+      "status": 200
+    }
+  ]
+}

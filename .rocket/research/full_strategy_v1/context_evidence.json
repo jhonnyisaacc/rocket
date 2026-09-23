@@ -1,0 +1,304 @@
+{
+  "archives": 3,
+  "available_macro_decisions": [
+    {
+      "coin": "BTC",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "BTC",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "BTC",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "BTC",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    },
+    {
+      "coin": "ETH",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "ETH",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "ETH",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "ETH",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    },
+    {
+      "coin": "SOL",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "SOL",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "SOL",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "SOL",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    },
+    {
+      "coin": "XRP",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "XRP",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "XRP",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "XRP",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    },
+    {
+      "coin": "HYPE",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "HYPE",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "HYPE",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "HYPE",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    },
+    {
+      "coin": "ZEC",
+      "macro_observation": {
+        "available_at": 1789499511171,
+        "expires_at": 1789521111171,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+        "status": "OK"
+      },
+      "time": 1789502400000
+    },
+    {
+      "coin": "ZEC",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789516800000
+    },
+    {
+      "coin": "ZEC",
+      "macro_observation": {
+        "available_at": 1789514959422,
+        "expires_at": 1789536559422,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+        "status": "OK"
+      },
+      "time": 1789531200000
+    },
+    {
+      "coin": "ZEC",
+      "macro_observation": {
+        "available_at": 1789557275266,
+        "expires_at": 1789578875266,
+        "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+        "status": "OK"
+      },
+      "time": 1789560000000
+    }
+  ],
+  "cot_observations": [
+    {
+      "first_observed": "2026-09-15T23:29:19.470007+00:00",
+      "regime": "bearish",
+      "release_dates": [
+        null,
+        null
+      ],
+      "report_as_of": [
+        "2026-09-08",
+        "2026-09-08"
+      ]
+    },
+    {
+      "first_observed": "2026-09-15T19:11:51.204022+00:00",
+      "regime": "bearish",
+      "release_dates": [
+        null,
+        null
+      ],
+      "report_as_of": [
+        "2026-09-08",
+        "2026-09-08"
+      ]
+    },
+    {
+      "first_observed": "2026-09-16T11:14:35.312773+00:00",
+      "regime": "bearish",
+      "release_dates": [
+        null,
+        null
+      ],
+      "report_as_of": [
+        "2026-09-08",
+        "2026-09-08"
+      ]
+    }
+  ],
+  "macro_records": [
+    {
+      "available_at": 1789514959422,
+      "expires_at": 1789536559422,
+      "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/116c4a682863449495451db4c6e657b8/result.json",
+      "status": "OK"
+    },
+    {
+      "available_at": 1789499511171,
+      "expires_at": 1789521111171,
+      "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-15/4f0908bb376d4b48812f8a563d883380/result.json",
+      "status": "OK"
+    },
+    {
+      "available_at": 1789557275266,
+      "expires_at": 1789578875266,
+      "source": "/Users/jhonny/rocket/.rocket/runs/2026-09-16/fb27781e8d1a4e60bcc1779c5033821b/result.json",
+      "status": "OK"
+    }
+  ],
+  "policy": "First observed metadata is not a historical publication time. COT release_date null remains unavailable before observation. Sparse context not used as an assumed historical pass. Full-context strategy result UNKNOWN."
+}

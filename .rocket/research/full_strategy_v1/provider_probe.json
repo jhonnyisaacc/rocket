@@ -1,0 +1,25 @@
+{
+  "note": "Current metadata not historical metadata. Probe is not merged or labeled unseen validation.",
+  "results": [
+    {
+      "error_type": "ConnectError",
+      "request": {
+        "type": "meta"
+      },
+      "retrieved_at": "2026-09-21T19:49:27.820888+00:00"
+    },
+    {
+      "error_type": "ConnectError",
+      "request": {
+        "req": {
+          "coin": "BTC",
+          "endTime": 1789560000000,
+          "interval": "1h",
+          "startTime": 1774008000000
+        },
+        "type": "candleSnapshot"
+      },
+      "retrieved_at": "2026-09-21T19:49:27.823768+00:00"
+    }
+  ]
+}

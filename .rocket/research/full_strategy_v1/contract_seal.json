@@ -1,0 +1,11 @@
+{
+  "hashes": {
+    "CONTRACT.md": "30cb927ef779abaa4bcdbdc01b604058bc7b6c3e6cb4a013d3df6fe8ff48f381",
+    "engine.py": "636186f59c01173525663f0e12a668ddc00ad782df80e41c9bfa47a90840bf82",
+    "execution.py": "a365e87d3c15ac3ce96d23893079baf1e74088892b89b09c620a3d236f0c1c30",
+    "test_contract.py": "2c93e095b19403cd3f02b6b40fe53027d5760e75846ee600d3e57ccfb744d507"
+  },
+  "sealed_at": "2026-09-21T19:49:20.304744+00:00",
+  "statement": "Frozen after fixture verification, before new historical replay outcomes.",
+  "test_returncode": 0
+}

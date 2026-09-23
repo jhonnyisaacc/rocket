@@ -1,0 +1,1498 @@
+{
+  "flip/OHLC/R/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/R/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OHLC/notional/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/R/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "flip/OLHC/notional/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/R/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OHLC/notional/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/R/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/BTC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/ETH": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/SOL": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/XRP": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/ZEC": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/all": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/development": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/later": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/without_HYPE": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  },
+  "passive/OLHC/notional/without_strongest": {
+    "closed_trade_drawdown20": null,
+    "completed_net_observations": 0,
+    "descriptive_week_bootstrap95": null,
+    "excluded_strongest": null,
+    "exposure_asset_hours": 0,
+    "fills": 0,
+    "hypotheses": 0,
+    "net_mean": {
+      "10": null,
+      "20": null,
+      "40": null
+    },
+    "occupied_admission_weeks": 0,
+    "scheduled_observable_fills": 0,
+    "statuses": {}
+  }
+}

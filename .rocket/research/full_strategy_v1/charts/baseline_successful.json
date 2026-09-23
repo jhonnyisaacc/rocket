@@ -1,0 +1,19 @@
+{
+  "coin": "ETH",
+  "cutoff": 1774555200000,
+  "forward_bars": 60,
+  "frame": {
+    "blockers": [
+      "LEGACY BASELINE \u2014 not a primary-workflow trade"
+    ],
+    "candidate": {
+      "zone": [
+        2118.7,
+        2185.4
+      ]
+    },
+    "time": 1774555200000
+  },
+  "selection": "Existing BTC/SOL specification cutoffs or fewest blockers then earliest timestamp; baseline examples deliberately outcome-selected.",
+  "shown_bars_sha256": "25195b1573546425c0c220e6d1e76fa4b9a4329e5d5f2144af694692abe5ba24"
+}

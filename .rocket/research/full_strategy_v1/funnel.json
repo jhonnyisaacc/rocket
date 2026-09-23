@@ -1,0 +1,124 @@
+{
+  "BTC": {
+    "blockers": {
+      "daily_mixed": 300,
+      "daily_structure_unknown": 98,
+      "hourly_stop_unknown": 110,
+      "impulse_daily_disagree": 18,
+      "impulse_unavailable": 924,
+      "reaction_absent": 1080,
+      "two_objectives_unavailable": 924,
+      "weekly_daily_disagree": 10,
+      "weekly_neutral": 378,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 924
+    },
+    "decisions": 1080,
+    "sole_blocker": {},
+    "statuses": {
+      "rejected": 1080
+    }
+  },
+  "ETH": {
+    "blockers": {
+      "daily_mixed": 300,
+      "daily_structure_unknown": 164,
+      "hourly_stop_unknown": 110,
+      "impulse_daily_disagree": 94,
+      "impulse_unavailable": 984,
+      "reaction_absent": 1080,
+      "two_objectives_unavailable": 984,
+      "weekly_neutral": 252,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 984
+    },
+    "decisions": 1080,
+    "sole_blocker": {},
+    "statuses": {
+      "rejected": 1080
+    }
+  },
+  "HYPE": {
+    "blockers": {
+      "confluence_below_three": 83,
+      "daily_mixed": 366,
+      "daily_structure_unknown": 212,
+      "hourly_stop_unknown": 128,
+      "impulse_daily_disagree": 96,
+      "impulse_unavailable": 920,
+      "reaction_absent": 1080,
+      "two_objectives_unavailable": 920,
+      "weekly_neutral": 294,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 920
+    },
+    "decisions": 1080,
+    "sole_blocker": {
+      "reaction_absent": 40
+    },
+    "statuses": {
+      "rejected": 1080
+    }
+  },
+  "SOL": {
+    "blockers": {
+      "daily_mixed": 292,
+      "daily_structure_unknown": 98,
+      "hourly_stop_unknown": 98,
+      "impulse_daily_disagree": 198,
+      "impulse_unavailable": 984,
+      "reaction_absent": 1080,
+      "two_objectives_unavailable": 984,
+      "weekly_daily_disagree": 12,
+      "weekly_neutral": 420,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 984
+    },
+    "decisions": 1080,
+    "sole_blocker": {},
+    "statuses": {
+      "rejected": 1080
+    }
+  },
+  "XRP": {
+    "blockers": {
+      "daily_mixed": 412,
+      "daily_structure_unknown": 128,
+      "hourly_stop_unknown": 110,
+      "impulse_daily_disagree": 240,
+      "impulse_unavailable": 900,
+      "reaction_absent": 1077,
+      "two_objectives_unavailable": 900,
+      "weekly_daily_disagree": 66,
+      "weekly_neutral": 378,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 900
+    },
+    "decisions": 1080,
+    "sole_blocker": {},
+    "statuses": {
+      "rejected": 1080
+    }
+  },
+  "ZEC": {
+    "blockers": {
+      "daily_mixed": 324,
+      "daily_structure_unknown": 200,
+      "hourly_stop_unknown": 92,
+      "impulse_daily_disagree": 18,
+      "impulse_unavailable": 852,
+      "reaction_absent": 1080,
+      "two_objectives_unavailable": 852,
+      "weekly_neutral": 462,
+      "weekly_warmup_unknown": 392,
+      "zone_unavailable": 852
+    },
+    "decisions": 1080,
+    "sole_blocker": {
+      "reaction_absent": 18
+    },
+    "statuses": {
+      "rejected": 1080
+    }
+  }
+}

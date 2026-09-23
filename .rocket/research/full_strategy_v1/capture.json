@@ -1,0 +1,61 @@
+{
+  "captured_at": "2026-09-21T19:49:20.059059+00:00",
+  "extension": "Not merged: retain shared frozen six-asset experiment window. Coverage probe stored separately.",
+  "historical_exchange_raw_responses": "NOT preserved by original six-asset acquisition; normalized snapshots only",
+  "hourly_retrieval": "2026-09-16T14:59:28.239584+00:00",
+  "original_retrieval": "2026-09-16T14:57:42.624689+00:00",
+  "sources": {
+    "/Users/jhonny/nave/docs/elcriptopanavideos.md": {
+      "sha256": "61a3353d673e6ba89636482c894a5ed411ab4a238b9911ecfaaffe3de9d70666",
+      "snapshot": "inputs/elcriptopanavideos.md"
+    },
+    "/Users/jhonny/nave/docs/technical.yaml": {
+      "sha256": "f42f6465db2c732dfabec21fd58b4b0871706649abf29ef48eff0fe45c56a01e",
+      "snapshot": "inputs/technical.yaml"
+    },
+    "/Users/jhonny/rocket/.rocket/research/btc_september_v1/archive_evidence.json": {
+      "sha256": "3bcbd66dd4eb2b2b3aee22a2022e433fbf60b03d5ccd9dc2b586d88f84be5217",
+      "snapshot": "inputs/archive_evidence.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/btc_september_v1/raw_5m.json": {
+      "sha256": "14a9618ce850c95f45854bd362bdc13e13f61d355e0fb0cdeddd312b2195b389",
+      "snapshot": "inputs/raw_5m.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/dataset.json": {
+      "sha256": "553c6a3a69dbd9723dd40ba16340911d8fe2ec8fad43f2a56567410ca442c99d",
+      "snapshot": "inputs/dataset.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/hourly.json": {
+      "sha256": "435426e405efe98595a2c17332d086bbe75ae12527ee1bb445a01ac198e75d62",
+      "snapshot": "inputs/hourly.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/ledger.json": {
+      "sha256": "691354332cb7a35b0dd2c1a73a32fb237a9d3b0bb70d1526c2170244ff6864c2",
+      "snapshot": "inputs/ledger.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/manifest.json": {
+      "sha256": "36d4d7bb8acce26bef77547c538626492f4738b7edf8eddf006f82faa66002dc",
+      "snapshot": "inputs/manifest.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/rule_snapshot.py": {
+      "sha256": "be603d7a4a5d08a281d303e900ddec706ed71bb2d5add043a84c620e79d6d28c",
+      "snapshot": "inputs/rule_snapshot.py"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/run.py": {
+      "sha256": "a8d1b810e3f2447ca3b425ed7d3c77c199143bbac051e7d8fb0e506e77ba4d8a",
+      "snapshot": "inputs/run.py"
+    },
+    "/Users/jhonny/rocket/.rocket/research/entry_audit/summary.json": {
+      "sha256": "12e80b3d6e6bbbc69830dc94c0f38c04619ec356ff52391f1697141863bc8d12",
+      "snapshot": "inputs/summary.json"
+    },
+    "/Users/jhonny/rocket/.rocket/research/theory_alignment_v1/DECISION.md": {
+      "sha256": "783046dc449f2bfa6b3b9e48f9f0114fc840f26e544f667a5b8bbbc0fee7cf93",
+      "snapshot": "inputs/DECISION.md"
+    },
+    "/Users/jhonny/rocket/.rocket/research/theory_alignment_v1/RECOVERED_RULES.md": {
+      "sha256": "783387d4a85f5f6402466a4a2f7851970786502dd79e710261678a78217175ad",
+      "snapshot": "inputs/RECOVERED_RULES.md"
+    }
+  }
+}
