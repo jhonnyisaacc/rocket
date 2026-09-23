@@ -1,0 +1,51 @@
+{
+  "source": "https://api.mainnet-beta.solana.com",
+  "sol_price_source": "https://pump.family/api/sales",
+  "prior_decision_time": "2026-09-23T12:08:10.046799+00:00",
+  "sol_usd": 115.61055296699564,
+  "accounts_retrieved_at": "2026-09-23T15:24:56.662848+00:00",
+  "accounts_slot": 449743205,
+  "vaults_retrieved_at": "2026-09-23T15:24:58.199328+00:00",
+  "vaults_slot": 449743210,
+  "classified_at": "2026-09-23T15:24:58.406979+00:00",
+  "findings": [
+    {
+      "asset": "BONNIE",
+      "mint": "4UnHwE52BPboFQaqSzbNx8yJ4UeiubcQSgWZbtGFpump",
+      "prior_state": "WATCH_ENTER",
+      "prior_liquidity_usd": 11252.17,
+      "prior_age_seconds": 3052,
+      "mint_exists": true,
+      "pool": "GbGtie8ZncwgqehcJFamYeUGu3m8JBF5Q4wgcocMsuj3",
+      "quote_vault": "CnDM8K1PbEX4dLMAtDzQai2Hr3teyQz69rc6K3oTqgEt",
+      "quote_raw_lamports": 3642763331,
+      "liquidity_usd": 842.28,
+      "age_seconds_now": 14860,
+      "state_now": "AVOID",
+      "reasons_now": [
+        "liquidity_below_floor"
+      ]
+    },
+    {
+      "asset": "CHICKEN",
+      "mint": "8n1XmqmBAkh1oLGmQBeDRWzMAVDZGKVrpmkmMZZgpump",
+      "prior_state": "WATCH_ENTER",
+      "prior_liquidity_usd": 10356.06,
+      "prior_age_seconds": 3376,
+      "mint_exists": true,
+      "pool": "HDwFQEBDKneapadtA81aRxQwfn9vA3FQgMtiYEGmL1yT",
+      "quote_vault": "ERSUNDyYDuMzk9DF5MDdSoKDHzubeP5bxYqyS64ZbhKw",
+      "quote_raw_lamports": 1282053188,
+      "liquidity_usd": 296.44,
+      "age_seconds_now": 15184,
+      "state_now": "AVOID",
+      "reasons_now": [
+        "liquidity_below_floor"
+      ]
+    }
+  ],
+  "retrieved_at": "2026-09-23T15:24:58.199328+00:00",
+  "edge": "NO_EDGE_VALIDATED",
+  "execution_enabled": false,
+  "notice": "A WATCH_ENTER row is not a buy."
+}

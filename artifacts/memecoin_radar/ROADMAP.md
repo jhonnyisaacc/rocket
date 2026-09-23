@@ -27,13 +27,13 @@ The measurement for this branch is `PHASE_B_UNIVERSE.md`, with the scan in `PHAS
 
 ### C — Discover a few falsifiable hypotheses
 
-The hypotheses for this branch are `PHASE_C_HYPOTHESES.md`, read off `PHASE_B_UNIVERSE.md`. Do not limit the search to current `WATCH_ENTER` gates. Do not implement a new scorer. A correlation is not an edge. None of these hypotheses is an edge. The holder-account claim has one check in `PHASE_D_HOLDER_CHECK.md`. The other Phase C claims are still unchallenged.
+The hypotheses for this branch are `PHASE_C_HYPOTHESES.md`, read off `PHASE_B_UNIVERSE.md`. Do not limit the search to current `WATCH_ENTER` gates. Do not implement a new scorer. A correlation is not an edge. None of these hypotheses is an edge. The holder-account check is in `PHASE_D_HOLDER_CHECK.md`; the later held-out pass is in `PHASE_D_HELDOUT.md`.
 
 ### D — Challenge only the strongest hypotheses
 
 Use observations that were not used to invent them. Include timing, liquidity, slippage, and failure. Compare to simple baselines. Write a candidate strategy contract only if something survives.
 
-The one check on this branch is `PHASE_D_HOLDER_CHECK.md`. It tests only whether `top1_holder_bps` is the pool's own token account. The other claims in `PHASE_C_HYPOTHESES.md` are still unchallenged. Nothing here is an edge. No candidate strategy contract. `edge` stays `NO_EDGE_VALIDATED`. `execution_enabled` stays false. A WATCH_ENTER row is not a buy.
+The holder-account check is `PHASE_D_HOLDER_CHECK.md`. The later held-out pass is `PHASE_D_HELDOUT.md`. Nothing here is an edge. No candidate strategy contract. `edge` stays `NO_EDGE_VALIDATED`. `execution_enabled` stays false. A WATCH_ENTER row is not a buy.
 
 ### E — Shadow strategy before automation
 
@@ -41,4 +41,4 @@ Only if a candidate edge survives D: read-only hypothetical entries and exits, p
 
 ## Where this branch stops
 
-Phase A is closed by the commit that puts this file, `PR30_AUDIT.md`, and the `HOW_TO_RUN.md` quarantine on `cursor/memecoin-radar-intake-f1ca`. Phase B's measurement is `PHASE_B_UNIVERSE.md`. Phase C's hypotheses are `PHASE_C_HYPOTHESES.md`. Phase D's holder check is `PHASE_D_HOLDER_CHECK.md`. The other Phase C claims are still unchallenged. `edge` stays `NO_EDGE_VALIDATED`. `execution_enabled` stays false. Stop and reassess before any later phase begins.
+Phase A is closed by the commit that puts this file, `PR30_AUDIT.md`, and the `HOW_TO_RUN.md` quarantine on `cursor/memecoin-radar-intake-f1ca`. Phase B's measurement is `PHASE_B_UNIVERSE.md`. Phase C's hypotheses are `PHASE_C_HYPOTHESES.md`. Phase D's holder check is `PHASE_D_HOLDER_CHECK.md`, and its held-out pass is `PHASE_D_HELDOUT.md`. `edge` stays `NO_EDGE_VALIDATED`. `execution_enabled` stays false. Stop and reassess before any later phase begins.
