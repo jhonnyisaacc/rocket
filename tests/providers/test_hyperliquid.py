@@ -6,6 +6,7 @@ import pytest
 from rocket.models import OperationalStatus
 from rocket.providers.hyperliquid import (
     HyperliquidPerps,
+    fetch_closed_candles,
     fetch_perp_markets,
     overlay_l2_spread,
     parse_candles,
@@ -135,6 +136,41 @@ def test_parse_candles_sorts_and_drops_invalid():
     )
     assert [row["timestamp_ms"] for row in rows] == [1_000, 2_000]
     assert rows[0]["source"] == "hyperliquid"
+
+
+def test_fetch_closed_candles_reuses_info_and_drops_open_bar():
+    end_ms = int(NOW.timestamp() * 1000)
+    day = 86_400_000
+    closed_open = end_ms - day
+    still_open = end_ms - day // 2
+    payload = [
+        {"t": closed_open, "o": "1", "h": "2", "l": "1", "c": "1.5", "v": "1", "s": "BTC", "i": "1d"},
+        {"t": still_open, "o": "1", "h": "3", "l": "1", "c": "2", "v": "1", "s": "BTC", "i": "1d"},
+    ]
+    seen = {}
+
+    class _Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return payload
+
+    class _Client:
+        def post(self, url, json):
+            seen["url"] = url
+            seen["body"] = json
+            return _Response()
+
+        def close(self):
+            raise AssertionError("injected client must not be closed")
+
+    rows = fetch_closed_candles(["btc"], interval="1d", lookback_days=10, now=NOW, http=_Client())
+    assert seen["url"].endswith("/info")
+    assert seen["body"]["type"] == "candleSnapshot"
+    assert seen["body"]["req"]["coin"] == "BTC"
+    assert seen["body"]["req"]["interval"] == "1d"
+    assert [row["timestamp_ms"] for row in rows["BTC"]] == [closed_open]
 
 
 def test_module_never_signs():

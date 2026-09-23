@@ -19,6 +19,22 @@ MAX_SETUP_MARKETS = 100
 SUPPORTED_CANDLE_INTERVALS = frozenset(
     {"1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "8h", "12h", "1d", "3d", "1w"}
 )
+_INTERVAL_SECONDS = {
+    "1m": 60,
+    "3m": 180,
+    "5m": 300,
+    "15m": 900,
+    "30m": 1800,
+    "1h": 3600,
+    "2h": 7200,
+    "4h": 14400,
+    "8h": 28800,
+    "12h": 43200,
+    "1d": 86400,
+    "3d": 259200,
+    "1w": 604800,
+}
+INTERVAL_MS = {name: seconds * 1000 for name, seconds in _INTERVAL_SECONDS.items()}
 
 
 def _finite(value: Any) -> float | None:
@@ -233,17 +249,22 @@ def fetch_candles(
     )
 
 
-def fetch_setup_candles(
+def fetch_closed_candles(
     coins: Iterable[str],
     *,
+    interval: str = SETUP_CANDLE_INTERVAL,
+    lookback_days: int = SETUP_LOOKBACK_DAYS,
     now: datetime | None = None,
     http: httpx.Client | None = None,
     limit: int = MAX_SETUP_MARKETS,
 ) -> dict[str, tuple[Mapping[str, Any], ...]]:
-    """4h candles for liquid names only. Per-coin failure stays missing, not fatal."""
+    """Closed candles via fetch_candles. Per-coin failure stays missing, not fatal."""
+    if interval not in INTERVAL_MS:
+        return {}
+    interval_ms = INTERVAL_MS[interval]
     observed = now or datetime.now(UTC)
     end_ms = int(observed.timestamp() * 1000)
-    start_ms = int((observed - timedelta(days=SETUP_LOOKBACK_DAYS)).timestamp() * 1000)
+    start_ms = int((observed - timedelta(days=lookback_days)).timestamp() * 1000)
     owns = http is None
     client = http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
     output: dict[str, tuple[Mapping[str, Any], ...]] = {}
@@ -252,17 +273,41 @@ def fetch_setup_candles(
             name = str(coin or "").upper()
             if not name:
                 continue
-            result = fetch_candles(name, start_ms=start_ms, end_ms=end_ms, http=client)
+            result = fetch_candles(
+                name, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
+            )
             if result.status is OperationalStatus.UNAVAILABLE:
-                result = fetch_candles(name, start_ms=start_ms, end_ms=end_ms, http=client)
+                result = fetch_candles(
+                    name, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
+                )
             if result.status is OperationalStatus.HEALTHY:
-                # Only closed 4h bars were knowable at the scan cutoff.
-                output[name] = tuple(row for row in result.records
-                                     if row["timestamp_ms"] + 4 * 3600 * 1000 <= end_ms)
+                output[name] = tuple(
+                    row
+                    for row in result.records
+                    if row["timestamp_ms"] + interval_ms <= end_ms
+                )
     finally:
         if owns:
             client.close()
     return output
+
+
+def fetch_setup_candles(
+    coins: Iterable[str],
+    *,
+    now: datetime | None = None,
+    http: httpx.Client | None = None,
+    limit: int = MAX_SETUP_MARKETS,
+) -> dict[str, tuple[Mapping[str, Any], ...]]:
+    """4h candles for liquid names only. Per-coin failure stays missing, not fatal."""
+    return fetch_closed_candles(
+        coins,
+        interval=SETUP_CANDLE_INTERVAL,
+        lookback_days=SETUP_LOOKBACK_DAYS,
+        now=now,
+        http=http,
+        limit=limit,
+    )
 
 
 def overlay_l2_spread(records: Sequence[Mapping[str, Any]], books: Mapping[str, Mapping[str, Any]]) -> tuple[dict[str, Any], ...]:
