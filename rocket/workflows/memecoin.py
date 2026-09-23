@@ -9,6 +9,7 @@ from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
 from typing import Any
 
+from rocket.config import env
 from rocket.models import (
     Evidence,
     EvidenceKind,
@@ -112,6 +113,16 @@ class MemecoinWorkflow:
         self.store = store
 
     def status(self, *, now: datetime | None = None) -> ResearchResult:
+        from rocket.workflows.memecoin_radar import (
+            AGE_FLOOR_SECONDS,
+            HELIUS_ENV,
+            LIQUIDITY_FLOOR_USD,
+            SAFETY_SENTENCE,
+            SELECTED_CAP,
+            UNIVERSE_SOURCE,
+            WATCH_IS_NOT_A_BUY,
+        )
+
         decided = now or datetime.now(UTC)
         result = ResearchResult(
             workflow="memecoin.status",
@@ -125,8 +136,21 @@ class MemecoinWorkflow:
                 "strategy_state": "EXPERIMENTAL",
                 "collector": "spool_first",
                 "execution_enabled": False,
+                "safety": SAFETY_SENTENCE,
+                "notice": WATCH_IS_NOT_A_BUY,
+                "universe_source": list(UNIVERSE_SOURCE),
+                "age_floor_seconds": AGE_FLOOR_SECONDS,
+                "liquidity_floor_usd": LIQUIDITY_FLOOR_USD,
+                "selected_cap": SELECTED_CAP,
+                "helius_env": HELIUS_ENV,
+                "helius_key_present": bool(env(HELIUS_ENV)),
+                "x_required": False,
             },
-            warnings=("NO EDGE VALIDATED. Primitives only; no production strategy job.",),
+            warnings=(
+                "NO EDGE VALIDATED. Primitives only; no production strategy job.",
+                SAFETY_SENTENCE,
+                WATCH_IS_NOT_A_BUY,
+            ),
         )
         if self.store:
             self.store.save_result(result)
