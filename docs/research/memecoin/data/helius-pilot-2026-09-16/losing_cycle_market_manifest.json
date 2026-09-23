@@ -1,0 +1,27 @@
+{
+  "purpose": "Market trades from 5s before first owner buy to 30s after final sell",
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "losing-cycle-market",
+    "method": "getTransactionsForAddress",
+    "params": [
+      "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+      {
+        "transactionDetails": "full",
+        "encoding": "jsonParsed",
+        "maxSupportedTransactionVersion": 0,
+        "limit": 100,
+        "sortOrder": "asc",
+        "filters": {
+          "blockTime": {
+            "gte": 1782328091,
+            "lt": 1782328188
+          }
+        }
+      }
+    ]
+  },
+  "max_requests": 1,
+  "estimated_credit_cap": 10,
+  "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump"
+}

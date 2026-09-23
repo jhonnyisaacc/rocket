@@ -1,0 +1,33 @@
+{
+  "request_key": "5d417accd8401f4ef657fc50b2f409ff51160291f3e0e09a549f8aa8783ff37a",
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "research",
+    "method": "getTransactionsForAddress",
+    "params": [
+      "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+      {
+        "transactionDetails": "full",
+        "encoding": "jsonParsed",
+        "maxSupportedTransactionVersion": 0,
+        "limit": 100,
+        "sortOrder": "asc",
+        "filters": {
+          "blockTime": {
+            "gte": 1790015040,
+            "lt": 1790015100
+          }
+        }
+      }
+    ]
+  },
+  "retrieved_at": "2026-09-21T18:27:35.942682+00:00",
+  "status": "rpc_rejected",
+  "provider_error_code": -32015,
+  "provider_error_categories": [
+    "not supported"
+  ],
+  "provider_message_retained": false,
+  "raw_response_retained": false,
+  "reason": "Provider error text excluded to prevent credential/URL leakage"
+}

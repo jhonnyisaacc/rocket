@@ -1,0 +1,194 @@
+[
+  {
+    "complete": true,
+    "address": "ESkZcd7v7Uzw5vksoshay6ckaMEitD58XwRaoCDGfBQY",
+    "interval": {
+      "gte": 1789646401,
+      "lt": 1789647301
+    },
+    "failed": 1,
+    "records": 2,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "8e65a7198ae05e8ce0697c4334d2c261e4146770256889d1950bec0045d6ef20",
+      "a9ce02d15eda7690fcab7be46a8ca004c222c5978579659f108f8191b3b99db7",
+      "7bcfb8356b4fa82562a0a6e84cf610c660afce52688e5319b7abe08f7bf2a579"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "5ZNUBFXeeiDhJtbC7PYhB3A8NRc4PJ7Cv6HbQEK9Ut4R",
+    "interval": {
+      "gte": 1789646401,
+      "lt": 1789647301
+    },
+    "failed": 446,
+    "records": 511,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "f316a0d782e074fd3ff9c6c3759268544a9e2e718bf9b14637d9a34cd37d37f9",
+      "b1fd3dd82855d55f6938179c93fb5af72f6bf613c278ced7ca37d359e6d750d4",
+      "6ec466c340969d751db5aef17e38301267f0cc5974747ec57b8ce7024abd77a4"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "Cu3BUe8ku8NtLCN3ULzqEp1RNsr99bPwiFXRmfT7NfBi",
+    "interval": {
+      "gte": 1789646407,
+      "lt": 1789647307
+    },
+    "failed": 20,
+    "records": 273,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "481f6ededc770d5f4563eb9ede4c03847b3aedd295d7a9ba99b1d051194afe3b",
+      "95befb9dbf425656c2ee55bb9a9b70c13e26e5d4bef6e9ac67960356ce6bc622",
+      "48dc01e1500723c205e805de7552ae9d08c14af55b830cd301893b784c83c2fc"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "APeh6s6WUyrswK6MHXGvLrY7c4K5H16giuq7tpf2xGrQ",
+    "interval": {
+      "gte": 1789646407,
+      "lt": 1789647307
+    },
+    "failed": 470,
+    "records": 520,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "8e7cce2f15f78f784dd05f235da8bc05c3a31e4258d485ec5bb5d52ef0e6212f",
+      "3dd395b785dac0d182524523fcf910cc083dccbe6e450a298ad4c82f83c0b29e",
+      "5ce8a4f166b643b2887e4a1154830b9cb9f65629a98b7038b8f1546558cc355d"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "GpfWAU5yb4nxiLmfvCtXRJBgetFG9PZfVZCjsPYoaKpz",
+    "interval": {
+      "gte": 1789646411,
+      "lt": 1789647311
+    },
+    "failed": 38,
+    "records": 280,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "0b89c16916f96079f7ddbcf316d4d82b054e1e7928830d627fb9dd807dae9e03",
+      "9311bc83f481657861737a2a85bebdcb18485c43530577c5749356eaf6ad94d3",
+      "16f2b595b1af30ad0b6b1538de03436a5c51cf552f6eb72afcab5ed8ced72c75"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "HNmmvosXyggjrZKcUv1NYJeCJ4QsSYPfd24V9QLuHaZ3",
+    "interval": {
+      "gte": 1789646414,
+      "lt": 1789647314
+    },
+    "failed": 9,
+    "records": 134,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "6193aeed76cee374c7c637ce3cfe289ddb255c53323c7732b4c1903c6a553572",
+      "6e3e3b583ff8290fe6a9bf543838d43abb107b991bb771deeb9fd23b89479399",
+      "faed6dc41c9ec92d04926bd3f5d140866b39b2f02067d64d792b00244d4a1224"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "8Sc8vt147zLywWcsDDCu4twAsTf54gtDhgpTgmHQRkrm",
+    "interval": {
+      "gte": 1789646417,
+      "lt": 1789647317
+    },
+    "failed": 20,
+    "records": 75,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "68c4dcac05f8447390d1b20f6ee83f66a99c5d3281811cf47e38a256fdafa8bb",
+      "d6e93ecc24bb329059cd50b777a3e7c076a4b0c5612f1e89e1fc9abd8f8593f5",
+      "b1cc2361bd4223cb01c6158c3423849c5481fd088243c5bbdff97b4f91c08162"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "8w2U4BB5CDSJq8AoDT1Bce2zK6RSSVccJ1jvm5uCgaYK",
+    "interval": {
+      "gte": 1789646428,
+      "lt": 1789647328
+    },
+    "failed": 0,
+    "records": 43,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "f286143457155243765128648e200f057339f4f9d107bc13d71c001b1299ffa3",
+      "9c9c193e2e7cc2785fe893a096cf4e4bfcbbc4f53f12caa7ef3aade8c0cdbc75",
+      "f0b9c52be937a764d200929ffc18e6ed927be543ade189c2720b93c12f53764b"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "CiyCmU8RNou9rcQZMfHExvMypvH62SRA9CSsFW4wi8z5",
+    "interval": {
+      "gte": 1789646430,
+      "lt": 1789647330
+    },
+    "failed": 32,
+    "records": 256,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "abb08035afdb6dded0a0a39e6bfc4c6c2543a5cc1f87de7c177d49ef5d01efc1",
+      "2dbbd5ab07fef8f9c9c202c32a2ec7b781631aa97ea02c65e2de5ef8bea3a444",
+      "b839a323fe37729fc10f8fa5b8252b4b44c88b5123ce4d42402b1bce203e9f56"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "HhSdBtSWVVPydCvJ4XgDSf2StR3hNRGJRKGmcsjLHQSK",
+    "interval": {
+      "gte": 1789646437,
+      "lt": 1789647337
+    },
+    "failed": 0,
+    "records": 21,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "064e998d3588b1d5007a1842c47fe47a2b7e4a531c8fb89a7e5861dae2f88d2a",
+      "f3e797d878429e6f6d137e864117e08ede9f64c8b289986418a9c3ad0f294f74",
+      "af6d5c6fef66ba8148f5275db54e4321801a0b544095fb3a87cfb65409643765"
+    ]
+  },
+  {
+    "complete": false,
+    "address": "GTuxA3aVzszod4Q6SC94EsxQR6JFoT5rgirf3T4F1YhR",
+    "interval": {
+      "gte": 1789646437,
+      "lt": 1789647337
+    },
+    "failed": 1091,
+    "records": 1186,
+    "reason": "Tail remains capped",
+    "source_captures": [
+      "bdd040ac0d0212af72a4c181904a92420e2df6b317e911aa01c75e678cf23227",
+      "83d102458370326e93a38bef0926ba6cc0f41e371776d8978b55c69391c7348c",
+      "bbf2b2762c15eeafca9c4fa8c7a4abb22e71e0bb14c251da1fc8960dbdd4794a"
+    ]
+  },
+  {
+    "complete": true,
+    "address": "G2Y6aLoVVti1XG9psWpazLcp6BASkdu89oU9AcRVWn5y",
+    "interval": {
+      "gte": 1789646437,
+      "lt": 1789647337
+    },
+    "failed": 0,
+    "records": 5,
+    "reason": "Ascending initial prefix plus overlapping exhausted tail",
+    "source_captures": [
+      "0c8b34aa3875dac9cc16d7551512199b9c3b7ba3a359f4706b21563745595784",
+      "666df209cce8781a75cc9b301e33d998772d4dc784320d0ff24414bec8dba910",
+      "bc9cf67f382c4029a808ed0ecc5534444da35ee89198d6a337ed17ecc74d87a4"
+    ]
+  }
+]

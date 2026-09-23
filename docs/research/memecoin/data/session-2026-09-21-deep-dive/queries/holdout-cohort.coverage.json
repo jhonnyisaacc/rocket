@@ -1,0 +1,41 @@
+{
+  "complete": false,
+  "reason": "Unexhausted cursor",
+  "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+  "interval": {
+    "gte": 1789646400,
+    "lt": 1789647000
+  },
+  "pages": 10,
+  "records": 10000,
+  "failed": 6961,
+  "first_event_time": 1789646400,
+  "last_event_time": 1789646463,
+  "source_captures": [
+    "6b0cc108a0d8e44dc5077babc174031e46a399d07499ebf62ae427d74ea840f9",
+    "9ac2b82363ae4878f23c80faffa16c9bbe4ff0be0f59a8ae7cb477b1e5ba26c0",
+    "1e9dce8199353689c783208e8c459c081fe27ccdbb20f094de9b92bdc9cff2ed",
+    "871a7dd0386cae8b2626a5a9b8f4ce019f6019489342ff38216d0532fe37797c",
+    "a1931f7aa8b775cfaa97bf36123267b25d84371d3d62f085826d850de8ece247",
+    "56af56711c60d7cfc7c2aad90e5d8f11b1bebbb90e31fd6cfa567335403d0675",
+    "03b242e0dfd9eccc05deaf95b0b9fcc58d373a17be5e44f16bd68ebeb14fd69f",
+    "b18a304ef1f794e457bc018aa348b9682469279366520db5610fdaf5fb229c64",
+    "6b084f519f02ca42a4d0bc7bb31a152802a63e90b8a1b59d124d960000d64286",
+    "925da78f48002af2d43edd568e71127389878930f91606e01cb5908acc7ab163"
+  ],
+  "stop_reason": "page_cap",
+  "query": {
+    "name": "holdout-cohort",
+    "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+    "interval": {
+      "gte": 1789646400,
+      "lt": 1789647000
+    },
+    "bucket": "cohort",
+    "page_cap": 10,
+    "limit": 1000,
+    "token_accounts": "none",
+    "purpose": "holdout-cohort"
+  },
+  "observed_at": "2026-09-21T19:59:20.360510+00:00"
+}

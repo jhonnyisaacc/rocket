@@ -1,0 +1,13 @@
+{
+  "name": "development-cohort",
+  "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+  "interval": {
+    "gte": 1789387200,
+    "lt": 1789387800
+  },
+  "bucket": "cohort",
+  "page_cap": 10,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "development-cohort"
+}

@@ -1,0 +1,40 @@
+{
+  "observed_date_utc": "2026-09-16",
+  "observation_window_utc": "14:40–14:50",
+  "edge": "NO_EDGE_VALIDATED",
+  "mappings": [
+    {
+      "username": "unipcs",
+      "profile_url": "https://fomo.family/profile/unipcs",
+      "chain_id": "solana:mainnet",
+      "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+      "candidate_source": "https://fomowalletfinder.com/?handle=unipcs",
+      "confidence": "medium",
+      "mapping_method": "third_party_candidate_plus_two_public_holdings_comparisons",
+      "ownership_proven": false,
+      "live_signal_eligible": false,
+      "rpc_endpoint": "https://api.mainnet-beta.solana.com",
+      "rpc_method": "getTokenAccountsByOwner",
+      "comparisons": [
+        {
+          "mint": "Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk",
+          "fomo_position_url": "https://fomo.family/profile/unipcs?tradeId=c67d250b-df85-4244-a4ab-59a9171c86a2",
+          "displayed_quantity": "15.8M",
+          "onchain_raw_amount": "15876386804966",
+          "decimals": 6,
+          "rpc_context_slot": 447549213
+        },
+        {
+          "mint": "HtTYHz1Kf3rrQo6AqDLmss7gq5WrkWAaXn3tupUZbonk",
+          "fomo_position_url": "https://fomo.family/profile/unipcs?tradeId=416b238b-7079-482a-a9ee-66b46131b00c",
+          "displayed_quantity": "14M",
+          "onchain_raw_amount": "14094024262326",
+          "decimals": 6,
+          "rpc_context_slot": 447549317
+        }
+      ],
+      "limitations": ["UI quantities abbreviated", "No signed proof", "No time-separated trade-delta validation", "Candidate source methodology not audited"],
+      "next_check": "Observe a new public fill and reconcile token-owner balance changes, then repeat."
+    }
+  ]
+}

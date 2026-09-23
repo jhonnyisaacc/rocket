@@ -1,0 +1,9 @@
+{
+  "observed_at": "2026-09-21T19:47:44Z",
+  "source": "https://fomo.family",
+  "selection": ["ballerboi", "Onchainmetrics", "NBA__trey", "menalwaysregret"],
+  "rule": "First four distinct public trader names in default feed, excluding pinned platform recap and previously inspected profiles; frozen before opening any selected profile.",
+  "bias": "Convenience sample from personalized/default feed; feed itself displays position gains for thesis posts. These incidental displays were visible, not used to select or replace candidates.",
+  "feed_evidence": ["ballerboi: CATE thesis 11s", "Onchainmetrics: INURANUS thesis 16s", "NBA__trey: INURANUS sell 21s", "menalwaysregret: UBIK Robinhood buy 26s"],
+  "historical_available_at": null
+}

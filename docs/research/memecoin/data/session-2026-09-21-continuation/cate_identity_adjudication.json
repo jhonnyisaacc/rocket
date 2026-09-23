@@ -1,0 +1,497 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "public_profile": "https://fomo.family/profile/GMannnnn",
+  "candidate_wallet": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+  "public_evidence_reference": "fomo_public_evidence.json",
+  "coverage": [
+    {
+      "complete": true,
+      "reason": "Provider-reported cursor exhaustion",
+      "address": "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+      "interval": {
+        "gte": 1790014980,
+        "lt": 1790015040
+      },
+      "pages": 7,
+      "records": 541,
+      "failed": 166,
+      "first_event_time": 1790014980,
+      "last_event_time": 1790015039,
+      "source_captures": [
+        "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f",
+        "e5767b28ae34e85d48d0df036f319c31fb8258abe3edec60fae1fc541754bb7c",
+        "beaf1a40834d30236bffb772ef1d3b79e4e2b969859f9e3c9196c5eae4630824",
+        "aa31a10806f70488ad820dec875688f880c50310620fc32025cb04d877e186d7",
+        "029c55e0f40f38de9ca7a564f024591946ef1e6e5161276b5b2cce57f44db4c8",
+        "9399787c708c6f5c9a72b0650b7800387a98022f17d400df3cbd46a17c8009a9",
+        "a737a53441f25d8e9b02c3b93a7cdc3b6405ada583f393a415bad44992a469ff"
+      ]
+    },
+    {
+      "complete": true,
+      "reason": "Provider-reported cursor exhaustion",
+      "address": "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+      "interval": {
+        "gte": 1790015040,
+        "lt": 1790015100
+      },
+      "pages": 8,
+      "records": 690,
+      "failed": 223,
+      "first_event_time": 1790015040,
+      "last_event_time": 1790015099,
+      "source_captures": [
+        "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4",
+        "1e16fbd1413e4a56c73c39d71f4b5f911708b6e2c634a61ae7ad161942e341b6",
+        "b771b1a575c99e0dc540b70dbda45977b263291c30cd6d5afff30b3b30df625b",
+        "5fe834784c6af67d9c41ae6d47f2e7cc9ffdf48c0c5fb9ed401129637a689cd1",
+        "ec697a34d51875034c126bef0d981d7c1a3519dd4122b52a2e7d73258e337bb9",
+        "b5d7393363cc3b3be22e40c58fb5345f65feb3c78175cf53e1bae32e49cea141",
+        "3f6d3315198dc50e774667bd71c6d3bd1698e1986e9c47fd136a2ec287d3fe26",
+        "519c9e02e89431a74dfcae3f1699e65ab5a3ab54fccaee36d6d5c77686718c7d"
+      ]
+    }
+  ],
+  "public_source_sha256": {
+    "fomo_public_evidence.json": "d43648956443650993ee3930b5a86c4cc62ccc99901c1eeb6a44831378844a6d",
+    "fomo_time_evidence.json": "3ffa54161e4b7a900f16082cea8e1f5a35b54747d53d7dbdf8948ec488b45921"
+  },
+  "unique_transactions": 1231,
+  "failed_transactions": 389,
+  "conditional_fill_matches": [
+    {
+      "signature": "51rmSHLwVyGSXXXnTPteK5SQDbfcMRY6CHzQ6SHJ5eALscpDUmngpj1jicKmev4g1CCJPWxiyxSfuyfJtmP65sbT",
+      "displayed_usd": "5530.57",
+      "minute_start": 1790014980,
+      "route_input_raw": 5530574000,
+      "owner_debit_raw": 5555000000,
+      "token_credit_raw": 59403380080,
+      "route_destination": "FzvRbXDdrsYVMa9KohXyQytWNAZAo4PsF8yujDH7KCfG",
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015008,
+      "slot": 449134862,
+      "owner_signed": true,
+      "successful": true,
+      "time_in_frozen_window": true,
+      "logs_truncated": false,
+      "amount_reconciled": true,
+      "route_input_display_rounded": "5530.57",
+      "total_separate_quote_amount_raw": 24426000,
+      "owner_quote_debits": [
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "FzvRbXDdrsYVMa9KohXyQytWNAZAo4PsF8yujDH7KCfG",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 5530574000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "7yD7gfXv49SFxhx9uTc11dEd7Nj98rGWeYMdZJgheZbG",
+          "outer_index": 4,
+          "inner_index": 2,
+          "stack_height": 3,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "HrTf9CzXR1dRH4Sof5QrpmGWwpwAf3qZzwCsEjQpXcSq",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 4428001,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "R4rNJHaffSUotNmqSKNEfDcJE8A7zJUkaoM5Jkd7cYX",
+          "outer_index": 4,
+          "inner_index": 18,
+          "stack_height": 2,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "85PhD8RR9F4bRPMzXqtqpFeuwLwK2xEqrmEuQXH22NcT",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 9998999,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "4ZZW5ePCAsHJdnHHUdgozdvLqYNVnkE9CgrW3iyZdskb",
+          "outer_index": 7,
+          "inner_index": 0,
+          "stack_height": 1,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "8zbNE5FtaHM7c75SUpxQZPPeekoCyiiEoY2MtU4WPL8n",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 9999000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "F11mt2PsYTR7RF7hzfvFyeFbWREiCS3soa5pGbPX88Lb",
+          "outer_index": 8,
+          "inner_index": 0,
+          "stack_height": 1,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        }
+      ],
+      "owner_quote_credits": [],
+      "route_transfer": [
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "FzvRbXDdrsYVMa9KohXyQytWNAZAo4PsF8yujDH7KCfG",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 5530574000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "7yD7gfXv49SFxhx9uTc11dEd7Nj98rGWeYMdZJgheZbG",
+          "outer_index": 4,
+          "inner_index": 2,
+          "stack_height": 3,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        }
+      ],
+      "intermediate_separate_transfers": [],
+      "source_capture": "beaf1a40834d30236bffb772ef1d3b79e4e2b969859f9e3c9196c5eae4630824",
+      "retrieved_at": "2026-09-21T19:10:16.074195+00:00",
+      "available_at": null,
+      "limitations": [
+        "Public UI dollar/USDC numerical correspondence, not an independently priced USD oracle.",
+        "Fee-like recipient roles are not verified. No insider or performance inference."
+      ],
+      "direct_input_competitors": [
+        {
+          "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "signature": "51rmSHLwVyGSXXXnTPteK5SQDbfcMRY6CHzQ6SHJ5eALscpDUmngpj1jicKmev4g1CCJPWxiyxSfuyfJtmP65sbT",
+          "matching_transfers": [
+            {
+              "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+              "destination": "FzvRbXDdrsYVMa9KohXyQytWNAZAo4PsF8yujDH7KCfG",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "amount_raw": 5530574000,
+              "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+              "destination_owner": "7yD7gfXv49SFxhx9uTc11dEd7Nj98rGWeYMdZJgheZbG",
+              "outer_index": 4,
+              "inner_index": 2,
+              "stack_height": 3,
+              "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+            }
+          ]
+        }
+      ],
+      "unique_direct_input_match_in_frozen_window": true
+    },
+    {
+      "signature": "48xDRdwKbcSDcTRXcUnZEuv85TaMKaXqJWWnxV5XLniw69qvpsUqfYU5HV3qdrWN8kdEr5sPv86HMa1D1TNcwpEx",
+      "displayed_usd": "5530.03",
+      "minute_start": 1790014980,
+      "route_input_raw": 5530029499,
+      "owner_debit_raw": 5555000000,
+      "token_credit_raw": 59186426653,
+      "route_destination": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015037,
+      "slot": 449134971,
+      "owner_signed": true,
+      "successful": true,
+      "time_in_frozen_window": true,
+      "logs_truncated": false,
+      "amount_reconciled": true,
+      "route_input_display_rounded": "5530.03",
+      "total_separate_quote_amount_raw": 24970501,
+      "owner_quote_debits": [
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "Ht6HzEkxppkRhjZAGD9RcNck5wvUkNyoygeQVfD8qopu",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 14971502,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "BhVHbM8cn9ojSi2VS1HTCQzDM1hspkviLFDvF7quv3kR",
+          "outer_index": 2,
+          "inner_index": 1,
+          "stack_height": 2,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 5530029499,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+          "outer_index": 2,
+          "inner_index": 6,
+          "stack_height": 3,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "85PhD8RR9F4bRPMzXqtqpFeuwLwK2xEqrmEuQXH22NcT",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 9998999,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "4ZZW5ePCAsHJdnHHUdgozdvLqYNVnkE9CgrW3iyZdskb",
+          "outer_index": 3,
+          "inner_index": 0,
+          "stack_height": 1,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        }
+      ],
+      "owner_quote_credits": [],
+      "route_transfer": [
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 5530029499,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+          "outer_index": 2,
+          "inner_index": 6,
+          "stack_height": 3,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        }
+      ],
+      "intermediate_separate_transfers": [],
+      "source_capture": "9399787c708c6f5c9a72b0650b7800387a98022f17d400df3cbd46a17c8009a9",
+      "retrieved_at": "2026-09-21T19:10:24.558218+00:00",
+      "available_at": null,
+      "limitations": [
+        "Public UI dollar/USDC numerical correspondence, not an independently priced USD oracle.",
+        "Fee-like recipient roles are not verified. No insider or performance inference."
+      ],
+      "direct_input_competitors": [
+        {
+          "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "signature": "48xDRdwKbcSDcTRXcUnZEuv85TaMKaXqJWWnxV5XLniw69qvpsUqfYU5HV3qdrWN8kdEr5sPv86HMa1D1TNcwpEx",
+          "matching_transfers": [
+            {
+              "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+              "destination": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+              "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+              "amount_raw": 5530029499,
+              "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+              "destination_owner": "EPUHjseXG3izk3MVUJ1PcyWT9xeBhtAnq8gUpq3j8Uni",
+              "outer_index": 2,
+              "inner_index": 6,
+              "stack_height": 3,
+              "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+            }
+          ]
+        }
+      ],
+      "unique_direct_input_match_in_frozen_window": true
+    },
+    {
+      "signature": "paMXs6P9kbv7xr5PFYWZHy2fHiWRmHvDUmSNZtJdfUJbLPbKaUDk5fgSei4eDyESqa9ZgFKnCkBYQQg8U6ydksg",
+      "displayed_usd": "9956.03",
+      "minute_start": 1790015040,
+      "route_input_raw": 9956028800,
+      "owner_debit_raw": 10000000000,
+      "token_credit_raw": 105271465038,
+      "route_destination": "2Y7HATmn9aJBcxCskE5V2U2epmjvkZmB51zTJBbhj4cU",
+      "intermediate_account": "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+      "intermediate_input_raw": 9964000000,
+      "intermediate_separate_raw": 7971200,
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015079,
+      "slot": 449135131,
+      "owner_signed": true,
+      "successful": true,
+      "time_in_frozen_window": true,
+      "logs_truncated": true,
+      "amount_reconciled": true,
+      "route_input_display_rounded": "9956.03",
+      "total_separate_quote_amount_raw": 43971200,
+      "owner_quote_debits": [
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 9964000000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+          "outer_index": 5,
+          "inner_index": 1,
+          "stack_height": 2,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "85PhD8RR9F4bRPMzXqtqpFeuwLwK2xEqrmEuQXH22NcT",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 18000000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "4ZZW5ePCAsHJdnHHUdgozdvLqYNVnkE9CgrW3iyZdskb",
+          "outer_index": 6,
+          "inner_index": 0,
+          "stack_height": 1,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        },
+        {
+          "source": "85Xaq6iLcJ6r9J7mGyjECLZKtQrFWZnegBkycJL375vY",
+          "destination": "Ce4wXxoqU2U92UnrBFAysh96PD4UsqWSVKfNfb7Ei9HD",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 18000000,
+          "source_owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+          "destination_owner": "HDixbrzwwLXczhDBk1JVrurPQsuLE8FUKnW2pucSXN3o",
+          "outer_index": 7,
+          "inner_index": 0,
+          "stack_height": 1,
+          "authority": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9"
+        }
+      ],
+      "owner_quote_credits": [],
+      "route_transfer": [
+        {
+          "source": "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "destination": "2Y7HATmn9aJBcxCskE5V2U2epmjvkZmB51zTJBbhj4cU",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 9956028800,
+          "source_owner": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+          "destination_owner": "8FnX3xo2yYw3EUE6w3nQA4GfXGS9wpK6oj3veJpbFzLo",
+          "outer_index": 5,
+          "inner_index": 4,
+          "stack_height": 3,
+          "authority": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn"
+        }
+      ],
+      "intermediate_separate_transfers": [
+        {
+          "source": "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "destination": "HrTf9CzXR1dRH4Sof5QrpmGWwpwAf3qZzwCsEjQpXcSq",
+          "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "amount_raw": 7971200,
+          "source_owner": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+          "destination_owner": "R4rNJHaffSUotNmqSKNEfDcJE8A7zJUkaoM5Jkd7cYX",
+          "outer_index": 5,
+          "inner_index": 2,
+          "stack_height": 2,
+          "authority": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn"
+        }
+      ],
+      "source_capture": "ec697a34d51875034c126bef0d981d7c1a3519dd4122b52a2e7d73258e337bb9",
+      "retrieved_at": "2026-09-21T19:10:23.378975+00:00",
+      "available_at": null,
+      "limitations": [
+        "Public UI dollar/USDC numerical correspondence, not an independently priced USD oracle.",
+        "Fee-like recipient roles are not verified. No insider or performance inference."
+      ],
+      "direct_input_competitors": [],
+      "unique_direct_input_match_in_frozen_window": false
+    }
+  ],
+  "identity_admission": {
+    "status": "admitted_two_transaction_matches",
+    "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+    "admitted_signatures": [
+      "51rmSHLwVyGSXXXnTPteK5SQDbfcMRY6CHzQ6SHJ5eALscpDUmngpj1jicKmev4g1CCJPWxiyxSfuyfJtmP65sbT",
+      "48xDRdwKbcSDcTRXcUnZEuv85TaMKaXqJWWnxV5XLniw69qvpsUqfYU5HV3qdrWN8kdEr5sPv86HMa1D1TNcwpEx"
+    ],
+    "reason": "Two distinct public fills reconcile; not proof of skill, legal identity or exclusivity"
+  },
+  "timezone_crosscheck": {
+    "supported_offset_minutes": [
+      -180
+    ],
+    "frozen_offset_corroborated": true,
+    "method": "Independent UTC clock versus paired visible absolute/relative UI times; quarter-hour offset candidates",
+    "precision": "minute-scale corroboration, not exact seconds or browser configuration audit",
+    "source": "fomo_time_evidence.json",
+    "chain_times_used_for_offset_selection": false
+  },
+  "admitted_new_wallet_mappings": 1,
+  "unattributed_large_buy_like_flows": [
+    {
+      "signature": "u1ZXB3qbADozKv8gSR9Hj74BzRJhXY17Hy25fLndG2TzcZ34gfW877tYwbrD5FmWHecbEEgzic9Mbwqbkhu5abL",
+      "owner": "JBqRcNxNLLhhvG8jYcUjXFCrRBpYex4KSEF6nVCsnaWJ",
+      "event_time": 1790014984,
+      "usdc_debit_raw": 1037403747,
+      "cate_credit_raw": 11149045855,
+      "social_identity": null
+    },
+    {
+      "signature": "2fcLNiQXTGd7S8VvYFBuiKiMbKGo2K2ciD6s7bB8XyNZWPwBka7jmr4A2cMny5PouvLFFnjx6L9E27r3o7B2DzBQ",
+      "owner": "Bzbuw6FZ6zgsWqRz4PiNi9LX4aFfh1tkoLhSYEykzXRM",
+      "event_time": 1790015006,
+      "usdc_debit_raw": 2874687901,
+      "cate_credit_raw": 30762058642,
+      "social_identity": null
+    },
+    {
+      "signature": "51rmSHLwVyGSXXXnTPteK5SQDbfcMRY6CHzQ6SHJ5eALscpDUmngpj1jicKmev4g1CCJPWxiyxSfuyfJtmP65sbT",
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015008,
+      "usdc_debit_raw": 5555000000,
+      "cate_credit_raw": 59403380080,
+      "social_identity": null
+    },
+    {
+      "signature": "bSALxibUV2kgsUajXGtXQoX4r6s8jAP9mXKY4F9UnwbUQg3DyrjrwR7qp8uvAPokMo4wvd7AWMSwpGtSft9Er8d",
+      "owner": "ABnCGv5BPr7ekjT3RCEz6jUu82Yg7JhmvzKQ8YgoRdSa",
+      "event_time": 1790015024,
+      "usdc_debit_raw": 1900000000,
+      "cate_credit_raw": 20302954799,
+      "social_identity": null
+    },
+    {
+      "signature": "48xDRdwKbcSDcTRXcUnZEuv85TaMKaXqJWWnxV5XLniw69qvpsUqfYU5HV3qdrWN8kdEr5sPv86HMa1D1TNcwpEx",
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015037,
+      "usdc_debit_raw": 5555000000,
+      "cate_credit_raw": 59186426653,
+      "social_identity": null
+    },
+    {
+      "signature": "2HqPAfUAX2w16vXo5KW6fcL3AAQ9dtfi5HAamu9kzLwY3CYZTT5QzYfPzKyZcZt8bSHGxcUxNqY4Ny5b4eDgJZAn",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "event_time": 1790015041,
+      "usdc_debit_raw": 5000000000,
+      "cate_credit_raw": 53309773315,
+      "social_identity": null
+    },
+    {
+      "signature": "35TzRhFsA42JkssrZTbM5ExwkCkaNBPiempZZ6oUQT6meps7c2Gnih7HyWc5HX8Ma4w2ktQa8F8atRnUBRTU5zZz",
+      "owner": "4E1N6KsDzhPKjPdMHiwvLZmGAPVT6YNofJ5nu8Qr3V6n",
+      "event_time": 1790015046,
+      "usdc_debit_raw": 1000000000,
+      "cate_credit_raw": 10689055929,
+      "social_identity": null
+    },
+    {
+      "signature": "3sKUDuokutoYgRwiYdzqM3b7XNCaj13p3zjYsKnoPJWNnM1GFWZAAyy5BXKx1ak2N1nran2awVyEKBth2idSbsT2",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "event_time": 1790015047,
+      "usdc_debit_raw": 5000000000,
+      "cate_credit_raw": 53181245402,
+      "social_identity": null
+    },
+    {
+      "signature": "3RuSEBFGNaStrfyuBziXeKaqKJNsSNnxVVddCoowioh9F3LyREm2CtNKWXUHqFfD17W5cU3ueWvGjYTWpcVcQurS",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "event_time": 1790015057,
+      "usdc_debit_raw": 5000000000,
+      "cate_credit_raw": 53051612666,
+      "social_identity": null
+    },
+    {
+      "signature": "Nuz3ExjnWJyfghejrBoMyaLXMj7HmhUFyBAw1jkVTEbypXJEQTUnYXjaHYoxScszcdSKqUsxGUnCzuoxWBMqtTr",
+      "owner": "4E1N6KsDzhPKjPdMHiwvLZmGAPVT6YNofJ5nu8Qr3V6n",
+      "event_time": 1790015063,
+      "usdc_debit_raw": 1000000000,
+      "cate_credit_raw": 10622082065,
+      "social_identity": null
+    },
+    {
+      "signature": "b8hNrvduAWcmwWF9A7smTV6nVd1KDF4GnyyUWTACDBsAhcmC5JAWoCSKMfi1vXu2m3jmjCcwhm33bQnaPPNaygL",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "event_time": 1790015064,
+      "usdc_debit_raw": 5000000000,
+      "cate_credit_raw": 52902350335,
+      "social_identity": null
+    },
+    {
+      "signature": "paMXs6P9kbv7xr5PFYWZHy2fHiWRmHvDUmSNZtJdfUJbLPbKaUDk5fgSei4eDyESqa9ZgFKnCkBYQQg8U6ydksg",
+      "owner": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+      "event_time": 1790015079,
+      "usdc_debit_raw": 10000000000,
+      "cate_credit_raw": 105271465038,
+      "social_identity": null
+    }
+  ],
+  "historical_identity_available_at": null,
+  "mapping_adjudicated_at": "2026-09-21T19:18:26Z",
+  "prior_5000_usdc_candidate": "Not admitted; does not reconcile to the three frozen public amounts.",
+  "other_frozen_candidates": "Rochaboyyyy and therear66 unchanged; no replacement or new profiles inspected."
+}

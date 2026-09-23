@@ -1,0 +1,72 @@
+{
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "winner_entry_amm",
+    "method": "getTransactionsForAddress",
+    "params": [
+      "hgUmzEybSWz8faMZFtLSvdnKadpkDwiaChg6jviEWtF",
+      {
+        "transactionDetails": "full",
+        "encoding": "jsonParsed",
+        "maxSupportedTransactionVersion": 0,
+        "limit": 100,
+        "sortOrder": "asc",
+        "filters": {
+          "blockTime": {
+            "gte": 1782327381,
+            "lt": 1782327419
+          }
+        }
+      }
+    ]
+  },
+  "anchor": {
+    "signature": "28VApaYTunMT4XTdJtsEwiUc9ZYAhoDXabarV3rFBWt1L4fabd2KgWV17cdPpFrXgQ5QmTLJpbNsZiQMj1gYsBRB",
+    "block_time": 1782327383,
+    "slot": 428648886,
+    "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+    "owner_token_delta_raw": 27689396556603,
+    "owner_opening_tokens_raw": 0,
+    "owner_closing_tokens_raw": 27689396556603,
+    "reserve_authority": "hgUmzEybSWz8faMZFtLSvdnKadpkDwiaChg6jviEWtF",
+    "reserve_in_pump_instruction": false,
+    "owner_is_signer": true,
+    "reserve_native_delta_lamports": 0,
+    "owner_native_delta_lamports": -1818016000,
+    "opposing_reserve_native_direction": false,
+    "reserve_in_amm_instruction": true,
+    "reserve_wsol_delta_raw": 1778133332,
+    "quote_direction_pass": true,
+    "transaction_conserves_lamports": true,
+    "other_native_changes": [
+      {
+        "account": "35jwFm79RWFDzRcFCbGmBsNDcCNEThetFj5ASsDPmZgb",
+        "delta_lamports": 1778133332
+      },
+      {
+        "account": "X5QPJcpph4mBAJDzc4hRziFftSbcygV59kRb2Fu6Je1",
+        "delta_lamports": 8266667
+      },
+      {
+        "account": "FZTQrRUCgWDTvwVtynRg8kfLanq1cHteDewvM4LMSpNM",
+        "delta_lamports": 5333334
+      },
+      {
+        "account": "gmgn9Mu1YGUmBihL8ujWAq1HunqoFHh9f2zSnbJ4DBp",
+        "delta_lamports": 10000
+      },
+      {
+        "account": "HjQjngTDqoHE6aaGhUqfz9aQ7WZcBRjy5xB8PScLSr8i",
+        "delta_lamports": 8266667
+      },
+      {
+        "account": "ByRRgnZenY6W2sddo1VJzX9o4sMU4gPDUkcmgrpGBxRy",
+        "delta_lamports": 18000000
+      }
+    ],
+    "fee_lamports": 6000
+  },
+  "max_requests": 1,
+  "estimated_credit_cap": 10,
+  "purpose": "Observed reserve ratio probes at 5/15/30s after this entry; not follower fills"
+}

@@ -1,0 +1,176 @@
+{
+  "frozen_at": "2026-09-21T20:02:09.475047+00:00",
+  "bucket": "contingency",
+  "max_reserved_credits": 240,
+  "plans": [
+    {
+      "name": "DIAGNOSED:holdout-tail-4oM2wESwA4UGs3ipuz2og3fvY9L9MZHcjd9fNbFppump",
+      "mint": "4oM2wESwA4UGs3ipuz2og3fvY9L9MZHcjd9fNbFppump",
+      "address": "ESkZcd7v7Uzw5vksoshay6ckaMEitD58XwRaoCDGfBQY",
+      "interval": {
+        "gte": 1789646401,
+        "lt": 1789647301
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646401
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-DWzs6uTomffP29kH47oDPsmwNAZhWZycUamqHUgPpump",
+      "mint": "DWzs6uTomffP29kH47oDPsmwNAZhWZycUamqHUgPpump",
+      "address": "5ZNUBFXeeiDhJtbC7PYhB3A8NRc4PJ7Cv6HbQEK9Ut4R",
+      "interval": {
+        "gte": 1789647238,
+        "lt": 1789647301
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789647238
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-ZFnx9fGSdDRt14SacomaFKfMWi4zq268zJBnpWbpump",
+      "mint": "ZFnx9fGSdDRt14SacomaFKfMWi4zq268zJBnpWbpump",
+      "address": "Cu3BUe8ku8NtLCN3ULzqEp1RNsr99bPwiFXRmfT7NfBi",
+      "interval": {
+        "gte": 1789646824,
+        "lt": 1789647307
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646824
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-FLZJw3oERCNUiQcVECGZSsheqFUSUkJwSfngsWgWpump",
+      "mint": "FLZJw3oERCNUiQcVECGZSsheqFUSUkJwSfngsWgWpump",
+      "address": "APeh6s6WUyrswK6MHXGvLrY7c4K5H16giuq7tpf2xGrQ",
+      "interval": {
+        "gte": 1789646532,
+        "lt": 1789647307
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646532
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-Coa5gEgPd1mwjZK8874gebGBEQY1xdBQMCC3TPMHpump",
+      "mint": "Coa5gEgPd1mwjZK8874gebGBEQY1xdBQMCC3TPMHpump",
+      "address": "GpfWAU5yb4nxiLmfvCtXRJBgetFG9PZfVZCjsPYoaKpz",
+      "interval": {
+        "gte": 1789647300,
+        "lt": 1789647311
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789647300
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-4epbmmAeZizdiq4NEa7kJmgfpsWCN5HVSMj77zpgpump",
+      "mint": "4epbmmAeZizdiq4NEa7kJmgfpsWCN5HVSMj77zpgpump",
+      "address": "HNmmvosXyggjrZKcUv1NYJeCJ4QsSYPfd24V9QLuHaZ3",
+      "interval": {
+        "gte": 1789646891,
+        "lt": 1789647314
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646891
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-8fwwMAPLo6wmjdALezMv7AycPzQWMbGAnJ8S6q8dpump",
+      "mint": "8fwwMAPLo6wmjdALezMv7AycPzQWMbGAnJ8S6q8dpump",
+      "address": "8Sc8vt147zLywWcsDDCu4twAsTf54gtDhgpTgmHQRkrm",
+      "interval": {
+        "gte": 1789646661,
+        "lt": 1789647317
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646661
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump",
+      "mint": "3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump",
+      "address": "8w2U4BB5CDSJq8AoDT1Bce2zK6RSSVccJ1jvm5uCgaYK",
+      "interval": {
+        "gte": 1789647079,
+        "lt": 1789647328
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789647079
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-ah1GwZQTQHaTGEX1WmBzSMHUwDFHcrMP9kjUzR1pump",
+      "mint": "ah1GwZQTQHaTGEX1WmBzSMHUwDFHcrMP9kjUzR1pump",
+      "address": "CiyCmU8RNou9rcQZMfHExvMypvH62SRA9CSsFW4wi8z5",
+      "interval": {
+        "gte": 1789646686,
+        "lt": 1789647330
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646686
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-2QC7Bg9eAvz2AZZwZ2sMpQnsyVYgBCZZcPxZC1TEpump",
+      "mint": "2QC7Bg9eAvz2AZZwZ2sMpQnsyVYgBCZZcPxZC1TEpump",
+      "address": "HhSdBtSWVVPydCvJ4XgDSf2StR3hNRGJRKGmcsjLHQSK",
+      "interval": {
+        "gte": 1789646466,
+        "lt": 1789647337
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646466
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-bwvd5DbQgxjrRupW4sYGhqrnbx6HmXufyf8yPoXD61k",
+      "mint": "bwvd5DbQgxjrRupW4sYGhqrnbx6HmXufyf8yPoXD61k",
+      "address": "GTuxA3aVzszod4Q6SC94EsxQR6JFoT5rgirf3T4F1YhR",
+      "interval": {
+        "gte": 1789646455,
+        "lt": 1789647337
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646455
+    },
+    {
+      "name": "DIAGNOSED:holdout-tail-Dz1Ny3pXQajBTNJiayZCujhmjbMy6xKPwJaZadQ4pump",
+      "mint": "Dz1Ny3pXQajBTNJiayZCujhmjbMy6xKPwJaZadQ4pump",
+      "address": "G2Y6aLoVVti1XG9psWpazLcp6BASkdu89oU9AcRVWn5y",
+      "interval": {
+        "gte": 1789646919,
+        "lt": 1789647337
+      },
+      "page_cap": 2,
+      "limit": 100,
+      "diagnosis": "Initial frozen one-page prefix has a remaining cursor; short page cannot prove absence",
+      "original_query_cap_unchanged": true,
+      "original_last_time": 1789646919
+    }
+  ],
+  "scope": "Only unproven tails of existing fixed holdout token intervals; no new tokens, date widening or strategy changes"
+}

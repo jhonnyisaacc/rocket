@@ -1,0 +1,14 @@
+{
+ "profile":"NBA__trey",
+ "observation_recorded_at":"2026-09-21T19:53:39Z",
+ "exact_browser_observation_time":null,
+ "mint":"EYMBTNraihZkLhjVQhDivPhjAWFgRF1By2zVd8rcNcGz",
+ "displayed_sells_usd":[2956.28,1391.70,3340.66,1005.82,2072.08,3212.11],
+ "displayed_time":"Sep 21, 4:47 PM",
+ "timezone_evidence":"UTC-3 corroborated in previous session; current default feed also displayed these sells seconds before 19:47:44 UTC. Minute precision only.",
+ "quantity_per_fill_available":false,
+ "transaction_link_available":false,
+ "linked_x":"https://x.com/elonmusk/status/2101178647088410828?s=46",
+ "x_identity_evidence":false,
+ "match_policy":"Search a single fixed minute for competing candidates; dollar matches alone do not admit identity without reconciled valuation basis and independent evidence."
+}

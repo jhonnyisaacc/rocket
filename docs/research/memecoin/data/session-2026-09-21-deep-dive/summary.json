@@ -1,0 +1,162 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "generated_at": "2026-09-21T20:06:52.628073+00:00",
+  "credits": {
+    "buckets": {
+      "cohort": {
+        "requests": 20,
+        "reserved_credits": 2000,
+        "successful_response_estimate": 2000,
+        "unresolved_requests": 0
+      },
+      "wallets": {
+        "requests": 8,
+        "reserved_credits": 800,
+        "successful_response_estimate": 440,
+        "unresolved_requests": 0
+      },
+      "development": {
+        "requests": 24,
+        "reserved_credits": 2400,
+        "successful_response_estimate": 330,
+        "unresolved_requests": 0
+      },
+      "public": {
+        "requests": 3,
+        "reserved_credits": 300,
+        "successful_response_estimate": 300,
+        "unresolved_requests": 0
+      },
+      "holdout": {
+        "requests": 12,
+        "reserved_credits": 1200,
+        "successful_response_estimate": 380,
+        "unresolved_requests": 0
+      },
+      "contingency": {
+        "requests": 27,
+        "reserved_credits": 270,
+        "successful_response_estimate": 270,
+        "unresolved_requests": 0
+      }
+    },
+    "requests": 94,
+    "reserved_credits": 6970,
+    "successful_response_estimate": 3720,
+    "returned_records_before_cross_query_dedup": 31912,
+    "actual_provider_billing": null,
+    "pricing": "10 credits per 100 returned full transactions rounded up; minimum 10. Reservations use maximum page size.",
+    "pricing_source": "https://www.helius.dev/docs/rpc/gettransactionsforaddress"
+  },
+  "offline_verification": {
+    "cache_requests": 94,
+    "new_network_requests": 0,
+    "prior_artifacts_preserved": true,
+    "development_reproduced": true,
+    "holdout_reproduced": true,
+    "holdout_events_redecoded": 1144,
+    "strategy_lock_intact": true,
+    "shortlist_reproduced": true
+  },
+  "unique_captured_signatures": 28237,
+  "scorecard": [
+    {
+      "partition": "development",
+      "hypothesis": "H1",
+      "observed_triggers": 7,
+      "ordinary_matches": 2,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 8,
+      "no_trigger": 4
+    },
+    {
+      "partition": "development",
+      "hypothesis": "H2",
+      "observed_triggers": 3,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 4,
+      "no_trigger": 8
+    },
+    {
+      "partition": "development",
+      "hypothesis": "H3",
+      "observed_triggers": 1,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 2,
+      "no_trigger": 10
+    },
+    {
+      "partition": "development",
+      "hypothesis": "momentum",
+      "observed_triggers": 3,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 4,
+      "no_trigger": 8
+    },
+    {
+      "partition": "holdout",
+      "hypothesis": "H1",
+      "observed_triggers": 1,
+      "ordinary_matches": 1,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 3,
+      "no_trigger": 9
+    },
+    {
+      "partition": "holdout",
+      "hypothesis": "H2",
+      "observed_triggers": 0,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 2,
+      "no_trigger": 10
+    },
+    {
+      "partition": "holdout",
+      "hypothesis": "H3",
+      "observed_triggers": 0,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 2,
+      "no_trigger": 10
+    },
+    {
+      "partition": "holdout",
+      "hypothesis": "momentum",
+      "observed_triggers": 4,
+      "ordinary_matches": 0,
+      "simulated": 0,
+      "rejected": 0,
+      "unavailable": 5,
+      "no_trigger": 7
+    }
+  ],
+  "development_token_count": 12,
+  "holdout_token_count": 12,
+  "wallet_count": 8,
+  "new_public_mappings": 0,
+  "holdout_complete_activity_intervals": 11,
+  "holdout_first_twelve_proven": false,
+  "automations": "PAUSED",
+  "execution_enabled": false,
+  "declared_deviations": [
+    "All hypotheses use the frozen first-five-minute observation scope.",
+    "A post-lock coverage-only driver filled diagnosed tails without changing the frozen decoder/strategy. Do not label this a pristine end-to-end preregistered holdout.",
+    "No executable case exists under the validated regime; no return or slippage rejection was fabricated."
+  ],
+  "hypotheses_decision": {
+    "H1": "Timing-observation candidate only; recurring wallet exits can precede every configured delay. No executable advantage established.",
+    "H2": "Unsupported: zero observed holdout convergence; dependency coverage incomplete.",
+    "H3": "Unsupported: one development trigger and zero observed holdout triggers; no execution edge established."
+  }
+}

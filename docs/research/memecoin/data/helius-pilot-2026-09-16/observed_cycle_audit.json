@@ -1,0 +1,289 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "new_api_calls": 0,
+  "unassigned_records": 27,
+  "limitations": "Single cached page; not complete history. Per-mint attribution restricted to one owner mint per transaction. Native cashflow includes fees, rent, tips and other transfers; no extra fee subtraction. Failed attempts retained. No follower returns or win rate inferred.",
+  "mint_groups": [
+    {
+      "chain": "solana",
+      "mint": "2EGAfQiYJQdgBP8tXMiUGYmLwYLzd2c3nSBbdnMmpump",
+      "inflows": 3,
+      "outflows": 3,
+      "net_raw_tokens": 0,
+      "failed_attempts": 0,
+      "observed_native_cashflow_lamports": 86756936,
+      "owner_paid_transaction_fees_lamports": 724414,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 182,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "61GosqQTpvTGsvHfTAAsz8RkmqWEEcTAxrnycxFXpG8gMYCzVXb2amotaAF2XzwaVc3wp6FWT8rmnd7AKbJ9tXdK",
+        "2RLwzg7w3Yjo7qfU5yPEMXMfnX5mCmc1KpDsBrLM33C79qNboErsQvDoFEBTT6HLjbvK9pVp4KJbPb4yUsWHAqjx",
+        "3XJZN9CZyVdR1ARvBy5fDBNHTV9MwMN6irUDMjvC2c8zdbWk69Pg3bd9usyotw4Du75q7PzWASQ61kJRj8j87Eu7",
+        "D5fyarjDRWNx9iKeGv7VpFX3K6XJb3fAR5tZtSfgquHq9jf1zuPxbFmsfdSAswPgSi8rJ4oUXHbzrQPg5fSaTBY",
+        "bWajrUhPXH5XTk6RN59GXsrRWrAoVK6GmGbVGJny684oU3Pb2LEFY8obApYFxB46hTxQhBAjaguAo6Svhzhxxzd",
+        "57uAeM8nMoBTe4JSqCdwtB9xQBZgBVnWYnWqnjNyB6BtM5smuST6Kd9JDJdzMwuhdU2vGmevA57DD2eZPKH5Frvv"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "inflows": 1,
+      "outflows": 1,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": -35471988,
+      "owner_paid_transaction_fees_lamports": 5662290,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 61,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+        "5wdtqefAi6DEfEz1FQrfPGCiT8mbYdFe9HXQKhWqJ8LuruhPjKKvat62NvdQyS6us2yYvFVp3SL8TXqWBQ6Xmg9V",
+        "5Em1F9wB5Tf4avXu4besRByQJWYcpsRnpvCkjZUxxfnujmb6W8GGTiyFoMrgEp4bfa29MhrRNczi6vX8wkMvPRas"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "6cAzayZin6La9Cv4LiRh9d5sZH39fY8ccv9U9nCHpump",
+      "inflows": 1,
+      "outflows": 1,
+      "net_raw_tokens": 0,
+      "failed_attempts": 5,
+      "observed_native_cashflow_lamports": -237539062,
+      "owner_paid_transaction_fees_lamports": 2982476,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 132,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "4QyeyjFJnfRmFPCsTH9EqSd4nrHkf9XsKvksTNo8cBEo1YcvRrarqqxffYX8PLLghbcZwmCaxpZhDmeS2ofrjjHc",
+        "GWXHb94ZqqB1UXm3AikCoeMdAUvDrY7WEcUuHzZJPz7gLQHzQtNdXexLhTVV9ZDsMjWcJaRAhMJw9JVPBvmS6A9",
+        "EzechpHZyrVSKak8VayqiCKeobMTqnbZUmj5cKcqzskrGb5BGwoguu7GfcGpEBngtGUAyh89iPakkxz7CCBsEPi",
+        "3MD24qZ4MsRLMuSRLsybT7m26arL9oRr3MjFQz2dKiddvfhdE3RCWHWXz9mQRnMvrBrR1r2r1UBpJnxKqzboUbf8",
+        "2AdGt6xVn2Mbi9Akubk1pQzYr7tDbhd7sR8ZX4MNC5jJSZKHNwxHny7fEcjfPb81SCY4vHhRyQeYXGCbA2emyRnK",
+        "5jhzdTnQJzaK6vN4S1g2tHZA6Rzn3wQgaPLRUnZQRFzzmSec5gXDE35SwtmAPuVwxEbY7cDc5yaS7Cg1KmyRiBSN",
+        "4Z6NkU7g9sErZH5WS7HKMtLLwMRoGdtDHrJZqiHFuSEdSk2BkBY7FNhMHRQEvoMSvyY3WoRdS3Zi3b7SsrCNWscQ"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "8PJw1ERmePDeJWAqoJE8bDZ4aKENidm16Vj6j118pump",
+      "inflows": 1,
+      "outflows": 1,
+      "net_raw_tokens": 0,
+      "failed_attempts": 0,
+      "observed_native_cashflow_lamports": -312559429,
+      "owner_paid_transaction_fees_lamports": 2421646,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 114,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "4mS5N5kmki4rzzmwmW9kWXLF5xb6T9yPvbzXZcjfBvtqohgx8EBMbB8FXRM1Ms3fSik1Ucba45fPCT445igAofwQ",
+        "4po9c7LqVZEHoioXpwjgVES7JNJVmsRvyhEd8XUtTpVxtzWWFmJMxpxiZKReKBvCpozQtYGjDtg4uxhC1JvMccEL"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "9kkxGzCgP6wnG39rfUfAyG8McHkSwQVQnoTwtXNcVx6a",
+      "inflows": 1,
+      "outflows": 1,
+      "net_raw_tokens": 0,
+      "failed_attempts": 2,
+      "observed_native_cashflow_lamports": -574737885,
+      "owner_paid_transaction_fees_lamports": 280475,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 55,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "62Xj6CvABe2nvrCm8dPvntFXsBkHiTdWJ4R4etsDrmFP7Lq62iPmGTx4W6Zsi341tMm62G5vLLfQGfRuoQ6nMYuN",
+        "31dqfAom2iuh1ZHHqnB7ooeHLAiNnvcPBRYf1YCw6mgBeAKcmXSEp67uh9PZz1yPqpMRycEEsgpxPxPRo5LgpZXK",
+        "YSdrsy4wU8SXrc4oMkR9Y5KSfCNapfjnArZ4TnLN72rKQNres4dyeGP61gU8KtjC19yHzzJgKMEkPUEFyYDC7Ux",
+        "5JujZwJMRNP97QCRC23p4rD6Lee8LUujRvohQL3qiy6qmFUw8HZShcakS9csgMWinhhgRJQ8TjbVbFGsqmB1pabS"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "AFmUUV21Bdv5Q8YaVw9tDCDhCnH2TawhCuywznALpump",
+      "inflows": 2,
+      "outflows": 3,
+      "net_raw_tokens": 0,
+      "failed_attempts": 4,
+      "observed_native_cashflow_lamports": 303662688,
+      "owner_paid_transaction_fees_lamports": 6320064,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 120,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "4D4HF5rSTWBaCmT8j31cEVhmNFtKoLGjbVpRSEj2tY1xgLEjYZHWSdzcMw2Sdd3nccR4oU72XPM3Qa6v4CqNYvYa",
+        "XjAncckkzpG6wnJiTGuLVUCw6RfLauVLykmCKQXpsqFQisiJBn92jcJZT7WftGW88vUygvziEN1HPpFxL9YkDVH",
+        "26nfcPjFgUcGZxEtZxAvpFaTef9Cr4fo9WzYuYbf2Rb7TMgLrZkCnxTzjZ6tcaRaL5R5SMSpBZm3s691PhppgfwK",
+        "4kRLoqzHufJoc2z8ku552MDiC2kjL8bDFufgiPpNqr7HFCRVm661mhkoTHmwpCpVnF6uMX4N7sLtJ6XsZ21LMLWw",
+        "65zsS6yTNcqQDyYoCckESJtRbjib3Qi2dVrkEwPuy3AYKxS5dCk4P8jGbCWLUXBxqr6tdPkYa9SHt1oTBrsqYFpD",
+        "5Yc7oVMwoAmFF6kz6WuzboLaGe8moJpyzybxJLSe3fakrvchTTfWJbFxmm27eMxQWBBxEygHSdkiW95Y7yVBXvSP",
+        "5BGMg5UkuCTWwPe793JH5Y7mj9keNKygU6LpFB498YYEfQirfr6QRaENhJ8vva1bw8Jpd2yKByWTG3jCiy9bonXN",
+        "5iYGsMagsTK2Xwhx3bRWkc2GSuVTE8bMyugh21Pyati2djmYoCx59hkFFiHLNPQjYt6Q1N5B4Qfyw8awUxDsKwWg",
+        "4xXqpdZCHfsbXCNzQ9YF3dFjEvwwsyoNhFM9KSqhf4nP4mxX6jMSDqNeEAN2YoNHJTjNV6JehveRo548do3MBH6G"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "Co3KdYRY2hchwjhV58FQE2A1bi7bxUTntQgJu6A3GLSj",
+      "inflows": 0,
+      "outflows": 1,
+      "net_raw_tokens": -15849512476909,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": 4626622386,
+      "owner_paid_transaction_fees_lamports": 30000,
+      "account_creation_lamports": 2039280,
+      "elapsed_seconds": 0,
+      "all_inflows_have_buy_log": false,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "2jftsm6i8DaqpgSeQeAi2J5E2zKf6N3o4WhTLFx6muuAwYp7jCL3y6wgb82towuWtNc8X45vMY7Wh5os4t4UTANV",
+        "5oNnNsgf5rKje6qW2YEptCG3DS6J7T9SEhxUePG9cDz7ZLzx4pMU7jRrSDNoZYNva15Zo57p4iWCPLQ7DDscsJV7"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "inflows": 2,
+      "outflows": 4,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": 2835270528,
+      "owner_paid_transaction_fees_lamports": 9831784,
+      "account_creation_lamports": 6152640,
+      "elapsed_seconds": 869,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+        "5MqQhmeCkwNt8nZaET1c7un65MBxysnyjH1QNHhaVH4v7KQHXFSZgFaQSzaPoG5RCjym56VWEVgZtJ28E1zjPexv",
+        "QZS3NfUvnDkQwXMRqFoLRsyERi9HjcmChp8H199mhSenxJaE8SY7KM41wekmiPWcVySbREuoMGnfzor7J1Zc8ng",
+        "5Hy4Yv94z2T3mWnNWmxWLrxp2hu5BBcMoEYHm6V5YdNGMtGfZKWavgkeUX9gF5VSvXv5Ku2dQCrnVgTY3BzxdaUP",
+        "28VApaYTunMT4XTdJtsEwiUc9ZYAhoDXabarV3rFBWt1L4fabd2KgWV17cdPpFrXgQ5QmTLJpbNsZiQMj1gYsBRB",
+        "58PGqxrGw1ezgu3yJKSteMaRmkU4Q4tQYyJELSfDveo1t8TzGKyoiTHHCarFTTFGpdMT7tp7DQkzBRGL436taJUG",
+        "2xjz3RFScokX2yQsk1vJr51efmsrdGwJvVvbb11PHNX6VGEVeViE3iLtAXxgiGJrdo6NyXjQj66Dda6Qxr1ZJwza"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "HFa4dz7j3Rr2zm3tDJnBzuB7Lgoen4HG7ig31nczpump",
+      "inflows": 2,
+      "outflows": 4,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": 223324259,
+      "owner_paid_transaction_fees_lamports": 969175,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 139,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "3Spf4b9JS3E97ZKzkEdWhJ3JuBzZpBJzitvSETgYHjt8Hd5RGJu37Yf2mXH9f3xaABSt2JAevxs25v2aWYEKpqsQ",
+        "58zHhJiykXtPbNtj9XeMyvYFWp4n9KLT5RZgQdoWcKfqTbQxL1KatTjhZwSnWS9oXwiGNWgB6X6TGtR7bjdN3rxC",
+        "5enKPmoouUQiT7UQBr6okFciaCAxjCg2Whm5mL8YWi8wj9f8eWeZZukJZJd164wPTBmo2quRULqWGGGHUioJG1PY",
+        "4vQuBLmzGK1jiB6udNcR3o1GQosm1u44vN3FNk4QuEQLtm99tMi3hUgaohRgaY2uNBvKDhs4sne5XvoqNKKdTSc1",
+        "5nT8P4qAo8fG6EwfoRHNfydjoqFEyHeoegsJL1CzoCBLq1p6aGs2yACLhb5jP5ZeVrojAL9o3Qy5V4sATwNxKV6L",
+        "RAJnvcToPahwmE4wiToTbEFbBHjfwmcSXws8etDfQRaMK1QtcqmwaZYnPVscBFgxnGHXFdQk1r8XVGQQYUGoeW1",
+        "3eXYHndghqY9emL9wJCbZMtHSZ8MZ561BMdwwnQRsNzfQdwVNF9JZnVse4LTg6VFuYiEksRFoVVbu6WaKkLcqbgQ"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "HjgJy5698zMRFFHdTsGWp81WzKhrjNtYNgWHcUyHpump",
+      "inflows": 1,
+      "outflows": 1,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": -214777881,
+      "owner_paid_transaction_fees_lamports": 4028977,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 41,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "4nsGmUeChDoWuM5GKYmUoJkfgJfX5uJYfuz7ai4VFNngiHdjkMxK2o4MWSwFMUxaYG4RazFujoA3GWigognvUJ6Z",
+        "wdoRo3R1xmiLCjrDJW21FfE4nUrChVR1tNuChBvM2FnFsSkEnCMf6fqvLER3pmV5PipnJd2YRyCcpRxu8bS2JNo",
+        "3Pw3KJ4req3AdshQLbsn6Y5B9yNV6wh7BcxLdpbbJJr3Ew7HkzB649VvweYBuLZwwHg3zb5Ux4uEU89EAbesGkQo"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "J8iZdA2ii2j4ZsQqSkBR55Wtwfrf43etHagRCkK7pump",
+      "inflows": 1,
+      "outflows": 2,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": 7641976,
+      "owner_paid_transaction_fees_lamports": 51000,
+      "account_creation_lamports": 8191920,
+      "elapsed_seconds": 60,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "5xaMmi8phpUZRBopscjiZHX1yYg8objLc6d6UuPsM5Zok3VxZ1RZYAxLGwT6aYURc5BJZdnYaT58gp9Ryp4FKavG",
+        "5u2tF7duJjYtXNEZZqLH2uSGB5H1ydiUPXypDJkHNiNNJ4qFpUGcxAPDDr127Z2dATwU1xmQD5hsqQqawija4KU",
+        "29F7TKahY1AdssnfbeHGdmWmh2t7WUNKVobCjh5SGit7d4rckADvUy85nATNkKnuvopd1BuTDv6qnwSQoSWair6e",
+        "5ox4copk7cLjTcALNL3bLHbhMwaWMkh1Xd8jK4euEvYPKzdEZxoQRV6tDtT96FhS4Sduaa4eLddH7adeCN6JVpK9"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "U9VckoryDRNnbQdr1DSYGT1zaftPFJmyVAjgnf5pump",
+      "inflows": 2,
+      "outflows": 4,
+      "net_raw_tokens": 0,
+      "failed_attempts": 1,
+      "observed_native_cashflow_lamports": -4842963,
+      "owner_paid_transaction_fees_lamports": 105000,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 126,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "4ZCvLa2UhefCVvkGWjJ27qjaBiSy36KenZPn1LRR1BsRfiHBGXUXHLhx4znr46rvM4aRbAgdNafAGNs8r6LzPDy",
+        "4FzrPn92SSbEAKuBpssJ5pohaZ1r7FDiQfwZhnDKJ22ptnJomfiqQyHnwmku8pF4ySDMLczWcuxUba9aqKYptpak",
+        "3BDR5AAnVsFW8HGNbdWWv3way3ZEfHU7j4PN93LiG9a7CJ2PFkdZ5qHtpdmg2UYLTJ5ixofnch33AmrzenuAbMPT",
+        "5aD5PFea5U8Sbg4MtDcqbJF66srDPuhDjTppENt2QteMJ1YT3Np2RkJSagjKSqRGhnrUesaeV9w82w3sBWwqQN33",
+        "5Dz5WGymy2zVYFHqoN1c4HseRwqzwbkH5ByLa8R89jNTxAwCjfG6c4EvqniXxBqYA6p5mePC5qcXAeTMY1gGvwdt",
+        "Soy6e2Yvhh1H5AqtJ6oNkU1xZyT416gqWcQQvtEuCtnRinh3reUAcXA3mMRBJKJEwSn1i7DH3bp6EYpCcPfjQJ5",
+        "SQLK4C1E6JQitj5wjnv7K3241myHJ5V3QvaC9qg2NkwUZVjNixrVJzqRDeZAvgLDhXjf4tpHyENWiUQ3kWPmMme"
+      ]
+    },
+    {
+      "chain": "solana",
+      "mint": "tMqiutpnzPkmURsVZ9LPSARgztpvyumuNQXQr9qpump",
+      "inflows": 5,
+      "outflows": 7,
+      "net_raw_tokens": 0,
+      "failed_attempts": 0,
+      "observed_native_cashflow_lamports": 939069856,
+      "owner_paid_transaction_fees_lamports": 15792026,
+      "account_creation_lamports": 2074080,
+      "elapsed_seconds": 179,
+      "all_inflows_have_buy_log": true,
+      "all_outflows_have_sell_log": true,
+      "signatures": [
+        "o8qRYVsE286U56v62jDDdaKBxCxXP24Svgf1LNd3h2u3VzrYHQLKWYYstNQYsmB7eNd8rSCq9xhjQAJZrw2s7Uk",
+        "5UDDkjuGWB1ywnVQw5zMwxPKFh9m7Jii7CqxmP9PSrxWcRpQ5pJdsaKEkYdZfRH7FPtKZgrDGhVB54m2BVYpMJF4",
+        "zMABCDm1VDyV1d8PEHqn51yx7bmwDCbELDPubhYR2fW72etH7rrvw6KtiNw3uAs7n3v6oXEnuxLGeDiE8n1tZKT",
+        "5DJFyGCKNi1Jj4DGoG9sY7QyLGenxS9ag882bNkk3Po9bp9bkeTrQHyHSBC4UYPkewjaJ1tGtbhuJaCVdmPLiwTn",
+        "3UDZZb5rHi8HT8p6UHocg5ij5g3M2N2QG2VnWGUhgLjARMhCqhtsiVBHdaNhPK17tpFZ7JrFoZJwhz7pyW4nUXH4",
+        "4YbzZM51sbq6yWaYwJvkCNqeLdot6uQVJH9KEMwEr7VrrtA5VAZn1RLpHUfkxG5jkbp8iWnwvAw9eAmWCScN1rUW",
+        "3xmMmeFjySHBGvwf3NbAQdAPgzK9dte6JBJjQedYQgbhNPoiYkw9sTncU9fFyWPnJ3r2RDdPnWPuCubKSrWf52qa",
+        "28Vpb6Y4MkFkDBVDPU6NA4qBJ4z1BfvQSKBopekFHkrKbcUV3UuvDxZMej8x3XSgrA5XdBmt9UJCXDDJDBeRJwCb",
+        "2pbudQajd1ffQ2CrpKEjigVPbV7WppfDLuHB7RvWCFJNuvFsQQ9jLDUhdPo2xf8zwW3wZ1tW8Amh5L4f7mV6xyU",
+        "5a8GBitV7WzTArEJQok39k4xufPrKGba5k3HWv3fGrHjpb74kLywM8HpQFrWZ52QYhq8Km9sWXeCymjc2E26CU4Y",
+        "2XAgV8VaLpCFuAFbPowcqztssj8q2QEjpbNkF59SSETN8Ag13mGpmykYye76yS94HeZDyaYXHH9vQkwWQz7A3orM",
+        "4e9XUjmiBUzL9akA9jqiEBo1BL9eyRHq98e52tJqnQUDs9Tc4w5VikJt8cedobd5n1AMCnPBrpobqVERWWeudVi8"
+      ]
+    }
+  ]
+}

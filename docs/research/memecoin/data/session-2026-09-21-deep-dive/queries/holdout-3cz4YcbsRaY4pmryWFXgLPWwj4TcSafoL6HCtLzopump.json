@@ -1,0 +1,13 @@
+{
+  "name": "holdout-3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump",
+  "address": "8w2U4BB5CDSJq8AoDT1Bce2zK6RSSVccJ1jvm5uCgaYK",
+  "interval": {
+    "gte": 1789646428,
+    "lt": 1789647328
+  },
+  "bucket": "holdout",
+  "page_cap": 1,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "holdout-3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump"
+}

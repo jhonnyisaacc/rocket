@@ -1,0 +1,15 @@
+{
+  "request_key": "a42f8bb56bb19c13044b80fa8fc5c8b4a59ff3d5959ee9a6f2baa5312bcf1095",
+  "request_reconstruction_note": "Request reconstructed from the recorded dispatch command; canonical hash verified against pre-dispatch ledger. This is not a recovered provider response.",
+  "request": {"jsonrpc":"2.0","id":"research","method":"getTransactionsForAddress","params":["Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",{"transactionDetails":"full","encoding":"jsonParsed","maxSupportedTransactionVersion":0,"limit":100,"sortOrder":"asc","filters":{"blockTime":{"gte":1790014980,"lt":1790015040}}}]},
+  "status": "capture_failed_before_response_was_retained",
+  "exception_class": "ValueError",
+  "evidence": "Terminal invocation during this session returned Capture failed: ValueError. Error-response preservation was added afterward; original provider error code/message are unavailable.",
+  "provider_error_code": null,
+  "raw_response_retained": false,
+  "not_a_raw_response": true,
+  "reserved_at": "2026-09-21T18:26:43.246604+00:00",
+  "reserved_credits": 10,
+  "billing_confirmed": false,
+  "automatic_retry": false
+}

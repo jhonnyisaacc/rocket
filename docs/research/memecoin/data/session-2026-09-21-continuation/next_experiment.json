@@ -1,0 +1,86 @@
+{
+  "experiment": "chronological-native-curve-follower-feasibility-v1",
+  "frozen_at": "2026-09-21T19:14:24.860843+00:00",
+  "edge": "NO_EDGE_VALIDATED",
+  "source_wallet": "789sBYAGntSyAPoS4ZH3zo3SUFuv1jeAjPeaq7muVany",
+  "social_identity": null,
+  "source_cache_latest_event_time": 1789200870,
+  "source_cache_latest_event_utc": "2026-09-12T08:14:30+00:00",
+  "baseline_unique_source_wallet_records": 100,
+  "baseline_evidence": [
+    {
+      "path": "data/helius-pilot-2026-09-16/historical_cohort_sample.json",
+      "sha256": "07cca908895bb857d143ad630abfc5900afb4e837a27054b33e9b5fb5acf9e96",
+      "source_wallet_records": 100
+    },
+    {
+      "path": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+      "sha256": "674a94711f7da0e8f796b28e688c2892b3e1e402cc27436447354e9c2da995ff",
+      "source_wallet_records": 3
+    },
+    {
+      "path": "data/helius-pilot-2026-09-16/winner_entry_amm.json",
+      "sha256": "96d20b828701162df52a91364a979c1f609afc88a84e4e67d12122ad90259fcc",
+      "source_wallet_records": 1
+    },
+    {
+      "path": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+      "sha256": "8dff3b3d3cbfdf4933a6ede30e49b964cced52327d0500e5b5d85cf0a8c6bc08",
+      "source_wallet_records": 1
+    }
+  ],
+  "interval": {
+    "gte": 1789257600,
+    "lt": 1789344000,
+    "start_utc": "2026-09-13T00:00:00+00:00",
+    "end_utc": "2026-09-14T00:00:00+00:00"
+  },
+  "selection": "First 20 qualifying source-authorized successful native-SOL Pump buy events in slot/transaction/instruction order; use all if fewer; zero is an explicit outcome.",
+  "eligibility": [
+    "Source wallet signs and its token/native or wrapped-native flow can be reconciled to the economic purchase; an event user alone is insufficient.",
+    "Identify native-SOL Pump venue from accounts and instruction/event layout, not token symbol.",
+    "Known calibration mints are excluded before numbering eligible events.",
+    "Do not exclude an otherwise eligible event for missing execution state, unsupported fee regime, migration after entry, failed simulated execution, or poor subsequent returns.",
+    "Ambiguous source ordering or attribution prevents claiming a complete first-20 sample; preserve boundary failures instead of skipping forward.",
+    "Retain an audit of non-native/AMM/failed/non-buy source records; do not substitute wallets or dates."
+  ],
+  "excluded_calibration_mints": [
+    "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+    "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump"
+  ],
+  "split": {
+    "development": "eligible events 1\u201310",
+    "holdout": "eligible events 11\u201320",
+    "short_sample": "No replacement events or date extension; report actual size of each split."
+  },
+  "outcome_collection_this_session": false,
+  "holdout_outcomes_inspected": false,
+  "holdout_boundary": "Freeze selection signatures first; holdout market-state/outcome files must remain outside development replay. Any incidental outcome exposure invalidates untouched status and must be disclosed, not silently relabeled.",
+  "primary_size_lamports": 100000000,
+  "sizes_lamports": [
+    10000000,
+    100000000,
+    500000000
+  ],
+  "primary_delay_seconds": 15,
+  "delays_seconds": [
+    5,
+    15,
+    30
+  ],
+  "holding_seconds_after_entry": 60,
+  "exit_submission_delay": "same as entry delay",
+  "slippage_bps": 200,
+  "availability": "Block-time scenarios only; historical available_at null.",
+  "execution": "Existing validated native-curve historical-state approximation only; no retuning, retries, peak exits, or assumed migration fills.",
+  "costs": "Reuse protocol accounting, locked deposits and sample-observed low/median/p95 network-cost scenarios; disclose unpriced inclusion costs.",
+  "overlap": "Independent fixed-budget scenarios, not a cash-constrained portfolio; repeated mints/overlapping positions are dependent observations.",
+  "statuses": [
+    "simulated",
+    "unavailable",
+    "rejected"
+  ],
+  "controls": "No wallet-selection edge claim. Freeze matched momentum and independent-wallet control rules before their acquisition.",
+  "next_acquisition_authorized_by_this_spec": false,
+  "next_acquisition_prerequisite": "Separately approved bounded session; freeze call count and coverage budget for the complete day before dispatch."
+}

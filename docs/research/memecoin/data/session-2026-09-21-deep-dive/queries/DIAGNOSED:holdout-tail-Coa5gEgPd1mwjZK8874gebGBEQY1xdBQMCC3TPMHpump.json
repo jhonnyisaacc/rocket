@@ -1,0 +1,13 @@
+{
+  "name": "DIAGNOSED:holdout-tail-Coa5gEgPd1mwjZK8874gebGBEQY1xdBQMCC3TPMHpump",
+  "address": "GpfWAU5yb4nxiLmfvCtXRJBgetFG9PZfVZCjsPYoaKpz",
+  "interval": {
+    "gte": 1789647300,
+    "lt": 1789647311
+  },
+  "bucket": "contingency",
+  "page_cap": 2,
+  "limit": 100,
+  "token_accounts": "none",
+  "purpose": "DIAGNOSED:holdout-tail-Coa5gEgPd1mwjZK8874gebGBEQY1xdBQMCC3TPMHpump"
+}

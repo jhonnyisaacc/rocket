@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "reason": "Provider-reported cursor exhaustion",
+  "address": "8w2U4BB5CDSJq8AoDT1Bce2zK6RSSVccJ1jvm5uCgaYK",
+  "interval": {
+    "gte": 1789647079,
+    "lt": 1789647328
+  },
+  "pages": 2,
+  "records": 1,
+  "failed": 0,
+  "first_event_time": 1789647079,
+  "last_event_time": 1789647079,
+  "source_captures": [
+    "9c9c193e2e7cc2785fe893a096cf4e4bfcbbc4f53f12caa7ef3aade8c0cdbc75",
+    "f0b9c52be937a764d200929ffc18e6ed927be543ade189c2720b93c12f53764b"
+  ],
+  "stop_reason": "exhausted",
+  "query": {
+    "name": "DIAGNOSED:holdout-tail-3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump",
+    "address": "8w2U4BB5CDSJq8AoDT1Bce2zK6RSSVccJ1jvm5uCgaYK",
+    "interval": {
+      "gte": 1789647079,
+      "lt": 1789647328
+    },
+    "bucket": "contingency",
+    "page_cap": 2,
+    "limit": 100,
+    "token_accounts": "none",
+    "purpose": "DIAGNOSED:holdout-tail-3cz4YcbsRaY4pmryWFXgLPWwj4TcSafoL6HCtLzopump"
+  },
+  "observed_at": "2026-09-21T20:02:15.299609+00:00"
+}

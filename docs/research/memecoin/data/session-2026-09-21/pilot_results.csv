@@ -1,0 +1,19 @@
+case,size_lamports,delay_seconds,status,reason,net_modeled_lamports,entry_quote_tokens,leader_fill_shortcut_tokens,exit_coverage_supported
+loss,10000000,5,simulated,Conditional direct-program execution at historical states,-4477366,164206758719,165539914442,True
+loss,10000000,15,simulated,Conditional direct-program execution at historical states,-4819584,159455297623,165539914442,True
+loss,10000000,30,rejected,Entry output breaches fixed 2% slippage floor,,145254383439,165539914442,True
+loss,100000000,5,simulated,Conditional direct-program execution at historical states,-42191795,1638757781760,1655399144425,True
+loss,100000000,15,simulated,Conditional direct-program execution at historical states,-45596413,1591385691004,1655399144425,True
+loss,100000000,30,rejected,Entry output breaches fixed 2% slippage floor,,1449789846627,1655399144425,True
+loss,500000000,5,simulated,Conditional direct-program execution at historical states,-214256233,8121030563914,8276995722129,True
+loss,500000000,15,simulated,Conditional direct-program execution at historical states,-230898802,7887291944410,8276995722129,True
+loss,500000000,30,rejected,Entry output breaches fixed 2% slippage floor,,7188369675654,8276995722129,True
+winner,10000000,5,rejected,Entry output breaches fixed 2% slippage floor,,108183923373,117445266911,False
+winner,10000000,15,rejected,Entry output breaches fixed 2% slippage floor,,98836473633,117445266911,False
+winner,10000000,30,rejected,Entry output breaches fixed 2% slippage floor,,89151894703,117445266911,False
+winner,100000000,5,rejected,Entry output breaches fixed 2% slippage floor,,1080068619417,1174452669119,False
+winner,100000000,15,rejected,Entry output breaches fixed 2% slippage floor,,986818462470,1174452669119,False
+winner,100000000,30,rejected,Entry output breaches fixed 2% slippage floor,,890194180042,1174452669119,False
+winner,500000000,5,rejected,Entry output breaches fixed 2% slippage floor,,5361339496207,5872263345597,False
+winner,500000000,15,rejected,Entry output breaches fixed 2% slippage floor,,4900017038971,5872263345597,False
+winner,500000000,30,rejected,Entry output breaches fixed 2% slippage floor,,4421764366460,5872263345597,False

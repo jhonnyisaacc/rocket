@@ -1,0 +1,13 @@
+{
+  "name": "holdout-cohort",
+  "address": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+  "interval": {
+    "gte": 1789646400,
+    "lt": 1789647000
+  },
+  "bucket": "cohort",
+  "page_cap": 10,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "holdout-cohort"
+}

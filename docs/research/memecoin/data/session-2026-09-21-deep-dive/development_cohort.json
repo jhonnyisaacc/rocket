@@ -1,0 +1,209 @@
+{
+  "partition": "development",
+  "selected": [],
+  "creation_failures": [
+    {
+      "signature": "5TFYoRVr7cuUTvCsbs1w17kTFwKStEMFZkNYtJxA5ELEyCKNVyD87gHy9n5sKG7Np1GYhvSxUpt5dFnn3zHhgyUr",
+      "slot": 446971221,
+      "transaction_index": 226,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2bkZ5ELHbHspvXdvmwHrpfGsNKX5LRwTAA4VPx8XqKe6bx9uZbDv2h2QtSoDit24Fp4k1zLp9e6ZCpZcXnA8rg7t",
+      "slot": 446971223,
+      "transaction_index": 162,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2E27dRLzZRcidvnVswKdmTsYEMR3jDCn1PiSrGAMLYYsKNR8R7rgf7XcFj98F6BFaFjgdLkHcHu6xjjcbVM1Dr4S",
+      "slot": 446971230,
+      "transaction_index": 474,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "31uE81mwVFX9ecoKXFZUG7UAJnfCjQDerLWrZSRifWRsLRqjGu9SgNMWjzfhYx47uu7TFtenApvmBXxpgJXt3Rap",
+      "slot": 446971234,
+      "transaction_index": 853,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2ntQgBfVo2b7XnLxrSESSg3XdtMwWsuHrkxCT7pCUZ7bM2UhT5U6oKgGLHcp9n1ENZhZdCf1HM9UGQRpqFc7kcfD",
+      "slot": 446971273,
+      "transaction_index": 914,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2Jf9dv2BuCdHgf4tuELP4DrM4jjyqzfHvVk6z97j4s2k4Yx96EQQG9Sn2GHAMYY68uTxjRFzqFw12ZFeMorrzyqo",
+      "slot": 446971288,
+      "transaction_index": 565,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "35zrRKXkb26ak3TqqEuJU6rjU9oft3SCq3BgTBScdYZmprUeDFdABiPyzc63MHnEaxbPvTe9i8h5Xfqsm8wk5zd5",
+      "slot": 446971289,
+      "transaction_index": 952,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "4rd9vzr7qL6Sr9jhhWcmARe8t7y4FGLzK6dmUYRYEh1En9nxyhemVAiEEmCmW2myvXmgbY8k4X3M8Txc7wL2qbwS",
+      "slot": 446971296,
+      "transaction_index": 1602,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2m6hBFJ5zsoNGXGcA7Yre8zz5Kana65dgPMtmBRkRyhcAHAqVwRXBQMEa59vA7tFgYjjGKLgc6A4XaJgVFapotey",
+      "slot": 446971342,
+      "transaction_index": 714,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "6FyendiZSho3jhbHTFGGpLB3LVakNMxpSr7XCUqg6pS9Hz2gEqoA7JQDqt3h8UXwrWuU4JdEr4sSqGizei2qk5b",
+      "slot": 446971354,
+      "transaction_index": 260,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "3eXja8q8Qeg2TXKKt6suanvXWMcAbGXuDqHCRa3QjjEXcX47TnspgLUKoLTaki4Gech64mDnWgESFs5cQtJoj8j",
+      "slot": 446971395,
+      "transaction_index": 913,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "4LzaAs3J68KKS5fHQ5WZZ1FGqSmwuPJLy2PCKkcAidM7mrSfQbAaLK6u4DQDndMvvxHbL6ftqCvXVyGRTNb4v4Mb",
+      "slot": 446971399,
+      "transaction_index": 552,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "41cbGMiWwGHq3BsNoLcCtC99AV6zqW2sTMFbgyiE3b5SDcm4TGLS1Nu7vXM4ciAYifctzebuBF6wTn9Ztb31WKtb",
+      "slot": 446971412,
+      "transaction_index": 1272,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "5k15XH2gU6xB59XzTodkMuQgTQxNrisVwAncBqNHHvwGagVgwYJovYj3ZfWEev1sHpBGQ1eNVJyP8cZtD8PmtFSu",
+      "slot": 446971425,
+      "transaction_index": 118,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "5KV7SZMKWB5Yz6ifn7br1rcfjpnsh8aNYbeZEx3w3oMTe3XvSUSCbh83KbB7vhaD3W6rhombLGezT52rtokiy2D3",
+      "slot": 446971476,
+      "transaction_index": 1478,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "3FV2MWYsS8Bn11TC71WSWfPfuwBxbNndxkG7zqfvV22NkDPpeeTbcT6q4ee2npcwohozjmUx4DvYnTdqRxq1hyKD",
+      "slot": 446971482,
+      "transaction_index": 109,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "TzS1yTLmDEDJiNS4JJ6G8zW2kyqJooSMQH2KivjGPtx4aAuBT2rR8ZvRiiunBwUHo7mgsKJt56cCbti2ChGi6th",
+      "slot": 446971482,
+      "transaction_index": 502,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "bk6L9e8QykNfnUvhZN8concD3nfEkkfPxgoujpqQzG5jvmfSoVDrL3vG6tjQmg3wk5PtjMaeRj87s5pngAWmS59",
+      "slot": 446971498,
+      "transaction_index": 969,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "jbWvGePsC3esx6PvgYg5BqnaUPs54DbWkhkJv2w97Hxhe9LqeTjyuSBZwFevV6H77R6rnavJoTtmF3q4YcNuVGV",
+      "slot": 446971504,
+      "transaction_index": 626,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "4WKqDPz658BS3XCCUhDckzNryj29CLFvyHTYiisoH9kkcFJ51eTnVREUErzDWoJDJB2xaJ1c5etguQy28G47nBhA",
+      "slot": 446971505,
+      "transaction_index": 480,
+      "reason": "Truncated or absent logs"
+    },
+    {
+      "signature": "2u9xVE3vjAugfrNNwGNxKx3VQ7NqTTE9K5QwUf59mcQrMr8hVt4uxbfsuT5nkC6CnCdge7Wv1RrA4DkCL85ujBmT",
+      "slot": 446971514,
+      "transaction_index": 59,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "tpeTDQnv6rRxcxYP254w2VtNMVNmPG1Zcy6Jm6yfq1CxgLWpeqt8677VVcMmf7WiknvaQpMu71mjPY32DWGEKqF",
+      "slot": 446971522,
+      "transaction_index": 270,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "WWrFTZgw8nAxKzdsYsKzFfC8dtmRRpRjBTz1Vx2764TCTR1gJ6gqVLuLdwC3AFUu9mjT6xx8tMzaXVPzTTpJPh5",
+      "slot": 446971528,
+      "transaction_index": 1321,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "NrzsMgXJNfWsCgd5PBttXzGGbtqvbmjehKMUjaN6kgwF1zgkd1cfcKJzxdsRZ4UsPUmJMkpHF92vCNrfkUYmXiQ",
+      "slot": 446971559,
+      "transaction_index": 697,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "wgGPfY8AeR9QB2459KNo7fQoRvVUGUi5UtPWQyAuz9LrL6PwfzQguXb6AAKoekJsK45XdQkydZwMV2CQ7iEUsL7",
+      "slot": 446971598,
+      "transaction_index": 437,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "513E5mzKfPkcELJ9miYTVgLd9A2uqzwKFQt9vPSYhgvhqcN9kphtioBsXMYjVMTNwsetMi5b76SkVLPukyzWDuSz",
+      "slot": 446971598,
+      "transaction_index": 976,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "27zrjBZkJZqN1grwhBfJ9b56EVsmKNkVy2Ckur5ZzqToSScuRShj1d16vng9cfmBw5pCZxtrVqSFrjangP3EBwph",
+      "slot": 446971641,
+      "transaction_index": 614,
+      "reason": "Truncated or absent logs"
+    },
+    {
+      "signature": "EAzqYz1MJwrbqD3zd3XqjcXY9e21cpcQ8une8eULG1nq6d97zfSFAYDdXBiDPygKp4bo2dPo5nmvE5J3y8WjjVB",
+      "slot": 446971645,
+      "transaction_index": 1027,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "3iPLUHThS8M6GDsoEAv8jnikPZT45rPwr4dc8K3WKsgC2d1cZo8C4uUzxtZv1jE9friWTktnm84BZtrpVpmWheRN",
+      "slot": 446971658,
+      "transaction_index": 115,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "2tQCt1ynTBtPik5gV9MxDSRX9heGH91o8vZTg2cK6BVqfQG9mQ9WYeh4QNhq8uhGmAAiR6hnMVkYjT4PdbEKWLTo",
+      "slot": 446971672,
+      "transaction_index": 244,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "4wY4Non9A4okBDz1XCnNwDcdwkbJNLyM2bErTkET8GVqf4G71U55QMuMPZFwHmDN8EM29WqBF1JFnZgswxLBem8w",
+      "slot": 446971680,
+      "transaction_index": 1126,
+      "reason": "Truncated or absent logs"
+    },
+    {
+      "signature": "44raYMBothiSVhEDgXH4rQCyDAFJjWDcHNKEZ4N5JEbihFsxxqcxxLrVdg2d9hBrYmM4RpuLAj2jJcW4HtCoAeTB",
+      "slot": 446971681,
+      "transaction_index": 383,
+      "reason": "Unsupported creation layout"
+    },
+    {
+      "signature": "23JyQ1GzhQNwLQc6e2XuRpHgH52EyYagE5FUxfGp7qqwwmWcTHqrbis3MtJfpjAgMhbRFDRGbAWtcFr8eXZafqZ5",
+      "slot": 446971682,
+      "transaction_index": 681,
+      "reason": "Unsupported creation layout"
+    }
+  ],
+  "first_twelve_proven": false,
+  "coverage_complete": false,
+  "records": 10000,
+  "selection_status": "partial",
+  "no_replacement": true
+}

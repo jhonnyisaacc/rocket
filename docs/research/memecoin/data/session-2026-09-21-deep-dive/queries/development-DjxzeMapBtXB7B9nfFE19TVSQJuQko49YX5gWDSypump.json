@@ -1,0 +1,13 @@
+{
+  "name": "development-DjxzeMapBtXB7B9nfFE19TVSQJuQko49YX5gWDSypump",
+  "address": "C6u92msrNpVJe7gDd1rLF3BefCLeaQ3DWCkZFBJeVWno",
+  "interval": {
+    "gte": 1789387224,
+    "lt": 1789388124
+  },
+  "bucket": "development",
+  "page_cap": 2,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "development-DjxzeMapBtXB7B9nfFE19TVSQJuQko49YX5gWDSypump"
+}

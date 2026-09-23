@@ -1,0 +1,100 @@
+{
+  "records": 55,
+  "unique_reserve_matches": 55,
+  "reserve_in_pump_instruction": 49,
+  "all_conserve_lamports": true,
+  "groups": [
+    {
+      "mint": "2EGAfQiYJQdgBP8tXMiUGYmLwYLzd2c3nSBbdnMmpump",
+      "events": 6,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "events": 2,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "6cAzayZin6La9Cv4LiRh9d5sZH39fY8ccv9U9nCHpump",
+      "events": 2,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "8PJw1ERmePDeJWAqoJE8bDZ4aKENidm16Vj6j118pump",
+      "events": 2,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "9kkxGzCgP6wnG39rfUfAyG8McHkSwQVQnoTwtXNcVx6a",
+      "events": 2,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "AFmUUV21Bdv5Q8YaVw9tDCDhCnH2TawhCuywznALpump",
+      "events": 5,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "Co3KdYRY2hchwjhV58FQE2A1bi7bxUTntQgJu6A3GLSj",
+      "events": 1,
+      "first_opening_tokens_raw": 15849512476909,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "events": 6,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "HFa4dz7j3Rr2zm3tDJnBzuB7Lgoen4HG7ig31nczpump",
+      "events": 6,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "HjgJy5698zMRFFHdTsGWp81WzKhrjNtYNgWHcUyHpump",
+      "events": 2,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "J8iZdA2ii2j4ZsQqSkBR55Wtwfrf43etHagRCkK7pump",
+      "events": 3,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "U9VckoryDRNnbQdr1DSYGT1zaftPFJmyVAjgnf5pump",
+      "events": 6,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    },
+    {
+      "mint": "tMqiutpnzPkmURsVZ9LPSARgztpvyumuNQXQr9qpump",
+      "events": 12,
+      "first_opening_tokens_raw": 0,
+      "last_closing_tokens_raw": 0,
+      "all_reserve_pairs_pass": true
+    }
+  ],
+  "limitations": "Observed token authority and instruction membership, not independently derived PDA. Same-slot ordering not resolved. Zero opening/closing inventory applies to observed accounts; closed historical accounts and missing pages may remain. No follower execution prices."
+}

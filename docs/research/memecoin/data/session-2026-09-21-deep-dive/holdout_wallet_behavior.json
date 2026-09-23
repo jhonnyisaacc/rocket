@@ -1,0 +1,59 @@
+[
+  {
+    "address": "JCZXR5AQyxyerEWWLWCqefen3otCTgEx3W9sHm1LThcs",
+    "observations": [
+      {
+        "mint": "8fwwMAPLo6wmjdALezMv7AycPzQWMbGAnJ8S6q8dpump",
+        "symbol": "34%",
+        "first_buy_age": 8,
+        "first_sell_age": 12,
+        "bought_raw": 622110584540,
+        "sold_raw": 622110584540,
+        "events": [
+          {
+            "signature": "2jtd7aN5mv3q19CTYx9VrcrK3Gk5BCMfEcmBrQbLPbXZKojitYdbGXS8s5f7LSYG6CFQq7kAGGaXqcRgJtqAYwu1",
+            "age": 8,
+            "is_buy": true,
+            "amount": 622110584540
+          },
+          {
+            "signature": "4r1ufh4H26wCBvrFNTFCGZ4jMtH5BrnqjYCBwXhQiPRPNgCVuTA54kree4mZ8uKnJu1hjQbhjMKwV2AtLhEXXy59",
+            "age": 12,
+            "is_buy": false,
+            "amount": 622110584540
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "2kdMB6p1YHFCydksFofpgKERqAGDFrfgqQRHHfopjdvX",
+    "observations": []
+  },
+  {
+    "address": "6fAV85kfyqXexp7uJVqByxDehU61WGVq8YD3CSWrYwQ8",
+    "observations": []
+  },
+  {
+    "address": "C5EMTGGE87SqLyuvhShLDMj2jUBwqBLJAZF6ybK8Jyqw",
+    "observations": []
+  },
+  {
+    "address": "NULLioEUhd89Jo5Acm9sX88bwjNjrsAVy6KWkXD7qZh",
+    "observations": []
+  },
+  {
+    "address": "5n2umv17r7Yphdnm3TWW7PHQwcWahPWdoxoUSK9YF4C4",
+    "observations": []
+  },
+  {
+    "address": "BUBBLEtr8BEJZ9PyC2DFYxG58r8tu5PiyAKMVm14hCg9",
+    "observations": []
+  },
+  {
+    "address": "DnWZJD25pt6Ziih6TGud7YwXsZDDx4CikVfZN9MmXAu7",
+    "observations": []
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "name": "DIAGNOSED:unipcs-direct-address",
+  "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "bucket": "contingency",
+  "page_cap": 4,
+  "limit": 100,
+  "token_accounts": "none",
+  "purpose": "DIAGNOSED:unipcs-direct-address"
+}

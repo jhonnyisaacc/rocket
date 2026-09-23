@@ -1,0 +1,19 @@
+{
+  "all": {
+    "records": 100,
+    "exactly_reconciled": 55,
+    "native_delta_lamports": -2774788462,
+    "owner_paid_fee_lamports": 50344328,
+    "unexplained_native_lamports": 44678337081,
+    "closure_rows": 7
+  },
+  "previously_unassigned": {
+    "records": 27,
+    "exactly_reconciled": 17,
+    "native_delta_lamports": -10417207883,
+    "owner_paid_fee_lamports": 1145001,
+    "unexplained_native_lamports": 132202149,
+    "closure_rows": 1
+  },
+  "limitations": "Residuals include direct program-owned lamport changes and account closures. They are not trading PnL. No economic counterparty labels inferred."
+}

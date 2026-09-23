@@ -1,0 +1,21 @@
+{
+  "profile": "https://fomo.family/profile/GMannnnn",
+  "observation_utc_bracket": ["2026-09-21T19:16:17Z", "2026-09-21T19:16:54Z"],
+  "clock_source": "UTC clock tool readings bracketing visible browser inspection",
+  "method": "Pair the same public fill's dollar amount and market cap between the Position dialog absolute timestamp and profile button relative age. No chain transaction time is used to choose the offset.",
+  "anchors": [
+    {"displayed_usd":"5530.57", "market_cap":"$91.6M", "absolute_local":"2026-09-21T16:15:00", "relative_minutes":1},
+    {"displayed_usd":"5530.57", "market_cap":"$92M", "absolute_local":"2026-09-21T16:11:00", "relative_minutes":5},
+    {"displayed_usd":"9956.03", "market_cap":"$91.1M", "absolute_local":"2026-09-21T15:24:00", "relative_minutes":52},
+    {"displayed_usd":"5530.03", "market_cap":"$90M", "absolute_local":"2026-09-21T15:23:00", "relative_minutes":53},
+    {"displayed_usd":"5530.57", "market_cap":"$89.7M", "absolute_local":"2026-09-21T15:23:00", "relative_minutes":53}
+  ],
+  "candidate_offset_minutes": [-720,-705,-690,-675,-660,-645,-630,-615,-600,-585,-570,-555,-540,-525,-510,-495,-480,-465,-450,-435,-420,-405,-390,-375,-360,-345,-330,-315,-300,-285,-270,-255,-240,-225,-210,-195,-180,-165,-150,-135,-120,-105,-90,-75,-60,-45,-30,-15,0,15,30,45,60,75,90,105,120,135,150,165,180,195,210,225,240,255,270,285,300,315,330,345,360,375,390,405,420,435,450,465,480,495,510,525,540,555,570,585,600,615,630,645,660,675,690,705,720,735,750,765,780,795,810,825,840],
+  "rounding_tolerance_seconds":120,
+  "frozen_offset_minutes":-180,
+  "limitations": [
+    "Corroborates the displayed offset at minute precision, not browser settings or exact fill seconds.",
+    "Allows two minutes for minute rounding, clock bracket and display refresh. Evaluates quarter-hour UTC offsets only; arbitrary custom clock offsets are outside this check.",
+    "Current public identity evidence does not establish historical bot availability."
+  ]
+}

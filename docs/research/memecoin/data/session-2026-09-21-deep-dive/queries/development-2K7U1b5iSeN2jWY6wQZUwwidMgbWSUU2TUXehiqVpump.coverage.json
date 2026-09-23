@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "reason": "Provider-reported cursor exhaustion",
+  "address": "DtYWaiNG3FuKEJU7fKXim6naeAXyHfnoeWyNXW9dWv7E",
+  "interval": {
+    "gte": 1789387201,
+    "lt": 1789388101
+  },
+  "pages": 2,
+  "records": 10,
+  "failed": 0,
+  "first_event_time": 1789387201,
+  "last_event_time": 1789387271,
+  "source_captures": [
+    "045a4f02cb90e69ae6cd4f511ae1ab271730bd64190d51fd6617c3dad9e0714c",
+    "c211dab647e03a07b63dce4b80180722555fdd0ad1a5c0634e9a418f9b7ca509"
+  ],
+  "stop_reason": "exhausted",
+  "query": {
+    "name": "development-2K7U1b5iSeN2jWY6wQZUwwidMgbWSUU2TUXehiqVpump",
+    "address": "DtYWaiNG3FuKEJU7fKXim6naeAXyHfnoeWyNXW9dWv7E",
+    "interval": {
+      "gte": 1789387201,
+      "lt": 1789388101
+    },
+    "bucket": "development",
+    "page_cap": 2,
+    "limit": 1000,
+    "token_accounts": "none",
+    "purpose": "development-2K7U1b5iSeN2jWY6wQZUwwidMgbWSUU2TUXehiqVpump"
+  },
+  "observed_at": "2026-09-21T19:50:16.728290+00:00"
+}

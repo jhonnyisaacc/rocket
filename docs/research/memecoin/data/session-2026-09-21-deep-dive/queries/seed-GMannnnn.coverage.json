@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "reason": "Provider-reported cursor exhaustion",
+  "address": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "pages": 2,
+  "records": 78,
+  "failed": 0,
+  "first_event_time": 1789006215,
+  "last_event_time": 1789257084,
+  "source_captures": [
+    "10b3f6d412345ad52b563c2c38e930e8a0924c6e233de4f13e72f25212c7c9d1",
+    "cd21fe37451796a72cb79f34d0a3f0d09b3991dae382cfab782a9b208967c511"
+  ],
+  "stop_reason": "exhausted",
+  "query": {
+    "name": "seed-GMannnnn",
+    "address": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+    "interval": {
+      "gte": 1788998400,
+      "lt": 1789257600
+    },
+    "bucket": "wallets",
+    "page_cap": 4,
+    "limit": 1000,
+    "token_accounts": "all",
+    "purpose": "seed-GMannnnn"
+  },
+  "observed_at": "2026-09-21T19:48:21.830178+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "development-85nkU91qwoPkKpTw7BN3ascc44btjm3Bipb3X4Fipump",
+  "address": "GPpD6fQ4n9ysirw24rSMJg5gkM1TuT3aCpR2CtbC4rBL",
+  "interval": {
+    "gte": 1789387245,
+    "lt": 1789388145
+  },
+  "bucket": "development",
+  "page_cap": 2,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "development-85nkU91qwoPkKpTw7BN3ascc44btjm3Bipb3X4Fipump"
+}
