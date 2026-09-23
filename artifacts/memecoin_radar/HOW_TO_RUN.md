@@ -10,7 +10,7 @@ The Helius key must already be exported on the machine that runs the command, un
 
 ## What a pass does
 
-`radar` is the cron entry. It collects one bounded snapshot and then scans it, and it prints exactly one JSON object. `collect` and `scan` still work on their own.
+`radar` collects one bounded snapshot and then scans it, and it prints exactly one JSON object. `collect` and `scan` still work on their own. Scheduling is not part of the current research phase.
 
 `collect` writes a bounded spool snapshot: two pages of graduated pump.fun coins (`GET /coins?complete=true`, 20 per page), pump.family migrated sales (fomo.family itself is login-walled), and at most 8 closed-window names that are still on the bonding curve. Intake is trimmed to 40 observations, preferring coins aged 30 minutes to 24 hours. If `HELIUS_API_KEY` is present, collect then confirms those mints and reads pool quote vaults. If it is absent, Helius health is `UNAVAILABLE` and nothing is sent.
 
@@ -36,15 +36,7 @@ Use a state directory you control. The default spool is `$ROCKET_HOME/memecoin/s
 .venv/bin/rocket memecoin scan --json --state-dir "$HOME/.rocket"
 ```
 
-The bot should run `radar`, not a shell loop. Optional flags: `--spool PATH` and, for a file of intake rows instead of a live fetch, `--input observations.json`. A file of the old caller PIT fixtures (`features`, `contract_address`) still hits the legacy scorer when passed to `scan`.
-
-## Cron
-
-`HELIUS_API_KEY` must already be exported in the environment this crontab uses. The line does not contain the key. Change `$HOME/rocket` if the checkout lives somewhere else. Every few minutes is safe; the command is bounded.
-
-```cron
-*/5 * * * * cd "$HOME/rocket" && "$HOME/rocket/.venv/bin/rocket" memecoin radar --json --state-dir "$HOME/.rocket"
-```
+Optional flags: `--spool PATH` and, for a file of intake rows instead of a live fetch, `--input observations.json`. A file of the old caller PIT fixtures (`features`, `contract_address`) still hits the legacy scorer when passed to `scan`.
 
 Stdout is one JSON object. Branch on `decision_summary`. Do not treat exit 0 as “there is a buy.”
 
@@ -56,7 +48,7 @@ Stdout is one JSON object. Branch on `decision_summary`. Do not treat exit 0 as 
 | 2 | Provider down. Operational `UNAVAILABLE`, including `coverage_status` `DATA_UNAVAILABLE`. |
 | 1 | Bad config or `ERROR`. Invalid `radar --input` JSON exits 1. |
 
-A partial scan (one board down, rows still ranked) is exit 0. Read `decision_summary.helius` and `coverage_status` for that. Exit 0 with `counts.WATCH_ENTER` of 0 is a normal cron result.
+A partial scan (one board down, rows still ranked) is exit 0. Read `decision_summary.helius` and `coverage_status` for that. Exit 0 with `counts.WATCH_ENTER` of 0 is a normal result.
 
 ## decision_summary
 
@@ -114,6 +106,22 @@ This object is an example of the shape. It is not a live scan and it is not a bu
 ```
 
 `liquidity_usd` 12000 here means 30 SOL in the quote vault × a $200 snapshot SOL price × 2. It is not the graduation print. `reasons` contains `floors_met_not_an_entry` on purpose. Meeting the floors identifies a row for a human to look at. It does not authorize an order.
+
+## LATER_NOT_NOW
+
+Scheduling is not part of the current research phase. The notes in this section were moved here so they are not current instructions. Do not install them. See `ROADMAP.md`. Phase E is the earliest phase that even discusses scheduling, and only after prospective evidence.
+
+`radar` is the cron entry.
+
+The bot should run `radar`, not a shell loop.
+
+`HELIUS_API_KEY` must already be exported in the environment this crontab uses. The line does not contain the key. Change `$HOME/rocket` if the checkout lives somewhere else. Every few minutes is safe; the command is bounded.
+
+```cron
+*/5 * * * * cd "$HOME/rocket" && "$HOME/rocket/.venv/bin/rocket" memecoin radar --json --state-dir "$HOME/.rocket"
+```
+
+Exit 0 with `counts.WATCH_ENTER` of 0 is a normal cron result.
 
 ## Do not
 
