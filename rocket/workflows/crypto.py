@@ -49,6 +49,9 @@ MS_1W = 7 * 24 * 3_600_000
 DAILY_CANDLE_LOOKBACK_DAYS = 120
 WEEKLY_CANDLE_LOOKBACK_DAYS = 210
 COT_SCOPE = "market/regime context; no per-altcoin COT signal"
+KNOWN_COT_REGIMES = frozenset({"bullish", "bearish", "neutral"})
+# A report in any of these states is missing or stale. Regime stays unknown.
+COT_REPORT_FAILURES = frozenset({"STALE", "UNAVAILABLE", "PARTIAL"})
 THEORY_NOTE = (
     "Staged momentum and COT research for a human decision. "
     "Not the PR #28 primary pullback contract and not an entry recommendation."
@@ -105,13 +108,140 @@ def cot_alignment(regime: str, direction: str) -> str:
 
 def cot_regime_passes(regime: str, direction: str | None) -> bool:
     normalized = regime.strip().lower()
-    if normalized not in {"bullish", "bearish", "neutral"} or direction not in {"long", "short"}:
+    if normalized not in KNOWN_COT_REGIMES or direction not in {"long", "short"}:
         return False
     if normalized == "bullish":
         return direction == "long"
     if normalized == "bearish":
         return direction == "short"
     return True
+
+
+def resolve_scan_cot(
+    cot_regime: str,
+    cot_context: Mapping[str, Any] | None,
+) -> tuple[str, str]:
+    """Scan-level regime and status. A failed report is unknown even if a bias was parsed."""
+    status = str((cot_context or {}).get("status") or "")
+    regime = effective_cot_regime(cot_regime, cot_context)
+    if status in COT_REPORT_FAILURES:
+        return "unknown", status
+    if not status:
+        status = "CLAIMED" if regime in KNOWN_COT_REGIMES else "MISSING"
+    return regime, status
+
+
+def _row_direction(row: Mapping[str, Any]) -> str:
+    direction = row.get("direction")
+    if direction in {"long", "short"}:
+        return str(direction)
+    return "none"
+
+
+def regime_required(row: Mapping[str, Any]) -> bool:
+    """A directional book row needs a regime. NO_TRADE does not."""
+    return _row_direction(row) in {"long", "short"} and row.get("state") != "NO_TRADE"
+
+
+def regime_for_row(row: Mapping[str, Any], scan_regime: str, status: str) -> str:
+    """Keep a regime a replay already claimed. A missing or stale report clears it."""
+    if status in COT_REPORT_FAILURES:
+        return "unknown"
+    if scan_regime in KNOWN_COT_REGIMES:
+        return scan_regime
+    claimed = str(row.get("cot_regime") or "").lower()
+    if claimed in KNOWN_COT_REGIMES:
+        return claimed
+    return "unknown"
+
+
+def annotate_cot_row(row: Mapping[str, Any], scan_regime: str, status: str) -> dict[str, Any]:
+    """Label COT. Unknown on a directional row is WAIT. Against does not drop or block."""
+    updated = dict(row)
+    direction = _row_direction(updated)
+    regime = regime_for_row(updated, scan_regime, status)
+    updated["cot_regime"] = regime
+    updated["cot_alignment"] = cot_alignment(regime, direction)
+    reasons = [str(item) for item in (updated.get("reasons") or []) if str(item) != "cot_regime_unknown"]
+    updated.pop("action", None)
+    if regime_required(updated) and regime == "unknown":
+        reasons.append("cot_regime_unknown")
+        updated["action"] = "WAIT"
+    updated["reasons"] = reasons
+    return updated
+
+
+def stamp_cot_book(
+    observations: Sequence[Any],
+    scan_regime: str,
+    status: str,
+) -> tuple[list[Any], list[dict[str, Any]]]:
+    observations_out: list[Any] = []
+    staged: list[dict[str, Any]] = []
+    for observation in observations:
+        if not isinstance(observation, Mapping):
+            observations_out.append(observation)
+            continue
+        copied = dict(observation)
+        candidates_out: list[Any] = []
+        for candidate in observation.get("candidates") or []:
+            if not isinstance(candidate, Mapping):
+                candidates_out.append(candidate)
+                continue
+            cand = dict(candidate)
+            stage = cand.get("research_stage")
+            if isinstance(stage, Mapping) and stage.get("state") in STAGED_STATES:
+                annotated = annotate_cot_row(stage, scan_regime, status)
+                cand["research_stage"] = annotated
+                staged.append(annotated)
+            candidates_out.append(cand)
+        copied["candidates"] = candidates_out
+        observations_out.append(copied)
+    return observations_out, staged
+
+
+def agreed_book_regime(rows: Sequence[Mapping[str, Any]], scan_regime: str, status: str) -> str:
+    if status in COT_REPORT_FAILURES:
+        return "unknown"
+    if scan_regime in KNOWN_COT_REGIMES:
+        return scan_regime
+    claimed = {
+        str(row.get("cot_regime") or "").lower()
+        for row in rows
+        if regime_required(row) and str(row.get("cot_regime") or "").lower() in KNOWN_COT_REGIMES
+    }
+    if len(claimed) == 1:
+        return claimed.pop()
+    return "unknown"
+
+
+def build_bot_decision(
+    rows: Sequence[Mapping[str, Any]],
+    regime: str,
+    status: str,
+) -> dict[str, Any]:
+    """Bot-facing COT decision. Never ENTER_LONG or ENTER_SHORT. Unknown is WAIT, not NO_TRADE."""
+    required = any(regime_required(row) for row in rows)
+    failed = regime == "unknown" or status in COT_REPORT_FAILURES
+    if required and failed:
+        action: str | None = "WAIT"
+        reason = "cot_regime_unknown"
+        shown = "unknown"
+    elif required:
+        action = None
+        reason = "cot_alignment_labeled"
+        shown = regime
+    else:
+        action = "NO_TRADE"
+        reason = "no_directional_row"
+        shown = "unknown" if failed else regime
+    return {
+        "action": action,
+        "reason": reason,
+        "regime_required": required,
+        "cot_regime": shown,
+        "cot_status": status,
+    }
 
 
 def trade_decision(
@@ -1093,8 +1223,6 @@ class CryptoWorkflow:
         warnings = []
         if not funnel["macro_context_validated"]:
             warnings.append("core macro evidence unavailable")
-        if funnel["cot_regime"] not in {"bullish", "bearish", "neutral"}:
-            warnings.append("COT regime unavailable; COT is not applied as an asset-level signal")
         extra_warnings = replay_payload.get("warnings") or ()
         warnings.extend(str(item) for item in extra_warnings if item)
         if candidates:
@@ -1138,9 +1266,19 @@ class CryptoWorkflow:
         if funnel.get("incomplete_evaluations") and mode is Mode.LIVE and operational is OperationalStatus.HEALTHY:
             operational = OperationalStatus.PARTIAL
         decision = trade_decision(candidates, research=research, operational=operational)
-        staged = _staged_book(replay_payload)
+        scan_regime, cot_status = resolve_scan_cot(cot_regime, cot_context)
+        observations_out, staged = stamp_cot_book(observations, scan_regime, cot_status)
+        book_regime = agreed_book_regime(staged, scan_regime, cot_status)
+        if book_regime in KNOWN_COT_REGIMES and cot_status == "MISSING":
+            cot_status = "CLAIMED"
+        if book_regime != scan_regime:
+            observations_out, staged = stamp_cot_book(observations, book_regime, cot_status)
+        funnel["cot_regime"] = book_regime
+        bot_decision = build_bot_decision(staged, book_regime, cot_status)
+        if book_regime not in KNOWN_COT_REGIMES:
+            warnings.append("COT regime unavailable; COT is not applied as an asset-level signal")
         perp_gap: list[dict[str, Any]] = []
-        for observation in observations:
+        for observation in observations_out:
             if not isinstance(observation, Mapping):
                 continue
             join = observation.get("join")
@@ -1180,7 +1318,9 @@ class CryptoWorkflow:
                 "perp_gap": perp_gap,
                 "perp_gap_count": len(perp_gap),
                 "trade_decision": decision,
-                "observations": list(observations),
+                "bot_decision": bot_decision,
+                "cot_regime": book_regime,
+                "observations": observations_out,
                 "cot_scope": COT_SCOPE,
                 "theory_note": THEORY_NOTE,
                 "execution_enabled": False,

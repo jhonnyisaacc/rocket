@@ -21,6 +21,18 @@ MARKET_NAMES = {
 STALE_AFTER_DAYS = 14
 
 
+def _positions_line(block: list[str]) -> str:
+    """Commitments row, not the later percent-of-open-interest row that also starts with All."""
+    percent_at = next(
+        (index for index, line in enumerate(block) if "PERCENT OF OPEN INTEREST" in line.upper()),
+        len(block),
+    )
+    for line in block[:percent_at]:
+        if line.strip().upper().startswith("ALL") and ":" in line:
+            return line
+    return ""
+
+
 def _ints(line: str) -> list[int]:
     values: list[int] = []
     for token in re.findall(r"[-+]?\d[\d,]*", line):
@@ -60,10 +72,7 @@ def parse_cftc_report(html: str) -> dict[str, dict[str, Any]]:
             continue
         next_header = next((index for index in header_indexes if index > header_idx), len(lines))
         block = lines[header_idx:next_header]
-        all_line = next(
-            (line for line in block if line.strip().upper().startswith("ALL") and ":" in line),
-            "",
-        )
+        all_line = _positions_line(block)
         values = _ints(all_line)
         if len(values) < 6:
             continue
@@ -195,14 +204,41 @@ def fetch_cot_context(*, now: datetime | None = None, http: httpx.Client | None 
     from rocket.providers.openbb_cftc import OpenBBCFTC
     from rocket.providers.registry import Registry
 
+    observed = now or datetime.now(UTC)
+    direct: dict[str, ProviderResult] = {}
+
+    def fetch_direct() -> ProviderResult:
+        result = fetch_cftc_direct(http=http)
+        direct["result"] = result
+        return result
+
     registry = Registry()
-    registry.register("cot", "cftc", lambda: fetch_cftc_direct(http=http))
-    registry.register("cot", "openbb_cftc", lambda: OpenBBCFTC().fetch(now=now))
-    acquisition = registry.acquire("cot", required=False,
-                                   sufficient=lambda r: cot_context_from_result(r, now=now)["status"] == "OK")
-    result = acquisition.result or ProviderResult(OperationalStatus.UNAVAILABLE, source="cot",
-                                                 failure_kind="SourcesExhausted")
-    context = cot_context_from_result(result, now=now)
-    context["provider_attempts"] = [p.to_dict() for p in acquisition.attempts]
+    registry.register("cot", "cftc", fetch_direct)
+    registry.register("cot", "openbb_cftc", lambda: OpenBBCFTC().fetch(now=observed))
+    acquisition = registry.acquire(
+        "cot",
+        required=False,
+        sufficient=lambda r: cot_context_from_result(r, now=observed)["status"] == "OK",
+    )
+    # A stale or partial official report is a diagnosis. Do not replace it with
+    # SourcesExhausted when the OpenBB fallback also fails.
+    result = acquisition.result
+    if result is None and "result" in direct:
+        result = direct["result"]
+    if result is None:
+        result = ProviderResult(
+            OperationalStatus.UNAVAILABLE,
+            source="cot",
+            failure_kind="SourcesExhausted",
+            retrieved_at=observed,
+        )
+    context = cot_context_from_result(result, now=observed)
+    context["provider_attempts"] = [attempt.to_dict() for attempt in acquisition.attempts]
     context["required"] = False
+    context["endpoint"] = CFTC_FUTURES_URL
+    context["stale_after_days"] = STALE_AFTER_DAYS
+    context["staleness_rule"] = (
+        f"cot_regime is unknown unless BTC and ETH both parse and the older as-of date "
+        f"is 0 to {STALE_AFTER_DAYS} days before the decision date"
+    )
     return context

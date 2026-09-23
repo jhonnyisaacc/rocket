@@ -516,6 +516,11 @@ def test_staged_scan_shows_zone_extended_in_play_and_no_bias(tmp_path):
     assert book["BTC"]["structure_4h"] == "MIXED"
     assert book["BTC"]["cot_regime"] == "bearish"
     assert book["BTC"]["cot_alignment"] == "against"
+    assert "action" not in book["BTC"]
+    assert result.payload["bot_decision"]["action"] is None
+    assert result.payload["bot_decision"]["reason"] == "cot_alignment_labeled"
+    assert result.payload["bot_decision"]["cot_regime"] == "bearish"
+    assert result.payload["cot_regime"] == "bearish"
     assert book["BTC"]["evaluated"] is True
     assert book["BTC"]["entry_research_zone"][0] < 130 < book["BTC"]["entry_research_zone"][1]
     assert "mixed_4h_structure" in book["BTC"]["reasons"]
@@ -569,7 +574,13 @@ def test_unknown_cot_does_not_wipe_staged_rows(tmp_path):
     assert row["state"] == "ZONE"
     assert row["cot_regime"] == "unknown"
     assert row["cot_alignment"] == "unknown"
+    assert row["action"] == "WAIT"
+    assert "cot_regime_unknown" in row["reasons"]
     assert row["evaluated"] is True
+    assert result.payload["bot_decision"]["action"] == "WAIT"
+    assert result.payload["bot_decision"]["reason"] == "cot_regime_unknown"
+    assert result.payload["bot_decision"]["regime_required"] is True
+    assert result.payload["execution_enabled"] is False
 
 
 def test_crypto_scan_does_not_import_cava():
@@ -604,3 +615,102 @@ def test_scan_live_macro_down_is_not_healthy(tmp_path):
     assert result.operational.status is OperationalStatus.PARTIAL
     assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
     assert any(item.name == "macro" and item.status is OperationalStatus.UNAVAILABLE for item in result.operational.providers)
+
+
+def _book_row(*, cot_regime="unknown", direction="long", state="ZONE"):
+    raw = candidate(symbol="BTC")
+    raw["research_stage"] = {
+        "asset": "BTC",
+        "asset_key": "canonical:btc",
+        "venue": "hyperliquid",
+        "contract_symbol": "BTC",
+        "state": state,
+        "direction": direction,
+        "reasons": ["inside_research_band"],
+        "weekly_bias": direction if direction in {"long", "short"} else "UNKNOWN",
+        "daily_bias": direction if direction in {"long", "short"} else "UNKNOWN",
+        "momentum": "fixture",
+        "cot_regime": cot_regime,
+        "cot_alignment": "unknown",
+        "structure_4h": "MIXED",
+        "entry_research_zone": [1.0, 2.0],
+        "invalidation": 0.5,
+        "evaluated": True,
+    }
+    return raw
+
+
+def test_replay_that_claims_regime_is_not_left_unknown(tmp_path):
+    from rocket.store import ResearchStore
+
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_payload(
+        replay(_book_row(cot_regime="unknown")),
+        macro_context=_macro(),
+        cot_regime="bearish",
+        mode=Mode.REPLAY,
+        now=NOW,
+    )
+    assert_research_result(result)
+    row = result.payload["candidates"][0]
+    assert row["state"] == "ZONE"
+    assert row["cot_regime"] == "bearish"
+    assert row["cot_alignment"] == "against"
+    assert "action" not in row
+    assert result.payload["cot_regime"] == "bearish"
+    assert result.payload["funnel"]["cot_regime"] == "bearish"
+    assert result.payload["bot_decision"]["reason"] == "cot_alignment_labeled"
+    assert result.payload["bot_decision"]["action"] is None
+    assert result.payload["execution_enabled"] is False
+    assert "ENTER_LONG" not in str(result.payload["bot_decision"])
+    assert "ENTER_SHORT" not in str(result.payload["bot_decision"])
+
+
+def test_replay_row_keeps_a_regime_it_already_claimed(tmp_path):
+    from rocket.store import ResearchStore
+
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_payload(
+        replay(_book_row(cot_regime="bullish")),
+        macro_context=_macro(),
+        mode=Mode.REPLAY,
+        now=NOW,
+    )
+    assert_research_result(result)
+    row = result.payload["candidates"][0]
+    assert row["cot_regime"] == "bullish"
+    assert row["cot_alignment"] == "aligned"
+    assert row["state"] == "ZONE"
+    assert result.payload["cot_regime"] == "bullish"
+    assert result.payload["bot_decision"]["cot_status"] == "CLAIMED"
+
+
+def test_stale_report_waits_and_keeps_the_row(tmp_path):
+    from rocket.store import ResearchStore
+
+    result = CryptoWorkflow(store=ResearchStore(tmp_path)).scan_payload(
+        replay(_book_row(cot_regime="bearish")),
+        macro_context=_macro(),
+        cot_context={
+            "status": "STALE",
+            "regime": "bearish",
+            "warnings": ["COT report is stale; no directional COT gate was applied"],
+        },
+        mode=Mode.REPLAY,
+        now=NOW,
+    )
+    assert_research_result(result)
+    row = result.payload["candidates"][0]
+    assert row["state"] == "ZONE"
+    assert row["direction"] == "long"
+    assert row["cot_regime"] == "unknown"
+    assert row["cot_alignment"] == "unknown"
+    assert row["action"] == "WAIT"
+    assert "cot_regime_unknown" in row["reasons"]
+    assert result.payload["candidates"]
+    assert result.payload["bot_decision"] == {
+        "action": "WAIT",
+        "reason": "cot_regime_unknown",
+        "regime_required": True,
+        "cot_regime": "unknown",
+        "cot_status": "STALE",
+    }
+    assert result.payload["execution_enabled"] is False
