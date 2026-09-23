@@ -23,6 +23,8 @@ The quarantine is the `LATER_NOT_NOW` section: the cron notes, the `*/5` crontab
 
 Distributions, measurement trust, and forward outcomes from point-in-time rows. Extra sources such as DexScreener only for validation or missing context, not mandatory. Do not optimize thresholds. End with what the data teaches, what it cannot teach, and which questions are worth testing.
 
+The measurement for this branch is `PHASE_B_UNIVERSE.md`, with the scan in `PHASE_B_SCAN.json`. Floors were not changed.
+
 ### C — Discover a few falsifiable hypotheses
 
 Do not limit the search to current `WATCH_ENTER` gates. Do not implement a new scorer. A correlation is not an edge.
@@ -37,4 +39,4 @@ Only if a candidate edge survives D: read-only hypothetical entries and exits, p
 
 ## Where this branch stops
 
-Phase A is closed by the commit that puts this file, `PR30_AUDIT.md`, and the `HOW_TO_RUN.md` quarantine on `cursor/memecoin-radar-intake-f1ca`. Phase B is the lowest unfinished phase. It has not been started. Stop and reassess before any later phase begins.
+Phase A is closed by the commit that puts this file, `PR30_AUDIT.md`, and the `HOW_TO_RUN.md` quarantine on `cursor/memecoin-radar-intake-f1ca`. Phase B's measurement is `PHASE_B_UNIVERSE.md`. Phase C has not started. Stop and reassess before any later phase begins.
