@@ -8,9 +8,9 @@ A WATCH_ENTER row is not a buy. This contract is a triage label for a human. It 
 
 ## Universe, in order
 
-1. `browser:pump.fun` — graduated coins. The page board does not print mints. The page’s own client calls `GET https://frontend-api-v3.pump.fun/coins` with `complete=true`. That flag is the graduated / bonding-curve-complete bit. Snapshot bound: 20 coins, newest `created_timestamp` first.
+1. `browser:pump.fun` — graduated coins. The page board does not print mints. The page’s own client calls `GET https://frontend-api-v3.pump.fun/coins` with `complete=true`. That flag is the graduated / bonding-curve-complete bit. Two bounded pages, 20 coins each. Page one is `offset=0`. Page two is `offset=20` when page one already reaches the 30-minute floor; otherwise one offset aimed at that floor, capped at 400. Intake then keeps at most 40 observations and prefers graduated coins aged 30 minutes to 24 hours, so the newest page does not fill the list by itself.
 2. `browser:fomo.family` — `https://fomo.family/` is login-walled, so the public sibling the pump.family page actually fetches is `GET https://pump.family/api/sales`. Phase `migrated` is in universe (window closed and off-curve). Phase `launched` is window-closed but still on the bonding curve: at most 8 of those are kept, and they cannot be WATCH_ENTER. Phase `open` is excluded.
-3. `helius` — confirm only, and only if `HELIUS_API_KEY` is already exported. Methods: `getAccountInfo` (mint, and pool when the page JSON has one) and `getTokenLargestAccounts`. No `getTransactionsForAddress`.
+3. `helius` — confirm only, and only if `HELIUS_API_KEY` is already exported. Methods: `getAccountInfo` (mint, and pool when the page JSON has one), `getTokenLargestAccounts`, and `getTokenAccountBalance` on the pool quote vault. `getTokenAccountsByOwner` is the fallback when the pool account is not a PumpSwap `Pool`. No `getTransactionsForAddress`. Calls stay inside the selected cap of 20, spent on age-window rows first.
 4. `x` — optional. Never required. Never an identity. If it is not consulted, provider health is `OPTIONAL_NOT_CONSULTED` and `social_heat` is `unknown`.
 
 `universe_source` on every scan is `browser:pump.fun`, `browser:fomo.family`, `helius`, `x`.
@@ -21,10 +21,21 @@ A WATCH_ENTER row is not a buy. This contract is a triage label for a human. It 
 | --- | --- | --- |
 | Age floor | 1800 seconds (30 minutes) | `age_seconds = decision_time - event_time`. Slot-0 snipes and the observed ~8s buy / ~12s disposal sit inside this floor. Too new is not WATCH_ENTER. |
 | Liquidity floor | 10000 USD | `liquidity_usd` only. Advertised market cap is stored aside and is not liquidity. |
-| Selected cap | 20 | Newest `discovered_at` first, then higher `liquidity_usd`. Further rows are `selected_cap`, not a silent drop of the whole market. |
-| Intake cap | 40 observations per collect | Plus at most a few provider-cache frames. Output is never a thousand-row dump. |
+| Selected cap | 20 | Age-window rows first (30 minutes to 24 hours), then older graduated rows, then unknown age, then rows under the age floor. Within a band, newer `event_time`, then higher `liquidity_usd`. Further rows are `selected_cap`, not a silent drop of the whole market. |
+| Intake cap | 40 observations per collect | Two pump pages plus the bounded pump.family rows, then trimmed to 40. Plus at most a few provider-cache frames. Output is never a thousand-row dump. |
 
-SOL reserve conversion, when used: `real_quote_reserves` lamports ÷ 1e9 × the same snapshot’s pump.family `solUsd`, and only when the quote mint is wrapped SOL or the native-SOL placeholder and the reserve is **greater than zero**. A zero reserve stays `liquidity_usd: null` (unknown), not a confirmed zero.
+## Liquidity
+
+`liquidity_usd` is current pool liquidity. Advertised market cap is stored aside and is not liquidity. pump.fun `real_quote_reserves` is the bonding-curve quote at graduation (about 85 SOL, the same print on coin after coin). It is not current pool liquidity and it is not read into `liquidity_usd`.
+
+For a row with `pump_swap_pool` or a pump.family `pool`:
+
+1. `getAccountInfo` on the pool.
+2. PumpSwap pools are owned by `pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA`. The account starts with the Anchor `Pool` discriminator `[241, 154, 109, 4, 17, 177, 109, 188]`. The quote mint is the 32 bytes at offset 75. The quote-vault token account is the 32 bytes at offset 171.
+3. `getTokenAccountBalance` on that vault. If the account is not this layout, one `getTokenAccountsByOwner` for wrapped SOL is the fallback.
+4. The quote mint must be wrapped SOL or the native-SOL placeholder. Liquidity = 2 × (raw vault amount ÷ 10^decimals) × the same snapshot’s pump.family `solUsd`. The ×2 is the constant-product pool: both sides are the same value at the pool’s own price. The result is rounded to cents.
+
+A missing pool, a zero vault, an unreadable account, or a missing `solUsd` leaves `liquidity_usd` null. That row is `SKIP`, never `WATCH_ENTER`. Null is not a confirmed zero and is not `liquidity_below_floor`.
 
 ## Clocks
 
@@ -70,6 +81,21 @@ Rejected, not selected: unknown identity, bad mint, future timestamps, Helius ac
 | Rows exist and Helius or one board is down | `PARTIAL` | `INSUFFICIENT_EVIDENCE` | `PARTIAL` |
 
 `selected: []` with `DATA_UNAVAILABLE` or `EMPTY_INTAKE` is not a finding that no memecoins exist. The payload warning says that explicitly. Caller-supplied legacy fixtures still use the old `scan()` path, including `CALLER_STATE_MISSING` on an empty fixture list. That path is not the live feed.
+
+## Spool window
+
+Scan ranks the latest complete snapshot only. Older snapshots do not leak into the new ranking. `collect` and `radar` keep the newest spool segment that contains a snapshot and delete the older segments, so a run every few minutes does not grow the spool without a bound.
+
+## Bot summary
+
+`rocket memecoin radar --json` collects and then scans, and prints one JSON object. `collect` and `scan` stay available. Scan and radar payloads include `decision_summary`:
+
+- `counts` for `WATCH_ENTER`, `SKIP`, `TOO_EARLY`, and `AVOID`
+- `coverage_status`
+- `helius.status` and `helius.failure_kind`
+- `watch_enter`: `identity`, `mint`, `liquidity_usd`, `age_seconds` for each `WATCH_ENTER` row
+
+`edge` stays `NO_EDGE_VALIDATED`. `execution_enabled` stays false. The notice stays `A WATCH_ENTER row is not a buy.` Exit codes are in `HOW_TO_RUN.md`. Exit 0 includes a healthy scan with zero `WATCH_ENTER`.
 
 ## Secrets
 

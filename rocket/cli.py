@@ -34,7 +34,11 @@ def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -
 
 
 def emit_result(result: ResearchResult, *, human: bool) -> None:
-    _emit(result.to_dict(), human=human, result=result)
+    payload = result.to_dict()
+    summary = result.payload.get("decision_summary")
+    if isinstance(summary, dict):
+        payload["decision_summary"] = summary
+    _emit(payload, human=human, result=result)
     raise typer.Exit(exit_code(result))
 
 
@@ -532,6 +536,10 @@ def memecoin_collect(
     spool_path = spool or default_spool_path(root)
     store = ResearchStore(root)
     raw = json.loads(input_file.read_text(encoding="utf-8")) if input_file else None
+    if not _raw_frames(raw):
+        from rocket.workflows.memecoin_radar import bound_spool
+
+        bound_spool(spool_path)
     writer = RawCaptureSpool(spool_path, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
     try:
         if _raw_frames(raw):
@@ -555,6 +563,66 @@ def memecoin_collect(
                     helius.close()
     finally:
         writer.close()
+    if not _raw_frames(raw):
+        from rocket.workflows.memecoin_radar import bound_spool
+
+        bound_spool(spool_path)
+    emit_result(result, human=human)
+
+
+@memecoin_app.command("radar")
+def memecoin_radar(
+    spool: Path | None = typer.Option(None, "--spool"),
+    input_file: Path | None = typer.Option(None, "--input", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Collect one snapshot and scan it. One JSON object. A WATCH_ENTER row is not a buy."""
+    del json_out
+    import httpx
+
+    from rocket.capture.spool import RawCaptureSpool
+    from rocket.workflows.memecoin_radar import (
+        bound_spool,
+        default_spool_path,
+        helius_endpoint,
+        radar_rows_from_payload,
+        run_radar,
+    )
+
+    root = state_dir or rocket_home()
+    spool_path = spool or default_spool_path(root)
+    store = ResearchStore(root)
+    if input_file is not None:
+        try:
+            raw = json.loads(input_file.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            configuration_failure("memecoin.radar", store, human=human)
+    else:
+        raw = None
+    bound_spool(spool_path)
+    writer = RawCaptureSpool(spool_path, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
+    browser = None
+    helius = None
+    try:
+        browser = None if raw is not None else httpx.Client(timeout=10.0)
+        helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+        observations = None if raw is None else radar_rows_from_payload(raw)
+        result = run_radar(
+            writer,
+            store=store,
+            observations=observations,
+            client=browser,
+            helius_client=helius,
+        )
+    finally:
+        if browser is not None:
+            browser.close()
+        if helius is not None:
+            helius.close()
+        writer.close()
+    bound_spool(spool_path)
     emit_result(result, human=human)
 
 

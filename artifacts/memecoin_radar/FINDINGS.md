@@ -46,7 +46,7 @@ Only when `HELIUS_API_KEY` is already in the process environment (the name Rocke
 Bounded JSON-RPC on `mainnet.helius-rpc.com`, at most the mints in one snapshot cap:
 
 1. `getAccountInfo` on the mint. The account must be owned by the SPL Token or Token-2022 program and decode as an initialized mint. This is the “mint exists” check.
-2. `getAccountInfo` on a pool address when the page JSON included one (`pump_swap_pool` or pump.family `pool`). Existence is a pool fact. It is not a USD liquidity number.
+2. `getAccountInfo` on a pool address when the page JSON included one (`pump_swap_pool` or pump.family `pool`). The PumpSwap quote vault is then read with `getTokenAccountBalance` (or `getTokenAccountsByOwner` when the account is not that layout). `liquidity_usd` is 2 × that quote side in USD. Pool existence alone is not a USD figure, and graduation-time `real_quote_reserves` is not used.
 3. `getTokenLargestAccounts` when the mint decodes. The top holder’s raw share of supply is stored as `top1_holder_bps`. Dev-hold stays `UNKNOWN` unless a later, separate owner match exists. No such match is invented here.
 
 `getTransactionsForAddress` is not called. If the key is absent, Helius provider health is `UNAVAILABLE` / `HELIUS_API_KEY_ABSENT`, no RPC is sent, and a browser-only row cannot be `WATCH_ENTER`.

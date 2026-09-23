@@ -14,7 +14,7 @@ Each selected row has `state` set to exactly one of:
 
 `TOO_EARLY` | `SKIP` | `WATCH_ENTER` | `AVOID`
 
-There is no selected `UNKNOWN`. `SKIP` is not a safe state. Selected length stays ≤ 20, newest `discovered_at` first, then higher `liquidity_usd`.
+There is no selected `UNKNOWN`. `SKIP` is not a safe state. Selected length stays ≤ 20. Graduated rows inside the 30-minute to 24-hour window rank first, then older graduated rows, then unknown age, then rows below the age floor. Within a band, newer `event_time`, then higher `liquidity_usd`. The 24-hour mark is a ranking window, not a hard gate.
 
 ## Mapping
 
@@ -24,7 +24,7 @@ Apply the first match that fits.
 
 - chain normalizes to `solana:mainnet` and the mint passes the existing base58 32-byte check
 - `event_time`, `available_at`, and `decision_time` are present and point-in-time legal (neither event nor available time is after the decision clock)
-- `liquidity_usd` is present and ≥ 10000
+- `liquidity_usd` is present and ≥ 10000. The number is current pool liquidity from `RADAR_CONTRACT_v0.md` (2 × the quote vault in USD). It is not pump.fun `real_quote_reserves` and not advertised market cap. Null does not pass this gate.
 - `age_seconds` ≥ 1800 (30 minutes), with `age_seconds = decision_time - event_time`
 - graduation is `graduated` and `window_state` is `closed`
 - Helius `getAccountInfo` confirmed the mint
@@ -35,7 +35,7 @@ Reason stays `floors_met_not_an_entry`. The payload notice is `A WATCH_ENTER row
 
 `AVOID` when identity is invalid, the mint fails decode or is not found, timestamps are in the future, or Helius confirmed the mint and a hard gate other than age fails. Those hard gates are: liquidity is present but under 10000, or the coin is still on the bonding curve (`still_on_curve` or `window_open`). Invalid identity, failed decode, mint not found, and future timestamps are rejected. They are not selected. A bad mint may show up as `AVOID` or as a rejected row; a future `available_at` is ineligible and is not selected.
 
-`SKIP` when a required check cannot be computed. That includes no Helius confirm, liquidity unknown, and clocks incomplete. A browser-only row is `SKIP`, not `WATCH_ENTER`. A young row without a Helius confirm is `SKIP`, not `TOO_EARLY`. `SKIP` means the check is missing. It does not mean the row is safe, ranked, or cleared.
+`SKIP` when a required check cannot be computed. That includes no Helius confirm, liquidity unknown, and clocks incomplete. Liquidity is unknown when the pool address is missing, the quote vault is zero or unreadable, or the snapshot SOL price is missing. Those rows are `SKIP`, never `WATCH_ENTER`. A browser-only row is `SKIP`, not `WATCH_ENTER`. A young row without a Helius confirm is `SKIP`, not `TOO_EARLY`. `SKIP` means the check is missing. It does not mean the row is safe, ranked, or cleared.
 
 ## What this is not
 
