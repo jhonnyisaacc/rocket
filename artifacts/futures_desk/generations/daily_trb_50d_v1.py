@@ -204,12 +204,17 @@ def net_return(direction: int, entry: float, exit_px: float, bps: float, rate_su
 
 
 def funding_rate_sum(buckets: dict[int, float], start_ms: int, end_ms: int) -> float | None:
-    """Hourly prints in (start, end]. A missing hour is incomplete. No zero-fill."""
+    """Hourly prints whose timestamp falls in (start, end].
+
+    The venue stamps each print about 50ms after the hour. The print on the
+    exit hour is therefore after the exit open and is outside the hold. A
+    missing hour inside the hold drops the trade. Missing hours are not zero.
+    """
     if end_ms <= start_ms:
         return 0.0
     total = 0.0
     stamp = (start_ms // HOUR_MS) * HOUR_MS + HOUR_MS
-    while stamp <= end_ms:
+    while stamp < end_ms:
         if stamp not in buckets:
             return None
         total += buckets[stamp]
@@ -469,14 +474,18 @@ def end_state(event: dict) -> tuple[str, str]:
     if mean20 <= 0 or event["largest"]["fires"] or event["june"]["20"]["fires"] or event["hype"]["20"]["fires"]:
         reason = []
         if mean20 <= 0:
-            reason.append("the event-study mean at 20bps is not positive")
+            reason.append(
+                "The event-study mean net return is not positive at 20bps, so the daily break does not survive costs. "
+                "The same mean is not positive at 40bps. "
+                "The frozen concentration tests do not decide this result, because there is no positive mean for one coin or one episode to explain"
+            )
         if event["largest"]["fires"]:
             reason.append(f"the gains sit in {event['largest']['coin']}")
         if event["june"]["20"]["fires"]:
             reason.append("the gains sit in the June 2026 rebound window")
         if event["hype"]["20"]["fires"]:
             reason.append("the gains sit in the HYPE high window")
-        return ("Hypothesis rejected", "; ".join(reason) + ".")
+        return ("Hypothesis rejected", ". ".join(reason) + ".")
     if mean40 is not None and mean40 > 0:
         return (
             "Promising, forward shadow only",
@@ -545,7 +554,7 @@ def render_results(summary: dict) -> str:
         f"| Long | {event['long']['n']} | {fmt(event['long']['mean20'])} | {fmt(event['long']['mean40'])} |",
         f"| Short | {event['short']['n']} | {fmt(event['short']['mean20'])} | {fmt(event['short']['mean40'])} |",
         "",
-        f"Gross mean before costs and funding: {fmt(event['gross'])}. Mean funding drag (direction times the rate sum): {fmt(event['funding_drag'])}. Standard deviation of the 20bps event returns: {fmt(event['std20'])}. Events overlap, so that deviation is not an independent-sample error.",
+        f"Gross mean before costs and funding: {fmt(event['gross'])}. Mean funding drag (direction times the rate sum): {fmt(event['funding_drag'])}. A funding print is stamped about 50ms after the hour, so the print on the exit hour falls after the exit open and is outside `(fill, exit]`. Standard deviation of the 20bps event returns: {fmt(event['std20'])}. Events overlap, so that deviation is not an independent-sample error.",
         "",
         f"Drawdown of summed unit-notional event returns, ordered by exit: {fmt(event['drawdown20'], 4)} at 20bps, {fmt(event['drawdown40'], 4)} at 40bps. Fraction of opened days in a position, averaged across the {universe['eligible_n']} eligible names: {fmt_share(event['time_in_market'])}.",
         "",
@@ -660,13 +669,21 @@ def fetch_funding(client: httpx.Client, coin: str, start_ms: int, end_ms: int, r
     cache = CACHE / f"{coin}_funding_{run_day}_{start_ms}_{end_ms}.json"
     cached = load_json(cache)
     if isinstance(cached, dict) and "buckets" in cached:
-        return {int(key): float(value) for key, value in cached["buckets"].items()}
+        loaded = {int(key): float(value) for key, value in cached["buckets"].items()}
+        # A download that died mid-page is continuous and then stops early.
+        # Do not reuse it. A finished download reaches the last hour before the exit.
+        if loaded and max(loaded) >= end_ms - HOUR_MS:
+            return loaded
     buckets: dict[int, float] = {}
     cursor = start_ms
     pages = 0
+    ended_clean = False
+    # Ask slightly past the exit open so a print stamped a few milliseconds
+    # after an interior hour is not cut off. The sum still stops before the exit.
+    request_end = end_ms + HOUR_MS
     while cursor <= end_ms and pages < 40:
         payload = None
-        for attempt in range(5):
+        for attempt in range(6):
             try:
                 response = client.post(
                     MAINNET_INFO_URL,
@@ -674,27 +691,37 @@ def fetch_funding(client: httpx.Client, coin: str, start_ms: int, end_ms: int, r
                         "type": "fundingHistory",
                         "coin": coin,
                         "startTime": int(cursor),
-                        "endTime": int(end_ms),
+                        "endTime": int(request_end),
                     },
                 )
                 response.raise_for_status()
-                payload = response.json()
+                body = response.json()
+                if not isinstance(body, list):
+                    raise ValueError("fundingHistory payload must be a list")
+                payload = body
                 break
-            except (httpx.HTTPError, ValueError) as exc:
-                payload = exc
-                time.sleep(0.7 * (attempt + 1))
+            except (httpx.HTTPError, ValueError, TypeError):
+                payload = None
+                time.sleep(0.8 * (attempt + 1))
         pages += 1
-        if not isinstance(payload, list) or not payload:
+        if payload is None:
+            break
+        if not payload:
+            ended_clean = True
             break
         last = int(payload[-1]["time"])
         for row in payload:
             hour = int(row["time"]) // HOUR_MS * HOUR_MS
             buckets[hour] = float(row["fundingRate"])
-        if len(payload) < 500 or last + 1 <= cursor:
+        reached = max(buckets) >= end_ms - HOUR_MS
+        if len(payload) < 500 or reached:
+            ended_clean = True
+            break
+        if last + 1 <= cursor:
             break
         cursor = last + 1
-        time.sleep(0.12)
-    if buckets:
+        time.sleep(0.15)
+    if buckets and ended_clean:
         save_json(cache, {"buckets": {str(key): value for key, value in buckets.items()}, "pages": pages})
     return buckets
 
@@ -924,10 +951,12 @@ def self_check() -> None:
     retaken = select_book(events)
     assert len(retaken) == 2
 
-    rates = {hour: 0.0001 for hour in range(51 * DAY_MS + HOUR_MS, 61 * DAY_MS + HOUR_MS, HOUR_MS)}
+    rates = {hour: 0.0001 for hour in range(51 * DAY_MS + HOUR_MS, 61 * DAY_MS, HOUR_MS)}
     rate_sum = funding_rate_sum(rates, 51 * DAY_MS, 61 * DAY_MS)
-    assert rate_sum is not None and abs(rate_sum - 0.0001 * 240) < 1e-9
+    assert rate_sum is not None and abs(rate_sum - 0.0001 * 239) < 1e-9
     assert funding_rate_sum({}, 51 * DAY_MS, 61 * DAY_MS) is None
+    # The print on the exit hour is after the exit open, so its absence is not a gap.
+    assert funding_rate_sum(rates, 51 * DAY_MS, 61 * DAY_MS) is not None
     entry = events[0]["fill"]
     exit_px = events[0]["exit"]
     gross = (exit_px - entry) / entry
