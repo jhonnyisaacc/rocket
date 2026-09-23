@@ -121,7 +121,7 @@ def test_macro_and_cot_produce_candidate(tmp_path):
     assert_research_result(result)
     assert result.status is ResearchStatus.SETUP_FOUND
     assert result.payload["funnel"]["final_candidates"] == 1
-    assert result.payload["funnel"]["universe_policy"] == "top_100_market_cap_plus_liquid_perps"
+    assert result.payload["funnel"]["universe_policy"] == "top_100_market_cap_intersect_hyperliquid_perps"
     assert result.payload["trade_decision"]["direction"] == "LONG"
     assert result.payload["final_candidates"][0]["mark_price"] is None
 
@@ -175,16 +175,37 @@ def test_join_requires_unambiguous_ticker():
         [_perp("BTC"), _perp("ALT"), _perp("KPEPE")],
         now=NOW,
     )
-    by_symbol = {row["symbol"]: row for row in observation["candidates"]}
-    assert by_symbol["BTC"]["ranking_state"] == "ELIGIBLE"
-    assert by_symbol["BTC"]["venue"] == "hyperliquid"
-    assert by_symbol["BTC"]["liquidity"]["state"] == "PASS"
-    assert by_symbol["BTC"]["setup_validation"]["valid"] is False
-    assert by_symbol["ALT"]["ranking_state"] == "UNKNOWN"
-    assert by_symbol["ALT"]["venue"] is None
-    members = observation["universe_members_deduplicated"]
-    assert any(row["symbol"] == "KPEPE" and row["universe_source"] == "liquid_perpetual" for row in members)
+    assert [row["symbol"] for row in observation["candidates"]] == ["BTC"]
+    btc = observation["candidates"][0]
+    assert btc["ranking_state"] == "ELIGIBLE"
+    assert btc["venue"] == "hyperliquid"
+    assert btc["liquidity"]["state"] == "PASS"
+    assert btc["setup_validation"]["valid"] is False
+    assert all(row["symbol"] != "KPEPE" for row in observation["universe_members_deduplicated"])
     assert observation["join"]["joined_count"] == 1
+    assert observation["join"]["top100_count"] == 3
+    assert {item["reason"] for item in observation["join"]["perp_gap"]} == {"ambiguous_symbol"}
+    assert [item["symbol"] for item in observation["join"]["perp_gap"]] == ["ALT", "ALT"]
+
+
+def test_unique_k_prefix_is_a_perp_and_unlisted_names_are_gaps():
+    observation = build_live_observation(
+        [_cap("PEPE", "pepe", 50), _cap("USDT", "tether", 3)],
+        [_perp("KPEPE"), _perp("BTC")],
+        now=NOW,
+    )
+    assert [row["symbol"] for row in observation["candidates"]] == ["PEPE"]
+    assert observation["candidates"][0]["contract_symbol"] == "KPEPE"
+    assert observation["candidates"][0]["ranking_state"] == "ELIGIBLE"
+    assert observation["join"]["mapped_perp_count"] == 1
+    assert observation["join"]["perp_gap"] == [
+        {
+            "symbol": "USDT",
+            "canonical_asset_id": "tether",
+            "rank": 3,
+            "reason": "no_hyperliquid_perp",
+        }
+    ]
 
 
 def test_liquidity_unknown_when_spread_missing():
@@ -262,7 +283,9 @@ def test_scan_live_hyperliquid_down_is_partial(tmp_path):
     assert result.status is ResearchStatus.INSUFFICIENT_EVIDENCE
     assert "hyperliquid perpetual metadata unavailable" in result.warnings
     assert result.payload["funnel"]["eligible"] == 0
-    assert result.payload["observations"][0]["candidates"][0]["liquidity"]["state"] == "REJECT"
+    assert result.payload["observations"][0]["candidates"] == []
+    assert result.payload["perp_gap"][0]["reason"] == "perpetual_metadata_unavailable"
+    assert result.payload["perp_gap_count"] == 1
 
 
 def _rising_4h(n=30):

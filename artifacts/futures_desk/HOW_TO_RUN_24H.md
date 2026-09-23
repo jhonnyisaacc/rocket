@@ -23,7 +23,7 @@ python -m rocket.cli status --json --state-dir "${ROCKET_HOME:-$HOME/.rocket}"
 
 `rocket` on `PATH` is the same command. Stdout is the result. Stderr is logs.
 
-Read `payload.candidates`. Do not decide from `status` or `trade_decision` alone. Those still follow the legacy 6-bar funnel. A healthy scan can be research `NO_SETUP` with `trade_decision.direction` `NO_TRADE` while `candidates` holds the book. That is not a failed theory. `payload.theory_note` says this is staged momentum and COT research, not the PR #28 primary contract.
+Read `payload.candidates`. The book is the top 100 by market cap intersected with a Hyperliquid perp. `payload.perp_gap` lists top-100 names with no perp. Those are not rows. Do not decide from `status` or `trade_decision` alone. Those still follow the legacy 6-bar funnel. A healthy scan can be research `NO_SETUP` with `trade_decision.direction` `NO_TRADE` while `candidates` holds the book. That is not a failed theory. `payload.theory_note` says this is staged momentum and COT research, not the PR #28 primary contract.
 
 `payload.cot_scope` is `market/regime context; no per-altcoin COT signal`. `payload.funnel.staged_states` counts the book.
 

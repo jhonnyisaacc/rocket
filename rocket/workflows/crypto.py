@@ -296,7 +296,7 @@ def build_funnel(
         "cot_regime": effective_cot,
         "cot_scope": COT_SCOPE,
         "macro_context_validated": bool(macro_checks) and all(macro_checks),
-        "universe_policy": "top_100_market_cap_plus_liquid_perps",
+        "universe_policy": "top_100_market_cap_intersect_hyperliquid_perps",
         "universe_size_target": UNIVERSE_SIZE,
     }
     return funnel, final_candidates, evidence
@@ -923,94 +923,116 @@ def _candidate_row(
     }
 
 
+def _perp_gap(row: Mapping[str, Any], reason: str) -> dict[str, Any]:
+    return {
+        "symbol": str(row.get("symbol") or "").upper(),
+        "canonical_asset_id": row.get("canonical_asset_id"),
+        "rank": row.get("rank"),
+        "reason": reason,
+    }
+
+
+def resolve_top100_perp(
+    row: Mapping[str, Any],
+    contracts_by_symbol: Mapping[str, Sequence[Mapping[str, Any]]],
+    ids_by_symbol: Mapping[str, Sequence[str]],
+    *,
+    cap_symbols: set[str],
+    perp_list_status: str,
+) -> tuple[Mapping[str, Any] | None, str | None]:
+    """Map one market-cap row onto one Hyperliquid perp, or a gap reason.
+
+    Direct name match stays the rule. Hyperliquid lists some 1000-unit perps with
+    a leading K (KPEPE, KSHIB). That alias is used only when it is unique, the
+    plain symbol is not itself a perp, and the K-name is not its own top-100 ticker.
+    """
+    symbol = str(row.get("symbol") or "").upper()
+    if not symbol or not row.get("canonical_asset_id"):
+        return None, "missing_identity"
+    if perp_list_status != "available":
+        return None, "perpetual_metadata_unavailable"
+    identities = ids_by_symbol.get(symbol, ())
+    if len(identities) != 1:
+        return None, "ambiguous_symbol"
+    direct = contracts_by_symbol.get(symbol, ())
+    if len(direct) > 1:
+        return None, "ambiguous_symbol"
+    if len(direct) == 1:
+        return direct[0], None
+    alias = "K" + symbol
+    aliased = contracts_by_symbol.get(alias, ())
+    if len(aliased) == 1 and alias not in cap_symbols:
+        return aliased[0], None
+    return None, "no_hyperliquid_perp"
+
+
 def build_live_observation(
     market_cap: Sequence[Mapping[str, Any]],
     perps: Sequence[Mapping[str, Any]],
     *,
     now: datetime,
+    perp_list_status: str = "available",
 ) -> dict[str, Any]:
-    """Join current top-100 market-cap rows to Hyperliquid perps without ticker-only identity."""
+    """Top-100 market-cap rows intersected with Hyperliquid perps. Unmapped names are gaps."""
     contracts_by_symbol: dict[str, list[Mapping[str, Any]]] = {}
     for perp in perps:
         if isinstance(perp, Mapping) and perp.get("name"):
             contracts_by_symbol.setdefault(str(perp["name"]).upper(), []).append(perp)
     ids_by_symbol = _ids_by_symbol(market_cap)
+    cap_symbols = {
+        str(row.get("symbol") or "").upper()
+        for row in market_cap
+        if isinstance(row, Mapping) and row.get("symbol")
+    }
     members: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
-    known_ids: set[str] = set()
+    gaps: list[dict[str, Any]] = []
     stamp = now.isoformat()
     joined = 0
+    considered = 0
     for row in market_cap:
         if not isinstance(row, Mapping):
             continue
+        considered += 1
         symbol = str(row.get("symbol") or "").upper()
         canonical = row.get("canonical_asset_id")
-        contract = _contract_for_row(row, contracts_by_symbol.get(symbol, ()), ids_by_symbol)
-        if contract is not None:
-            joined += 1
+        contract, gap_reason = resolve_top100_perp(
+            row,
+            contracts_by_symbol,
+            ids_by_symbol,
+            cap_symbols=cap_symbols,
+            perp_list_status=perp_list_status,
+        )
+        if contract is None:
+            gaps.append(_perp_gap(row, gap_reason or "no_hyperliquid_perp"))
+            continue
+        joined += 1
         rank = row.get("rank")
+        contract_name = str(contract["name"])
         member = {
             "symbol": symbol,
             "canonical_asset_id": canonical,
-            "venue": "hyperliquid" if contract is not None else None,
-            "contract_symbol": str(contract["name"]) if contract is not None else None,
-            "quote_currency": str(contract.get("quote_currency") or "USDC") if contract is not None else "USD",
+            "venue": "hyperliquid",
+            "contract_symbol": contract_name,
+            "quote_currency": str(contract.get("quote_currency") or "USDC"),
             "universe_source": row.get("universe_source") or "current_top_market_cap",
             "rank": rank,
             "exchange_contract_type": "perpetual",
+            "name_alias": contract_name if contract_name != symbol else None,
         }
         members.append(member)
-        if canonical:
-            known_ids.add(str(canonical).lower())
-        ranking = "ELIGIBLE" if canonical and contract is not None else "UNKNOWN"
         candidates.append(
             _candidate_row(
                 symbol=symbol,
                 canonical_asset_id=canonical,
-                venue=member["venue"],
+                venue="hyperliquid",
                 contract=contract,
-                ranking_state=ranking,
+                ranking_state="ELIGIBLE",
                 universe_source=str(member["universe_source"]),
                 rank=rank,
                 stamp=stamp,
             )
         )
-    unresolved = 0
-    for symbol, contracts in sorted(contracts_by_symbol.items()):
-        for contract in contracts:
-            mapped = ids_by_symbol.get(symbol, [])
-            canonical = mapped[0] if len(mapped) == 1 else None
-            if canonical and canonical.lower() in known_ids:
-                continue
-            unresolved += 1
-            members.append(
-                {
-                    "symbol": symbol,
-                    "canonical_asset_id": canonical,
-                    "venue": "hyperliquid",
-                    "contract_symbol": str(contract["name"]),
-                    "quote_currency": str(contract.get("quote_currency") or "USDC"),
-                    "universe_source": "liquid_perpetual",
-                    "rank": None,
-                    "data_completeness": "complete" if canonical else "incomplete",
-                    "missingness_reason": None if canonical else "canonical_asset_id_unresolved",
-                    "exchange_contract_type": "perpetual",
-                }
-            )
-            if not canonical:
-                continue
-            candidates.append(
-                _candidate_row(
-                    symbol=symbol,
-                    canonical_asset_id=canonical,
-                    venue="hyperliquid",
-                    contract=contract,
-                    ranking_state="BELOW_RANK_THRESHOLD",
-                    universe_source="liquid_perpetual",
-                    rank=None,
-                    stamp=stamp,
-                )
-            )
     return {
         "observation_timestamp": stamp,
         "source": "live:CoinGecko+Hyperliquid",
@@ -1020,8 +1042,11 @@ def build_live_observation(
         "join": {
             "market_cap_source": "coingecko",
             "perpetual_source": "hyperliquid",
+            "top100_count": considered,
+            "mapped_perp_count": joined,
             "joined_count": joined,
-            "unresolved_perp_count": unresolved,
+            "perp_gap_count": len(gaps),
+            "perp_gap": gaps,
             "spread_source": "hyperliquid impactPxs; half-spread slippage, depth not imputed",
         },
     }
@@ -1114,6 +1139,16 @@ class CryptoWorkflow:
             operational = OperationalStatus.PARTIAL
         decision = trade_decision(candidates, research=research, operational=operational)
         staged = _staged_book(replay_payload)
+        perp_gap: list[dict[str, Any]] = []
+        for observation in observations:
+            if not isinstance(observation, Mapping):
+                continue
+            join = observation.get("join")
+            if not isinstance(join, Mapping):
+                continue
+            for item in join.get("perp_gap") or []:
+                if isinstance(item, Mapping):
+                    perp_gap.append(dict(item))
         staged_states = {name: 0 for name in STAGED_STATES}
         for row in staged:
             staged_states[str(row["state"])] += 1
@@ -1142,6 +1177,8 @@ class CryptoWorkflow:
                 "cava_context_status": cava_status,
                 "final_candidates": candidates,
                 "candidates": staged,
+                "perp_gap": perp_gap,
+                "perp_gap_count": len(perp_gap),
                 "trade_decision": decision,
                 "observations": list(observations),
                 "cot_scope": COT_SCOPE,
@@ -1239,7 +1276,12 @@ class CryptoWorkflow:
             cot_context = fetch_cot_context(now=observed)
         cava = self.store.load_context("cava") if self.store else None
         perp_records = perps_result.records if perps_result.status is OperationalStatus.HEALTHY else ()
-        observation = build_live_observation(discovery.records, perp_records, now=observed)
+        observation = build_live_observation(
+            discovery.records,
+            perp_records,
+            now=observed,
+            perp_list_status="available" if perps_result.status is OperationalStatus.HEALTHY else "unavailable",
+        )
         if candles is None:
             coins = [
                 str(row.get("contract_symbol"))
@@ -1313,10 +1355,11 @@ class CryptoWorkflow:
                      and row["liquidity"]["state"] == "PASS"]
         for row in requested:
             coin = str(row["contract_symbol"])
+            candle_key = coin.upper()
             providers.append({"name": f"hyperliquid.candles:{coin}",
-                              "status": "HEALTHY" if coin in candles else "UNAVAILABLE",
-                              "failure_kind": None if coin in candles else "CandleAcquisitionFailed",
-                              "coverage": str(len(candles.get(coin, ())))})
+                              "status": "HEALTHY" if candle_key in candles else "UNAVAILABLE",
+                              "failure_kind": None if candle_key in candles else "CandleAcquisitionFailed",
+                              "coverage": str(len(candles.get(candle_key, ())))})
         if macro_result is not None:
             providers.extend(item.to_dict() for item in macro_result.operational.providers)
         else:

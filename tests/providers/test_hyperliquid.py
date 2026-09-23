@@ -165,12 +165,13 @@ def test_fetch_closed_candles_reuses_info_and_drops_open_bar():
         def close(self):
             raise AssertionError("injected client must not be closed")
 
-    rows = fetch_closed_candles(["btc"], interval="1d", lookback_days=10, now=NOW, http=_Client())
+    rows = fetch_closed_candles(["kPEPE"], interval="1d", lookback_days=10, now=NOW, http=_Client())
     assert seen["url"].endswith("/info")
     assert seen["body"]["type"] == "candleSnapshot"
-    assert seen["body"]["req"]["coin"] == "BTC"
+    assert seen["body"]["req"]["coin"] == "kPEPE"
+    assert "BTC" not in rows
+    assert [row["timestamp_ms"] for row in rows["KPEPE"]] == [closed_open]
     assert seen["body"]["req"]["interval"] == "1d"
-    assert [row["timestamp_ms"] for row in rows["BTC"]] == [closed_open]
 
 
 def test_module_never_signs():

@@ -94,7 +94,7 @@ def parse_meta_and_asset_ctxs(payload: Any, *, retrieved_at: datetime) -> tuple[
             continue
         if asset.get("isDelisted") is True:
             continue
-        name = str(asset.get("name") or "").upper()
+        name = str(asset.get("name") or "").strip()
         if not name:
             continue
         mark = _finite(ctx.get("markPx")) or _finite(ctx.get("midPx"))
@@ -220,7 +220,7 @@ def fetch_candles(
             json={
                 "type": "candleSnapshot",
                 "req": {
-                    "coin": coin.upper(),
+                    "coin": str(coin).strip(),
                     "interval": interval,
                     "startTime": int(start_ms),
                     "endTime": int(end_ms),
@@ -245,7 +245,7 @@ def fetch_candles(
         records=records,
         retrieved_at=retrieved,
         source="hyperliquid",
-        extras={"coin": coin.upper(), "interval": interval, "signing": False},
+        extras={"coin": str(coin).strip(), "interval": interval, "signing": False},
     )
 
 
@@ -270,18 +270,18 @@ def fetch_closed_candles(
     output: dict[str, tuple[Mapping[str, Any], ...]] = {}
     try:
         for coin in list(coins)[: max(0, limit)]:
-            name = str(coin or "").upper()
-            if not name:
+            venue_coin = str(coin or "").strip()
+            if not venue_coin:
                 continue
             result = fetch_candles(
-                name, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
+                venue_coin, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
             )
             if result.status is OperationalStatus.UNAVAILABLE:
                 result = fetch_candles(
-                    name, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
+                    venue_coin, interval=interval, start_ms=start_ms, end_ms=end_ms, http=client
                 )
             if result.status is OperationalStatus.HEALTHY:
-                output[name] = tuple(
+                output[venue_coin.upper()] = tuple(
                     row
                     for row in result.records
                     if row["timestamp_ms"] + interval_ms <= end_ms

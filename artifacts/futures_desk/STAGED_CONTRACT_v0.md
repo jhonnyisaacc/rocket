@@ -11,7 +11,7 @@ These already follow `docs/ROCKET_PLAN.md`, `docs/issues/03-crypto-futures-polis
 | Rule | Source |
 |---|---|
 | One crypto engine. No second scanner, no Cava import on the scan path, no Discord/Hermes, no orders or signing | Plan non-goals; issue 03 |
-| Universe is the current top 100 by market cap joined to a Hyperliquid perpetual. Ambiguous tickers stay unresolved | `build_live_observation` |
+| Universe is the current top 100 by market cap intersected with a Hyperliquid perpetual. A name with no perp is a gap, not a candidate row. Ambiguous tickers stay unresolved | `build_live_observation` |
 | Liquid means the existing gates: 24h quote volume, open interest, spread, slippage | `assess_live_liquidity` |
 | COT is BTC/ETH market regime only. Scope text stays `market/regime context; no per-altcoin COT signal`. There is no per-altcoin COT | `cot_regime_passes` usage; `rocket/providers/cftc.py` |
 | Unknown or stale COT does not delete a row | existing fail-open in `build_funnel` |
