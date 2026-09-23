@@ -49,7 +49,7 @@ Bounded JSON-RPC on `mainnet.helius-rpc.com`, at most the mints in one snapshot 
 2. `getAccountInfo` on a pool address when the page JSON included one (`pump_swap_pool` or pump.family `pool`). Existence is a pool fact. It is not a USD liquidity number.
 3. `getTokenLargestAccounts` when the mint decodes. The top holder’s raw share of supply is stored as `top1_holder_bps`. Dev-hold stays `UNKNOWN` unless a later, separate owner match exists. No such match is invented here.
 
-`getTransactionsForAddress` is not called. If the key is absent, Helius provider health is `UNAVAILABLE` / `HELIUS_API_KEY_ABSENT`, no RPC is sent, and a browser-only row cannot be `WATCH`.
+`getTransactionsForAddress` is not called. If the key is absent, Helius provider health is `UNAVAILABLE` / `HELIUS_API_KEY_ABSENT`, no RPC is sent, and a browser-only row cannot be `WATCH_ENTER`.
 
 ## X
 
@@ -57,4 +57,4 @@ X is optional and not required for the radar to return. No tweet is an entry. If
 
 ## What “identify” means after this change
 
-Collect writes a bounded snapshot into the spool. Scan ranks that feed. `WATCH` is a human-review label after identity, clocks, age, liquidity, and a Helius mint confirm. A WATCH row is not a buy.
+Collect writes a bounded snapshot into the spool. Scan ranks that feed. `WATCH_ENTER` is a human-review label after identity, clocks, age, liquidity, and a Helius mint confirm. A WATCH_ENTER row is not a buy. The bot labels are `TOO_EARLY`, `SKIP`, `WATCH_ENTER`, and `AVOID` (`DECISION_CONTRACT_v0.md`).

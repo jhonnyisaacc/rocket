@@ -14,6 +14,7 @@ from __future__ import annotations
 import base64
 import json
 import math
+import time
 from collections import deque
 from collections.abc import Mapping, Sequence
 from datetime import UTC, datetime
@@ -45,7 +46,8 @@ SAFETY_SENTENCE = (
     "NO_EDGE_VALIDATED. Human-gated. Read-only. Identification ≠ entry. "
     "Browser and X are evidence sources, not execution."
 )
-WATCH_IS_NOT_A_BUY = "A WATCH row is not a buy."
+WATCH_IS_NOT_A_BUY = "A WATCH_ENTER row is not a buy."
+DECISIONS = frozenset({"TOO_EARLY", "SKIP", "WATCH_ENTER", "AVOID"})
 ABSENCE_WARNING = "Empty, partial, or failed discovery is not evidence that no memecoins exist."
 
 # Minutes, not seconds: slot-0 bonding-curve snipes and the observed 8s/12s
@@ -53,6 +55,8 @@ ABSENCE_WARNING = "Empty, partial, or failed discovery is not evidence that no m
 AGE_FLOOR_SECONDS = 30 * 60
 LIQUIDITY_FLOOR_USD = 10_000
 SELECTED_CAP = 20
+RPC_BATCH_CAP = 5
+RPC_BATCH_PAUSE_SECONDS = 0.4
 INTAKE_FRAME_CAP = 40
 SCAN_INTAKE_CAP = 200
 FAMILY_CURVE_CAP = 8
@@ -372,16 +376,40 @@ def _decode_mint(data: bytes) -> tuple[int, int] | None:
     return supply, data[44]
 
 
-def _rpc_batch(client: httpx.Client, url: str, calls: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
-    try:
-        response = client.post(url, json=calls)
-        response.raise_for_status()
-        payload = response.json()
-    except (httpx.HTTPError, UnicodeError, json.JSONDecodeError, ValueError):
-        return None
-    if isinstance(payload, dict):
-        payload = [payload]
-    return payload if isinstance(payload, list) else None
+def _rpc_post(client: httpx.Client, url: str, calls: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
+    """One JSON-RPC batch. A 429 is retried. The URL is never returned."""
+    delay = 0.0
+    for attempt in range(3):
+        if delay:
+            time.sleep(delay)
+        try:
+            response = client.post(url, json=calls)
+            if response.status_code == 429 and attempt < 2:
+                delay = 1.5 * (attempt + 1)
+                continue
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, UnicodeError, json.JSONDecodeError, ValueError):
+            return None
+        if isinstance(payload, dict):
+            payload = [payload]
+        return payload if isinstance(payload, list) else None
+    return None
+
+
+def _rpc_batch(client: httpx.Client, url: str, calls: list[dict[str, Any]]) -> tuple[list[dict[str, Any]] | None, bool]:
+    """Small batches with a pause. A later 429 keeps earlier confirms."""
+    merged: list[dict[str, Any]] = []
+    incomplete = False
+    for index, start in enumerate(range(0, len(calls), RPC_BATCH_CAP)):
+        if index:
+            time.sleep(RPC_BATCH_PAUSE_SECONDS)
+        part = _rpc_post(client, url, calls[start:start + RPC_BATCH_CAP])
+        if part is None:
+            incomplete = True
+            continue
+        merged.extend(part)
+    return (merged or None), incomplete
 
 
 def confirm_helius(rows: Sequence[Mapping[str, Any]], client: httpx.Client, *, now: datetime) -> tuple[list[dict[str, Any]], ProviderHealth]:
@@ -404,7 +432,7 @@ def confirm_helius(rows: Sequence[Mapping[str, Any]], client: httpx.Client, *, n
             calls.append({"jsonrpc": "2.0", "id": f"p:{pool}", "method": "getAccountInfo", "params": [pool, {"encoding": "base64"}]})
     if not calls:
         return copied, _health("helius", OperationalStatus.HEALTHY, now, coverage="no_mints")
-    payload = _rpc_batch(client, url, calls)
+    payload, incomplete = _rpc_batch(client, url, calls)
     if payload is None:
         return copied, _health("helius", OperationalStatus.UNAVAILABLE, now, failure="HELIUS_HTTP_ERROR", coverage="getAccountInfo")
     by_id = {str(item.get("id")): item for item in payload if isinstance(item, Mapping)}
@@ -457,7 +485,12 @@ def confirm_helius(rows: Sequence[Mapping[str, Any]], client: httpx.Client, *, n
             if "helius" not in sources:
                 sources.append("helius")
             row["sources"] = sources
-    return copied, _health("helius", OperationalStatus.HEALTHY, now, coverage=f"getAccountInfo+getTokenLargestAccounts confirmed={confirmed}")
+    status = OperationalStatus.PARTIAL if incomplete else OperationalStatus.HEALTHY
+    failure = "HELIUS_HTTP_ERROR" if incomplete else None
+    return copied, _health(
+        "helius", status, now, failure=failure,
+        coverage=f"getAccountInfo+getTokenLargestAccounts confirmed={confirmed}",
+    )
 
 
 def _reject(reason: str, row: Mapping[str, Any] | None = None) -> dict[str, Any]:
@@ -517,12 +550,8 @@ def classify_row(row: Mapping[str, Any], *, now: datetime) -> dict[str, Any]:
         known_fails.append("still_on_curve" if graduation == "still_on_curve" else "window_open")
     elif graduation not in {"graduated"} or window != "closed":
         unknowns.append("graduation_unknown")
-    if unknowns:
-        state, reasons = "UNKNOWN", unknowns + known_fails
-    elif known_fails:
-        state, reasons = "AVOID", known_fails
-    else:
-        state, reasons = "WATCH", ["floors_met_not_an_entry"]
+    confirmed = helius.get("mint_exists") is True
+    state, reasons = _decision(confirmed=confirmed, age=age, unknowns=unknowns, known_fails=known_fails)
     volume = _finite(row.get("volume_acceleration"))
     selected = {
         "identity": identity,
@@ -546,6 +575,38 @@ def classify_row(row: Mapping[str, Any], *, now: datetime) -> dict[str, Any]:
     return {"bucket": "selected", "item": selected, "event": event, "available": available}
 
 
+def _decision(*, confirmed: bool, age: int | None, unknowns: list[str], known_fails: list[str]) -> tuple[str, list[str]]:
+    """Bot label for a selected row. SKIP is not safe. WATCH_ENTER is not a buy.
+
+    Priority is documented in artifacts/memecoin_radar/DECISION_CONTRACT_v0.md.
+    Age below the floor on a Helius-confirmed mint is TOO_EARLY ahead of other
+    hard fails. A hard fail other than age is AVOID only after that confirm.
+    Anything that cannot be computed, including a missing confirm, is SKIP.
+    """
+    if confirmed and age is not None and age < AGE_FLOOR_SECONDS:
+        reasons = ["below_age_floor"]
+        for item in [*unknowns, *known_fails]:
+            if item not in reasons and item != "age_unknown":
+                reasons.append(item)
+        return "TOO_EARLY", reasons
+    hard = [item for item in known_fails if item != "below_age_floor"]
+    if confirmed and hard:
+        reasons = list(hard)
+        for item in unknowns:
+            if item not in reasons:
+                reasons.append(item)
+        return "AVOID", reasons
+    if unknowns or not confirmed:
+        reasons = list(unknowns)
+        for item in known_fails:
+            if item not in reasons:
+                reasons.append(item)
+        if not confirmed and "helius_confirm_missing" not in reasons:
+            reasons.insert(0, "helius_confirm_missing")
+        return "SKIP", reasons or ["helius_confirm_missing"]
+    return "WATCH_ENTER", ["floors_met_not_an_entry"]
+
+
 def rank_rows(rows: Sequence[Mapping[str, Any]], *, now: datetime) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     selected, rejected = [], []
     for row in rows:
@@ -555,6 +616,8 @@ def rank_rows(rows: Sequence[Mapping[str, Any]], *, now: datetime) -> tuple[list
         outcome = classify_row(row, now=now)
         if outcome["bucket"] == "rejected":
             rejected.append(outcome["item"])
+        elif outcome["item"].get("state") not in DECISIONS:
+            rejected.append(_reject("failed_decode", outcome["item"]))
         else:
             selected.append(outcome)
     selected.sort(
@@ -594,7 +657,7 @@ def _evidence_for(rows: Sequence[Mapping[str, Any]], *, now: datetime) -> tuple[
             source="memecoin.radar",
             reference=identity,
             claim="Intake row ranked for human review. Identification is not an entry.",
-            kind=EvidenceKind.FACT if row.get("state") == "WATCH" else EvidenceKind.UNKNOWN,
+            kind=EvidenceKind.FACT if row.get("state") == "WATCH_ENTER" else EvidenceKind.UNKNOWN,
             event_time=event,
             available_at=available,
             retrieved_at=now,

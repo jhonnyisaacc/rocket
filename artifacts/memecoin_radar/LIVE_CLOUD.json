@@ -1,0 +1,1080 @@
+{
+  "schema_version": 2,
+  "run_id": "6735e4c05fb74b008ac9731caeb2f1a0",
+  "workflow": "memecoin.scan",
+  "mode": "LIVE",
+  "operational": {
+    "status": "HEALTHY",
+    "providers": [
+      {
+        "name": "browser:fomo.family",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": null,
+        "coverage": "fomo.family login-walled; pump.family/api/sales migrated+closed excluded=0"
+      },
+      {
+        "name": "browser:pump.fun",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": null,
+        "coverage": "frontend-api-v3.pump.fun GET /coins complete=true"
+      },
+      {
+        "name": "x",
+        "status": "UNAVAILABLE",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": "OPTIONAL_NOT_CONSULTED",
+        "coverage": "optional"
+      },
+      {
+        "name": "helius",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+        "failure_kind": null,
+        "coverage": "getAccountInfo+getTokenLargestAccounts confirmed=20"
+      }
+    ]
+  },
+  "status": "INSUFFICIENT_EVIDENCE",
+  "decision_time": "2026-09-23T07:54:27.181089+00:00",
+  "started_at": "2026-09-23T07:54:27.181089+00:00",
+  "completed_at": "2026-09-23T07:54:27.181089+00:00",
+  "evidence": [
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:FvMLDEUDKUr9C34e8Nynz5Aqfdk34a2RBKQxygLpfomo",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": null,
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "UNKNOWN",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:29edg1RAgo8o4cb5Y6AYdwJrq2d5kQgJSWMzgGQhpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:41:20+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:AHWDmozZb5ZVLs6VxkscGYWS5QN7TJqSTQSqnDxDpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:41:14+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:3spFENA9i6yqrk44L6QorbvwzrYAQYf561LYEkiSpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:41:11+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:B2r35cd7np1bphGYR99DRKM93yLgMhAR8RwdyK8Ypump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:39:56+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:6UbBD7hn9fhXZoAefpNWkRGAbiJfwisDT3Cf8LTwpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:38:08+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:BmvSRbyrmQKkpHyNS17ZxHsG3PU4d5RjS8Pw8TUspump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:36:59+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:GRyzr9avvEjWhFfkA592VSZbcnnuGXuoLdBCtMB28GCE",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:36:45+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:3VAL5BUC4jzqJtXCE7891oeVRUZMpE9Roq3fJ5U2pump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:36:39+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:6zEzi8zGxWg16V6ij3Mp1J5A2mFofC13bsMRzguHpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:36:10+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:JedhgzPovcfMCZKpVwKXUWEW7DEvVqBsSgd6AP6pump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:36:01+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:CuXX9nkGiMTrGGdwLKXS5Ho1PyXUPmPPkHsjMzrSpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:35:01+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:9PkQTqeceJ9LfwjRPNdUYvdJPwcAohDmnNDV9XKGpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:33:43+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:ALhrpiCo342rDyvXXFhrRGw8XQGxNzfkoN6PoSzXpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:32:18+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:SXREo2hNDnWodyfXmmcseri2uvVF2kgDmGpMLSypump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:28:29+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:B8x86ehh9Fan2pnZsyQPQoGH16J8dG9g81yWMRZy5PAH",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:27:40+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:97YAjtNhfNuPejut9qDPzDw1NSwtPTtmJggLEVjGpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "UNKNOWN",
+      "event_time": "2026-09-23T07:24:53+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:7tCSagmUyza3YWM7t7VxZN9n3LpBK8U3AryTHHuKpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "FACT",
+      "event_time": "2026-09-23T07:23:32+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:7YXT4nd3vhTXMfk4goqwmqFk6NcpwiypGFuYJ8cLpump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "FACT",
+      "event_time": "2026-09-23T07:20:25+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    },
+    {
+      "source": "memecoin.radar",
+      "reference": "solana:mainnet:8bMbgFNEpq3QxCPbiE8bgWyMoSpsF39nxFA64uspump",
+      "claim": "Intake row ranked for human review. Identification is not an entry.",
+      "kind": "FACT",
+      "event_time": "2026-09-23T07:20:10+00:00",
+      "observed_at": null,
+      "available_at": "2026-09-23T07:50:58.874726+00:00",
+      "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+      "decision_time": "2026-09-23T07:54:27.181089+00:00",
+      "availability": "ELIGIBLE",
+      "provenance": "PROVIDER_RESULT",
+      "metadata": {}
+    }
+  ],
+  "warnings": [
+    "NO_EDGE_VALIDATED. Human-gated. Read-only. Identification ≠ entry. Browser and X are evidence sources, not execution.",
+    "A WATCH_ENTER row is not a buy.",
+    "Empty, partial, or failed discovery is not evidence that no memecoins exist."
+  ],
+  "reasons": [
+    {
+      "code": "STRATEGY_UNVALIDATED",
+      "missing": [
+        "costed out-of-sample strategy validation and human review"
+      ],
+      "retryable": false
+    }
+  ],
+  "presentation": {
+    "market_result": false,
+    "silent": true,
+    "diagnostic_only": true
+  },
+  "payload": {
+    "edge": "NO_EDGE_VALIDATED",
+    "execution_enabled": false,
+    "safety": "NO_EDGE_VALIDATED. Human-gated. Read-only. Identification ≠ entry. Browser and X are evidence sources, not execution.",
+    "notice": "A WATCH_ENTER row is not a buy.",
+    "universe_source": [
+      "browser:pump.fun",
+      "browser:fomo.family",
+      "helius",
+      "x"
+    ],
+    "age_floor_seconds": 1800,
+    "liquidity_floor_usd": 10000,
+    "selected_cap": 20,
+    "x_required": false,
+    "overfit_guard": "no asset-specific rule added",
+    "case_study": null,
+    "selected": [
+      {
+        "identity": "solana:mainnet:FvMLDEUDKUr9C34e8Nynz5Aqfdk34a2RBKQxygLpfomo",
+        "asset": "FAMILY",
+        "mint": "FvMLDEUDKUr9C34e8Nynz5Aqfdk34a2RBKQxygLpfomo",
+        "state": "SKIP",
+        "liquidity_usd": null,
+        "age_seconds": null,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:fomo.family"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "helius_confirm_missing",
+          "clocks_incomplete",
+          "age_unknown",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:50:58.874726+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://fomo.family/",
+          "https://pump.family/explore",
+          "https://pump.family/api/sales"
+        ],
+        "bundle_or_dev_hold": "UNKNOWN",
+        "event_time": null,
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:29edg1RAgo8o4cb5Y6AYdwJrq2d5kQgJSWMzgGQhpump",
+        "asset": "BFC",
+        "mint": "29edg1RAgo8o4cb5Y6AYdwJrq2d5kQgJSWMzgGQhpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 787,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:41:20+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/29edg1RAgo8o4cb5Y6AYdwJrq2d5kQgJSWMzgGQhpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1305,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:41:20+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:AHWDmozZb5ZVLs6VxkscGYWS5QN7TJqSTQSqnDxDpump",
+        "asset": "ToadPepe",
+        "mint": "AHWDmozZb5ZVLs6VxkscGYWS5QN7TJqSTQSqnDxDpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 793,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:41:14+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/AHWDmozZb5ZVLs6VxkscGYWS5QN7TJqSTQSqnDxDpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1162,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:41:14+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:3spFENA9i6yqrk44L6QorbvwzrYAQYf561LYEkiSpump",
+        "asset": "FAP",
+        "mint": "3spFENA9i6yqrk44L6QorbvwzrYAQYf561LYEkiSpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 796,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:41:11+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/3spFENA9i6yqrk44L6QorbvwzrYAQYf561LYEkiSpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9600,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:41:11+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:B2r35cd7np1bphGYR99DRKM93yLgMhAR8RwdyK8Ypump",
+        "asset": "$CAT1",
+        "mint": "B2r35cd7np1bphGYR99DRKM93yLgMhAR8RwdyK8Ypump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 871,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:39:56+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/B2r35cd7np1bphGYR99DRKM93yLgMhAR8RwdyK8Ypump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 6527,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:39:56+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:6UbBD7hn9fhXZoAefpNWkRGAbiJfwisDT3Cf8LTwpump",
+        "asset": "AHOOD",
+        "mint": "6UbBD7hn9fhXZoAefpNWkRGAbiJfwisDT3Cf8LTwpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 979,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:38:08+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/6UbBD7hn9fhXZoAefpNWkRGAbiJfwisDT3Cf8LTwpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9989,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:38:08+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:BmvSRbyrmQKkpHyNS17ZxHsG3PU4d5RjS8Pw8TUspump",
+        "asset": "$CCOW",
+        "mint": "BmvSRbyrmQKkpHyNS17ZxHsG3PU4d5RjS8Pw8TUspump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 1048,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:36:59+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/BmvSRbyrmQKkpHyNS17ZxHsG3PU4d5RjS8Pw8TUspump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 4295,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:36:59+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:GRyzr9avvEjWhFfkA592VSZbcnnuGXuoLdBCtMB28GCE",
+        "asset": "McDonald's",
+        "mint": "GRyzr9avvEjWhFfkA592VSZbcnnuGXuoLdBCtMB28GCE",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1062,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:36:45+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/GRyzr9avvEjWhFfkA592VSZbcnnuGXuoLdBCtMB28GCE"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9978,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:36:45+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:3VAL5BUC4jzqJtXCE7891oeVRUZMpE9Roq3fJ5U2pump",
+        "asset": "Agritrump",
+        "mint": "3VAL5BUC4jzqJtXCE7891oeVRUZMpE9Roq3fJ5U2pump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1068,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:36:39+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/3VAL5BUC4jzqJtXCE7891oeVRUZMpE9Roq3fJ5U2pump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9956,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:36:39+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:6zEzi8zGxWg16V6ij3Mp1J5A2mFofC13bsMRzguHpump",
+        "asset": "cancer",
+        "mint": "6zEzi8zGxWg16V6ij3Mp1J5A2mFofC13bsMRzguHpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 1097,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:36:10+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/6zEzi8zGxWg16V6ij3Mp1J5A2mFofC13bsMRzguHpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 6026,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:36:10+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:JedhgzPovcfMCZKpVwKXUWEW7DEvVqBsSgd6AP6pump",
+        "asset": "₽",
+        "mint": "JedhgzPovcfMCZKpVwKXUWEW7DEvVqBsSgd6AP6pump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1106,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:36:01+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/JedhgzPovcfMCZKpVwKXUWEW7DEvVqBsSgd6AP6pump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9984,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:36:01+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:CuXX9nkGiMTrGGdwLKXS5Ho1PyXUPmPPkHsjMzrSpump",
+        "asset": "$CAT1",
+        "mint": "CuXX9nkGiMTrGGdwLKXS5Ho1PyXUPmPPkHsjMzrSpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 1166,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:35:01+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/CuXX9nkGiMTrGGdwLKXS5Ho1PyXUPmPPkHsjMzrSpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 7596,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:35:01+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:9PkQTqeceJ9LfwjRPNdUYvdJPwcAohDmnNDV9XKGpump",
+        "asset": "$BITFOOTS",
+        "mint": "9PkQTqeceJ9LfwjRPNdUYvdJPwcAohDmnNDV9XKGpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": null,
+        "age_seconds": 1244,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor",
+          "liquidity_unknown"
+        ],
+        "discovered_at": "2026-09-23T07:33:43+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/9PkQTqeceJ9LfwjRPNdUYvdJPwcAohDmnNDV9XKGpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9998,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:33:43+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:ALhrpiCo342rDyvXXFhrRGw8XQGxNzfkoN6PoSzXpump",
+        "asset": "YouTube",
+        "mint": "ALhrpiCo342rDyvXXFhrRGw8XQGxNzfkoN6PoSzXpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1329,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:32:18+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/ALhrpiCo342rDyvXXFhrRGw8XQGxNzfkoN6PoSzXpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1345,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:32:18+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:SXREo2hNDnWodyfXmmcseri2uvVF2kgDmGpMLSypump",
+        "asset": "SOLAZY",
+        "mint": "SXREo2hNDnWodyfXmmcseri2uvVF2kgDmGpMLSypump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1558,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:28:29+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/SXREo2hNDnWodyfXmmcseri2uvVF2kgDmGpMLSypump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1624,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:28:29+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:B8x86ehh9Fan2pnZsyQPQoGH16J8dG9g81yWMRZy5PAH",
+        "asset": "Robinhood",
+        "mint": "B8x86ehh9Fan2pnZsyQPQoGH16J8dG9g81yWMRZy5PAH",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1607,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:27:40+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/B8x86ehh9Fan2pnZsyQPQoGH16J8dG9g81yWMRZy5PAH"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9980,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:27:40+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:97YAjtNhfNuPejut9qDPzDw1NSwtPTtmJggLEVjGpump",
+        "asset": "LOONGPHIL",
+        "mint": "97YAjtNhfNuPejut9qDPzDw1NSwtPTtmJggLEVjGpump",
+        "state": "TOO_EARLY",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1774,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "below_age_floor"
+        ],
+        "discovered_at": "2026-09-23T07:24:53+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/97YAjtNhfNuPejut9qDPzDw1NSwtPTtmJggLEVjGpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9980,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:24:53+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:7tCSagmUyza3YWM7t7VxZN9n3LpBK8U3AryTHHuKpump",
+        "asset": "Muse AI",
+        "mint": "7tCSagmUyza3YWM7t7VxZN9n3LpBK8U3AryTHHuKpump",
+        "state": "WATCH_ENTER",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 1855,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "floors_met_not_an_entry"
+        ],
+        "discovered_at": "2026-09-23T07:23:32+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/7tCSagmUyza3YWM7t7VxZN9n3LpBK8U3AryTHHuKpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1331,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:23:32+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:7YXT4nd3vhTXMfk4goqwmqFk6NcpwiypGFuYJ8cLpump",
+        "asset": "TRUMP2",
+        "mint": "7YXT4nd3vhTXMfk4goqwmqFk6NcpwiypGFuYJ8cLpump",
+        "state": "WATCH_ENTER",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 2042,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "floors_met_not_an_entry"
+        ],
+        "discovered_at": "2026-09-23T07:20:25+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/7YXT4nd3vhTXMfk4goqwmqFk6NcpwiypGFuYJ8cLpump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 9931,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:20:25+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      },
+      {
+        "identity": "solana:mainnet:8bMbgFNEpq3QxCPbiE8bgWyMoSpsF39nxFA64uspump",
+        "asset": "STARBUCKS",
+        "mint": "8bMbgFNEpq3QxCPbiE8bgWyMoSpsF39nxFA64uspump",
+        "state": "WATCH_ENTER",
+        "liquidity_usd": 10022.81,
+        "age_seconds": 2057,
+        "volume_acceleration": null,
+        "sources": [
+          "browser:pump.fun",
+          "helius"
+        ],
+        "social_heat": "unknown",
+        "reasons": [
+          "floors_met_not_an_entry"
+        ],
+        "discovered_at": "2026-09-23T07:20:10+00:00",
+        "available_at": "2026-09-23T07:50:58.874726+00:00",
+        "source_urls": [
+          "https://pump.fun/explore",
+          "https://frontend-api-v3.pump.fun/coins?limit=20&offset=0&sort=created_timestamp&order=DESC&includeNsfw=false&complete=true",
+          "https://pump.fun/coin/8bMbgFNEpq3QxCPbiE8bgWyMoSpsF39nxFA64uspump"
+        ],
+        "bundle_or_dev_hold": {
+          "top1_holder_bps": 1413,
+          "dev_hold": "UNKNOWN"
+        },
+        "event_time": "2026-09-23T07:20:10+00:00",
+        "graduation_status": "graduated",
+        "window_state": "closed"
+      }
+    ],
+    "rejected": [
+      {
+        "identity": "solana:mainnet:C6kFoSsQXyNRAAZh7q3wykrzjeJwp3e3y6BNsCkYpump",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:8p53wQRinuSmUa1aQ259U49ZMiXapsrcXbmUC1ebfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:H3LE7XqLFfMbzugxasBeSHgKysenTyXoz4Mire2xfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:FNEUBpyZtfhZLemVzCWqCFLEMTTK6ChfQF6YrNF9fomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:DdvhLZZgJh6cUFXpUEe9iNqkQhR5WGLiCn183RHnfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:3NdA1ttn6aFmHqPPMfjk3soWACxLXd2bvAA5PTJKfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:6nqjmPUhp63DCpyKJFxQPJJSVMfbN9FdsCxu9Bwrfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:D6YkmjPJg1o7JdAnvc93K9QTrP6AZ3QXLKG1HVcfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:81kRvqhtkEjr5XifhbwjRGRJSXxDBKGMT7CpkNpsfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:5SN9SH1w9oSqVmJkbtttUduoCR5iSKMn1MjDTuD4fomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:62Twqf8daa3c8iS2v75ua7eexJdXCtd6NPJmrTzdfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:DRxWK1FU7ci4vjGhMZu4koQpVLtut4gpxSpxtr6bfomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:4Ukipu6Dsshkwy3DGy8nSeJHi8FJQ68XYFNAg9B2fomo",
+        "reason": "selected_cap"
+      },
+      {
+        "identity": "solana:mainnet:3DdbP1uddSA8y846jLBcJhUi5ECYw6CQtCviJvbgfomo",
+        "reason": "selected_cap"
+      }
+    ],
+    "provider_health": [
+      {
+        "name": "browser:fomo.family",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": null,
+        "coverage": "fomo.family login-walled; pump.family/api/sales migrated+closed excluded=0"
+      },
+      {
+        "name": "browser:pump.fun",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": null,
+        "coverage": "frontend-api-v3.pump.fun GET /coins complete=true"
+      },
+      {
+        "name": "x",
+        "status": "UNAVAILABLE",
+        "retrieved_at": "2026-09-23T07:50:58.874726+00:00",
+        "failure_kind": "OPTIONAL_NOT_CONSULTED",
+        "coverage": "optional"
+      },
+      {
+        "name": "helius",
+        "status": "HEALTHY",
+        "retrieved_at": "2026-09-23T07:54:27.181089+00:00",
+        "failure_kind": null,
+        "coverage": "getAccountInfo+getTokenLargestAccounts confirmed=20"
+      }
+    ],
+    "coverage_status": "OBSERVED",
+    "intake_rows": 34
+  },
+  "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
+}

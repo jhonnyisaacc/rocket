@@ -458,7 +458,7 @@ def memecoin_scan(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Rank a bounded intake feed. A WATCH row is not a buy."""
+    """Rank a bounded intake feed. A WATCH_ENTER row is not a buy."""
     del json_out
     from datetime import UTC, datetime
 

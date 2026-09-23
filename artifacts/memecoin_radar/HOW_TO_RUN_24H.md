@@ -4,7 +4,7 @@ NO_EDGE_VALIDATED. Human-gated. Read-only. Identification ≠ entry.
 Browser and X are evidence sources, not execution.
 Every result keeps edge=NO_EDGE_VALIDATED and execution_enabled=false.
 
-A WATCH row is not a buy.
+A WATCH_ENTER row is not a buy. Identification is not an entry. See `DECISION_CONTRACT_v0.md`.
 
 The Helius key is already on the operator’s computer (or the VPS where that environment is already exported). It must not be copied into this repo, into JSON artifacts, into screenshots, or into the pull request. Rocket reads the existing name `HELIUS_API_KEY`. Do not invent a second variable and do not paste the key into a shell history you plan to commit. This cloud agent cannot see that key; live confirm has to run on the machine where it is already exported. Do not SSH it across.
 
@@ -37,25 +37,25 @@ Check the JSON before reading any row as a candidate:
 
 - `payload.edge` is `NO_EDGE_VALIDATED`
 - `payload.execution_enabled` is `false`
-- `payload.notice` is `A WATCH row is not a buy.`
+- `payload.notice` is `A WATCH_ENTER row is not a buy.`
 - `payload.coverage_status` is `DATA_UNAVAILABLE` when the feed could not be read. That is a provider failure, not an empty market.
 - `payload.coverage_status` is `EMPTY_INTAKE` when a snapshot was written and the bounded universe was empty. `selected` is `[]`. That is also not “no memecoins exist.”
 - `operational.providers` names `browser:pump.fun`, `browser:fomo.family`, `helius`, and `x`. `x` stays optional. A Helius row with `failure_kind` `HELIUS_API_KEY_ABSENT` means this process does not have the key. Move the command to the machine where it is already exported. Do not copy the key into the repo.
 
-## Example WATCH row
+## Example WATCH_ENTER row
 
-This object is an example of the shape. It is not a live scan and it is not a buy. A real WATCH row appears only after the floors in `RADAR_CONTRACT_v0.md` and a Helius mint confirm. On a machine without the key, the same discovery row is `UNKNOWN`.
+This object is an example of the shape. It is not a live scan and it is not a buy. A real WATCH_ENTER row appears only after the floors in `RADAR_CONTRACT_v0.md` and a Helius mint confirm. On a machine without the key, the same discovery row is `SKIP`.
 
 ```json
 {
   "example_only": true,
   "edge": "NO_EDGE_VALIDATED",
   "execution_enabled": false,
-  "notice": "A WATCH row is not a buy.",
+  "notice": "A WATCH_ENTER row is not a buy.",
   "identity": "solana:mainnet:EXAMPLE_MINT_NOT_A_SIGNAL",
   "asset": "LABEL",
   "mint": "EXAMPLE_MINT_NOT_A_SIGNAL",
-  "state": "WATCH",
+  "state": "WATCH_ENTER",
   "liquidity_usd": 17001.07,
   "age_seconds": 7200,
   "volume_acceleration": null,
@@ -73,6 +73,6 @@ This object is an example of the shape. It is not a live scan and it is not a bu
 
 ## Do not
 
-- Do not treat WATCH as a buy, a copy of an 8-second wallet, or a slot-0 snipe.
+- Do not treat WATCH_ENTER as a buy, a copy of an 8-second wallet, or a slot-0 snipe.
 - Do not merge or vendor PR #27’s cache.
 - Do not point X, Discord, or a trading key at this command. X is optional heat after a mint is already known.

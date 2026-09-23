@@ -4,12 +4,12 @@ NO_EDGE_VALIDATED. Human-gated. Read-only. Identification ≠ entry.
 Browser and X are evidence sources, not execution.
 Every result keeps edge=NO_EDGE_VALIDATED and execution_enabled=false.
 
-A WATCH row is not a buy. This contract is a triage label for a human. It is not an entry, a copy rule, or a claim that any row has edge.
+A WATCH_ENTER row is not a buy. This contract is a triage label for a human. It is not an entry, a copy rule, or a claim that any row has edge. Selected-row bot labels are in `DECISION_CONTRACT_v0.md`.
 
 ## Universe, in order
 
 1. `browser:pump.fun` — graduated coins. The page board does not print mints. The page’s own client calls `GET https://frontend-api-v3.pump.fun/coins` with `complete=true`. That flag is the graduated / bonding-curve-complete bit. Snapshot bound: 20 coins, newest `created_timestamp` first.
-2. `browser:fomo.family` — `https://fomo.family/` is login-walled, so the public sibling the pump.family page actually fetches is `GET https://pump.family/api/sales`. Phase `migrated` is in universe (window closed and off-curve). Phase `launched` is window-closed but still on the bonding curve: at most 8 of those are kept, and they cannot be WATCH. Phase `open` is excluded.
+2. `browser:fomo.family` — `https://fomo.family/` is login-walled, so the public sibling the pump.family page actually fetches is `GET https://pump.family/api/sales`. Phase `migrated` is in universe (window closed and off-curve). Phase `launched` is window-closed but still on the bonding curve: at most 8 of those are kept, and they cannot be WATCH_ENTER. Phase `open` is excluded.
 3. `helius` — confirm only, and only if `HELIUS_API_KEY` is already exported. Methods: `getAccountInfo` (mint, and pool when the page JSON has one) and `getTokenLargestAccounts`. No `getTransactionsForAddress`.
 4. `x` — optional. Never required. Never an identity. If it is not consulted, provider health is `OPTIONAL_NOT_CONSULTED` and `social_heat` is `unknown`.
 
@@ -19,7 +19,7 @@ A WATCH row is not a buy. This contract is a triage label for a human. It is not
 
 | Gate | Value | Meaning |
 | --- | --- | --- |
-| Age floor | 1800 seconds (30 minutes) | `age_seconds = decision_time - event_time`. Slot-0 snipes and the observed ~8s buy / ~12s disposal sit inside this floor. Too new is not WATCH. |
+| Age floor | 1800 seconds (30 minutes) | `age_seconds = decision_time - event_time`. Slot-0 snipes and the observed ~8s buy / ~12s disposal sit inside this floor. Too new is not WATCH_ENTER. |
 | Liquidity floor | 10000 USD | `liquidity_usd` only. Advertised market cap is stored aside and is not liquidity. |
 | Selected cap | 20 | Newest `discovered_at` first, then higher `liquidity_usd`. Further rows are `selected_cap`, not a silent drop of the whole market. |
 | Intake cap | 40 observations per collect | Plus at most a few provider-cache frames. Output is never a thousand-row dump. |
@@ -34,22 +34,26 @@ The only PIT fields are `event_time`, `available_at`, and `decision_time`.
 - `available_at` is `retrieved_at` of the response that carried the row. It is not backdated to `event_time`.
 - `decision_time` is the scan clock.
 - `available_at` or `event_time` after `decision_time` is rejected (`future_available_at` / `future_event_time`). The row is not selected.
-- A missing clock does not become WATCH. The row is `UNKNOWN` with `clocks_incomplete` or `age_unknown`.
+- A missing clock does not become WATCH_ENTER. The row is `SKIP` with `clocks_incomplete` or `age_unknown`.
 
 ## State
 
-`WATCH` only when all of these are true:
+Selected `state` is the bot enum in `DECISION_CONTRACT_v0.md`: `TOO_EARLY`, `SKIP`, `WATCH_ENTER`, `AVOID`. There is no selected `UNKNOWN` state. `SKIP` is not safe.
+
+`WATCH_ENTER` only when all of these are true. Reason stays `floors_met_not_an_entry`.
 
 - Canonical identity is `solana:mainnet` plus a mint that passes the existing base58 32-byte check. The pump.fun chain string `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` normalizes to `solana:mainnet`. Any other chain is `unknown_identity`.
 - `event_time`, `available_at`, and `decision_time` are present and PIT-eligible.
 - `liquidity_usd` is present and ≥ 10000.
 - `age_seconds` ≥ 1800.
 - Graduation is `graduated` and the window state is `closed` (not still on the bonding curve).
-- Helius `getAccountInfo` confirmed the mint account exists and decodes. A browser row without that confirm is `UNKNOWN` or rejected. It is not WATCH.
+- Helius `getAccountInfo` confirmed the mint account exists and decodes. A browser row without that confirm is `SKIP` or rejected. It is not WATCH_ENTER.
 
-`AVOID` when Helius has confirmed the mint and a computed gate fails: below the age floor, liquidity present but under the floor, or still on the bonding curve.
+`TOO_EARLY` when Helius confirmed the mint and `age_seconds` is below 1800. That label wins over other hard fails. Those fails stay in `reasons`.
 
-`UNKNOWN` when a required check cannot be computed, including missing Helius confirm, missing liquidity, missing age, or missing graduation. Unknown is not rewritten into “safe”.
+`AVOID` when identity is invalid, the mint fails decode or is not found, timestamps are in the future, or Helius confirmed the mint and a hard gate other than age fails (liquidity present but under the floor, or still on the bonding curve). Invalid identity, failed decode, mint not found, and future timestamps are rejected and are not selected.
+
+`SKIP` when a required check cannot be computed: no Helius confirm, liquidity unknown, or clocks incomplete. `SKIP` is not a safe state.
 
 Rejected, not selected: unknown identity, bad mint, future timestamps, Helius account missing (`mint_not_found`), failed decode, duplicate identity.
 

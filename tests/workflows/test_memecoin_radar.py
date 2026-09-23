@@ -10,6 +10,7 @@ from rocket.workflows.memecoin_radar import (
     AGE_FLOOR_SECONDS,
     LIQUIDITY_FLOOR_USD,
     PUMP_COINS_URL,
+    RPC_BATCH_CAP,
     SAFETY_SENTENCE,
     collect_snapshot,
     confirm_helius,
@@ -98,27 +99,53 @@ def test_browser_only_row_cannot_be_watch():
     result = scan_feed([_row()], now=NOW)
     assert_research_result(result)
     assert result.payload["selected"]
-    assert result.payload["selected"][0]["state"] == "UNKNOWN"
+    assert result.payload["selected"][0]["state"] == "SKIP"
     assert "helius_confirm_missing" in result.payload["selected"][0]["reasons"]
-    assert all(row["state"] != "WATCH" for row in result.payload["selected"])
+    assert all(row["state"] != "WATCH_ENTER" for row in result.payload["selected"])
 
 
 def test_confirmed_row_meeting_floors_is_watch_and_not_an_entry():
     result = scan_feed([_confirmed()], now=NOW)
     assert_research_result(result)
     row = result.payload["selected"][0]
-    assert row["state"] == "WATCH"
+    assert row["state"] == "WATCH_ENTER"
     assert row["age_seconds"] >= AGE_FLOOR_SECONDS
     assert row["liquidity_usd"] >= LIQUIDITY_FLOOR_USD
     assert "floors_met_not_an_entry" in row["reasons"]
-    assert result.payload["notice"] == "A WATCH row is not a buy."
+    assert result.payload["notice"] == "A WATCH_ENTER row is not a buy."
+    assert "not a buy" in result.payload["notice"]
 
 
 def test_too_new_confirmed_row_is_not_watch():
     fresh = _confirmed(event_time=(NOW - timedelta(seconds=10)).isoformat())
     result = scan_feed([fresh], now=NOW)
-    assert result.payload["selected"][0]["state"] == "AVOID"
+    assert result.payload["selected"][0]["state"] == "TOO_EARLY"
+    assert result.payload["selected"][0]["state"] != "WATCH_ENTER"
     assert "below_age_floor" in result.payload["selected"][0]["reasons"]
+
+
+def test_confirmed_liquidity_under_floor_is_avoid():
+    result = scan_feed([_confirmed(liquidity_usd=LIQUIDITY_FLOOR_USD - 1)], now=NOW)
+    row = result.payload["selected"][0]
+    assert row["state"] == "AVOID"
+    assert row["state"] != "WATCH_ENTER"
+    assert "liquidity_below_floor" in row["reasons"]
+
+
+def test_confirmed_bonding_curve_is_avoid():
+    result = scan_feed([_confirmed(graduation_status="still_on_curve", window_state="closed")], now=NOW)
+    row = result.payload["selected"][0]
+    assert row["state"] == "AVOID"
+    assert "still_on_curve" in row["reasons"]
+
+
+def test_unconfirmed_young_row_is_skip_not_too_early():
+    fresh = _row(event_time=(NOW - timedelta(seconds=10)).isoformat())
+    result = scan_feed([fresh], now=NOW)
+    row = result.payload["selected"][0]
+    assert row["state"] == "SKIP"
+    assert row["state"] != "TOO_EARLY"
+    assert "helius_confirm_missing" in row["reasons"]
 
 
 def test_market_cap_is_not_liquidity_and_zero_reserves_stay_unknown():
@@ -143,7 +170,8 @@ def test_market_cap_is_not_liquidity_and_zero_reserves_stay_unknown():
     assert liquid["liquidity_usd"] > LIQUIDITY_FLOOR_USD
 
 
-def test_spool_feed_ranks_browser_row_without_calling_helius(tmp_path):
+def test_spool_feed_ranks_browser_row_without_calling_helius(tmp_path, monkeypatch):
+    monkeypatch.delenv("HELIUS_API_KEY", raising=False)
     spool = RawCaptureSpool(tmp_path / "spool", max_bytes=1024 * 1024, reserve_bytes=1)
     collected = collect_snapshot(spool, now=NOW, observations=[_row()])
     spool.close()
@@ -153,7 +181,8 @@ def test_spool_feed_ranks_browser_row_without_calling_helius(tmp_path):
     assert collected.payload["helius_key_present"] is False
     scanned = scan_spool(tmp_path / "spool", now=NOW)
     assert_research_result(scanned)
-    assert scanned.payload["selected"][0]["state"] != "WATCH"
+    assert scanned.payload["selected"][0]["state"] == "SKIP"
+    assert scanned.payload["selected"][0]["state"] != "WATCH_ENTER"
     assert scanned.payload["coverage_status"] != "DATA_UNAVAILABLE"
 
 
@@ -212,11 +241,11 @@ def test_public_page_json_is_a_feed_not_a_hand_built_watch(monkeypatch):
     result = scan_feed(found["observations"], now=NOW, providers=found["providers"])
     assert_research_result(result)
     states = {row["mint"]: row["state"] for row in result.payload["selected"]}
-    assert states[MINT] == "UNKNOWN"
+    assert states[MINT] == "SKIP"
     assert "helius_confirm_missing" in result.payload["selected"][0]["reasons"] or any(
         "helius_confirm_missing" in row["reasons"] for row in result.payload["selected"]
     )
-    assert all(row["state"] != "WATCH" for row in result.payload["selected"])
+    assert all(row["state"] != "WATCH_ENTER" for row in result.payload["selected"])
     assert result.payload["edge"] == "NO_EDGE_VALIDATED"
     assert "x" in result.payload["universe_source"]
 
@@ -256,9 +285,59 @@ def test_helius_confirm_does_not_copy_the_key_into_the_result(monkeypatch):
     result = scan_feed(rows, now=NOW, providers=(health,))
     assert_research_result(result)
     assert secret not in result.to_json().decode()
-    assert result.payload["selected"][0]["state"] == "WATCH"
+    assert result.payload["selected"][0]["state"] == "WATCH_ENTER"
     assert result.payload["selected"][0]["bundle_or_dev_hold"]["dev_hold"] == "UNKNOWN"
     assert result.payload["selected"][0]["bundle_or_dev_hold"]["top1_holder_bps"] == 25000 * 10_000 // supply
+
+
+def _mint_from_seed(seed: int) -> str:
+    alphabet = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    raw = bytes([seed]) * 32
+    number = int.from_bytes(raw, "big")
+    chars = []
+    while number:
+        number, rem = divmod(number, 58)
+        chars.append(alphabet[rem])
+    return "".join(reversed(chars))
+
+
+def test_helius_confirm_splits_batches_under_the_rate_cap(monkeypatch):
+    monkeypatch.setenv("HELIUS_API_KEY", "heliustestkeyvalue")
+    supply = 1_000_000
+    data = bytearray(82)
+    data[36:44] = supply.to_bytes(8, "little")
+    data[44] = 6
+    data[45] = 1
+    import base64
+
+    encoded = base64.b64encode(bytes(data)).decode()
+    sizes = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls = json.loads(request.content)
+        sizes.append(len(calls))
+        body = []
+        for call in calls:
+            if call["method"] == "getAccountInfo":
+                body.append({"jsonrpc": "2.0", "id": call["id"], "result": {"value": {
+                    "owner": TOKEN_PROGRAM,
+                    "data": [encoded, "base64"],
+                }}})
+            else:
+                body.append({"jsonrpc": "2.0", "id": call["id"], "result": {"value": [
+                    {"address": call["id"], "amount": "25000", "decimals": 6},
+                ]}})
+        return httpx.Response(200, json=body)
+
+    rows = [_row(mint=_mint_from_seed(seed), asset=f"L{seed}") for seed in range(1, 7)]
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    confirmed, health = confirm_helius(rows, client, now=NOW)
+    result = scan_feed(confirmed, now=NOW, providers=(health,))
+    assert sizes and max(sizes) <= RPC_BATCH_CAP
+    assert len(sizes) > 1
+    assert result.payload["selected"]
+    assert {row["state"] for row in result.payload["selected"]} == {"WATCH_ENTER"}
+    assert "heliustestkeyvalue" not in result.to_json().decode()
 
 
 def _json_documents(text: str) -> list[dict]:
