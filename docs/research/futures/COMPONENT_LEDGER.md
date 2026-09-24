@@ -4,9 +4,9 @@ Component states concern incremental value in the current architecture. Historic
 
 | Component | Role | Status | Evidence / next discriminating test |
 | --- | --- | --- | --- |
-| Multi-horizon time-series trend | Continuous directional forecast | `UNTESTED` | Active frontier; compare with zero forecast and simple single-horizon controls under the same PIT tape and costs. |
-| Realized/EWMA volatility | Forecast normalization and separate risk size | `UNTESTED` | Begin with simple estimators; test forecast normalization separately from risk scaling. |
-| Point-in-time universe | Eligibility | `OPEN_DATA_GATE` | Inventory historic listings, first/last actual bars, gaps and delistings; current metadata cannot define old membership. |
+| Multi-horizon time-series trend | Continuous directional forecast | `FROZEN_UNSCORED` | [FUT-001](experiments/FUT-001.md) fixes 20/60/120-day normalized forecasts and 2025 OOS falsifier before PnL. |
+| Realized/EWMA volatility | Forecast normalization and separate risk size | `FROZEN_UNSCORED` | FUT-001 fixes EWMA 0.94 and 5% annual floor; forecast and portfolio metrics will be separate. |
+| Point-in-time universe | Eligibility | `DATA_AUDIT` | 864 paired USDT archive directories found; row-level first/last bars, funding gaps and delistings still under audit. Current metadata cannot define old membership. |
 | Relative strength | Ranker | `UNTESTED_AS_INCREMENT` | Standalone quintiles failed in PR #31; after a viable base forecast, compare candidate selection with and without ranking. |
 | Funding, OI, basis, crowding | Derivatives context | `UNTESTED` | Require timestamped history; condition an already defined signal, measure incremental OOS value. No sign-only funding rule. |
 | COT | Context or possible regime feature | `UNTESTED_AS_INCREMENT` | Compare base against base plus causal COT state, with availability and release-time audit; do not make it a mandatory entry gate by default. |

@@ -14,7 +14,8 @@ import xml.etree.ElementTree as ET
 from datetime import UTC, datetime
 
 ENDPOINT = "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision"
-PREFIX = "data/futures/um/monthly/klines/"
+ROOT = "data/futures/um/monthly/"
+KINDS = ("klines", "fundingRate")
 NS = {"s3": "http://s3.amazonaws.com/doc/2006-03-01/"}
 
 
@@ -33,12 +34,15 @@ def parse_page(raw: bytes) -> tuple[list[str], str | None]:
     return prefixes, token if truncated else None
 
 
-def list_contract_directories(*, timeout: float = 20.0) -> list[str]:
+def list_contract_directories(kind: str = "klines", *, timeout: float = 20.0) -> list[str]:
+    if kind not in KINDS:
+        raise ValueError(f"unsupported archive kind: {kind}")
+    prefix_root = f"{ROOT}{kind}/"
     symbols: set[str] = set()
     token: str | None = None
     seen_tokens: set[str] = set()
     while True:
-        query = {"list-type": "2", "prefix": PREFIX, "delimiter": "/", "max-keys": "1000"}
+        query = {"list-type": "2", "prefix": prefix_root, "delimiter": "/", "max-keys": "1000"}
         if token:
             query["continuation-token"] = token
         url = ENDPOINT + "?" + urllib.parse.urlencode(query)
@@ -46,9 +50,9 @@ def list_contract_directories(*, timeout: float = 20.0) -> list[str]:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             prefixes, next_token = parse_page(response.read())
         for prefix in prefixes:
-            if not prefix.startswith(PREFIX) or not prefix.endswith("/"):
+            if not prefix.startswith(prefix_root) or not prefix.endswith("/"):
                 raise ValueError(f"unexpected archive prefix: {prefix}")
-            symbol = prefix[len(PREFIX) : -1]
+            symbol = prefix[len(prefix_root) : -1]
             if not symbol or "/" in symbol:
                 raise ValueError(f"unexpected contract directory: {prefix}")
             symbols.add(symbol)
@@ -65,14 +69,20 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--timeout", type=float, default=20.0)
     args = parser.parse_args()
-    symbols = list_contract_directories(timeout=args.timeout)
+    by_kind = {kind: list_contract_directories(kind, timeout=args.timeout) for kind in KINDS}
+    price = set(by_kind["klines"])
+    funding = set(by_kind["fundingRate"])
+    paired = sorted(price & funding)
     print(json.dumps({
         "retrieved_at": datetime.now(UTC).isoformat(),
         "source": ENDPOINT,
-        "prefix": PREFIX,
+        "root": ROOT,
         "meaning": "archive directories only; NOT a historical tradable universe",
-        "directory_count": len(symbols),
-        "symbols": symbols,
+        "directory_counts": {kind: len(symbols) for kind, symbols in by_kind.items()},
+        "paired_directory_count": len(paired),
+        "paired_usdt_count": sum(symbol.endswith("USDT") for symbol in paired),
+        "symbols_by_kind": by_kind,
+        "paired_symbols": paired,
     }, indent=2))
 
 

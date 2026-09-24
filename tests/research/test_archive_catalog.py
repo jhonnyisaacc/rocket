@@ -32,3 +32,8 @@ def test_parse_page_rejects_truncated_listing_without_token():
     </ListBucketResult>'''
     with pytest.raises(ValueError, match="continuation"):
         archive_catalog.parse_page(raw)
+
+
+def test_catalog_rejects_unknown_data_kind():
+    with pytest.raises(ValueError, match="unsupported"):
+        archive_catalog.list_contract_directories("current_exchange_info")
