@@ -28,6 +28,8 @@ MC-017 measured the canonical PumpSwap account at the frozen receipt +67-second 
 
 MC-018 checked a later third-party pool listing for those 52 depleted direct exits and found no listed noncanonical pool. The one PumpSwap listing among controls was the canonical pool created after that control's frozen exit. This is a discovery lead check only; it does not establish the absence of another venue or assign realized zero cash recovery.
 
+MC-019 read the FeeConfig, global config, three previously present canonical pools, vaults and base mints from one later confirmed bank. All three selected a dynamic **125-bps** total fee tier (2 LP, 93 protocol, 30 creator) using effective quote reserves and actual mint supplies; the global static fields alone showed only 20+5 bps. This is route-pricing input truth at the later bank, not a quote at MC-017's exit clocks or evidence that a hypothetical sell would land. No entry rank is promoted.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).

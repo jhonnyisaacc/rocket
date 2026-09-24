@@ -22,9 +22,12 @@ from scripts.research.memecoin_route_snapshot_capture import AMM_CONFIG, AMM_IDL
 FEE_PROGRAM = "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ"
 FEE_CONFIG = "5PHirr8joyTMp9JMm6nW7hNDVyEYdkzDqazxPD7RaTjx"
 RPC = "https://solana-rpc.publicnode.com"
+MC017_ROUTE_SHA256 = "b9908c92251575049a9451f2a8235724edbe62fc8ca87ebbbfefd618cacff4b2"
 
 
 def selected(route_path: Path) -> tuple[list[dict], list[str]]:
+    if hashlib.sha256(route_path.read_bytes()).hexdigest() != MC017_ROUTE_SHA256:
+        raise ValueError("MC-017 frozen route report fingerprint changed")
     route = json.loads(route_path.read_text())
     if route.get("data_gate_pass") is not True:
         raise ValueError("MC-017 route gate did not pass")
