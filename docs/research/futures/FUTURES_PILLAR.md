@@ -26,6 +26,19 @@ The [FUT-005 CME BTC positioning-change trial](experiments/FUT-005.md) was froze
 
 Its subsequently frozen [2023–2024 result](experiments/FUT-005-RESULT.md) failed the 2023 gross and net gate: 2023 gross mean daily return was −0.07429% and 20bps net was −0.09036%. The 2024 net arithmetic mean was positive but compounded return was negative and gains were Q1 concentrated. This closes the exact standalone paper-signed COT-change trade after conservative release delay; COT as context or a separately tested incremental feature remains open. Conditional 2025 COT outcomes were not read.
 
+The [quarter-hour order-flow paper](https://arxiv.org/html/2607.09426v2)
+supplied a distinct intraday prior. Its first-ten-second *opening forecast*
+averaged less than one basis point gross, below ordinary taker fees; its
+post-bin four-to-twelve-hour imbalance regression was not a trading result.
+The [FUT-006 contract](experiments/FUT-006.md) therefore froze a bounded
+post-study, delayed-entry twelve-hour BTC/ETH test before reading conditioned
+outcomes. Its [result](experiments/FUT-006-RESULT.md) found a pooled mean
+**−2.5332 bp gross** and **−7.4381 bp after 5 bp-per-side turnover and
+funding** across 122 November–December 2024 intervals. BTC and ETH diverged
+strongly; the pooled gross and net cheap gates failed. Close this exact
+always-signed order-flow contract, with no asset, month, sign, clock or
+threshold rescue. No conditional 2025 order-flow result was read.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
