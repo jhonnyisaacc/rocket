@@ -39,6 +39,16 @@ strongly; the pooled gross and net cheap gates failed. Close this exact
 always-signed order-flow contract, with no asset, month, sign, clock or
 threshold rescue. No conditional 2025 order-flow result was read.
 
+The [funding product/source check](FUNDING_DIRECTION_SOURCE_SCOUT.md) found
+that the published high-return carry trade requires a spot hedge, so it is
+not evidence for a standalone short-perpetual decision. A separate 2026
+study reports a BTC one-day spot-return association after funding in the
+lower historical decile but does not model execution. The
+[FUT-007 contract](experiments/FUT-007.md) freezes an ETH perpetual
+asset-transfer test with a full-hour delay, prior 180-day funding rank,
+actual funding and target-change costs. Its 2023H2/2024 result is pending;
+2025 is conditional and 2026 remains untouched.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
