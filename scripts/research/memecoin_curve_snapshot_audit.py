@@ -194,6 +194,9 @@ def evaluate(session: Path, companion: Path) -> dict:
             snapshot["context_stale_for_mint"] = (
                 snapshot["context_slot"] < visible["slot"]
                 if visible and isinstance(snapshot["context_slot"], int) else None)
+            snapshot["context_stale_for_create"] = (
+                snapshot["context_slot"] < created["slot"]
+                if isinstance(snapshot["context_slot"], int) else None)
             snapshot["fee_source_signature"] = visible["signature"] if visible else None
             snapshot["fee_schedule"] = (
                 {"protocol_bps": visible["fee_basis_points"],
@@ -209,12 +212,21 @@ def evaluate(session: Path, companion: Path) -> dict:
             row["direct_quote_status"] = "IDENTITY_UNVERIFIED"
             rows.append(row)
             continue
+        if original["reason"] == "EXIT_OUTSIDE_COVERED_CAPTURE":
+            row["direct_quote_status"] = "OUTSIDE_COVERED_LOG_WINDOW"
+            rows.append(row)
+            continue
         entry, exit_read = row["entry"], row["exit"]
         if not entry or not exit_read or not entry["timely"] or not exit_read["timely"]:
             row["direct_quote_status"] = "SNAPSHOT_MISSING_OR_LATE"
             rows.append(row)
             continue
-        if any(read["context_stale_for_mint"] for read in (entry, exit_read)):
+        if any(not isinstance(read["context_slot"], int) for read in (entry, exit_read)):
+            row["direct_quote_status"] = "ACCOUNT_CONTEXT_UNAVAILABLE"
+            rows.append(row)
+            continue
+        if any(read["context_stale_for_create"] or read["context_stale_for_mint"]
+               for read in (entry, exit_read)):
             row["direct_quote_status"] = "ACCOUNT_CONTEXT_STALE"
             rows.append(row)
             continue
@@ -274,16 +286,27 @@ def evaluate(session: Path, companion: Path) -> dict:
             raise ValueError("baseline and flow splits differ")
         row["split"] = original["split"]
         row["flow_score"] = flow["flow_score"]
+        row["event_state_returns"] = flow["returns"]
+        row["direct_minus_event_state"] = {
+            str(fee): (row["direct_returns"][str(fee)] - flow["returns"][str(fee)]
+                       if row["direct_returns"][str(fee)] is not None
+                       and flow["returns"][str(fee)] is not None else None)
+            for fee in FEES}
 
     def group_summary(group: list[dict], fee: int) -> dict:
         quoted = sum(row["direct_quote_status"] == "QUOTED" for row in group)
         unavailable = sum(row["direct_quote_status"] == "EXIT_UNAVAILABLE" for row in group)
         values = [row["direct_returns"][str(fee)] for row in group
                   if row["direct_returns"][str(fee)] is not None]
+        differences = [row["direct_minus_event_state"][str(fee)] for row in group
+                       if row["direct_minus_event_state"][str(fee)] is not None]
         return {"scored": len(group), "quoted": quoted, "exit_unavailable": unavailable,
                 "unknown_or_no_entry": len(group) - quoted - unavailable,
                 "stress_n": len(values), "stress_mean": statistics.mean(values) if values else None,
-                "stress_median": statistics.median(values) if values else None}
+                "stress_median": statistics.median(values) if values else None,
+                "paired_event_state_n": len(differences),
+                "direct_minus_event_state_median": (
+                    statistics.median(differences) if differences else None)}
 
     splits = {}
     for split in ("development", "evaluation"):
@@ -320,6 +343,8 @@ def evaluate(session: Path, companion: Path) -> dict:
                   row["account_vs_last_visible_trade_equal"] is not None for row in read_rows),
               "context_stale_for_mint_count": sum(row["context_stale_for_mint"] is True
                                                   for row in read_rows),
+              "context_stale_for_create_count": sum(row["context_stale_for_create"] is True
+                                                    for row in read_rows),
               "eligible_direct_status_counts": dict(Counter(row["direct_quote_status"]
                                                            for row in eligible)),
               "baseline_direct_status_counts": dict(Counter(

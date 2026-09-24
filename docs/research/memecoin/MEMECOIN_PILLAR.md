@@ -16,6 +16,8 @@ MC-011 later reconciled 142/144 sampled single-event early trades to a unique to
 
 MC-012's later pool lookup found no listed non-Pump venue for 54 modeled curve-unavailable MC-010 names. Because the lookup was not contemporaneous, it cannot turn zero-recovery stress into an observed loss or certify that no alternate route existed. Preserve route and quote availability as separate, time-stamped evidence.
 
+MC-013 read Pump bonding-curve accounts at creation receipt +7/+67 seconds for every launch in a new covered ten-minute window. All 550 scheduled reads decoded and met the frozen timing bounds; 116/131 paired direct-account and event-state stress returns were equal. The unchanged high-flow group again had fewer modeled curve-unavailable exits, while its costed entry stress means were negative in both splits and fee scenarios. A direct account quote remains separate from an achieved fill or alternate-venue liquidation.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
