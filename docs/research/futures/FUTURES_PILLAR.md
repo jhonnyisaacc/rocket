@@ -44,10 +44,14 @@ that the published high-return carry trade requires a spot hedge, so it is
 not evidence for a standalone short-perpetual decision. A separate 2026
 study reports a BTC one-day spot-return association after funding in the
 lower historical decile but does not model execution. The
-[FUT-007 contract](experiments/FUT-007.md) freezes an ETH perpetual
+[FUT-007 contract](experiments/FUT-007.md) froze an ETH perpetual
 asset-transfer test with a full-hour delay, prior 180-day funding rank,
-actual funding and target-change costs. Its 2023H2/2024 result is pending;
-2025 is conditional and 2026 remains untouched.
+actual funding and target-change costs. Its [result](experiments/FUT-007-RESULT.md)
+found only 13 triggered 2023H2 days against a frozen minimum of 15; its
+2024 sample had 52 triggers but negative mean event gross, negative
+event-minus-unconditional gross, and negative net after costs. The exact
+once-daily lower-tail ETH trade is closed. Conditional 2025 outcomes and
+the 2026 holdout remain unread.
 
 ## Established boundaries
 
