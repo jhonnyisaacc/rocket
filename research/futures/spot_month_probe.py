@@ -14,7 +14,6 @@ import json
 import urllib.request
 import zipfile
 from datetime import UTC, datetime
-from itertools import pairwise
 from pathlib import Path
 
 from research.futures.archive_catalog import ENDPOINT
@@ -24,7 +23,7 @@ MONTHS = (("BTCUSDT", "2024-01"), ("ETHUSDT", "2024-01"),
 DAY_MS = 86_400_000
 
 
-def parse_daily(raw: bytes, year: int) -> dict:
+def parse_daily_rows(raw: bytes, year: int) -> list[tuple]:
     with zipfile.ZipFile(io.BytesIO(raw)) as archive:
         names = archive.namelist()
         if len(names) != 1 or not names[0].endswith(".csv"):
@@ -34,33 +33,41 @@ def parse_daily(raw: bytes, year: int) -> dict:
         rows = rows[1:]
     if not rows:
         raise ValueError("no spot rows")
-    stamps = []
+    parsed = []
     for row in rows:
         if len(row) != 12:
             raise ValueError("unexpected spot row width")
         open_raw, close_raw = int(row[0]), int(row[6])
-        divisor = 1000 if year >= 2025 else 1
-        expected_digits = 16 if year >= 2025 else 13
-        if len(row[0]) != expected_digits or len(row[6]) != expected_digits:
+        if len(row[0]) not in (13, 16) or len(row[6]) != len(row[0]):
             raise ValueError("unexpected spot timestamp units")
-        if (open_raw % divisor != 0 or (close_raw + 1) % divisor != 0
-                or close_raw != open_raw + DAY_MS * divisor - 1):
+        divisor = 1000 if len(row[0]) == 16 else 1
+        if (open_raw % divisor != 0 or close_raw < open_raw
+                or close_raw > open_raw + DAY_MS * divisor - 1):
             raise ValueError("invalid spot daily interval")
+        complete_day = int(close_raw == open_raw + DAY_MS * divisor - 1)
         stamp = open_raw // divisor
         if stamp % DAY_MS:
             raise ValueError("spot day not UTC aligned")
+        if datetime.fromtimestamp(stamp / 1000, UTC).year != year:
+            raise ValueError("spot row outside expected year")
         open_, high, low, close = (float(row[index]) for index in (1, 2, 3, 4))
         base_volume, quote_volume = float(row[5]), float(row[7])
         if not (0 < low <= min(open_, close) <= max(open_, close) <= high
                 and base_volume >= 0 and quote_volume >= 0):
             raise ValueError("invalid spot OHLC or volume")
-        stamps.append(stamp)
+        tradable = int(complete_day and base_volume > 0 and quote_volume > 0 and high > low)
+        parsed.append((stamp, open_, high, low, close, base_volume, quote_volume,
+                       close_raw // divisor, complete_day, tradable))
+    stamps = [row[0] for row in parsed]
     if stamps != sorted(set(stamps)):
         raise ValueError("duplicate or unsorted spot days")
-    if any(right - left != DAY_MS for left, right in pairwise(stamps)):
-        raise ValueError("spot month has a daily gap")
-    return {"rows": len(rows), "first_day": datetime.fromtimestamp(stamps[0] / 1000, UTC).date().isoformat(),
-            "last_day": datetime.fromtimestamp(stamps[-1] / 1000, UTC).date().isoformat(),
+    return parsed
+
+
+def parse_daily(raw: bytes, year: int) -> dict:
+    parsed = parse_daily_rows(raw, year)
+    return {"rows": len(parsed), "first_day": datetime.fromtimestamp(parsed[0][0] / 1000, UTC).date().isoformat(),
+            "last_day": datetime.fromtimestamp(parsed[-1][0] / 1000, UTC).date().isoformat(),
             "timestamp_unit": "microseconds" if year >= 2025 else "milliseconds"}
 
 
