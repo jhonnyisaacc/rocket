@@ -63,6 +63,15 @@ trigger after 5 bp per side. The exact directional rule is closed. This
 small pilot does not test the paper's passive-buy toxicity finding, and
 conditional 2025 pressure outcomes remain unread.
 
+The next [daily dollar-index source screen](MACRO_DOLLAR_SOURCE_SCOUT.md)
+identified a potentially material spot-BTC forecast prior, but its paper's
+stated trading fee and net-return table differ by roughly a factor of ten.
+An ICE-labeled Yahoo index proxy is now acquired, but its bar timestamps
+are session labels, and its holiday gaps exceed ICE's stated index
+calendar. Its exact relation to the paper's series and release clock
+remain unresolved. It is a source and economic screen only;
+no macro-conditioned Rocket result or new trade rule exists.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
