@@ -83,6 +83,18 @@ gross, incremental and cost gates failed. Close this exact rule; the
 conditional 2025 score was not run. The paper's spot VAR and disputed fee
 table remain separate.
 
+The [Hyperliquid loss-close source audit](HYPERLIQUID_CLOSE_FLOW_SOURCE_SCOUT.md)
+found wallet-level taker, realized-P&L and liquidation fields in two free
+2025 block-fill mirror shards, but also a large internal October gap. The
+[frozen FUT-010 gross pilot](experiments/FUT-010-RESULT.md) tested only
+contiguous hours with an optimistic delayed trade-price proxy. All 222
+scheduled BTC/ETH events were active, but July/October mean gross was
++3.873/+3.431 bp, below the 9 bp base taker fee floor on both dates;
+July also lagged its always-short control. Close this exact all-wallet
+five-minute-flow, thirty-minute-hold rule. The paper's classified wallet
+cohort, forced liquidations, actual bid/ask and 2026 final holdout remain
+separate and untested.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).

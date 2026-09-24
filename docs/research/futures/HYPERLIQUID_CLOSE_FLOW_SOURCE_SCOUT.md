@@ -148,8 +148,8 @@ There is currently no paper-based effect size that sets the event threshold,
 horizon, or wallet cohort.
 
 **Decision:** the free 2025 mirror resolves the initial field and event-count
-gate on the two audited shards. Its completeness, exact source fidelity,
-spread/depth and economic feasibility remain unverified. The next action is
-to score the frozen 2025 gross pilot within verified contiguous source windows;
-no FUT-010 result or production change follows from this scout. The 2026
-final holdout remains unread.
+gate on the two audited shards. Its completeness, exact source fidelity and
+spread/depth remain unverified. The subsequent [FUT-010 result](experiments/FUT-010-RESULT.md)
+failed the base-fee-floor gate for the exact all-wallet delayed rule. The
+source paper's classified front-end cohort and its effect magnitude remain
+the next source/economic question. The 2026 final holdout remains unread.
