@@ -113,11 +113,12 @@ The distinct [market-liquidation source audit](HYPERLIQUID_LIQUIDATION_SOURCE_SC
 first found just 21 separated market-wide episodes in twelve fragmented
 2025 shards. Four complete SHA-pinned days subsequently yielded
 4,308,938 consecutive blocks and 54 separated HYPE episodes with both
-entry and exit trade-proxy timestamps present. Backstop rows were shown
-to have different semantics and are excluded. The [FUT-012 contract](experiments/FUT-012.md)
-freezes a delayed HYPE trial across these four dates and chronological
-halves before any conditioned return is inspected. No liquidation
-strategy result or production change exists.
+entry and exit trade-proxy timestamps present. Backstop rows had
+different semantics and were excluded. The frozen [FUT-012 result](experiments/FUT-012-RESULT.md)
+scored all 54 episodes: first-half gross +120.644 bp, second-half
++9.931 bp, below its same-bin +19.791 bp always-short control. This
+fails the predeclared both-halves gate and closes the exact delayed HYPE
+market-liquidation rule. No production change exists.
 
 ## Established boundaries
 
