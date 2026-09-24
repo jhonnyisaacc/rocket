@@ -16,8 +16,16 @@ Append entries; do not overwrite a frozen design or result. Fields for every fut
 | Dataset fingerprint | None: the prospective cohort has not been captured. Individual rows will be hashed by the snapshot builder. |
 | Execution | Disabled. Later simulator must pin protocol fee, size, latency, slippage, failure and exit rules. |
 | Baseline / metrics / split | Age/curve-only baseline; coverage and latency first, then temporal OOS ranking and net expectancy. Split cannot be frozen until a collection window exists. |
-| Result / failure attribution | `OPEN` / `DATA_LIMITATION`: `main` has a spool but no subscribed decoded launch stream or coverage proof. |
-| Allowed conclusion | Existing data contracts can reject late or unprovenanced features. The sample requirement is defined. |
+| Result / failure attribution | `KNOWN` for the bounded MC-001 window: 2,458/2,458 inner-slot signatures matched; six creates/437 trades decoded; 113/113 native non-Mayhem state transitions and 208/208 observed quotes reconciled. Initial 8 MiB capture failed its disk bound; the completed session used 32 MiB. See [result](experiments/MC-001-RESULT.md). |
+| Allowed conclusion | A read-only prospective early-event stream can be captured and audited for a short window; the data contract rejects late or unprovenanced features. |
 | Forbidden conclusion | Any early predictive signal, graduation alpha, trade expectancy or `ENTER` decision. |
-| Next implication | Build and audit a bounded read-only collection session, then freeze a feature/label experiment. |
+| Next implication | Run the predeclared longer MC-002 collection and quote baseline; test regime coverage and execution beyond the short calibration. |
 | Git SHA | To be filled by PR commit; design created on 2026-09-24. |
+
+## MC-002 — five-second curve-progress / costed quote proxy
+
+Parent MC-001. Status `OPEN` / no promotion. [Frozen question, mechanism, falsifier, population, five-second features, 60-second label approximation, 70/30 temporal split, costs and forbidden conclusion](experiments/MC-002-FROZEN.md). [Result and evidence](experiments/MC-002-RESULT.md): capture-manifest SHA-256 `eecafe4a98590184e8d88963cd195532480bfd80c394f9fc3a26658923e429da`; 104 creates, 41 scored, 19 quoted, 22 censored. Evaluation had three numeric quote outcomes. Failure attribution: `DATA_LIMITATION` (small numeric and temporally held-out sample), `EXECUTION_UNREPRODUCIBLE` (static-state proxy and unavailable exits), not `NO_SIGNAL`. Allowed conclusion: the current simple curve-progress rank is not promoted. Forbidden conclusion: a validated profitable strategy or proof that all early features lack signal. The original misclassified-exit result and corrected result are both in the archive. No frozen clock, size, cost or rank was retuned.
+
+## MC-003 — exit feasibility and replication
+
+Parent MC-002. Status `CANDIDATE` design frozen before an independent cohort. [Complete design](experiments/MC-003-FROZEN.md) keeps the same baseline and adds a distinct exit-feasibility risk label plus explicit terminal-liquidity stress. Dataset fingerprint, result, split metrics, failure attribution and implementation SHA are pending acquisition; no result is claimed here.
