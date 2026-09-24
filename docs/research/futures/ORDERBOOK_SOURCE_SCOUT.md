@@ -1,6 +1,6 @@
 # Near-touch order-book source scout
 
-Status: `NO_VALIDATED_NEAR_TOUCH_HISTORICAL_TAPE`, 2026-09-24. This is a
+Status: `HISTORICAL_L2_LISTING_VERIFIED_BYTES_UNAUDITED`, 2026-09-24. This is a
 return-free data and economic-feasibility check, not FUT-008 or an order-book
 strategy result. The [candidate paper](https://ssrn.com/abstract=6693260)
 reports that recent sell pressure relative to best-bid absorption capacity
@@ -45,10 +45,29 @@ fixed BTC 2024-01-01 and 2025-01-01 hour-zero objects. This shows the
 anonymous path is not usable in the current environment; it does **not**
 show the objects are absent. No signed/requester-billed download was made.
 
-Next distinguish a genuinely available near-touch L2 sample from a data
-product with only coarse depth bands: inspect signed Hyperliquid access or
-another historical L2 source with explicit cost and timestamp semantics,
-then compare plausible forward return with round-trip fees/spread before
-registering a rule. If historical L2 is not accessible, a prospective
-collection/shadow is a distinct path and cannot masquerade as a historical
-OOS test. No strategy or production decision changes follow from this scout.
+[OKX's official historical-data page](https://www.okx.com/historical-data)
+advertises high-resolution L2 order books from March 2023 and tick-level
+trades from September 2021. Its public download dialog exposed **Perpetual**
+and **BTC-USDT**, with 400- and 5,000-level choices. A fixed UTC
+**2024-09-01** query at 400 levels returned one listed export,
+`BTC-USDT-SWAP-L2orderbook-400lv-2024-09-02.tar.gz`, with a displayed size
+of **384.19 MB**. The file-date suffix is one day after the selected period;
+the archive's actual coverage must be checked rather than inferred from its
+name. The page's field-information panel describes `instId`, `action`
+(`snapshot` or `update`), ask/bid price, quantity and order count, and `ts`
+as a millisecond Unix push timestamp. That schema is compatible with a
+reconstructed best-bid-capacity measure, subject to checking update order,
+gaps, snapshot resets, contract units and timestamp alignment against trades.
+The listing and field definitions were verified in the UI; archive bytes,
+checksum, completeness and downloadable access were **not** validated.
+This is also an OKX venue sample, so a positive finding would still need a
+separate Hyperliquid transfer and execution-cost check.
+
+Next validate a bounded OKX archive sample: record its digest, unpacked
+schema, actual UTC coverage, snapshot/update continuity, best-bid size and
+contract units, then pair it with timestamp-compatible trade data. Compare
+plausible forward return with round-trip fees/spread before registering a
+rule. Signed Hyperliquid access remains an independent venue-transfer path.
+If historical L2 bytes are not accessible, prospective collection/shadow is
+a distinct path and cannot masquerade as a historical OOS test. No strategy
+or production decision changes follow from this scout.
