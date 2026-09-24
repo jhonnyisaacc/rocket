@@ -64,6 +64,9 @@ def analyze(session: Path) -> dict:
     audit = json.loads((session / "audit.json").read_text())
     if audit["coverage_status"] != "SIGNATURES_MATCH_INNER_SLOTS" or audit["event_decode_error_count"]:
         raise ValueError("MC-006 requires a covered, decoded cohort")
+    if (audit["created_mint_trade_state_continuity"]["native_nonmayhem_fail"]
+            or audit["native_nonmayhem_quote_validation"]["fail"]):
+        raise ValueError("MC-006 requires a valid native curve quote model")
     flow = json.loads((session / "mc005-flow-result.json").read_text())
     if flow["score"] != "observed_buys_5s - observed_sells_5s":
         raise ValueError("flow score differs from frozen design")
@@ -82,13 +85,18 @@ def analyze(session: Path) -> dict:
         created = creates[row["signature"]]
         start = datetime.fromisoformat(created["available_at"])
         end = start + timedelta(seconds=5)
-        buys = [trade for trade in trades_by_mint[row["mint"]]
-                if trade["quote_mint"] == NATIVE_QUOTE and not trade["mayhem_mode"]
-                and trade["is_buy"] and start <= datetime.fromisoformat(trade["available_at"]) <= end]
+        early = [trade for trade in trades_by_mint[row["mint"]]
+                 if trade["quote_mint"] == NATIVE_QUOTE and not trade["mayhem_mode"]
+                 and start <= datetime.fromisoformat(trade["available_at"]) <= end]
+        buys = [trade for trade in early if trade["is_buy"]]
+        sells = len(early) - len(buys)
+        if len(buys) - sells != row["flow_score"]:
+            raise ValueError("diagnostic trade counts differ from frozen flow score")
         users = [trade["user"] for trade in buys if trade.get("user")]
         lag = (start - datetime.fromisoformat(created["event_time"])).total_seconds()
         detailed.append({**row, "create_event_timestamp_to_receipt_seconds": lag,
                          "first_five_second_buy_events": len(buys),
+                         "first_five_second_sell_events": sells,
                          "first_five_second_distinct_event_users": len(set(users)),
                          "first_five_second_missing_event_users": len(buys) - len(users)})
     all_create_lags = [(datetime.fromisoformat(row["available_at"]) -

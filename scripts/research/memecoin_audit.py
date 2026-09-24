@@ -229,11 +229,14 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
     if not isinstance(start_slot, int) or not isinstance(end_slot, int):
         index_errors.append("capture_slot_bounds_unavailable")
     else:
+        first_notification_slot = manifest.get("first_notification_slot")
+        index_start_slot = min(start_slot, first_notification_slot) if isinstance(
+            first_notification_slot, int) else start_slot
         if cursor is None:
             index_errors.append("end_index_anchor_unavailable")
         elif anchor.get("slot", -1) < end_slot:
             index_errors.append("end_index_anchor_precedes_end_slot")
-        elif start_slot <= anchor["slot"] <= end_slot:
+        elif index_start_slot <= anchor["slot"] <= end_slot:
             entries[cursor] = anchor
         with nullcontext() if offline else httpx.Client(timeout=20) as client:
             for page_number in range(max_pages):
@@ -270,9 +273,9 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                 for item in page:
                     if not isinstance(item.get("slot"), int) or not item.get("signature"):
                         raise ValueError("malformed signature index record")
-                    if start_slot <= item["slot"] <= end_slot:
+                    if index_start_slot <= item["slot"] <= end_slot:
                         entries[item["signature"]] = item
-                    if item["slot"] < start_slot:
+                    if item["slot"] < index_start_slot:
                         reached_start = True
                 cursor = page[-1]["signature"]
                 if reached_start:
@@ -382,10 +385,19 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
         "schema": "rocket.memecoin.capture-audit.v1",
         "capture_manifest_sha256": hashlib.sha256(
             (session / "capture-manifest.json").read_bytes()).hexdigest(),
+        "capture_end_reason": manifest["end_reason"],
+        "capture_errors": manifest.get("errors", []),
         "index_source": "getSignaturesForAddress",
         "index_provider_host": urlparse(rpc_url).hostname,
         "end_index_anchor": anchor,
         "index_page_count": len(list(index_dir.glob("page-*.json"))),
+        "index_start_slot": min(start_slot, manifest["first_notification_slot"])
+        if isinstance(start_slot, int) and isinstance(manifest.get("first_notification_slot"), int)
+        else start_slot,
+        "pre_subscription_to_first_notification_slot_gap": (
+            manifest["first_notification_slot"] - start_slot
+            if isinstance(start_slot, int) and isinstance(manifest.get("first_notification_slot"), int)
+            else None),
         "index_reached_start_slot": reached_start,
         "index_errors": index_errors,
         "raw_frame_count": frame_count,
