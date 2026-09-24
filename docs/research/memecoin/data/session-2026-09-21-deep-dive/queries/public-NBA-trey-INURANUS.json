@@ -1,0 +1,13 @@
+{
+  "name": "public-NBA-trey-INURANUS",
+  "address": "EYMBTNraihZkLhjVQhDivPhjAWFgRF1By2zVd8rcNcGz",
+  "interval": {
+    "gte": 1790020020,
+    "lt": 1790020080
+  },
+  "bucket": "public",
+  "page_cap": 3,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "public-NBA-trey-INURANUS"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "development-FSABHLW3xoNk1kiMNnZyepHpTKksPKcBiqYFGmcqpump",
+  "address": "DwL924TWdKJ83UdGvLYMHDU1LkTnPBtXGiFTV9JWTR62",
+  "interval": {
+    "gte": 1789387241,
+    "lt": 1789388141
+  },
+  "bucket": "development",
+  "page_cap": 2,
+  "limit": 1000,
+  "token_accounts": "none",
+  "purpose": "development-FSABHLW3xoNk1kiMNnZyepHpTKksPKcBiqYFGmcqpump"
+}

@@ -1,0 +1,2800 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "execution_enabled": false,
+  "automation": "PAUSED",
+  "frozen_experiment_sha256": "7aa4765da1f16dde17b0d7a50bdd9018265bf07ed1c561cae642ea00364a6854",
+  "results": [
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 5,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -4477366,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328101,
+      "modeled_exit_decision_time": 1782328161,
+      "modeled_exit_time": 1782328166,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12384080,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14228480,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 160056174041,
+      "entry_quote_tokens": 164206758719,
+      "entry_state_signature": "3QMwowMoWYiptrnUhRdyayjMDRzw2UkRHxGg8GJ88HUYT4HwH8GascMs74c6eGaX3y8jHLuJxkGqPGSpmFPHc4T4",
+      "entry_state_time": 1782328101,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 164206758719,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 165539914442,
+      "entry_shortcut_token_difference": -1333155723,
+      "immediate_entry_price_impact_bps": 4.490192524529249,
+      "entry_filled": true,
+      "exit_state_signature": "2oQJBeSCGm9f9vCS3pzUtMgMUMQNHHVuEhW4b45CHjCHvkvRaaYGnsj6qrKAGYbNzfepNx5ijxmpUAnpFm3Znp1a",
+      "exit_state_time": 1782328165,
+      "exit_state_age_seconds": 1,
+      "exit_quote": {
+        "tokens": 164206758719,
+        "gross": 5906466,
+        "cash": 5832634,
+        "fees": {
+          "protocol": 56112,
+          "creator": 0,
+          "cashback": 17720,
+          "buyback": 28056,
+          "protocol_retained": 28056,
+          "charged": 73832
+        }
+      },
+      "expected_exit_cash": 5535091,
+      "immediate_exit_price_impact_bps": 3.4709910342065258,
+      "net_scenarios_lamports": {
+        "low": -4177366,
+        "median": -4477366,
+        "high": -10177366
+      },
+      "wallet_cash_change_lamports": {
+        "low": -6251446,
+        "median": -6551446,
+        "high": -12251446
+      },
+      "cashback_accrued_not_realized_lamports": 47350,
+      "protocol_and_creator_and_cashback_charged_lamports": 197290,
+      "modeled_return_on_trade_budget_bps": -4477.366,
+      "leader_shortcut_same_exit_net_lamports": -4430021
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 15,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -4819584,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328111,
+      "modeled_exit_decision_time": 1782328171,
+      "modeled_exit_time": 1782328186,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12384080,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14228480,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 160056174041,
+      "entry_quote_tokens": 159455297623,
+      "entry_state_signature": "F8Bh3h5EYhQaN4HaBLDmU14kvf48YeuD7dPiei5awgPmGHzyRgqoseDKDmQa52dKCXoFRGbkJafbwP44U1bejNv",
+      "entry_state_time": 1782328111,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 159455297623,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 165539914442,
+      "entry_shortcut_token_difference": -6084616819,
+      "immediate_entry_price_impact_bps": 4.424737424653098,
+      "entry_filled": true,
+      "exit_state_signature": "3RRGCGDF9wWWAapTnvxWU6Q3uwBSTo1RMXfapzqWDJDHigkWfo7oWFWeQU41BEM9tujS5gmooVvYyLqLBxEJYYXX",
+      "exit_state_time": 1782328176,
+      "exit_state_age_seconds": 10,
+      "exit_quote": {
+        "tokens": 159455297623,
+        "gross": 5559916,
+        "cash": 5490416,
+        "fees": {
+          "protocol": 52820,
+          "creator": 0,
+          "cashback": 16680,
+          "buyback": 26410,
+          "protocol_retained": 26410,
+          "charged": 69500
+        }
+      },
+      "expected_exit_cash": 5353940,
+      "immediate_exit_price_impact_bps": 3.3185703258909207,
+      "net_scenarios_lamports": {
+        "low": -4519584,
+        "median": -4819584,
+        "high": -10519584
+      },
+      "wallet_cash_change_lamports": {
+        "low": -6593664,
+        "median": -6893664,
+        "high": -12593664
+      },
+      "cashback_accrued_not_realized_lamports": 46310,
+      "protocol_and_creator_and_cashback_charged_lamports": 192958,
+      "modeled_return_on_trade_budget_bps": -4819.584,
+      "leader_shortcut_same_exit_net_lamports": -4610113
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328126,
+      "modeled_exit_decision_time": 1782328186,
+      "modeled_exit_time": 1782328216,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12384080,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14228480,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 160056174041,
+      "entry_quote_tokens": 145254383439,
+      "entry_state_signature": "4Y4112ea3qWm2JXBiGpU8fwd6FU2ptHjadLQ8MhVtVdr9PtgU7M77DB4oPAUs7Rcv8ryq2z8LhfKecfo2Uw2NB6d",
+      "entry_state_time": 1782328126,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 145254383439,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 165539914442,
+      "entry_shortcut_token_difference": -20285531003,
+      "immediate_entry_price_impact_bps": 4.223069934975409,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 155000,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 5,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -42191795,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328101,
+      "modeled_exit_decision_time": 1782328161,
+      "modeled_exit_time": 1782328166,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102384080,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104228480,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 1597376547342,
+      "entry_quote_tokens": 1638757781760,
+      "entry_state_signature": "3QMwowMoWYiptrnUhRdyayjMDRzw2UkRHxGg8GJ88HUYT4HwH8GascMs74c6eGaX3y8jHLuJxkGqPGSpmFPHc4T4",
+      "entry_state_time": 1782328101,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 1638757781760,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1655399144425,
+      "entry_shortcut_token_difference": -16641362665,
+      "immediate_entry_price_impact_bps": 44.94728624043236,
+      "entry_filled": true,
+      "exit_state_signature": "2oQJBeSCGm9f9vCS3pzUtMgMUMQNHHVuEhW4b45CHjCHvkvRaaYGnsj6qrKAGYbNzfepNx5ijxmpUAnpFm3Znp1a",
+      "exit_state_time": 1782328165,
+      "exit_state_age_seconds": 1,
+      "exit_quote": {
+        "tokens": 1638757781760,
+        "gross": 58853879,
+        "cash": 58118205,
+        "fees": {
+          "protocol": 559112,
+          "creator": 0,
+          "cashback": 176562,
+          "buyback": 279556,
+          "protocol_retained": 279556,
+          "charged": 735674
+        }
+      },
+      "expected_exit_cash": 55155613,
+      "immediate_exit_price_impact_bps": 34.55913444809512,
+      "net_scenarios_lamports": {
+        "low": -41891795,
+        "median": -42191795,
+        "high": -47891795
+      },
+      "wallet_cash_change_lamports": {
+        "low": -43965875,
+        "median": -44265875,
+        "high": -49965875
+      },
+      "cashback_accrued_not_realized_lamports": 472859,
+      "protocol_and_creator_and_cashback_charged_lamports": 1970243,
+      "modeled_return_on_trade_budget_bps": -4219.1795,
+      "leader_shortcut_same_exit_net_lamports": -41602644
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 15,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -45596413,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328111,
+      "modeled_exit_decision_time": 1782328171,
+      "modeled_exit_time": 1782328186,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102384080,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104228480,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 1597376547342,
+      "entry_quote_tokens": 1591385691004,
+      "entry_state_signature": "F8Bh3h5EYhQaN4HaBLDmU14kvf48YeuD7dPiei5awgPmGHzyRgqoseDKDmQa52dKCXoFRGbkJafbwP44U1bejNv",
+      "entry_state_time": 1782328111,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 1591385691004,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1655399144425,
+      "entry_shortcut_token_difference": -64013453421,
+      "immediate_entry_price_impact_bps": 44.29142264004026,
+      "entry_filled": true,
+      "exit_state_signature": "3RRGCGDF9wWWAapTnvxWU6Q3uwBSTo1RMXfapzqWDJDHigkWfo7oWFWeQU41BEM9tujS5gmooVvYyLqLBxEJYYXX",
+      "exit_state_time": 1782328176,
+      "exit_state_age_seconds": 10,
+      "exit_quote": {
+        "tokens": 1591385691004,
+        "gross": 55406165,
+        "cash": 54713587,
+        "fees": {
+          "protocol": 526359,
+          "creator": 0,
+          "cashback": 166219,
+          "buyback": 263179,
+          "protocol_retained": 263180,
+          "charged": 692578
+        }
+      },
+      "expected_exit_cash": 53354560,
+      "immediate_exit_price_impact_bps": 33.045905303715045,
+      "net_scenarios_lamports": {
+        "low": -45296413,
+        "median": -45596413,
+        "high": -51296413
+      },
+      "wallet_cash_change_lamports": {
+        "low": -47370493,
+        "median": -47670493,
+        "high": -53370493
+      },
+      "cashback_accrued_not_realized_lamports": 462516,
+      "protocol_and_creator_and_cashback_charged_lamports": 1927147,
+      "modeled_return_on_trade_budget_bps": -4559.6413,
+      "leader_shortcut_same_exit_net_lamports": -43399345
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328126,
+      "modeled_exit_decision_time": 1782328186,
+      "modeled_exit_time": 1782328216,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102384080,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104228480,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 1597376547342,
+      "entry_quote_tokens": 1449789846627,
+      "entry_state_signature": "4Y4112ea3qWm2JXBiGpU8fwd6FU2ptHjadLQ8MhVtVdr9PtgU7M77DB4oPAUs7Rcv8ryq2z8LhfKecfo2Uw2NB6d",
+      "entry_state_time": 1782328126,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 1449789846627,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1655399144425,
+      "entry_shortcut_token_difference": -205609297798,
+      "immediate_entry_price_impact_bps": 42.27082473919751,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 155000,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 5,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -214256233,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328101,
+      "modeled_exit_decision_time": 1782328161,
+      "modeled_exit_time": 1782328166,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502384080,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504228480,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 7916853927200,
+      "entry_quote_tokens": 8121030563914,
+      "entry_state_signature": "3QMwowMoWYiptrnUhRdyayjMDRzw2UkRHxGg8GJ88HUYT4HwH8GascMs74c6eGaX3y8jHLuJxkGqPGSpmFPHc4T4",
+      "entry_state_time": 1782328101,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 8121030563914,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 8276995722129,
+      "entry_shortcut_token_difference": -155965158215,
+      "immediate_entry_price_impact_bps": 225.74429945928526,
+      "entry_filled": true,
+      "exit_state_signature": "2oQJBeSCGm9f9vCS3pzUtMgMUMQNHHVuEhW4b45CHjCHvkvRaaYGnsj6qrKAGYbNzfepNx5ijxmpUAnpFm3Znp1a",
+      "exit_state_time": 1782328165,
+      "exit_state_age_seconds": 1,
+      "exit_quote": {
+        "tokens": 8121030563914,
+        "gross": 289674702,
+        "cash": 286053767,
+        "fees": {
+          "protocol": 2751910,
+          "creator": 0,
+          "cashback": 869025,
+          "buyback": 1375955,
+          "protocol_retained": 1375955,
+          "charged": 3620935
+        }
+      },
+      "expected_exit_cash": 271519694,
+      "immediate_exit_price_impact_bps": 169.5202898243134,
+      "net_scenarios_lamports": {
+        "low": -213956233,
+        "median": -214256233,
+        "high": -219956233
+      },
+      "wallet_cash_change_lamports": {
+        "low": -216030313,
+        "median": -216330313,
+        "high": -222030313
+      },
+      "cashback_accrued_not_realized_lamports": 2350507,
+      "protocol_and_creator_and_cashback_charged_lamports": 9793776,
+      "modeled_return_on_trade_budget_bps": -4285.12466,
+      "leader_shortcut_same_exit_net_lamports": -208810197
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 15,
+      "status": "simulated",
+      "reason": "Conditional direct-program execution at historical states",
+      "net_modeled_lamports": -230898802,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328111,
+      "modeled_exit_decision_time": 1782328171,
+      "modeled_exit_time": 1782328186,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": {
+        "low": 10000,
+        "median": 310000,
+        "high": 6010000
+      },
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502384080,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504228480,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 7916853927200,
+      "entry_quote_tokens": 7887291944410,
+      "entry_state_signature": "F8Bh3h5EYhQaN4HaBLDmU14kvf48YeuD7dPiei5awgPmGHzyRgqoseDKDmQa52dKCXoFRGbkJafbwP44U1bejNv",
+      "entry_state_time": 1782328111,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 7887291944410,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 8276995722129,
+      "entry_shortcut_token_difference": -389703777719,
+      "immediate_entry_price_impact_bps": 222.43581477651585,
+      "entry_filled": true,
+      "exit_state_signature": "3RRGCGDF9wWWAapTnvxWU6Q3uwBSTo1RMXfapzqWDJDHigkWfo7oWFWeQU41BEM9tujS5gmooVvYyLqLBxEJYYXX",
+      "exit_state_time": 1782328176,
+      "exit_state_age_seconds": 10,
+      "exit_quote": {
+        "tokens": 7887291944410,
+        "gross": 272821467,
+        "cash": 269411198,
+        "fees": {
+          "protocol": 2591804,
+          "creator": 0,
+          "cashback": 818465,
+          "buyback": 1295902,
+          "protocol_retained": 1295902,
+          "charged": 3410269
+        }
+      },
+      "expected_exit_cash": 262740635,
+      "immediate_exit_price_impact_bps": 162.19055743919193,
+      "net_scenarios_lamports": {
+        "low": -230598802,
+        "median": -230898802,
+        "high": -236598802
+      },
+      "wallet_cash_change_lamports": {
+        "low": -232672882,
+        "median": -232972882,
+        "high": -238672882
+      },
+      "cashback_accrued_not_realized_lamports": 2299947,
+      "protocol_and_creator_and_cashback_charged_lamports": 9583110,
+      "modeled_return_on_trade_budget_bps": -4617.97604,
+      "leader_shortcut_same_exit_net_lamports": -217701145
+    },
+    {
+      "case": "loss",
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782328096,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782328096,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782328126,
+      "modeled_exit_decision_time": 1782328186,
+      "modeled_exit_time": 1782328216,
+      "anchor_signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "3FNKtSjdDdpyUwDxzmJLmxwmbMDdyHyZMv3ofGRLQXo9M8doSga2xmTFYNa4nAGPgQw9DUXCPL8suC5dpkM8CVrP",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0,
+          "sample_size": 82
+        },
+        "median": {
+          "signature": "2SGNgZho6UQ1KQM42W19YDKszuJuYfAQH6qgUa3hrBiiuVUsxeRmQ7QdsVFMHYH4Qo3gqoHr6HMQnjPpjKynAoyb",
+          "network_fee": 155000,
+          "recognized_jito_tip": 0,
+          "total": 155000,
+          "source": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+          "quantile": 0.5,
+          "sample_size": 82
+        },
+        "high": {
+          "signature": "2DQ3ZdegLtuh3MhSHoZUBkFpaQVhGq5NncdynoUMcth1Leb3MWBvdEsukewkQJq8SxJNBsW8pXsBpWdbcM5g4kzm",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+          "quantile": 0.95,
+          "sample_size": 82
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502384080,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504228480,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": true,
+      "expected_entry_tokens": 7916853927200,
+      "entry_quote_tokens": 7188369675654,
+      "entry_state_signature": "4Y4112ea3qWm2JXBiGpU8fwd6FU2ptHjadLQ8MhVtVdr9PtgU7M77DB4oPAUs7Rcv8ryq2z8LhfKecfo2Uw2NB6d",
+      "entry_state_time": 1782328126,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 7188369675654,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 8276995722129,
+      "entry_shortcut_token_difference": -1088626046475,
+      "immediate_entry_price_impact_bps": 212.24565431270224,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 155000,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 5,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326653,
+      "modeled_exit_decision_time": 1782326713,
+      "modeled_exit_time": 1782326718,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12518992,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14363392,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 113049149129,
+      "entry_quote_tokens": 108183923373,
+      "entry_state_signature": "2KqXNB4C4t6icmWhVBHZsjsCmCNza5yYqrq2LdeZJH2VrdsTpGqmXag76hFjiG98oGVBvALcwWorcGfuN47meiHZ",
+      "entry_state_time": 1782326653,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 108183923373,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 117445266911,
+      "entry_shortcut_token_difference": -9261343538,
+      "immediate_entry_price_impact_bps": 3.6444538349808617,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 15,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326663,
+      "modeled_exit_decision_time": 1782326723,
+      "modeled_exit_time": 1782326738,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12518992,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14363392,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 113049149129,
+      "entry_quote_tokens": 98836473633,
+      "entry_state_signature": "jrnJtAXJqqrTwM2Fkh34fktPCoZiUV62Sh4dr5WnnvA4JYa8KW4Kg6Jhj1ZeubPuXKVRPvc8VgbmCe35Lj2SGXb",
+      "entry_state_time": 1782326663,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 98836473633,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 117445266911,
+      "entry_shortcut_token_difference": -18608793278,
+      "immediate_entry_price_impact_bps": 3.4834229988306666,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 10000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326678,
+      "modeled_exit_decision_time": 1782326738,
+      "modeled_exit_time": 1782326768,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 12084080,
+        "median": 12518992,
+        "high": 18084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 13928480,
+        "median": 14363392,
+        "high": 19928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 113049149129,
+      "entry_quote_tokens": 89151894703,
+      "entry_state_signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+      "entry_state_time": 1782326677,
+      "entry_state_age_seconds": 1,
+      "entry_quote": {
+        "tokens": 89151894703,
+        "gross": 9876542,
+        "cash": 10000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 93828,
+          "creator": 0,
+          "cashback": 29630,
+          "buyback": 46914,
+          "protocol_retained": 46914,
+          "charged": 123458
+        }
+      },
+      "leader_fill_shortcut_tokens": 117445266911,
+      "entry_shortcut_token_difference": -28293372208,
+      "immediate_entry_price_impact_bps": 3.3083319698359013,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 5,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326653,
+      "modeled_exit_decision_time": 1782326713,
+      "modeled_exit_time": 1782326718,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102518992,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104363392,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 1128600170014,
+      "entry_quote_tokens": 1080068619417,
+      "entry_state_signature": "2KqXNB4C4t6icmWhVBHZsjsCmCNza5yYqrq2LdeZJH2VrdsTpGqmXag76hFjiG98oGVBvALcwWorcGfuN47meiHZ",
+      "entry_state_time": 1782326653,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 1080068619417,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1174452669119,
+      "entry_shortcut_token_difference": -94384049702,
+      "immediate_entry_price_impact_bps": 36.474423233413006,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 15,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326663,
+      "modeled_exit_decision_time": 1782326723,
+      "modeled_exit_time": 1782326738,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102518992,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104363392,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 1128600170014,
+      "entry_quote_tokens": 986818462470,
+      "entry_state_signature": "jrnJtAXJqqrTwM2Fkh34fktPCoZiUV62Sh4dr5WnnvA4JYa8KW4Kg6Jhj1ZeubPuXKVRPvc8VgbmCe35Lj2SGXb",
+      "entry_state_time": 1782326663,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 986818462470,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1174452669119,
+      "entry_shortcut_token_difference": -187634206649,
+      "immediate_entry_price_impact_bps": 34.861532740630025,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 100000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326678,
+      "modeled_exit_decision_time": 1782326738,
+      "modeled_exit_time": 1782326768,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 102084080,
+        "median": 102518992,
+        "high": 108084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 103928480,
+        "median": 104363392,
+        "high": 109928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 1128600170014,
+      "entry_quote_tokens": 890194180042,
+      "entry_state_signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+      "entry_state_time": 1782326677,
+      "entry_state_age_seconds": 1,
+      "entry_quote": {
+        "tokens": 890194180042,
+        "gross": 98765431,
+        "cash": 100000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 938272,
+          "creator": 0,
+          "cashback": 296297,
+          "buyback": 469136,
+          "protocol_retained": 469136,
+          "charged": 1234569
+        }
+      },
+      "leader_fill_shortcut_tokens": 1174452669119,
+      "entry_shortcut_token_difference": -284258489077,
+      "immediate_entry_price_impact_bps": 33.10794721183032,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 5,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326653,
+      "modeled_exit_decision_time": 1782326713,
+      "modeled_exit_time": 1782326718,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502518992,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504363392,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 5601346586608,
+      "entry_quote_tokens": 5361339496207,
+      "entry_state_signature": "2KqXNB4C4t6icmWhVBHZsjsCmCNza5yYqrq2LdeZJH2VrdsTpGqmXag76hFjiG98oGVBvALcwWorcGfuN47meiHZ",
+      "entry_state_time": 1782326653,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 5361339496207,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 5872263345597,
+      "entry_shortcut_token_difference": -510923849390,
+      "immediate_entry_price_impact_bps": 183.03609981031403,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 15,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326663,
+      "modeled_exit_decision_time": 1782326723,
+      "modeled_exit_time": 1782326738,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502518992,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504363392,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 5601346586608,
+      "entry_quote_tokens": 4900017038971,
+      "entry_state_signature": "jrnJtAXJqqrTwM2Fkh34fktPCoZiUV62Sh4dr5WnnvA4JYa8KW4Kg6Jhj1ZeubPuXKVRPvc8VgbmCe35Lj2SGXb",
+      "entry_state_time": 1782326663,
+      "entry_state_age_seconds": 0,
+      "entry_quote": {
+        "tokens": 4900017038971,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 5872263345597,
+      "entry_shortcut_token_difference": -972246306626,
+      "immediate_entry_price_impact_bps": 174.91427216879868,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    },
+    {
+      "case": "winner",
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "size_lamports": 500000000,
+      "delay_seconds": 30,
+      "status": "rejected",
+      "reason": "Entry output breaches fixed 2% slippage floor",
+      "net_modeled_lamports": null,
+      "source_event_time": 1782326648,
+      "source_available_at": null,
+      "modeled_signal_available_at": 1782326648,
+      "modeled_availability_assumption": "Scenario only: decision at anchor block time; not measured feed receipt or finality",
+      "modeled_entry_time": 1782326678,
+      "modeled_exit_decision_time": 1782326738,
+      "modeled_exit_time": 1782326768,
+      "anchor_signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "decoder_version": "pilot-decode-1-may18-idl",
+      "model_version": "pilot-model-1",
+      "simulation_kind": "historical-state execution approximation",
+      "sample_role": "known-outcome development fixture",
+      "economic_costs": null,
+      "observed_cost_scenarios": {
+        "low": {
+          "signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+          "network_fee": 5000,
+          "recognized_jito_tip": 0,
+          "total": 5000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0,
+          "sample_size": 110
+        },
+        "median": {
+          "signature": "2sXti4oMdBwQ3fkMoMvQ1Fb3b66pRJcNJZGCgJZi8D13SeESmnw6vCgLCim5k8MRwF3NDKx5TFQamRWeL8JsScvy",
+          "network_fee": 222456,
+          "recognized_jito_tip": 0,
+          "total": 222456,
+          "source": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+          "quantile": 0.5,
+          "sample_size": 110
+        },
+        "high": {
+          "signature": "2NdwvJ1ak7wGB8jThqVGXf37b2ZvKia9Xd2XUwiQErrxH4tFPo1KdNhWzYBAC4WU3KzFUS5TyEMahaUxsjeLLG1W",
+          "network_fee": 3005000,
+          "recognized_jito_tip": 0,
+          "total": 3005000,
+          "source": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+          "quantile": 0.95,
+          "sample_size": 110
+        }
+      },
+      "cash_required_lamports": {
+        "low": 502084080,
+        "median": 502518992,
+        "high": 508084080
+      },
+      "cash_required_if_new_accumulator_lamports": {
+        "low": 503928480,
+        "median": 504363392,
+        "high": 509928480
+      },
+      "deposit_locked_lamports": 2074080,
+      "platform_fee_lamports": 0,
+      "unpriced_components": [
+        "unobserved inclusion/MEV costs; no inclusion probability model",
+        "non-Jito routing/service transfers excluded under direct-program scenario",
+        "other protocol account setup/top-ups assumed unnecessary; new accumulator deposit shown separately",
+        "off-chain infrastructure costs"
+      ],
+      "exit_coverage_supported": false,
+      "expected_entry_tokens": 5601346586608,
+      "entry_quote_tokens": 4421764366460,
+      "entry_state_signature": "29GPMKQis7v47wFyr15wdPcYASqBR9mptnwSN3B2pxHkEAMwWLJkDwxpkmgCVkmeEJEBCh2dkVxC2fex7rsrmUWv",
+      "entry_state_time": 1782326677,
+      "entry_state_age_seconds": 1,
+      "entry_quote": {
+        "tokens": 4421764366460,
+        "gross": 493827159,
+        "cash": 500000000,
+        "unused_budget": 0,
+        "fees": {
+          "protocol": 4691359,
+          "creator": 0,
+          "cashback": 1481482,
+          "buyback": 2345679,
+          "protocol_retained": 2345680,
+          "charged": 6172841
+        }
+      },
+      "leader_fill_shortcut_tokens": 5872263345597,
+      "entry_shortcut_token_difference": -1450498979137,
+      "immediate_entry_price_impact_bps": 166.0869007723374,
+      "rejected_stage": "entry",
+      "entry_filled": false,
+      "attempted_failure_network_cost_lamports": {
+        "low": 5000,
+        "median": 222456,
+        "high": 3005000
+      },
+      "rejected_cost_note": "No trade PnL. If attempted on-chain, network fee remains; atomic transfers/deposits revert. Unlanded/preflight rejection has no chain fee."
+    }
+  ],
+  "evidence_inventory": [
+    {
+      "path": "data/helius-pilot-2026-09-16/losing_cycle_market.json",
+      "sha256": "674a94711f7da0e8f796b28e688c2892b3e1e402cc27436447354e9c2da995ff",
+      "retrieved_at": "2026-09-17T16:03:38.514089+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "losing-cycle-market",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328091,
+                "lt": 1782328188
+              }
+            }
+          }
+        ]
+      },
+      "count": 100,
+      "failed": 31,
+      "first_time": 1782328092,
+      "last_time": 1782328167,
+      "pagination_token_present": true,
+      "response_at_limit": true
+    },
+    {
+      "path": "data/helius-pilot-2026-09-16/winner_entry_curve.json",
+      "sha256": "8dff3b3d3cbfdf4933a6ede30e49b964cced52327d0500e5b5d85cf0a8c6bc08",
+      "retrieved_at": "2026-09-17T22:03:19.127874+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "winner_entry_curve",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326646,
+                "lt": 1782326684
+              }
+            }
+          }
+        ]
+      },
+      "count": 34,
+      "failed": 1,
+      "first_time": 1782326648,
+      "last_time": 1782326680,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/18a8ffb0265d020a0122a50b9fb4f2dc65b27f1bb5a0792a9fb583c7fba17719.json",
+      "sha256": "479a2189c6b414653318be54523d258cb10db7f9716cfe2c42b13c52ad0656ff",
+      "retrieved_at": "2026-09-21T18:13:08.150235+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326684,
+                "lt": 1782326704
+              }
+            }
+          }
+        ]
+      },
+      "count": 15,
+      "failed": 1,
+      "first_time": 1782326687,
+      "last_time": 1782326703,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/1f08b5adc273b73905404ad8c5285a6c40fd9b9e2eaaf0fa95d1172ce3da9790.json",
+      "sha256": "bc493cccc00668fc1864dbf7521c9c573e453e04907d376b45bd18801ec82720",
+      "retrieved_at": "2026-09-21T18:19:02.465423+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326764,
+                "lt": 1782326771
+              }
+            },
+            "paginationToken": "428647365:404"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/223e081fb19cd9e0fa9eac803908705c88df516c8cee4980473751d25dcceead.json",
+      "sha256": "f7b852e3cbc81b87be6ade7ad1a23a0ec9f3956e5e65a4395d02f57da46cc5c9",
+      "retrieved_at": "2026-09-21T18:19:00.712723+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326646,
+                "lt": 1782326684
+              }
+            },
+            "paginationToken": "428647139:863"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/2ea0c0ceaa98d0fb9fbb176dd07ab7714ff2c1891ce9cc1a96e163a9526a7dfd.json",
+      "sha256": "5ce967f7182d96db1b676437c69ee238afac0ac499f4e11bbbf93cd0504745b0",
+      "retrieved_at": "2026-09-21T18:13:06.996239+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328188,
+                "lt": 1782328208
+              }
+            }
+          }
+        ]
+      },
+      "count": 9,
+      "failed": 1,
+      "first_time": 1782328188,
+      "last_time": 1782328207,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/404cf9a1f7dff500eb7cf1ff692bb446ffc94a6f6708e9db7ee2f9edf2fe3ac5.json",
+      "sha256": "2df7c77a956cd8a994fb72869028150ca4cc4c54156f10984b85ef30db82e7df",
+      "retrieved_at": "2026-09-21T18:19:03.106657+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326704,
+                "lt": 1782326724
+              }
+            },
+            "paginationToken": "428647248:974"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/439909d9827e08cc0ed8799a7f4615997be9c7b837222a0bf631a2665983dfac.json",
+      "sha256": "eb31c36bf3062c68725f34c781dad78d09aa5991410dd43c0c10137a8ee0cbc0",
+      "retrieved_at": "2026-09-21T18:13:09.950297+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326724,
+                "lt": 1782326744
+              }
+            }
+          }
+        ]
+      },
+      "count": 18,
+      "failed": 5,
+      "first_time": 1782326724,
+      "last_time": 1782326738,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/4a2bfb3ed0b934bc83d2d42480861878f7d885c571270847f357f45f4b8c62eb.json",
+      "sha256": "9148c68db5b87908a037f8dbb0ca4cd76654deb7a6941facd718503fb98402e3",
+      "retrieved_at": "2026-09-21T18:13:10.991184+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326744,
+                "lt": 1782326764
+              }
+            }
+          }
+        ]
+      },
+      "count": 42,
+      "failed": 8,
+      "first_time": 1782326744,
+      "last_time": 1782326763,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/6017369277348eaa29f13d3dc0bbf80b8f2bc0d01a9b197db86682cb10d7cab3.json",
+      "sha256": "75ea807d6509a799f660eb9b1fd43d82d9015734b5eea05aa2668f25819dd86c",
+      "retrieved_at": "2026-09-21T18:13:11.594982+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326764,
+                "lt": 1782326771
+              }
+            }
+          }
+        ]
+      },
+      "count": 4,
+      "failed": 0,
+      "first_time": 1782326764,
+      "last_time": 1782326770,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/94eb2e79b0602e66aa78e74f94bb64ac749b24692203413e31700893729732a8.json",
+      "sha256": "78816ab057cdabc24dd794fc7444550c91af0884c113e0c2a887ff259cf9e0ec",
+      "retrieved_at": "2026-09-21T18:13:07.299182+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328208,
+                "lt": 1782328219
+              }
+            }
+          }
+        ]
+      },
+      "count": 1,
+      "failed": 1,
+      "first_time": 1782328218,
+      "last_time": 1782328218,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/a20e34bb0cacc06a2efa006de466cc5874b6c2c54f070243d740c14e68f6fff8.json",
+      "sha256": "1932b03538b4ad964e4eeb9580902d54d12f0903b211dd5b11fefd1704319e2f",
+      "retrieved_at": "2026-09-21T18:19:00.994249+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326684,
+                "lt": 1782326704
+              }
+            },
+            "paginationToken": "428647196:1030"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/a39d81984f0b6ec42d6e01c94c600e2894caf5210093d157aadd6c60b03d3dae.json",
+      "sha256": "45c6462d3d20a8ad88f26266167e6422b2bf9bb9d23404908b22f516c587d317",
+      "retrieved_at": "2026-09-21T18:19:02.771588+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328208,
+                "lt": 1782328219
+              }
+            },
+            "paginationToken": "428650968:627"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/b0d556f3c3a3d60e752a1daf6b5815b626be5d82c4f5644a5fab7cdad836a102.json",
+      "sha256": "d16b6887867bf180fa6c76ae5614450d3c2b854a5923db2b3e6a2f286b1a32aa",
+      "retrieved_at": "2026-09-21T18:19:00.430464+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328091,
+                "lt": 1782328188
+              }
+            },
+            "paginationToken": "428650845:37"
+          }
+        ]
+      },
+      "count": 7,
+      "failed": 2,
+      "first_time": 1782328169,
+      "last_time": 1782328187,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/c20a93ac5823c4313563c5158a670637a7cea0c4b47160453193caa19e94c4a9.json",
+      "sha256": "858b4fb30e491655c996d7325e96285948757f4e2f41ed37606e8a43997d3437",
+      "retrieved_at": "2026-09-21T18:19:03.488711+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328168,
+                "lt": 1782328188
+              }
+            },
+            "paginationToken": "428650893:36"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/c2827cea5a0fa50394a47a99c9bce9aa49bf185153f6c03958b9604a20b31e16.json",
+      "sha256": "0c8104f90bf55ca7fc328eeae9566ce4883bd1e5c6cf5dc920c2f44cebac1f2f",
+      "retrieved_at": "2026-09-21T18:13:09.069473+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326704,
+                "lt": 1782326724
+              }
+            }
+          }
+        ]
+      },
+      "count": 19,
+      "failed": 6,
+      "first_time": 1782326706,
+      "last_time": 1782326723,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/d063c1709d3b2a2556fed0dee3b1f6f9b6d3601411ebf4bc8996bee79956f37d.json",
+      "sha256": "4b73056740f353dac4965d5d656e10d257593f3512b23393bf8d9ef7ed04bf03",
+      "retrieved_at": "2026-09-21T18:19:01.755277+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326724,
+                "lt": 1782326744
+              }
+            },
+            "paginationToken": "428647286:1008"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/d3b4a9388e49ac0408b6728d276ae66e21f3bf399b599a9876030ca09ee14291.json",
+      "sha256": "3b245838c03523e58bc3707a205b6075a2203f5f6e6dcd7155b20b27a3ae965b",
+      "retrieved_at": "2026-09-21T18:19:01.401021+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328188,
+                "lt": 1782328208
+              }
+            },
+            "paginationToken": "428650939:228"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/d4b06616cbb4d1ba68431187631ab17ac9acdab83d936d1d4faf639c787f07c7.json",
+      "sha256": "b283f159259442b26c688cb68fd05e7f237763fd035e4d784ea3b933cfadd132",
+      "retrieved_at": "2026-09-21T18:13:06.287120+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328168,
+                "lt": 1782328188
+              }
+            }
+          }
+        ]
+      },
+      "count": 7,
+      "failed": 2,
+      "first_time": 1782328169,
+      "last_time": 1782328187,
+      "pagination_token_present": true,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/d629f72e47db09afed7dda865042897b1faef082731098294af2a123e1bb46cf.json",
+      "sha256": "b3effdd2da7fe3b5dd4125a8d50600be67b2738e8749b5703c985be3076ee5a8",
+      "retrieved_at": "2026-09-21T18:19:02.160432+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GVoCmJpcDZ2u376Hc8ZREHb2zcp75atnjdeCsXtmWiG1",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782326744,
+                "lt": 1782326764
+              }
+            },
+            "paginationToken": "428647348:365"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    },
+    {
+      "path": "data/session-2026-09-21/db5222407c74fa0a9e3f27c021dc7c64230b25a871653421c4de9a0c425212ea.json",
+      "sha256": "0987ff76d344fcd0a625131c3c6f87f9c80979f97ca138686c1d5f45cca9d0c1",
+      "retrieved_at": "2026-09-21T18:19:54.892737+00:00",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": "research",
+        "method": "getTransactionsForAddress",
+        "params": [
+          "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+          {
+            "transactionDetails": "full",
+            "encoding": "jsonParsed",
+            "maxSupportedTransactionVersion": 0,
+            "limit": 100,
+            "sortOrder": "asc",
+            "filters": {
+              "blockTime": {
+                "gte": 1782328091,
+                "lt": 1782328188
+              }
+            },
+            "paginationToken": "428650893:36"
+          }
+        ]
+      },
+      "count": 0,
+      "failed": 0,
+      "first_time": null,
+      "last_time": null,
+      "pagination_token_present": false,
+      "response_at_limit": false
+    }
+  ],
+  "decoded_evidence_reference": "data/session-2026-09-21/decoded_evidence.json",
+  "estimated_helius_credits": 262,
+  "actual_provider_billing": null,
+  "successful_capture_credit_estimate": 242,
+  "unresolved_or_rejected_reservations": [
+    {
+      "bucket": "wallets",
+      "purpose": "Frozen GMannnnn candidate: public CATE buys at Sep21 15:23/15:24 UTC-3; two minute windows only, no return selection",
+      "request_key": "a42f8bb56bb19c13044b80fa8fc5c8b4a59ff3d5959ee9a6f2baa5312bcf1095",
+      "reserved_at": "2026-09-21T18:26:43.246604+00:00",
+      "reserved_credits": 10
+    },
+    {
+      "bucket": "wallets",
+      "purpose": "Second of two preplanned GMannnnn fill windows; independent 15:24 UTC-3 buy, not retry of rejected 15:23 window",
+      "request_key": "5d417accd8401f4ef657fc50b2f409ff51160291f3e0e09a549f8aa8783ff37a",
+      "reserved_at": "2026-09-21T18:27:35.597107+00:00",
+      "reserved_credits": 10
+    }
+  ],
+  "implementation_sha256": {
+    "pilot_capture.py": "94dd4931248dc7b445dc1442ecc30b5bfd33be11dc59d4b29778fc2ab6ab0407",
+    "pilot_decode.py": "c7ff2f56ab0b0609abada921e11568a643ecbcc5ad455e4282aa0f9f5a496f11",
+    "pilot_model.py": "42010f69e74e6db6a5629c57573adcf3d9a16adf05b3fbcd12fa50d0c7799baa",
+    "pilot_replay.py": "f826e7575e2f2e5e03c0696b69e43c1c904c5e43892bf7325399a2105ca8271d",
+    "pilot_discovery.py": "e5568d48bd0c4cb8fd8c2660d73d6a87c080aa56a3a2b587bfdb6a310047170e",
+    "pilot_validate.py": "a0aac6a2a0417fd21e317c332f1351bf5902bad24c303ec7aa0fdedb66e981dd"
+  },
+  "credit_reservations": 55,
+  "unique_transactions": 249,
+  "decoded_events": 192,
+  "failed_transactions": 56,
+  "exclusions": [
+    {
+      "signature": "335cgm4nVceZ7h34CtcL9ZbAK1zB16pBSkeqq6mLhkGj8d7Fg4ThgZZGs7fU3z51apyaUcz31owmjP85ni4UrEQ8",
+      "slot": 428647196,
+      "event_time": 1782326703,
+      "source": "data/session-2026-09-21/18a8ffb0265d020a0122a50b9fb4f2dc65b27f1bb5a0792a9fb583c7fba17719.json",
+      "reason": "Missing or truncated logs"
+    }
+  ],
+  "continuity_failures": [
+    {
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "previous": "4B4EUh67MKQftcQysNmPYRgshd3L4nkxqbeazSpzKTYqTL96rfQUnEP2YiDUMLv2Hm7ubunknKGE8yMezgwvPxjC",
+      "next": "47x4rmK5maqBNGzbe3fF8pefCWP8SfrzeVoAZcoqQefyZ6qY4KYgGZGJD9k5QvUNdYLDpBrQ2sFTSS81q7vGKXwo",
+      "emitted_virtual_and_real_continuity": false,
+      "independent_account_balance_continuity": false,
+      "independent_pre_state": {
+        "sol": 61834206043,
+        "tokens": 520585646623498,
+        "real_sol": 31834206043,
+        "real_tokens": 240685646623498
+      },
+      "independent_instruction_quote_matches": true,
+      "pass_all": false
+    }
+  ],
+  "coverage": {
+    "loss": [
+      {
+        "start": 1782328091,
+        "end": 1782328188,
+        "complete": true,
+        "pages": 3
+      },
+      {
+        "start": 1782328168,
+        "end": 1782328188,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782328188,
+        "end": 1782328208,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782328208,
+        "end": 1782328219,
+        "complete": true,
+        "pages": 2
+      }
+    ],
+    "winner": [
+      {
+        "start": 1782326646,
+        "end": 1782326684,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782326684,
+        "end": 1782326704,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782326704,
+        "end": 1782326724,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782326724,
+        "end": 1782326744,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782326744,
+        "end": 1782326764,
+        "complete": true,
+        "pages": 2
+      },
+      {
+        "start": 1782326764,
+        "end": 1782326771,
+        "complete": true,
+        "pages": 2
+      }
+    ]
+  },
+  "assumptions": [
+    "Block-time delays are hypothetical, not observed feed latency.",
+    "End-of-timestamp ordered snapshot convention; available_at stays null.",
+    "Own immediate entry/exit impact included; historical future states and other traders are not counterfactually recomputed.",
+    "Protocol 95bps plus redirected creator cashback 30bps; buyback redistributes half of protocol fee.",
+    "No cashback claim or deposit refund; direct-program path has no platform service fee.",
+    "Observed network+recognized Jito cost quantiles applied per leg, not guarantees of inclusion.",
+    "No retry or fallback exit; rejected exits leave inventory; no return for unavailable or rejected cases."
+  ]
+}

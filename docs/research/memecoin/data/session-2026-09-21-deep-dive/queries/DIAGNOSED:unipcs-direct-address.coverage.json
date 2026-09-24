@@ -1,0 +1,34 @@
+{
+  "complete": true,
+  "reason": "Provider-reported cursor exhaustion",
+  "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "pages": 3,
+  "records": 177,
+  "failed": 3,
+  "first_event_time": 1789004028,
+  "last_event_time": 1789257573,
+  "source_captures": [
+    "1e0d5b312bb5ca2f7414359d05f828b87ea2fa82c377c38573cc0524a587439c",
+    "223e017c20bbf604f3145081803939db4f0f530d715e557ca425468268cdf872",
+    "40b30f89d4a1cfa40a9eb0e097d9d906f1d7a9c529cfc2418238c52601d34915"
+  ],
+  "stop_reason": "exhausted",
+  "query": {
+    "name": "DIAGNOSED:unipcs-direct-address",
+    "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+    "interval": {
+      "gte": 1788998400,
+      "lt": 1789257600
+    },
+    "bucket": "contingency",
+    "page_cap": 4,
+    "limit": 100,
+    "token_accounts": "none",
+    "purpose": "DIAGNOSED:unipcs-direct-address"
+  },
+  "observed_at": "2026-09-21T20:03:34.085756+00:00"
+}

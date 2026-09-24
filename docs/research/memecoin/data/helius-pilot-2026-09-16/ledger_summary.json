@@ -1,0 +1,30 @@
+{
+  "new_api_calls": 0,
+  "edge": "NO_EDGE_VALIDATED",
+  "wallets": {
+    "fomo_unipcs_candidate": {
+      "records": 100,
+      "categories": {
+        "token_inflow_only": 100
+      },
+      "owner_signer_rows": 0,
+      "rows_with_outgoing_token_transfer": 0,
+      "rows_with_incoming_token_transfer": 100,
+      "verified_trades": 0
+    },
+    "historical_cohort_sample": {
+      "records": 100,
+      "categories": {
+        "no_owner_token_change": 27,
+        "failed": 18,
+        "token_outflow_with_native_inflow_unverified": 33,
+        "token_inflow_with_native_outflow_unverified": 22
+      },
+      "owner_signer_rows": 90,
+      "rows_with_outgoing_token_transfer": 34,
+      "rows_with_incoming_token_transfer": 25,
+      "verified_trades": 0
+    }
+  },
+  "limitations": "Partial historical pages. Parsed transfers may be incomplete. Directions do not prove swaps; no cost basis, execution price, or follower return inferred."
+}

@@ -1,0 +1,36 @@
+[
+  {
+    "cache": "losing_cycle_market",
+    "events": 69,
+    "single_event_rows": 69,
+    "timestamp_matches": 69,
+    "real_token_reserve_matches": 0,
+    "user_token_matches": 68,
+    "reserve_offsets_raw": [
+      206900000000000
+    ],
+    "observed_fee_bps": [
+      [
+        95,
+        0
+      ]
+    ]
+  },
+  {
+    "cache": "winner_entry_curve",
+    "events": 33,
+    "single_event_rows": 33,
+    "timestamp_matches": 33,
+    "real_token_reserve_matches": 0,
+    "user_token_matches": 33,
+    "reserve_offsets_raw": [
+      206900000000000
+    ],
+    "observed_fee_bps": [
+      [
+        95,
+        0
+      ]
+    ]
+  }
+]

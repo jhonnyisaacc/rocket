@@ -1,0 +1,6 @@
+{
+ "development_cohort.json":"Initial older-layout diagnostic; superseded by development_cohort_v2.json using the pinned September 12 IDL.",
+ "development_evidence.json":"Initial economic-token check; superseded by development_evidence_final.json, which also requires exact quote-payment evidence for admitted buyers.",
+ "shortlist_development.json":"Initial diagnostic shortlist; shortlist_final.json is the immutable holdout selection. Addresses did not change.",
+ "development_independent_continuity.json":"Initial audit treated absent token balance metadata as zero. Superseded by development_independent_continuity_v2.json; missing fields remain unknown, with regression test. Not used to admit execution."
+}

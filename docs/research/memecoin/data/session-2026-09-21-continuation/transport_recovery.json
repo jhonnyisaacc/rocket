@@ -1,0 +1,8 @@
+{
+  "diagnosis": "Sandbox DNS lookup for mainnet.helius-rpc.com failed with socket.gaierror errno 8. The same read-only lookup outside the sandbox succeeded. Two history requests failed with URLError before any response. Original reservations remain charged conservatively; actual billing unobserved.",
+  "decision": "One explicitly audited retry per affected request after restoring network access. No automated retries, no deletion of prior reservations, no cap increase. Stop on any further failure.",
+  "one_time_request_authorizations": {
+    "e5767b28ae34e85d48d0df036f319c31fb8258abe3edec60fae1fc541754bb7c": "Diagnosed sandbox DNS failure; one manual retry outside sandbox, prior reservation retained",
+    "1e16fbd1413e4a56c73c39d71f4b5f911708b6e2c634a61ae7ad161942e341b6": "Diagnosed sandbox DNS failure; one manual retry outside sandbox, prior reservation retained"
+  }
+}

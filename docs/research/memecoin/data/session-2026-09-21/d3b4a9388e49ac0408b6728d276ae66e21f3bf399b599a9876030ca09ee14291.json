@@ -1,0 +1,36 @@
+{
+  "request": {
+    "jsonrpc": "2.0",
+    "id": "research",
+    "method": "getTransactionsForAddress",
+    "params": [
+      "GiWUp1xWutN5vGtS6DHuJDNpGYbU7gXJumqaRDxnHowc",
+      {
+        "transactionDetails": "full",
+        "encoding": "jsonParsed",
+        "maxSupportedTransactionVersion": 0,
+        "limit": 100,
+        "sortOrder": "asc",
+        "filters": {
+          "blockTime": {
+            "gte": 1782328188,
+            "lt": 1782328208
+          }
+        },
+        "paginationToken": "428650939:228"
+      }
+    ]
+  },
+  "response": {
+    "jsonrpc": "2.0",
+    "id": "research",
+    "result": {
+      "data": [],
+      "paginationToken": null
+    }
+  },
+  "retrieved_at": "2026-09-21T18:19:01.401021+00:00",
+  "response_sha256": "3731d9f0250cc7d7f311ea61c8211083a59027cc43cf74086666f3c73def2536",
+  "estimated_credits": 10,
+  "request_key": "d3b4a9388e49ac0408b6728d276ae66e21f3bf399b599a9876030ca09ee14291"
+}

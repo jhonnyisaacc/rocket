@@ -1,0 +1,7 @@
+{
+  "evaluated_at": "2026-09-21T20:02:57.422770+00:00",
+  "evaluations": 1,
+  "frozen_engine_verified": true,
+  "coverage_driver_added_after_lock": true,
+  "disclosure": "Post-lock diagnostic tail coverage was added without changing shortlist, thresholds or frozen decoder/engine. Outcomes are retrospective; no additional untouched validation set remains."
+}

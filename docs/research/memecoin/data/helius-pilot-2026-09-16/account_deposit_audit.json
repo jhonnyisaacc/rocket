@@ -1,0 +1,247 @@
+{
+  "new_api_calls": 0,
+  "groups": {
+    "closed_or_zero_at_end": {
+      "records": 9,
+      "gross_funding_lamports": 15816080
+    },
+    "surviving_owner_token_account": {
+      "records": 12,
+      "gross_funding_lamports": 24888960
+    }
+  },
+  "records": [
+    {
+      "signature": "4W9rHzoS4Vcx6J6tt4VbmZkbqZ2qXYJeMR4SesV3g5fnyAza1EY558YpTd6UX5RsPYqyx8NhncPUyXJWoPWaSwXG",
+      "account": "9CMZRULCrqSK9j2mEZ7TQnJVbqrXDBGp2nKZ2yhmb4eu",
+      "funding_lamports": 650240,
+      "post_lamports": 0,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "2dZLMdzVy3qXPtc9PEwqQPNY4qdCziGUDz6hsB9y7TAMoPWf1z69E1t1R3NZDExT1bqUi1bCrM1GLLfRCdoHyiQG",
+      "account": "HGcD6Pbv1XNsLJrwP7nydQf88seBaweFtwVzLMpVazyn",
+      "funding_lamports": 890880,
+      "post_lamports": 0,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+      "account": "HhDi9CywMfKheP8JjLa29Q3t5CD7xdrKPiUkvmoKDeX6",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "4D4HF5rSTWBaCmT8j31cEVhmNFtKoLGjbVpRSEj2tY1xgLEjYZHWSdzcMw2Sdd3nccR4oU72XPM3Qa6v4CqNYvYa",
+      "account": "7FgA3CNS4QfnKMu814im1WsyQe1oYYRoJGuVQAg1DeqZ",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "AFmUUV21Bdv5Q8YaVw9tDCDhCnH2TawhCuywznALpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "8VDHRRT5Xcjc3McpqFpJMgHvgeoWDhyvPoHi3pVWpvy32YCjzriLKsNNxrPaAKsCC3cmUk6xeHpMMTRPzowgD4w",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "2xjz3RFScokX2yQsk1vJr51efmsrdGwJvVvbb11PHNX6VGEVeViE3iLtAXxgiGJrdo6NyXjQj66Dda6Qxr1ZJwza",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "28VApaYTunMT4XTdJtsEwiUc9ZYAhoDXabarV3rFBWt1L4fabd2KgWV17cdPpFrXgQ5QmTLJpbNsZiQMj1gYsBRB",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "43BS9WKtyuFNWugK7WsHXcAk5L6zJXW477AyqQEdsmVQRrKV5LfSSAk5byMyHccW1eMEDmJ9y9ZadqhMie9C23hM",
+      "account": "81WZQakFd3tV2icMi5SwXRsgVoMfq6rUx1KgjSmmADd4",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "o8qRYVsE286U56v62jDDdaKBxCxXP24Svgf1LNd3h2u3VzrYHQLKWYYstNQYsmB7eNd8rSCq9xhjQAJZrw2s7Uk",
+      "account": "7eg3TPMC7qKSCuDD5XJrrqJyb2dkeupPEjjm7weNxdDJ",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "tMqiutpnzPkmURsVZ9LPSARgztpvyumuNQXQr9qpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "4nsGmUeChDoWuM5GKYmUoJkfgJfX5uJYfuz7ai4VFNngiHdjkMxK2o4MWSwFMUxaYG4RazFujoA3GWigognvUJ6Z",
+      "account": "Ch7oASRtXgzBuEeU3wuCoWkDWVvfpXzj4JyvRmVKWRUX",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "HjgJy5698zMRFFHdTsGWp81WzKhrjNtYNgWHcUyHpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "62Xj6CvABe2nvrCm8dPvntFXsBkHiTdWJ4R4etsDrmFP7Lq62iPmGTx4W6Zsi341tMm62G5vLLfQGfRuoQ6nMYuN",
+      "account": "4TFttx7nRUUqaYaBFAbd2Km9vy7pyerHxehkTwRuKaRe",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "9kkxGzCgP6wnG39rfUfAyG8McHkSwQVQnoTwtXNcVx6a",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "2jftsm6i8DaqpgSeQeAi2J5E2zKf6N3o4WhTLFx6muuAwYp7jCL3y6wgb82towuWtNc8X45vMY7Wh5os4t4UTANV",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "EzechpHZyrVSKak8VayqiCKeobMTqnbZUmj5cKcqzskrGb5BGwoguu7GfcGpEBngtGUAyh89iPakkxz7CCBsEPi",
+      "account": "GgSdskaAVQrStSqjaTXnzy47Lmp2H1ueYBgbb4bXMUk8",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "6cAzayZin6La9Cv4LiRh9d5sZH39fY8ccv9U9nCHpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "4mS5N5kmki4rzzmwmW9kWXLF5xb6T9yPvbzXZcjfBvtqohgx8EBMbB8FXRM1Ms3fSik1Ucba45fPCT445igAofwQ",
+      "account": "Ai1fJ9emjB5VeVYcwTKne9a8Vq6hPj6pF7GTJtLyXFvu",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "8PJw1ERmePDeJWAqoJE8bDZ4aKENidm16Vj6j118pump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "61GosqQTpvTGsvHfTAAsz8RkmqWEEcTAxrnycxFXpG8gMYCzVXb2amotaAF2XzwaVc3wp6FWT8rmnd7AKbJ9tXdK",
+      "account": "2rBddmQfCWSzTp8apwViuYsa7ZU5ucgTKhzSLhKCD5Ck",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "2EGAfQiYJQdgBP8tXMiUGYmLwYLzd2c3nSBbdnMmpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "4FzrPn92SSbEAKuBpssJ5pohaZ1r7FDiQfwZhnDKJ22ptnJomfiqQyHnwmku8pF4ySDMLczWcuxUba9aqKYptpak",
+      "account": "9hUPgSPVAT8Fy8UiBWFkU9Bt9h6sEdmEcvmULUtYN7WL",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "U9VckoryDRNnbQdr1DSYGT1zaftPFJmyVAjgnf5pump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "5ox4copk7cLjTcALNL3bLHbhMwaWMkh1Xd8jK4euEvYPKzdEZxoQRV6tDtT96FhS4Sduaa4eLddH7adeCN6JVpK9",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "5u2tF7duJjYtXNEZZqLH2uSGB5H1ydiUPXypDJkHNiNNJ4qFpUGcxAPDDr127Z2dATwU1xmQD5hsqQqawija4KU",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "5xaMmi8phpUZRBopscjiZHX1yYg8objLc6d6UuPsM5Zok3VxZ1RZYAxLGwT6aYURc5BJZdnYaT58gp9Ryp4FKavG",
+      "account": "4TLDz6Y4DP9JdvFKuXVk4PxijoJRxTDmaju2MDXALd9z",
+      "funding_lamports": 2039280,
+      "post_lamports": 0,
+      "closed_in_transaction": true,
+      "owner_token_account_at_end": false,
+      "mint": null,
+      "funding_equals_end_balance": false,
+      "classification": "closed_or_zero_at_end"
+    },
+    {
+      "signature": "5xaMmi8phpUZRBopscjiZHX1yYg8objLc6d6UuPsM5Zok3VxZ1RZYAxLGwT6aYURc5BJZdnYaT58gp9Ryp4FKavG",
+      "account": "9WuBJAeqALiNk3P4a6RkUPttpfDuZckwHaXjF39Bu3Rb",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "J8iZdA2ii2j4ZsQqSkBR55Wtwfrf43etHagRCkK7pump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    },
+    {
+      "signature": "3Spf4b9JS3E97ZKzkEdWhJ3JuBzZpBJzitvSETgYHjt8Hd5RGJu37Yf2mXH9f3xaABSt2JAevxs25v2aWYEKpqsQ",
+      "account": "5rtxVaSKwJLBn2H9Ho81Gia7VFfEwQmsvvbFzFSpr1Aw",
+      "funding_lamports": 2074080,
+      "post_lamports": 2074080,
+      "closed_in_transaction": false,
+      "owner_token_account_at_end": true,
+      "mint": "HFa4dz7j3Rr2zm3tDJnBzuB7Lgoen4HG7ig31nczpump",
+      "funding_equals_end_balance": true,
+      "classification": "surviving_owner_token_account"
+    }
+  ],
+  "limitations": "End-of-transaction balances only. Later refunds, account ownership control and rent exemptions are not inferred; do not add gross funding to profit."
+}

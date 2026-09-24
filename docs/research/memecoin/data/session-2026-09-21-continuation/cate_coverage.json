@@ -1,0 +1,44 @@
+{
+  "scope": "cate",
+  "created_at": "2026-09-21T19:09:16.998425+00:00",
+  "intervals": [
+    {
+      "complete": false,
+      "reason": "Unexhausted cursor",
+      "address": "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+      "interval": {
+        "gte": 1790014980,
+        "lt": 1790015040
+      },
+      "pages": 1,
+      "records": 100,
+      "failed": 25,
+      "first_event_time": 1790014980,
+      "last_event_time": 1790014991,
+      "source_captures": [
+        "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f"
+      ],
+      "new_pages": 0,
+      "stop_reason": "Capture failed: URLError"
+    },
+    {
+      "complete": false,
+      "reason": "Unexhausted cursor",
+      "address": "Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+      "interval": {
+        "gte": 1790015040,
+        "lt": 1790015100
+      },
+      "pages": 1,
+      "records": 100,
+      "failed": 42,
+      "first_event_time": 1790015040,
+      "last_event_time": 1790015049,
+      "source_captures": [
+        "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4"
+      ],
+      "new_pages": 0,
+      "stop_reason": "Capture failed: URLError"
+    }
+  ]
+}

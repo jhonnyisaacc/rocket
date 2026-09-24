@@ -1,0 +1,69 @@
+[
+  {
+    "cache": "losing_cycle_market",
+    "events": 69,
+    "formula_differences": [
+      {
+        "instruction": "buy",
+        "lamport_error": 0,
+        "count": 20
+      },
+      {
+        "instruction": "buy_exact_quote_in",
+        "lamport_error": 1,
+        "count": 7
+      },
+      {
+        "instruction": "sell",
+        "lamport_error": 0,
+        "count": 42
+      }
+    ],
+    "fee_ceil_errors": {
+      "0": 69
+    },
+    "cashback_buyback_bps": [
+      {
+        "cashback": 30,
+        "buyback": 5000,
+        "events": 69
+      }
+    ]
+  },
+  {
+    "cache": "winner_entry_curve",
+    "events": 33,
+    "formula_differences": [
+      {
+        "instruction": "buy",
+        "lamport_error": 0,
+        "count": 15
+      },
+      {
+        "instruction": "buy_exact_quote_in",
+        "lamport_error": 1,
+        "count": 5
+      },
+      {
+        "instruction": "buy_exact_sol_in",
+        "lamport_error": 1,
+        "count": 1
+      },
+      {
+        "instruction": "sell",
+        "lamport_error": 0,
+        "count": 12
+      }
+    ],
+    "fee_ceil_errors": {
+      "0": 33
+    },
+    "cashback_buyback_bps": [
+      {
+        "cashback": 30,
+        "buyback": 5000,
+        "events": 33
+      }
+    ]
+  }
+]

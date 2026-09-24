@@ -1,0 +1,23 @@
+{
+  "session": "2026-09-21-one-hour-pilot",
+  "started_at": "2026-09-21T18:10:53Z",
+  "deadline_at": "2026-09-21T19:10:53Z",
+  "edge": "NO_EDGE_VALIDATED",
+  "automation": "PAUSED",
+  "execution_enabled": false,
+  "helius_credit_cap": 1000,
+  "credit_buckets": {"state": 400, "wallets": 200, "gaps": 200, "contingency": 200},
+  "fixtures": {"loss": "435CfmvrJ4QtkVv4cZ1TbUa7rzrKKjvQJLMnvhTCpump", "winner": "EcPhZph4VXgHW279x5bYX2VjvWBHW5TTQingCAtEpump"},
+  "sample_role": "known_outcome_calibration_only",
+  "sizes_lamports": [10000000, 100000000, 500000000],
+  "delays_seconds": [5, 15, 30],
+  "primary_size_lamports": 100000000,
+  "primary_delay_seconds": 15,
+  "holding_seconds_after_entry": 60,
+  "exit_submission_delay": "same_as_entry_delay",
+  "slippage_bps": 200,
+  "availability": "historical block-time scenarios, not measured feed arrival",
+  "initial_missing_evidence": ["historical fee split semantics", "exact-input quote validation", "independent consecutive state continuity", "same-slot ordering where material", "fixed exit states", "additional public wallet identity evidence"],
+  "fresh_selection_rule": "First three distinct non-Unipcs public trader profiles encountered in default Fomo social feed; record selection before inspecting subsequent returns. Convenience sample, not representative. No substitution based on PnL.",
+  "replay_statuses": ["simulated", "unavailable", "rejected"]
+}

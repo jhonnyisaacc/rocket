@@ -1,0 +1,98 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "summaries": [
+    {
+      "label": "fomo_unipcs_candidate",
+      "cached": true,
+      "records": 100,
+      "estimated_new_credits": 0,
+      "oldest_utc": "2026-09-16T15:10:58+00:00",
+      "newest_utc": "2026-09-16T15:22:10+00:00",
+      "has_more": true,
+      "failed_transactions": 0,
+      "rows_with_token_balances": 100,
+      "rows_with_owner_token_delta": 100,
+      "programs": [
+        [
+          "ComputeBudget111111111111111111111111111111",
+          99
+        ],
+        [
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          98
+        ],
+        [
+          "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          89
+        ],
+        [
+          "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+          85
+        ],
+        [
+          "DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH",
+          75
+        ],
+        [
+          "11111111111111111111111111111111",
+          69
+        ],
+        [
+          "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+          38
+        ],
+        [
+          "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ",
+          34
+        ]
+      ]
+    },
+    {
+      "label": "historical_cohort_sample",
+      "cached": true,
+      "records": 100,
+      "estimated_new_credits": 0,
+      "oldest_utc": "2026-06-24T12:09:23+00:00",
+      "newest_utc": "2026-09-12T08:14:30+00:00",
+      "has_more": true,
+      "failed_transactions": 18,
+      "rows_with_token_balances": 74,
+      "rows_with_owner_token_delta": 55,
+      "programs": [
+        [
+          "11111111111111111111111111111111",
+          93
+        ],
+        [
+          "ComputeBudget111111111111111111111111111111",
+          83
+        ],
+        [
+          "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+          66
+        ],
+        [
+          "pfeeUxB6jkeY1Hxd7CsFCAjcbHA9rWtchMGdZ6VojVZ",
+          60
+        ],
+        [
+          "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          58
+        ],
+        [
+          "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+          34
+        ],
+        [
+          "term9YPb9mzAsABaqN71A4xdbxHmpBNZavpBiQKZzN3",
+          29
+        ],
+        [
+          "GMgnVFR8Jb39LoXsEVzb3DvBy3ywCmdmJquHUy1Lrkqb",
+          27
+        ]
+      ]
+    }
+  ],
+  "limitations": "Recent-page coverage audit only. Token deltas can be transfers; no PnL or swap classification yet."
+}

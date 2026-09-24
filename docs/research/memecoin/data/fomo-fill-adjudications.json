@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "chain": "solana",
+  "public_profile": "https://fomo.family/profile/unipcs?tradeId=c67d250b-df85-4244-a4ab-59a9171c86a2",
+  "owner": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "mint": "Dz9mQ9NzkBcCsuGPFJ3r1bS4wgqKMHBPiVuniW8Mbonk",
+  "quote_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+  "token_decimals": 6,
+  "quote_decimals": 6,
+  "status": "two_high_confidence_public_fill_matches_not_profitability_validation",
+  "fills": [
+    {
+      "cache": "helius-pilot-2026-09-16/unipcs_useless_aug30.json",
+      "signature": "4yDik2r5JxQtgKn1SjVw6zhHjMMnibFhwnEPswx7PnK2qHpQA7mbJVHWsWXGTaVToR6HwphoraxM1o8vMc6K3jX1",
+      "block_time": 1788102082,
+      "quote_debit_raw": 50000000000,
+      "token_credit_raw": 755233667715,
+      "ui_buy_usd": "49977.50",
+      "separate_quote_transfers_raw": [10000000, 12500000],
+      "ui_time": "2026-08-30 12:01 PM"
+    },
+    {
+      "cache": "helius-pilot-2026-09-16/unipcs_useless_aug25.json",
+      "signature": "sspQjKk7ZVutys2gHMF76VW7VQ4uD4nmeN2hahGtHPw7iuRMErugL7KsDeGDc1ZduAPRZXatP4q8236hZwMLq2S",
+      "block_time": 1787690704,
+      "quote_debit_raw": 17675440000,
+      "token_credit_raw": 284217750173,
+      "ui_buy_usd": "17666.60",
+      "separate_quote_transfers_raw": [8837720],
+      "ui_time": "2026-08-25 5:45 PM"
+    }
+  ],
+  "limitations": [
+    "UI timestamps match UTC-3 by inference; browser timezone not independently inspected.",
+    "Separate transfers reconcile the displayed amounts; recipient roles are not verified.",
+    "No legal identity, full portfolio ownership, or follower profitability established.",
+    "UI dollar figures approximately match USDC quantities; no historical USDC/USD oracle asserted."
+  ]
+}

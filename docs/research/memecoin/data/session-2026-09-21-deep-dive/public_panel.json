@@ -1,0 +1,22 @@
+{
+ "selection_source":"public_selection.json",
+ "profiles":[
+  {"username":"ballerboi","profile":"https://fomo.family/profile/ballerboi","mapping_status":"unavailable","wallet":null,"evidence":"Public Solana StonkFun token GYU4DrNqnBam2MPBuxxp86eqvY4wXdxKoPcXwN2X7AF2: three displayed buys 74.36, 46.72, 47.08 USD at Sep20 23:33,23:00,22:47 local. No individual quantities or transaction signatures in inspected dialog.","explicit_personal_x":null,"exclusion":"Token-level X links are not profile identity links; USD valuation basis unresolved."},
+  {"username":"Onchainmetrics","display_name":"Onchaingambles","profile":"https://fomo.family/profile/Onchainmetrics","mapping_status":"unavailable","wallet":null,"explicit_personal_x":null,"evidence":"Public recent swaps include Nautilo buys, INURANUS buys and several sales; no explicit wallet in inspected profile.","exclusion":"Displayed performance and profile claims do not establish a wallet or copying profitability."},
+  {"username":"NBA__trey","display_name":"NBA Trey","profile":"https://fomo.family/profile/NBA__trey","mapping_status":"unavailable","wallet":null,"explicit_personal_x":null,"evidence_source":"public_nba_fill_observation.json","onchain_query":"queries/public-NBA-trey-INURANUS.coverage.json","exclusion":"Three capped pages retain an unexhausted cursor; no exact owner USDC-credit cents match among returned records. Dollar valuation may not be USDC. This does not establish absence or prove a different identity."},
+  {"username":"menalwaysregret","display_name":"Tsukasa","profile":"https://fomo.family/profile/menalwaysregret","mapping_status":"unavailable","wallet":null,"explicit_personal_x":null,"evidence":"First encountered UBIK buy was on Robinhood chain; inspected profile shows UBIK, SHROOM, PENGU and other swaps, without explicit wallet.","exclusion":"Encountered evidence is cross-chain and lacks independently reconciled Solana fills. Candidate retained, not replaced."}
+ ],
+ "linked_x_evidence":{
+  "url":"https://x.com/elonmusk/status/2101178647088410828",
+  "source":"Explicit link in NBA__trey INURANUS thesis",
+  "post_time_utc":"2026-09-19T05:16:42.000Z",
+  "timestamp_provenance":"Visible post time element datetime attribute",
+  "observation_time_exact":null,
+  "observation_session":"2026-09-21-deep-dive",
+  "summary":"A merchandise-themed Uranium/Uranus post, not a token purchase or trader-wallet disclosure.",
+  "identity_evidence":false,
+  "chain_event_time":null
+ },
+ "new_mappings_admitted":0,
+ "current_observation_is_not_historical_availability":true
+}

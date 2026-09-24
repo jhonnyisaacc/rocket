@@ -1,0 +1,39 @@
+{
+  "session": "2026-09-21-one-hour-pilot",
+  "status": "completed",
+  "started_at": "2026-09-21T18:10:53Z",
+  "completed_at": "2026-09-21T18:42:49.436611+00:00",
+  "elapsed_seconds": 1916.436611,
+  "deadline_at": "2026-09-21T19:10:53Z",
+  "within_one_hour": true,
+  "edge": "NO_EDGE_VALIDATED",
+  "execution_enabled": false,
+  "persistent_collection_enabled": false,
+  "automation": "PAUSED",
+  "automation_verification": "Local automation TOML read during session; no mutation",
+  "tests": {
+    "run": 46,
+    "failures": 0,
+    "errors": 0,
+    "passed": true
+  },
+  "credits_reserved": 262,
+  "successful_response_credit_estimate": 242,
+  "actual_provider_billing": null,
+  "completed_outputs": [
+    "2026-09-21-follower-replay-pilot.md",
+    "RESEARCH_BACKLOG.md",
+    "session_20260921_manifest.json",
+    "session_20260921_candidates.json",
+    "data/session-2026-09-21/decoded_evidence.json",
+    "data/session-2026-09-21/pilot_results.json",
+    "data/session-2026-09-21/pilot_results.csv",
+    "data/session-2026-09-21/discovery_evidence.json",
+    "data/session-2026-09-21/validation_summary.json"
+  ],
+  "remaining_conditions": [
+    "Winning-case truncated log path unavailable",
+    "Zero new social-wallet mappings; discovery histories incomplete",
+    "No untouched sample or validated edge; no measured live execution availability"
+  ]
+}

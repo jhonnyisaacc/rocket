@@ -1,0 +1,197 @@
+{
+  "edge": "NO_EDGE_VALIDATED",
+  "candidate_panel": {
+    "selection_observed_at": "2026-09-21T18:24:30Z",
+    "selection_time_precision": "approximate minute of browser observation; not a chain availability timestamp",
+    "rule": "First three distinct non-Unipcs trader names encountered in Fomo Feed after its pinned official recap, before opening profiles or examining subsequent returns.",
+    "selection_order": [
+      "Rochaboyyyy",
+      "therear66",
+      "GMannnnn"
+    ],
+    "bias": "Convenience sample from logged-in Fomo default feed, potentially curated/filtered. Mixed chains. Not random and not an estimate of trader skill.",
+    "exposure_disclosure": "Fomo initially restored a leaderboard panel; no candidate was selected from it. Switched to Feed. Feed cards inherently expose some current position/PnL information; selection ignored it and followed display order.",
+    "candidates": [
+      {
+        "name": "Rochaboyyyy",
+        "profile": "https://fomo.family/profile/Rochaboyyyy",
+        "selection_card": "CATE thesis: I LIKE THIS HAHA",
+        "mapping_status": "unavailable",
+        "wallet": null,
+        "public_identity_evidence": "Fomo bio explicitly says follow my x Rochaboyyyy; X shows matching chuck display name.",
+        "x_profile": "https://x.com/Rochaboyyyy",
+        "x_posts_checked": [
+          "https://x.com/Rochaboyyyy/status/2101407098898653192",
+          "https://x.com/Rochaboyyyy/status/2101088765670223946",
+          "https://x.com/Rochaboyyyy/status/2101007272763617581"
+        ],
+        "x_evidence_assessment": "CATE promotion/price targets; no wallet or transaction signature in inspected post text. Did not treat gains imagery as verification.",
+        "fill_evidence": "Public profile shows CATE buys including $93.60, $658.20 and $470.00, labeled 1mo. Position identifier 4be7439a-d0b2-407f-89f3-8b0ed8085468 is not a chain transaction signature.",
+        "next_requirement": "Explicit public wallet, or two distinct fills with sufficiently precise time/amount/token evidence to match independently.",
+        "confidence": "Public self-declared social link supported; wallet attribution not established."
+      },
+      {
+        "name": "therear66",
+        "profile": "https://fomo.family/profile/therear66",
+        "selection_card": "Nautilo buy, approximately $3K, Robinhood chain",
+        "mapping_status": "unavailable",
+        "wallet": null,
+        "fill_evidence": "Nautilo buys displayed $2,999.75 and $1,999.24; a CATBRAIN sell $1,100.17 and buy $1,999.22 were also visible. No transaction-level verification performed.",
+        "token": "robinhood:0xddd4947010496b500abe96ab0965c38584413ba3",
+        "linked_x": "No explicit linked X identity observed on inspected profile; did not assume same-name X account belongs to trader.",
+        "exclusion": "Observed selection fills are on Robinhood Chain; cross-chain reconstruction deferred by session scope.",
+        "next_requirement": "Public wallet evidence and separately scoped chain data support, or a later independently verifiable Solana fill.",
+        "confidence": "Fomo profile and public fills observed; wallet identity unverified."
+      },
+      {
+        "name": "GMannnnn",
+        "profile": "https://fomo.family/profile/GMannnnn",
+        "selection_card": "CATE buys, approximately $5.6K and $5.5K, Solana",
+        "mapping_status": "unavailable",
+        "wallet": null,
+        "token": "solana:Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+        "position_identifier": "994df1bc-2316-4648-ad46-960bd8b1b78b",
+        "public_fills": [
+          {
+            "displayed_usd": "9956.03",
+            "displayed_time": "Sep 21, 3:24 PM",
+            "utc_window_inferred": [
+              "2026-09-21T18:24:00Z",
+              "2026-09-21T18:25:00Z"
+            ]
+          },
+          {
+            "displayed_usd": "5530.03",
+            "displayed_time": "Sep 21, 3:23 PM",
+            "utc_window_inferred": [
+              "2026-09-21T18:23:00Z",
+              "2026-09-21T18:24:00Z"
+            ]
+          },
+          {
+            "displayed_usd": "5530.57",
+            "displayed_time": "Sep 21, 3:23 PM",
+            "utc_window_inferred": [
+              "2026-09-21T18:23:00Z",
+              "2026-09-21T18:24:00Z"
+            ]
+          }
+        ],
+        "time_assumption": "UI timezone inferred as UTC-3 from local environment and contemporaneous feed; not independently established for this new profile. Minute precision only.",
+        "linked_x": "No explicit linked X identity observed on inspected profile.",
+        "capture_attempts": "Two version-0 requests rejected; second preserved safe RPC error code -32015. Two corrected version-1 requests succeeded, each bounded at 100 records. No automatic retry or pagination.",
+        "captures": [
+          "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f",
+          "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4"
+        ],
+        "coverage_failure": "Both responses hit the 100-record limit: only 18:23:00\u201318:23:11 and 18:24:00\u201318:24:09 UTC captured, not complete minutes. All subsequent seconds remain unchecked.",
+        "rejected_shortcut": "An unrelated/unattributed signer bought twice for 5,000 USDC in the second partial window. Those debits do not reconcile to the displayed $9,956.03 or $5,530.xx amounts, so no GMannnnn attribution is admitted.",
+        "next_requirement": "Explicit public wallet or precise fill quantities/seconds, then two independent on-chain matches; do not expand broad mint scans merely to force a mapping.",
+        "confidence": "Public fills observed; zero admitted transaction matches."
+      }
+    ],
+    "mapping_admission_rule": "Explicit public wallet evidence or two distinct transaction-level matches; no inferred insider status.",
+    "historical_identity_available_at": null,
+    "admitted_new_wallet_mappings": 0,
+    "scheduled_collection_enabled": false,
+    "discovery_helius_credits_reserved": 40,
+    "discovery_successful_response_credit_estimate": 20,
+    "actual_provider_billing": null
+  },
+  "capture_inventory": [
+    {
+      "capture": "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f",
+      "rows": 100,
+      "failed": 25,
+      "first_event_time": 1790014980,
+      "last_event_time": 1790014991,
+      "requested_interval": {
+        "gte": 1790014980,
+        "lt": 1790015040
+      },
+      "retrieved_at": "2026-09-21T18:28:00.094055+00:00",
+      "available_at": null,
+      "cursor_present": true,
+      "complete": false,
+      "reason": "At record limit; pagination deliberately not expanded"
+    },
+    {
+      "capture": "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4",
+      "rows": 100,
+      "failed": 42,
+      "first_event_time": 1790015040,
+      "last_event_time": 1790015049,
+      "requested_interval": {
+        "gte": 1790015040,
+        "lt": 1790015100
+      },
+      "retrieved_at": "2026-09-21T18:28:01.496834+00:00",
+      "available_at": null,
+      "cursor_present": true,
+      "complete": false,
+      "reason": "At record limit; pagination deliberately not expanded"
+    }
+  ],
+  "unique_transactions": 200,
+  "unattributed_flows": [
+    {
+      "signature": "u1ZXB3qbADozKv8gSR9Hj74BzRJhXY17Hy25fLndG2TzcZ34gfW877tYwbrD5FmWHecbEEgzic9Mbwqbkhu5abL",
+      "owner": "JBqRcNxNLLhhvG8jYcUjXFCrRBpYex4KSEF6nVCsnaWJ",
+      "token_credit_raw": 11149045855,
+      "usdc_debit_raw": 1037403747,
+      "event_time": 1790014984,
+      "retrieved_at": "2026-09-21T18:28:00.094055+00:00",
+      "available_at": null,
+      "capture": "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f",
+      "classification": "buy_like_net_flow_unverified",
+      "social_identity": null,
+      "attribution_status": "not_admitted",
+      "reason": "No exact reconciliation with frozen public Fomo fill evidence"
+    },
+    {
+      "signature": "2HqPAfUAX2w16vXo5KW6fcL3AAQ9dtfi5HAamu9kzLwY3CYZTT5QzYfPzKyZcZt8bSHGxcUxNqY4Ny5b4eDgJZAn",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "token_credit_raw": 53309773315,
+      "usdc_debit_raw": 5000000000,
+      "event_time": 1790015041,
+      "retrieved_at": "2026-09-21T18:28:01.496834+00:00",
+      "available_at": null,
+      "capture": "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4",
+      "classification": "buy_like_net_flow_unverified",
+      "social_identity": null,
+      "attribution_status": "not_admitted",
+      "reason": "No exact reconciliation with frozen public Fomo fill evidence"
+    },
+    {
+      "signature": "35TzRhFsA42JkssrZTbM5ExwkCkaNBPiempZZ6oUQT6meps7c2Gnih7HyWc5HX8Ma4w2ktQa8F8atRnUBRTU5zZz",
+      "owner": "4E1N6KsDzhPKjPdMHiwvLZmGAPVT6YNofJ5nu8Qr3V6n",
+      "token_credit_raw": 10689055929,
+      "usdc_debit_raw": 1000000000,
+      "event_time": 1790015046,
+      "retrieved_at": "2026-09-21T18:28:01.496834+00:00",
+      "available_at": null,
+      "capture": "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4",
+      "classification": "buy_like_net_flow_unverified",
+      "social_identity": null,
+      "attribution_status": "not_admitted",
+      "reason": "No exact reconciliation with frozen public Fomo fill evidence"
+    },
+    {
+      "signature": "3sKUDuokutoYgRwiYdzqM3b7XNCaj13p3zjYsKnoPJWNnM1GFWZAAyy5BXKx1ak2N1nran2awVyEKBth2idSbsT2",
+      "owner": "4HwUKeLwmAvhfchzzDnA3ymaJFKY1ndyS913R9CSqBD8",
+      "token_credit_raw": 53181245402,
+      "usdc_debit_raw": 5000000000,
+      "event_time": 1790015047,
+      "retrieved_at": "2026-09-21T18:28:01.496834+00:00",
+      "available_at": null,
+      "capture": "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4",
+      "classification": "buy_like_net_flow_unverified",
+      "social_identity": null,
+      "attribution_status": "not_admitted",
+      "reason": "No exact reconciliation with frozen public Fomo fill evidence"
+    }
+  ],
+  "new_admitted_wallet_mappings": 0,
+  "selection_is_convenience_sample": true,
+  "historical_identity_available_at": null
+}

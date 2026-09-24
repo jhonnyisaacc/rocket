@@ -1,0 +1,13 @@
+{
+  "name": "seed-GMannnnn",
+  "address": "FPLXEqws2rKy4k8B2tARTGV632fYCnPqxEktVMKfJ2H9",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "bucket": "wallets",
+  "page_cap": 4,
+  "limit": 1000,
+  "token_accounts": "all",
+  "purpose": "seed-GMannnnn"
+}

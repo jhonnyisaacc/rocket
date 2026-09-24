@@ -1,0 +1,32 @@
+{
+  "complete": false,
+  "reason": "Unexhausted cursor",
+  "address": "APeh6s6WUyrswK6MHXGvLrY7c4K5H16giuq7tpf2xGrQ",
+  "interval": {
+    "gte": 1789646407,
+    "lt": 1789647307
+  },
+  "pages": 1,
+  "records": 520,
+  "failed": 470,
+  "first_event_time": 1789646407,
+  "last_event_time": 1789646532,
+  "source_captures": [
+    "8e7cce2f15f78f784dd05f235da8bc05c3a31e4258d485ec5bb5d52ef0e6212f"
+  ],
+  "stop_reason": "page_cap",
+  "query": {
+    "name": "holdout-FLZJw3oERCNUiQcVECGZSsheqFUSUkJwSfngsWgWpump",
+    "address": "APeh6s6WUyrswK6MHXGvLrY7c4K5H16giuq7tpf2xGrQ",
+    "interval": {
+      "gte": 1789646407,
+      "lt": 1789647307
+    },
+    "bucket": "holdout",
+    "page_cap": 1,
+    "limit": 1000,
+    "token_accounts": "none",
+    "purpose": "holdout-FLZJw3oERCNUiQcVECGZSsheqFUSUkJwSfngsWgWpump"
+  },
+  "observed_at": "2026-09-21T20:00:32.863597+00:00"
+}

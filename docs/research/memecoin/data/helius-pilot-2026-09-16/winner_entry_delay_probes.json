@@ -1,0 +1,65 @@
+{
+  "reports": [
+    {
+      "venue": "curve",
+      "records": 34,
+      "failures": 1,
+      "opposing_flows": 33,
+      "anchor_matched": true,
+      "probes": [
+        {
+          "delay_seconds": 5,
+          "first_observed_time": 1782326653,
+          "observations": 1,
+          "change_min_pct": "6.583032719376137452632778100",
+          "change_max_pct": "6.583032719376137452632778100"
+        },
+        {
+          "delay_seconds": 15,
+          "first_observed_time": 1782326663,
+          "observations": 2,
+          "change_min_pct": "20.23662511301251779335478250",
+          "change_max_pct": "21.06139104519398084486202370"
+        },
+        {
+          "delay_seconds": 30,
+          "first_observed_time": 1782326680,
+          "observations": 1,
+          "change_min_pct": "31.74452231271394441184959770",
+          "change_max_pct": "31.74452231271394441184959770"
+        }
+      ]
+    },
+    {
+      "venue": "amm",
+      "records": 41,
+      "failures": 4,
+      "opposing_flows": 37,
+      "anchor_matched": true,
+      "probes": [
+        {
+          "delay_seconds": 5,
+          "first_observed_time": 1782327388,
+          "observations": 1,
+          "change_min_pct": "1.548633435115045162005128500",
+          "change_max_pct": "1.548633435115045162005128500"
+        },
+        {
+          "delay_seconds": 15,
+          "first_observed_time": 1782327398,
+          "observations": 1,
+          "change_min_pct": "10.63333773667125576485969740",
+          "change_max_pct": "10.63333773667125576485969740"
+        },
+        {
+          "delay_seconds": 30,
+          "first_observed_time": 1782327413,
+          "observations": 1,
+          "change_min_pct": "15.02632680723847822781253590",
+          "change_max_pct": "15.02632680723847822781253590"
+        }
+      ]
+    }
+  ],
+  "limitations": "Selected winning case; not out-of-sample. Ratios are realized exchanges of different sizes/directions, not executable quotes. No transaction ordering, counterfactual price impact, fees or actual feed latency modeled. No follower return."
+}

@@ -1,0 +1,71 @@
+{
+  "session": "2026-09-21-deep-dive",
+  "completed_at": "2026-09-21T20:09:12.353836+00:00",
+  "elapsed_minutes": 26.222563933333333,
+  "status": "closed",
+  "edge": "NO_EDGE_VALIDATED",
+  "tests_passed": 108,
+  "credits": {
+    "buckets": {
+      "cohort": {
+        "requests": 20,
+        "reserved_credits": 2000,
+        "successful_response_estimate": 2000,
+        "unresolved_requests": 0
+      },
+      "wallets": {
+        "requests": 8,
+        "reserved_credits": 800,
+        "successful_response_estimate": 440,
+        "unresolved_requests": 0
+      },
+      "development": {
+        "requests": 24,
+        "reserved_credits": 2400,
+        "successful_response_estimate": 330,
+        "unresolved_requests": 0
+      },
+      "public": {
+        "requests": 3,
+        "reserved_credits": 300,
+        "successful_response_estimate": 300,
+        "unresolved_requests": 0
+      },
+      "holdout": {
+        "requests": 12,
+        "reserved_credits": 1200,
+        "successful_response_estimate": 380,
+        "unresolved_requests": 0
+      },
+      "contingency": {
+        "requests": 27,
+        "reserved_credits": 270,
+        "successful_response_estimate": 270,
+        "unresolved_requests": 0
+      }
+    },
+    "requests": 94,
+    "reserved_credits": 6970,
+    "successful_response_estimate": 3720,
+    "returned_records_before_cross_query_dedup": 31912,
+    "actual_provider_billing": null,
+    "pricing": "10 credits per 100 returned full transactions rounded up; minimum 10. Reservations use maximum page size.",
+    "pricing_source": "https://www.helius.dev/docs/rpc/gettransactionsforaddress"
+  },
+  "automation": "PAUSED",
+  "execution_enabled": false,
+  "report": "2026-09-21-deep-dive-report.md",
+  "reason": "Discovery and one locked later evaluation completed; execution remains explicitly unsupported. Stop before the time/credit ceilings rather than spend to a target.",
+  "source_hashes": {
+    "deep_evidence.py": "53ab9599b701a103ea9f544eca4e1c650fe8728417f9d696102d4be20512ba84",
+    "deep_session.py": "e7cba55b74d6f38dea821351dced81001fa9463fab9fe3d7e893bce143972874",
+    "deep_report.py": "48b974cbbbdaa5201d9692d8f84fabb806c068e9279b0b4a9f99f04bdfdf477d",
+    "deep_sources.py": "2f27ec2f6e134956d51eaa55424cbc4d5d4af7e0ac978415f7ef9acf491ee17c",
+    "deep_compatibility.py": "c32d0fbf48efa80f6e7e8ad0f26421ffe7f360dbb12317926a0ecd8cfeaeeffc",
+    "deep_capture.py": "316f2bf2033edbdb741abf959b322faca67e8ac0a184c40eccd34f60c3f089ea",
+    "deep_holdout.py": "c04f4de110660b0c7faefae9f1dc6f3abb70337196b03e92d757d250c1d1df25",
+    "deep_analysis.py": "c1f57749c0831bf397e173f879b44e6c44be0b5059e1d8ac5f066076680a307a",
+    "deep_audit.py": "18a66970aae10a919602617cce45af586b98cb1290724581990b7e2273f13972",
+    "deep_experiment.py": "6bff9bc1d1c58c6044800a1d1500c5a90948752f9c8e5197c54d5b8ea81be5e8"
+  }
+}

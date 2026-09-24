@@ -1,0 +1,48 @@
+{
+  "new_api_calls": 0,
+  "captured_records": 100,
+  "failed_records": 31,
+  "opposing_reserve_flows": 69,
+  "anchor": {
+    "signature": "2ABsKP8yRzJFvtsgHzs9Ak3mDszT3SFUo7J6L2ej32kCNVqui9EA7YkjLgCu9UH8pdPvR37z7zxyAsWu7umSdUCB",
+    "block_time": 1782328096,
+    "slot": 428650668,
+    "side": "buy",
+    "reserve_sol_delta_lamports": 1466666666,
+    "reserve_token_delta_raw": -24582677294726,
+    "observed_reserve_ratio_sol_per_token": "5.966260909728740572854909411E-8"
+  },
+  "delay_probes": [
+    {
+      "delay_seconds": 5,
+      "target_time": 1782328101,
+      "first_observed_time": 1782328101,
+      "same_second_observations": 1,
+      "ratio_min": "6.008670905846341841765451047E-8",
+      "ratio_max": "6.008670905846341841765451047E-8",
+      "change_vs_anchor_min_pct": "0.710830397115996446989638300",
+      "change_vs_anchor_max_pct": "0.710830397115996446989638300"
+    },
+    {
+      "delay_seconds": 15,
+      "target_time": 1782328111,
+      "first_observed_time": 1782328111,
+      "same_second_observations": 1,
+      "ratio_min": "6.151869645479922475247021920E-8",
+      "ratio_max": "6.151869645479922475247021920E-8",
+      "change_vs_anchor_min_pct": "3.110972492814108402020276400",
+      "change_vs_anchor_max_pct": "3.110972492814108402020276400"
+    },
+    {
+      "delay_seconds": 30,
+      "target_time": 1782328126,
+      "first_observed_time": 1782328126,
+      "same_second_observations": 3,
+      "ratio_min": "6.662021483799551722720757325E-8",
+      "ratio_max": "6.848703361055801026060377606E-8",
+      "change_vs_anchor_min_pct": "11.66158477810257711191795750",
+      "change_vs_anchor_max_pct": "14.79054410590939440526076460"
+    }
+  ],
+  "limitations": "First 100 records only; window truncated. Ratios are realized reserve exchange amounts, not marginal quotes or follower fills. Same-second order unresolved, trade sizes/directions differ, no fee/slippage/latency-adjusted return. No follower PnL calculated."
+}

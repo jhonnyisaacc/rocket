@@ -1,0 +1,324 @@
+[
+  {
+    "address": "JCZXR5AQyxyerEWWLWCqefen3otCTgEx3W9sHm1LThcs",
+    "observations": [
+      {
+        "mint": "FSABHLW3xoNk1kiMNnZyepHpTKksPKcBiqYFGmcqpump",
+        "symbol": "Wholesome",
+        "first_buy_age": 22,
+        "first_sell_age": 24,
+        "bought_raw": 2216877522582,
+        "sold_raw": 2216877522582,
+        "events": [
+          {
+            "signature": "5srXWKuc7EVaUN3W7V7vRXA14RvRYuWhdmwB2r3rL8okqi965EsMNeMnZ7oxUAQetd9pamYzjmenxfbWinRkp964",
+            "age": 22,
+            "is_buy": true,
+            "amount": 2216877522582
+          },
+          {
+            "signature": "4jWAXyEWKnwbB75M4GqhA3abqi755BiAQY94toHp9ET1aArF9HTfn2UTE9i5ddh8fu7a6wPrPjhPa3AzbiJ4derH",
+            "age": 24,
+            "is_buy": false,
+            "amount": 2216877522582
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      },
+      {
+        "mint": "7EmsPTiXVr9ybysVothCWWLNA6Pidbn9EpBp9nyYpump",
+        "symbol": "uuu",
+        "first_buy_age": 11,
+        "first_sell_age": 80,
+        "bought_raw": 6366099572446,
+        "sold_raw": 6366099572446,
+        "events": [
+          {
+            "signature": "4zkLZLBDXNpH3EKk8yXssqBS8qqwwgm1TNXcj2gw4jTDSksRSuigpFi76rDDrnreu9kYKRBTtJi3U293HhEgPjzo",
+            "age": 11,
+            "is_buy": true,
+            "amount": 770160898039
+          },
+          {
+            "signature": "t3eWcoRijb11tvRo9gVN5maELhbbgD6v8je8UtEkCNSKs8BZ1TFCH7jA1VSpeYKmrkEevXgtYofKDeEog2dw4oc",
+            "age": 63,
+            "is_buy": true,
+            "amount": 416916865362
+          },
+          {
+            "signature": "5iZxkRTidDafo3bswDcegHG9KkKcv9C9AZBStYhFGcew8SvMoyog2jR1iTwQCM8ehLSuppiFW9GPncfu1ep2HgQg",
+            "age": 78,
+            "is_buy": true,
+            "amount": 5179021809045
+          },
+          {
+            "signature": "2eU6cSdqM45SkrNr4vCGpkiZHiyT1BXPV8T3nQqdsSNW968B2REusMtLShHUhGtc6N7MxUiRwKmW4jyEESHKCPs8",
+            "age": 80,
+            "is_buy": false,
+            "amount": 6366099572446
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "2kdMB6p1YHFCydksFofpgKERqAGDFrfgqQRHHfopjdvX",
+    "observations": [
+      {
+        "mint": "PhvVwQaqEneuwgBA66bGugn1zEBj1JK9iwTw2U2pump",
+        "symbol": "BBP",
+        "first_buy_age": 11,
+        "first_sell_age": 70,
+        "bought_raw": 43296829192976,
+        "sold_raw": 43296829192976,
+        "events": [
+          {
+            "signature": "5AE4ZvLgEppyifAmWmhy9C2qkpmXZbMFEpHPmjTPsAhsTPTxKbJBVB9ziihNX5FZVsCkzSEprr9nRpxbptV2Zxiv",
+            "age": 11,
+            "is_buy": true,
+            "amount": 14691596622927
+          },
+          {
+            "signature": "cbZf5TTMqixFd1hWeYRrivWpaG2YATMDvVb486rQMsc7FxhoWdHyNTD4tSLGTUwpJry8kGEe1ZbiuyUwf3CyaKa",
+            "age": 45,
+            "is_buy": true,
+            "amount": 3430459943257
+          },
+          {
+            "signature": "5S39DRa6Fh46xWKdLvH9vFmv2oWyv65JPtUQ5XtykwJ9Sh9n9HJoYuh1aEWACSqm1BNPNqLC4wgU7A22KW3qJYsv",
+            "age": 52,
+            "is_buy": true,
+            "amount": 10215310949276
+          },
+          {
+            "signature": "3ox7RJKha4PGfPrf7cc2xxovNDJg9wcbmn7L6V559BFCz3H79fn8c35Axu9SkHy1Br4KPhRa8Tjjm61Zo8CAqrx",
+            "age": 61,
+            "is_buy": true,
+            "amount": 14959461677516
+          },
+          {
+            "signature": "2DqWpFDCErmw7KamGbRLHsXTqjTNqYfP3KwREvopoYPBVGCgjsWZ5dkRRW6jWU44DDja9Rn9GfqT9YuVQVSwfqJ2",
+            "age": 70,
+            "is_buy": false,
+            "amount": 43296829192976
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      },
+      {
+        "mint": "7EmsPTiXVr9ybysVothCWWLNA6Pidbn9EpBp9nyYpump",
+        "symbol": "uuu",
+        "first_buy_age": 24,
+        "first_sell_age": 77,
+        "bought_raw": 34438547482434,
+        "sold_raw": 34438547482434,
+        "events": [
+          {
+            "signature": "tH3DF9MffJujrQqPhHtFUdT5bnJ2KwFZoaEphYhbCzC9MNJc6xqYvaUTGjrcePVTgxrosPZh138arxpjoKXXKUC",
+            "age": 24,
+            "is_buy": true,
+            "amount": 17899913070636
+          },
+          {
+            "signature": "5tWHp5FzeXAmfMUav44EsmYtsxFKfykEmBzWWD82KF2sr6V6P3WzddeU8HUism6BzCm4a1RkBdrPRj9AFvPKQUVh",
+            "age": 42,
+            "is_buy": true,
+            "amount": 5226880880016
+          },
+          {
+            "signature": "4TYgQVBFn6qNBHAESAVEN3jkT5KmgoXgdXNL9jVLL6mHjQTeaMYngj3zsQRKhH6BrQehJVkeiJ76aCK6PsUcNFnB",
+            "age": 55,
+            "is_buy": true,
+            "amount": 6206051397868
+          },
+          {
+            "signature": "HNvV8d7GAzkRyNmmc7TadKfosMzXygbawmFp9U11j9hQFuFcSgTELuopGuKsMBjXyAmmRSfH2ui4r5qsfrQXDvQ",
+            "age": 66,
+            "is_buy": true,
+            "amount": 5105702133914
+          },
+          {
+            "signature": "51usshYvCvJv7H6eD6xUewW6fAKKy7MciP47wWxLTzYcqFKsKMHL86LytTWoZ8jJd7FqcM9y8iB8PMTi3NKtwMzn",
+            "age": 77,
+            "is_buy": false,
+            "amount": 34438547482434
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "6fAV85kfyqXexp7uJVqByxDehU61WGVq8YD3CSWrYwQ8",
+    "observations": [
+      {
+        "mint": "9PV2wx6iL3iSYjS5g2tjjaN5aZchSc1xnG91wyVgpump",
+        "symbol": "MORFIK",
+        "first_buy_age": 0,
+        "first_sell_age": 10,
+        "bought_raw": 5879856555422,
+        "sold_raw": 5879856555422,
+        "events": [
+          {
+            "signature": "63vKLEFVavp835usFJ6J8Muas59fWd6CwaCEYVRN5EGfUqSj4vGk6qmfes1kFDAvUZBdZaVodiFX9JD3fHws8Yjw",
+            "age": 0,
+            "is_buy": true,
+            "amount": 5879856555422
+          },
+          {
+            "signature": "HySmuF6HwgtaGAJG46HjCFspYzMKoXp4i8S6NzhLBeZoF6erWqNqiV9a4NE9sgDTLLjHuW3C7QyMi6cJYA1vGpb",
+            "age": 10,
+            "is_buy": false,
+            "amount": 5879856555422
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "C5EMTGGE87SqLyuvhShLDMj2jUBwqBLJAZF6ybK8Jyqw",
+    "observations": [
+      {
+        "mint": "d2Pxjfo5bGaFgTNAqvoo2Usp2GoPicyLFj5r3mDpump",
+        "symbol": "Liberland",
+        "first_buy_age": 0,
+        "first_sell_age": 3,
+        "bought_raw": 20526169809643,
+        "sold_raw": 20526169809643,
+        "events": [
+          {
+            "signature": "3yqRKQcpJBDJr7a2cy1wcq7k9PUuU4XteZszWwvFZAHE6KMaN9AVTzorsAwpVUyxNSbQ1r8DF71w6vWj2NhLNQxZ",
+            "age": 0,
+            "is_buy": true,
+            "amount": 20526169809643
+          },
+          {
+            "signature": "cZBYfCerXBHXtqqHG17YCqFby8djxRRD3FGgdWv1Cfn81ZLfZENYZuky5zYvxvSaQqz7RwqMVobSpzUmmxKrNqE",
+            "age": 3,
+            "is_buy": false,
+            "amount": 20526169809643
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "NULLioEUhd89Jo5Acm9sX88bwjNjrsAVy6KWkXD7qZh",
+    "observations": [
+      {
+        "mint": "d2Pxjfo5bGaFgTNAqvoo2Usp2GoPicyLFj5r3mDpump",
+        "symbol": "Liberland",
+        "first_buy_age": 0,
+        "first_sell_age": 2,
+        "bought_raw": 11061789518867,
+        "sold_raw": 11061789518867,
+        "events": [
+          {
+            "signature": "4SBogEYuHXb24LTEDQeNLHVh1K1s1MwyrWqExQATa569Mia24mvSb4gf7eLoo5YvRdFqn2n381Cu6tvsJ8KnSo6o",
+            "age": 0,
+            "is_buy": true,
+            "amount": 11061789518867
+          },
+          {
+            "signature": "5J9MWNecx2MHtUrRqMjddNTZz1YN8btpJWC2TPSdg9o8wJ5ZNN55wH9YE516qvUrhBRuzMVPeQ6hf4yLEjnwbTCR",
+            "age": 2,
+            "is_buy": false,
+            "amount": 11061789518867
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "5n2umv17r7Yphdnm3TWW7PHQwcWahPWdoxoUSK9YF4C4",
+    "observations": [
+      {
+        "mint": "FsD5wZ5tbntMQC5fc6ooH1svs3AzomKNpP8f9e3bpump",
+        "symbol": "$TOAD",
+        "first_buy_age": 1,
+        "first_sell_age": 110,
+        "bought_raw": 829808608160,
+        "sold_raw": 829808608160,
+        "events": [
+          {
+            "signature": "4WMJVtxVKxb3BbBZsVMVpXDnZ5rj3r126frqS4EN8KrWqj6VzdJL6hKF6XznQvjN2cueuLxMUnCzcwfJQPAxD3Hm",
+            "age": 1,
+            "is_buy": true,
+            "amount": 829808608160
+          },
+          {
+            "signature": "4QZXS9ys57QWP95SiYbe5QwRxTtpBAFy7T4UNYDpqdtSBfkfsTv2FkHWKcNTEMEVXfECbHumkDRNEYnf9JZRrdaQ",
+            "age": 110,
+            "is_buy": false,
+            "amount": 829808608160
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "BUBBLEtr8BEJZ9PyC2DFYxG58r8tu5PiyAKMVm14hCg9",
+    "observations": [
+      {
+        "mint": "GEP59sB6eBbkVqBrnyUjXPi7Fdi4FUmj1mMNgzpdpump",
+        "symbol": "zen",
+        "first_buy_age": 1,
+        "first_sell_age": 3,
+        "bought_raw": 3299145345207,
+        "sold_raw": 3299145345207,
+        "events": [
+          {
+            "signature": "3MkeSYJFC9FXypWLX6QCxWvdZE82sTw2gH3JVcBJYKzrGqQqoJPsic1oK4n9Cmg1wAnn8kfs73xdzJPgEwxTRPKQ",
+            "age": 1,
+            "is_buy": true,
+            "amount": 3299145345207
+          },
+          {
+            "signature": "nFb9CfCATkqU2E61HExAMGtWheKnRHX69fC6R61KTQRJ7SpX2gf2ADL4izoYdky62RMnb1ewQVg9GTouoCxLLtC",
+            "age": 3,
+            "is_buy": false,
+            "amount": 3299145345207
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  },
+  {
+    "address": "DnWZJD25pt6Ziih6TGud7YwXsZDDx4CikVfZN9MmXAu7",
+    "observations": [
+      {
+        "mint": "GEP59sB6eBbkVqBrnyUjXPi7Fdi4FUmj1mMNgzpdpump",
+        "symbol": "zen",
+        "first_buy_age": 1,
+        "first_sell_age": null,
+        "bought_raw": 23400806766025,
+        "sold_raw": 0,
+        "events": [
+          {
+            "signature": "3uWGPuEeqAj4JUWZJkbAbUter9cm9cX3RVrzEeVT88MGwCFHPgi95pTnNqryqj9YkHLeVnvgi5mCUFHNcq9kJSy4",
+            "age": 1,
+            "is_buy": true,
+            "amount": 23400806766025
+          }
+        ],
+        "profit": null,
+        "scope": "Observed token movements only; not complete inventory or realized profit"
+      }
+    ]
+  }
+]

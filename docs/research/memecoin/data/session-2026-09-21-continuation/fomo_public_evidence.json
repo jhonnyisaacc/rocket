@@ -1,0 +1,22 @@
+{
+  "profile": "https://fomo.family/profile/GMannnnn",
+  "observed_at": "2026-09-21T19:09:00Z",
+  "observation_time_precision": "approximate minute of browser inspection",
+  "surface": "Logged-in browser; public profile and Position dialog only",
+  "token": "solana:Ai66LHZG9MCzg1WKdawwqduVAXpNDUuV8M3uyq5ppump",
+  "fills": [
+    {"displayed_usd": "9956.03", "displayed_time": "Sep 21, 3:24 PM", "displayed_market_cap": "$91.1M"},
+    {"displayed_usd": "5530.03", "displayed_time": "Sep 21, 3:23 PM", "displayed_market_cap": "$90M"},
+    {"displayed_usd": "5530.57", "displayed_time": "Sep 21, 3:23 PM", "displayed_market_cap": "$89.7M"}
+  ],
+  "quantity_available": false,
+  "seconds_available": false,
+  "transaction_link_available": false,
+  "explicit_wallet_available": false,
+  "timezone_verified": false,
+  "valuation_basis_verified": false,
+  "inspection": "Each transaction row is display text, without a title attribute or transaction link. Dialog links expose the profile and mint, not a transaction signature. No raw application state or private APIs inspected.",
+  "historical_identity_available_at": null,
+  "mapping_status": "unavailable",
+  "next_step": "Complete only the two already frozen inferred UTC windows; do not widen timezone search or attribute approximate dollar matches."
+}

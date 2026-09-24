@@ -1,0 +1,47 @@
+{
+  "session": "2026-09-21-continuation",
+  "started_at": "2026-09-21T19:04:45Z",
+  "deadline_at": "2026-09-21T20:04:45Z",
+  "acquisition_deadline_at": "2026-09-21T19:54:45Z",
+  "root": "/Users/jhonny/rocket/docs/research/memecoin/data/session-2026-09-21-continuation",
+  "cache_roots": [
+    "/Users/jhonny/rocket/docs/research/memecoin/data/session-2026-09-21"
+  ],
+  "helius_credit_cap": 1000,
+  "credit_buckets": {
+    "discovery": 400,
+    "wallets": 200,
+    "gaps": 200,
+    "contingency": 200
+  },
+  "baseline_tests": {
+    "passed": 46,
+    "failed": 0
+  },
+  "edge": "NO_EDGE_VALIDATED",
+  "execution_enabled": false,
+  "automation": "PAUSED",
+  "cate_origin_keys": [
+    "dbae79a172a6189fcd82eaac74bbebc786fc23dad81ff25a40abfd489b45ea8f",
+    "9f5ca922e2d6547ad525c4a3ef9f316c6f1f5ffb09307ed9c5b85e951883edc4"
+  ],
+  "cate_max_new_pages_per_window": 20,
+  "unipcs_wallet": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "unipcs_interval": {
+    "gte": 1788101932,
+    "lt": 1788102232
+  },
+  "unipcs_max_pages": 20,
+  "pricing_sources": [
+    "https://www.helius.dev/docs/rpc/gettransactionsforaddress",
+    "https://www.helius.dev/docs/billing/credits"
+  ],
+  "pricing_checked_at": "2026-09-21T19:05:00Z",
+  "pricing": {
+    "full_history_up_to_100_records": 10,
+    "archival_transaction": 1,
+    "block_signatures": 1
+  },
+  "actual_provider_billing": null,
+  "completion_rule": "Close within 60 minutes; no automatic extension; preserve partial coverage"
+}

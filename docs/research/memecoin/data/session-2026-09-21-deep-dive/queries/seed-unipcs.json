@@ -1,0 +1,13 @@
+{
+  "name": "seed-unipcs",
+  "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "bucket": "wallets",
+  "page_cap": 4,
+  "limit": 1000,
+  "token_accounts": "all",
+  "purpose": "seed-unipcs"
+}

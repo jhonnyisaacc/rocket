@@ -1,0 +1,33 @@
+{
+  "complete": true,
+  "reason": "Provider-reported cursor exhaustion",
+  "address": "789sBYAGntSyAPoS4ZH3zo3SUFuv1jeAjPeaq7muVany",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "pages": 2,
+  "records": 1,
+  "failed": 0,
+  "first_event_time": 1789200870,
+  "last_event_time": 1789200870,
+  "source_captures": [
+    "88b0f2593b4bd3ab550d352f9c65582af9b119136a1035197d0927374c8056ef",
+    "b960db681cd66eae01c8e08a2864b14b187c9f6795ffe6e3e674033cce3e8d41"
+  ],
+  "stop_reason": "exhausted",
+  "query": {
+    "name": "seed-anonymous_calibration",
+    "address": "789sBYAGntSyAPoS4ZH3zo3SUFuv1jeAjPeaq7muVany",
+    "interval": {
+      "gte": 1788998400,
+      "lt": 1789257600
+    },
+    "bucket": "wallets",
+    "page_cap": 4,
+    "limit": 1000,
+    "token_accounts": "all",
+    "purpose": "seed-anonymous_calibration"
+  },
+  "observed_at": "2026-09-21T19:48:22.505386+00:00"
+}

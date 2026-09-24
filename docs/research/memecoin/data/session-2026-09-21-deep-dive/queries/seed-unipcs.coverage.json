@@ -1,0 +1,35 @@
+{
+  "complete": false,
+  "reason": "Unexhausted cursor",
+  "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "pages": 4,
+  "records": 4000,
+  "failed": 18,
+  "first_event_time": 1788998403,
+  "last_event_time": 1789030052,
+  "source_captures": [
+    "78bc8984d51a0429265f4dd6f3994187f3a7416f16c33f1cdf51081a19f1d29d",
+    "55fbd4273baa7b2af9a5f7541f28870b3f2c3bc2edd7cc30c08bd690cb5a8b2a",
+    "04036569b1922076e70d2af1add8cd3d894769c241070f502c251da74812d1c0",
+    "7ad40cf505f05df4ec28110914858e91f397ec8917f0a47e4c264cd959fbd102"
+  ],
+  "stop_reason": "page_cap",
+  "query": {
+    "name": "seed-unipcs",
+    "address": "2heJbC32Tpfcb3nbUb5ER61K11FGZVfVGtVnDm6LDogF",
+    "interval": {
+      "gte": 1788998400,
+      "lt": 1789257600
+    },
+    "bucket": "wallets",
+    "page_cap": 4,
+    "limit": 1000,
+    "token_accounts": "all",
+    "purpose": "seed-unipcs"
+  },
+  "observed_at": "2026-09-21T19:48:20.004527+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "seed-anonymous_calibration",
+  "address": "789sBYAGntSyAPoS4ZH3zo3SUFuv1jeAjPeaq7muVany",
+  "interval": {
+    "gte": 1788998400,
+    "lt": 1789257600
+  },
+  "bucket": "wallets",
+  "page_cap": 4,
+  "limit": 1000,
+  "token_accounts": "all",
+  "purpose": "seed-anonymous_calibration"
+}

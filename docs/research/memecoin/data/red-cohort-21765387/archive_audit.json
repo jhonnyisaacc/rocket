@@ -1,0 +1,154 @@
+{
+  "archive_sha256": "f908d10f459e52de0e6f0d77af26db262e41a521dfe3872f30bd795e255841d0",
+  "catalogue_hit_rows": 6306,
+  "cohort_size_distribution": {
+    "2": 571,
+    "3": 229,
+    "4": 102,
+    "5": 33,
+    "6": 34,
+    "7": 17,
+    "8": 12,
+    "9": 4,
+    "10": 5,
+    "11": 2,
+    "12": 3
+  },
+  "cohorts": 1012,
+  "distinct_catalogue_mints": 5975,
+  "edge": "NO_EDGE_VALIDATED",
+  "intra_distinct_mints": 20162,
+  "intra_duplicate_signature_rows": 0,
+  "intra_duplicate_wallet_rows": 0,
+  "intra_first_rank_above_10": 9081,
+  "intra_missing_available_at": 20163,
+  "intra_rows": 20163,
+  "invalid_or_redacted_strings": 1,
+  "missing_full_corpus_files": [
+    "pumpfun_buyers.jsonl",
+    "pumpfun_launches.jsonl"
+  ],
+  "published_results": {
+    "covariate_balance": {
+      "corpus_day": {
+        "post_matching_smd": 0.02006978599433405,
+        "pre_matching_smd": 0.010310995830913387
+      },
+      "has_telegram": {
+        "post_matching_smd": -0.07000862432546513,
+        "pre_matching_smd": 0.10385949477856449
+      },
+      "has_twitter": {
+        "post_matching_smd": 0.03710106206659713,
+        "pre_matching_smd": 0.6512328124672825
+      },
+      "has_website": {
+        "post_matching_smd": 0.0018624295256731663,
+        "pre_matching_smd": 0.4322170690144946
+      },
+      "hour_cos": {
+        "post_matching_smd": 0.07672612346141887,
+        "pre_matching_smd": -0.068931023635913
+      },
+      "hour_sin": {
+        "post_matching_smd": 0.051339271908304625,
+        "pre_matching_smd": -0.05690663567181749
+      },
+      "log1p_desc_len": {
+        "post_matching_smd": 0.02044634628512595,
+        "pre_matching_smd": 0.03319251752719033
+      },
+      "log1p_initmcap_sol": {
+        "post_matching_smd": 0.0016517450117851356,
+        "pre_matching_smd": 0.5772485639142939
+      },
+      "log1p_name_len": {
+        "post_matching_smd": 0.05907530239159312,
+        "pre_matching_smd": 0.07962041458687302
+      },
+      "log1p_symbol_len": {
+        "post_matching_smd": -0.029863396390690303,
+        "pre_matching_smd": 0.07431364719780813
+      }
+    },
+    "matched_sample_lift": {
+      "buyers_30m": {
+        "ci_high_pct": 19.360772187680656,
+        "ci_low_pct": 12.957047316979699,
+        "control_mean": 12.674109614319985,
+        "n": 5419,
+        "point_pct": 16.10955185312034,
+        "treated_mean": 14.711016792766193
+      },
+      "sol_30m": {
+        "ci_high_pct": 15.14309082034561,
+        "ci_low_pct": -0.5101302248565592,
+        "control_mean": 3.5283598448097435,
+        "n": 5419,
+        "point_pct": 6.334027889836603,
+        "treated_mean": 3.7500879446848128
+      }
+    },
+    "meta": {
+      "bootstrap_iters": 1000,
+      "buyers_file": "<data-path>/pumpfun_buyers.jsonl.stale_2026-06-29",
+      "caliper_logit_ps": 0.08179925380370444,
+      "cohorts_file": "<data-path>/sniper_cohorts.jsonl",
+      "corpus_days": 13.380995370370371,
+      "corpus_end_s": 1782370347.0,
+      "corpus_start_s": 1781214229.0,
+      "launches_file": "<data-path>/pumpfun_launches.jsonl",
+      "match": "1:1 nearest-neighbor without replacement, logit-PS caliper 0.2 SD",
+      "n_cohort_wallets": 2965,
+      "n_control_pool_pre_match": 160679,
+      "n_matched_pairs": 5419,
+      "n_treated_pre_match": 5419,
+      "n_universe_mints": 166098,
+      "script": "paper7_v3_psm_nocohort_zerofill.py",
+      "seed": 42
+    },
+    "naive_pooled_lift_same_universe": {
+      "buyers_30m_pct": 63.927990821070075,
+      "n_control_pool": 160679,
+      "n_treated": 5419,
+      "sol_30m_pct": 63.06595014091175
+    },
+    "paper_placebo_activity_matched_pct": {
+      "buyers_30m_ci": [
+        183.8,
+        255.2
+      ],
+      "buyers_30m_point": 216.3
+    },
+    "paper_reference_naive_lifts_pct": {
+      "buyers_30m": 132.3,
+      "sol_30m": 136.5
+    }
+  },
+  "published_results_are_not_reproduced": true,
+  "size_field_mismatches": 0,
+  "source": "https://zenodo.org/records/21765387",
+  "top_cohort": {
+    "first_seen": "2026-06-13T22:01:14Z",
+    "hits_below_0_2_sol": 19,
+    "last_seen": "2026-06-24T18:22:21Z",
+    "launches": 42,
+    "mean_first_rank": 2.29,
+    "median_cohort_sol_per_hit": 0.7781126600000001,
+    "same_second_hits": 10,
+    "wallets": [
+      "789sBYAGntSyAPoS4ZH3zo3SUFuv1jeAjPeaq7muVany",
+      "AyFPwAkdddDiRqw911GXDghY65vjbcwQ3R7n6jBaw62b",
+      "BTPaogPrK2YXjymqXFWq6hpX3KisbGynzAbV3LnBLNZV",
+      "CC5nggDWgVrJjPsfHxSnLPz311yZcKseWC9rsGvoXAsM",
+      "DGuoMqwahcJzqhgf6D5199ztLzVn4oEcmYJHuP9H6Q3t",
+      "ED28Sp1M8BUsKDMWm8UsVmPJ67smq3Vp6QMewm7D93c",
+      "EFhdxiifzuHr29eErt1WZE1uzWrJFra4RZNF9vT6KdGc",
+      "Fn6WMrUUmCDHp6iag4PyWkcdL4h3ZTgXhKGqqKG7BY1G",
+      "iirLZS3cE6i5QXavqUNDLZCqxR72buNLYAPYqY4wpeb"
+    ],
+    "warning": "Historical discovery sample; no price, sell, profitability or current activity validation."
+  },
+  "unique_wallet_strings": 2965,
+  "valid_solana_addresses": 2964
+}
