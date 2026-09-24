@@ -10,6 +10,8 @@ The working lifecycle is creation → early seconds/blocks → bonding curve →
 
 Use simple survival and return baselines before nonlinear tabular models. Participant history is a candidate feature, with sample-size shrinkage and strict wallet-buy accounting. Holder concentration requires exclusion of pool/vault accounts. Model quote-side reserves under the correct protocol version and execute with size, fees, latency, failures, slippage and exit coverage. A quoted pool state is not an achieved fill. Preserve separate entry and exit experiments.
 
+MC-010's independently covered fast-receipt cohort repeated a lower modeled curve-exit-unavailability rate for high early net flow, while its costed entry stress returns remained negative. Treat early flow as an unpromoted risk component. Verify beneficial buyers, alternate exit liquidity and actual inclusion before any production decision uses it.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
