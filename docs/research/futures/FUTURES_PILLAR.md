@@ -95,6 +95,20 @@ five-minute-flow, thirty-minute-hold rule. The paper's classified wallet
 cohort, forced liquidations, actual bid/ask and 2026 final holdout remain
 separate and untested.
 
+The [author slide and HYPE source follow-up](HYPERLIQUID_CLOSE_FLOW_SOURCE_SCOUT.md)
+identified `FrontendMarket` orders as part of the paper's front-end wallet
+fingerprint and a longer close-loser markout horizon. Six fixed 2025 fill
+order IDs all returned `unknownOid` from today's public order-status API,
+so the free fill mirror cannot establish that wallet cohort. A distinct
+[frozen FUT-011 HYPE 120-minute trial](experiments/FUT-011-RESULT.md)
+used two new, source-audited seven-hour Sunday windows. All 118 events
+were active, but August's mean optimistic gross was +4.973 bp, below the
+9 bp base taker fee floor and its always-short control; September's
++13.649 bp exceeded 9 bp but lagged its +43.340 bp always-short control.
+The exact longer-horizon all-wallet rule failed its two-date gross and
+incremental gate. Neither result validates a front-end cohort edge or a
+live decision.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).

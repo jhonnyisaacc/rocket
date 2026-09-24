@@ -190,7 +190,9 @@ HYPE closes occur across its whole shard, with no selected missing fields
 and all 74,368 HYPE trade keys paired. Each shard has one gap **outside**
 the selected seven-hour segment. Both chosen windows are Sundays and share
 the same UTC clock, 28 days apart. The [FUT-011 contract](experiments/FUT-011.md)
-freezes only these windows before scoring.
+froze only these windows before scoring. Its subsequent
+[result](experiments/FUT-011-RESULT.md) failed the two-date gross/incremental
+gate; August was below the base fee floor and September lagged always-short.
 
 A preselected September 15 cutoff shard was source-audited but not chosen:
 its 2025-09-14 and 2025-09-15 hours were split into roughly two-hour
