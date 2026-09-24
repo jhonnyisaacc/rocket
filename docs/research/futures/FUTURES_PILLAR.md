@@ -109,6 +109,17 @@ The exact longer-horizon all-wallet rule failed its two-date gross and
 incremental gate. Neither result validates a front-end cohort edge or a
 live decision.
 
+The distinct [market-liquidation source audit](HYPERLIQUID_LIQUIDATION_SOURCE_SCOUT.md)
+then checked twelve metadata-selected 2025 fill shards without reading
+conditioned future prices. All 31,020 marked BTC/ETH/HYPE trades in these
+samples were market-method closes with paired markers and the liquidated
+wallet as taker. They occupied only 197 market-wide five-minute bins;
+49 bins allowed a delayed entry and 120-minute exit within continuous
+source coverage, and a 30-minute separation left 21 episodes. This is
+too clustered for a return trial on these fragments. The source gate
+continues with full-day stitching; no liquidation strategy result or
+production change exists.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
