@@ -22,7 +22,9 @@ The old multi-horizon baseline's [Bybit 2022 venue-transfer diagnostic](experime
 
 The distinct [FUT-004 spot/perpetual basis factor](experiments/FUT-004-RESULT.md) had a negative 2022 daily gross mean across predeclared settlement bounds and an approximately flat 2023 mean. It failed the frozen two-year gross-information gate before costs, so its conditional 2024/2025 tests were not run. This closes the tested one-day high-basis-long/low-basis-short perpetual factor, not every dated-futures basis or funding-carry idea.
 
-The [FUT-005 CME BTC positioning-change trial](experiments/FUT-005.md) is frozen before COT-conditioned outcomes. Its signed prior comes from a published pre-2023 study, while the [source audit](COT_SOURCE_FEASIBILITY.md) establishes report release lags, including exceptional 2023/2025 delays. It remains an unscored BTC-only hypothesis, not a proven COT regime feature or a validated strategy.
+The [FUT-005 CME BTC positioning-change trial](experiments/FUT-005.md) was frozen before COT-conditioned outcomes. Its signed prior came from a published pre-2023 study, while the [source audit](COT_SOURCE_FEASIBILITY.md) established report release lags, including exceptional 2023/2025 delays.
+
+Its subsequently frozen [2023–2024 result](experiments/FUT-005-RESULT.md) failed the 2023 gross and net gate: 2023 gross mean daily return was −0.07429% and 20bps net was −0.09036%. The 2024 net arithmetic mean was positive but compounded return was negative and gains were Q1 concentrated. This closes the exact standalone paper-signed COT-change trade after conservative release delay; COT as context or a separately tested incremental feature remains open. Conditional 2025 COT outcomes were not read.
 
 ## Established boundaries
 
