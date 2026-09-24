@@ -71,7 +71,8 @@ def build(probes: dict, notices: dict, root: Path) -> list[dict]:
             "minute_index_sha256": item["indexPriceKlines_sha256"],
             "minute_trade_source_key": item["klines_key"],
             "minute_trade_sha256": item["klines_sha256"],
-            "notice_candidate_url": notice["source_url"],
+            "notice_candidate_url": notice.get("symbol_sources", {}).get(
+                item["symbol"], notice["source_url"]),
             "status": "UNVERIFIED_SYMBOL_TIME_AND_MINUTE_APPROXIMATION",
         }
         if envelope is None or last > cutoff:

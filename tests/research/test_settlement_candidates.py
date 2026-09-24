@@ -35,8 +35,10 @@ def test_notice_cutoff_override_is_used(tmp_path: Path):
         "klines_key": "trade.zip", "klines_sha256": "trade-hash",
     }]}
     notices = {"events": [{"date": "1970-01-01", "settlement_time_utc": "06:30",
-                           "source_url": "https://example.com/notice"}]}
+                           "source_url": "https://example.com/notice",
+                           "symbol_sources": {"PORT3USDT": "https://example.com/port3"}}]}
     candidates = build(probes, notices, tmp_path)
     assert len(candidates) == 1
     assert candidates[0]["assumed_settlement_ms"] == 390 * 60000
     assert candidates[0]["approx_index_settlement_price"] == 1
+    assert candidates[0]["notice_candidate_url"] == "https://example.com/port3"
