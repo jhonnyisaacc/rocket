@@ -70,7 +70,10 @@ An ICE-labeled Yahoo index proxy is now acquired, but its bar timestamps
 are session labels, and its holiday gaps exceed ICE's stated index
 calendar. Its exact relation to the paper's series and release clock
 remain unresolved. It is a source and economic screen only;
-no macro-conditioned Rocket result or new trade rule exists.
+the [FUT-009 sparse delayed rule](experiments/FUT-009.md) is now frozen
+before macro-conditioned returns. It first tests post-study 2024 BTC
+perpetual gross, incremental and costed outcomes; 2025 is conditional.
+No macro-conditioned Rocket result exists yet.
 
 ## Established boundaries
 

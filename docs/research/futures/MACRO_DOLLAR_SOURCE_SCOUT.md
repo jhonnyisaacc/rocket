@@ -1,6 +1,6 @@
 # Daily dollar-index forecast: economic and source screen
 
-Status: `PROXY_ROWS_ACQUIRED_CLOCK_AND_COVERAGE_UNRESOLVED`, 2026-09-24. No dollar-conditioned
+Status: `SPARSE_DELAYED_PROXY_SOURCE_READY`, 2026-09-24. No dollar-conditioned
 Rocket return, fitted coefficient, or new strategy rule has been scored.
 This is a possible **daily BTC directional** mechanism after FUT-008, not a
 continuation or threshold change of any failed trial.
@@ -88,16 +88,38 @@ coverage**. Missing dates must not be filled forward and described as
 fresh macro information. A separate source or an explicitly sparse,
 delayed hypothesis is required before a frozen trial.
 
+A deterministic [source-clock normalizer](../../../research/futures/dxy_asof.py)
+verified the raw SHA and preserved all 2,264 valid session dates, then
+assigned each close an **earliest allowed** timestamp of 03:00 UTC on the
+following calendar date. This is after 22:00 or 23:00 local New York time
+on the source session date, later than the [ICE notice's pre-2021 19:15
+Eastern publication endpoint](https://www.ice.com/publicdocs/equity_indices/notices/DXY_ICE_FX_Indices_Methodology_Updates_20210311.pdf).
+It does not assert the Yahoo bar timestamp is a release time or fill the
+holiday gaps. The ignored local `dxy_yahoo_2017_2025_asof.json` has
+SHA-256 `8c8427fa1ed62c38466fed10b4785d1754f8f25227100c8a7e053047a1143e40`.
+This makes the proxy usable only for a separately labeled **sparse and
+delayed** hypothesis; vintage revisions and exact paper-series identity
+remain unverified.
+
+For that distinct hypothesis, a [BTC hourly source auditor](../../../research/futures/btc_macro_hourly_source.py)
+acquired **48 official Binance BTCUSDT USD-M monthly 1h ZIPs** for
+2022–2025 and matched each to its published `.CHECKSUM`. All 35,064
+hourly rows are consecutive, with 8,760/8,760/8,784/8,760 hours by year,
+valid OHLC and exact hour-end clocks. The already checksum-repaired
+BTC funding database has 1,095/1,095/1,098/1,095 consecutive eight-hour
+slots in those years. The ignored local hourly `source_audit.json` has
+SHA-256 `bcbcfdb4d6b5af752abf65edbbcff5258c9cdfacace0b948d5dcc7add7425af1`;
+it records every ZIP source hash. The funding database SHA-256 is
+`e42cfcfc5d244293a9a3327a5009c05723c541b1d86ed3a5050a08c7f97e863b`.
+No future BTC return was paired with a dollar observation in these audits.
+
 ## Decision before another numbered trial
 
-This mechanism merits a source gate because of its daily turnover and
-published gross scale. Reconcile the acquired proxy against the paper's
-index identity and documented ICE close, time zone, publication latency,
-missing holidays, revisions and 2019/2021 methodology changes. Confirm
-that the value was available *before* each prospective BTC perpetual
-decision and preserve an as-of manifest. If an exact or defensibly delayed
-series cannot be established, pursue another mechanism rather than using
-H.10 observation dates or Yahoo session labels as publication dates.
+The source gate admits a **sparse delayed proxy trial**, with no signal on
+missing Yahoo sessions. It does not admit a replication claim. A closer
+paper replication would still need reconciliation of exact index identity,
+vendor vintages and missing holiday values. H.10 observation dates and
+Yahoo session-label timestamps remain inadmissible as publication times.
 
 Then freeze one simple causal forecast and a chronological cheap gross
 falsifier under a new experiment ID **before** inspecting its conditioned
