@@ -86,6 +86,18 @@ market-wide cohort history. A narrow `orderStatus` spot check for fixed
 fill `oid`s is a cheaper first joinability test than acquiring the whole
 `replica_cmds` archive.
 
+That check was run on the first three distinct BTC/ETH unmarked loss-close
+taker wallet/`oid` pairs in each of the two fixed 2025 shards. All six
+requests returned `unknownOid` on 2026-09-24, including three July and
+three October orders. The 42-character wallets and order IDs came directly
+from the mirror fills, and no post-event price was read for this check.
+This is evidence that the public API did not recover those historical
+orders; it does not prove that the official `replica_cmds` archive or a
+separately recorded order stream lacks them. The reason for `unknownOid`
+was not determined. Do not use a live/current order-status lookup to
+backfill a claimed point-in-time cohort without an archival completeness
+and timestamp test.
+
 The original archive must still be cross-checked before any promotion, but a
 free mirror now supplies an initial source sample. Decision time must be
 **after the complete source block is observed**, with a
@@ -135,6 +147,12 @@ shard, with no independent source checksum, no book quotes and no proof of
 continuous coverage. The 2026 mirror was used for schema preview only; no
 2026 outcome was read.
 
+The same return-free auditor run with `--coins HYPE` found 401,208 HYPE
+wallet-fill rows, 200,604 two-counterparty trade keys, 39,173 unmarked
+loss-realizing taker closes, and no selected missing fields on this July
+shard. This is source feasibility for the asset in the author chart, not
+an evaluated HYPE strategy or a count of independent signals.
+
 We independently selected a later [2025-10-10 shard](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block/resolve/main/data/batch_upto_20251010_14.lz4_1765119892.parquet)
 before outcomes. Its 241,902,165 bytes have SHA-256
 `600e52955d8975614402f25404e141418a54a64e80ca0b016ebf44ccd82f703b`.
@@ -148,6 +166,38 @@ block numbers absent. Original source paths cover UTC hours `0`, `1`, and
 must not bridge the gap with a position or interpolated price. A mirror
 filename can therefore hide a large internal coverage gap; the 75-date
 metadata inventory is not a continuous tape guarantee.
+
+The HYPE-only return-free audit on the October shard found 190,092
+wallet-fill rows, 95,046 two-counterparty trade keys, 23,559 unmarked
+loss-realizing taker closes, and no selected missing fields. Its same
+large block gap still applies. These two already inspected dates are
+useful source checks, but a new 120-minute HYPE contract should freeze
+fresh discovery dates before reading HYPE outcomes.
+
+### Fresh HYPE 120-minute source windows
+
+Before any HYPE future return was read, mirror metadata led to fixed
+September batch cutoffs, then the HYPE-only structural auditor determined
+their actual contiguous hours. The [September 1 cutoff shard](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block/resolve/main/data/batch_upto_20250901_0.lz4_1765112048.parquet)
+(SHA-256 `77a3d0689948c14114eed15e53e05f1b02c1d8080172b54675122e634601d143`)
+contains 2025-08-31 UTC hours `03`–`09` continuously; 32,716 HYPE unmarked
+loss-realizing taker closes occur across the **whole shard**, with no
+selected missing fields and all 109,958 HYPE trade keys paired. The
+[September 29 cutoff shard](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block/resolve/main/data/batch_upto_20250929_0.lz4_1765117407.parquet)
+(SHA-256 `c858ffcfca963b858ed3d696f569b38178bbfec1fdb897adca8cd7a6ccc75a0a`)
+contains 2025-09-28 UTC hours `03`–`09` continuously; 22,771 qualifying
+HYPE closes occur across its whole shard, with no selected missing fields
+and all 74,368 HYPE trade keys paired. Each shard has one gap **outside**
+the selected seven-hour segment. Both chosen windows are Sundays and share
+the same UTC clock, 28 days apart. The [FUT-011 contract](experiments/FUT-011.md)
+freezes only these windows before scoring.
+
+A preselected September 15 cutoff shard was source-audited but not chosen:
+its 2025-09-14 and 2025-09-15 hours were split into roughly two-hour
+segments by two block gaps, leaving inadequate room for the intended
+120-minute hold and delayed entry. This exclusion used only block coverage,
+not HYPE prices or returns. The later September 29 shard replaced it
+under that coverage criterion.
 
 A [public explorer block](https://github.com/hyperliquid-dex/node/issues/32)
 was also queried as a free alternative. Its `blockDetails` and `txDetails`
