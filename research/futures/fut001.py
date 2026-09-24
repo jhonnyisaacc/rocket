@@ -71,7 +71,8 @@ def funding_window(records: list[tuple], slots: list[int], start: int,
     return True, total
 
 
-def generate_signals(db: sqlite3.Connection) -> tuple[dict[int, dict[str, dict]], dict, dict[int, dict[str, bool]]]:
+def generate_signals(db: sqlite3.Connection, *, start_ms: int = START_MS,
+                     end_ms: int = END_MS) -> tuple[dict[int, dict[str, dict]], dict, dict[int, dict[str, bool]]]:
     """Use only completed bars and settlements known at each decision close."""
     signals: dict[int, dict[str, dict]] = defaultdict(dict)
     fills: dict[int, dict[str, bool]] = defaultdict(dict)
@@ -91,7 +92,7 @@ def generate_signals(db: sqlite3.Connection) -> tuple[dict[int, dict[str, dict]]
         for index in range(120, len(bars)):
             day = bars[index][0]
             entry = day + DAY_MS
-            if not START_MS <= entry < END_MS:
+            if not start_ms <= entry < end_ms:
                 continue
             counts["candidate_symbol_days"] += 1
             history = bars[index - 120:index + 1]
@@ -153,13 +154,14 @@ def desired_weights(current: dict[str, dict], component: str) -> dict[str, float
 
 
 def preflight(signals: dict[int, dict[str, dict]], fills: dict[int, dict[str, bool]],
-              *, component: str) -> list[dict]:
+              *, component: str, start_ms: int = START_MS, end_ms: int = END_MS) -> list[dict]:
     """Identify every missing exposed price/funding interval before scoring."""
     unresolved = []
     previous: dict[str, float] = {}
     previous_year = None
-    for day in range(START_MS, END_MS, DAY_MS):
-        if partition(day) is None:
+    for day in range(start_ms, end_ms, DAY_MS):
+        if datetime.fromtimestamp(day / 1000, UTC).year != \
+           datetime.fromtimestamp((day + DAY_MS) / 1000, UTC).year:
             continue
         year = datetime.fromtimestamp(day / 1000, UTC).year
         if year != previous_year:

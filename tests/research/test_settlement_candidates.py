@@ -36,6 +36,7 @@ def test_notice_cutoff_override_is_used(tmp_path: Path):
     }]}
     notices = {"events": [{"date": "1970-01-01", "settlement_time_utc": "06:30",
                            "source_url": "https://example.com/notice",
+                           "symbol_settlement_time_utc": {"PORT3USDT": "06:30"},
                            "symbol_sources": {"PORT3USDT": "https://example.com/port3"}}]}
     candidates = build(probes, notices, tmp_path)
     assert len(candidates) == 1

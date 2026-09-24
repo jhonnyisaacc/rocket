@@ -55,7 +55,8 @@ def build(probes: dict, notices: dict, root: Path) -> list[dict]:
         notice = by_date.get(date)
         if notice is None:
             continue
-        cutoff_time = notice.get("settlement_time_utc", "09:00")
+        cutoff_time = notice.get("symbol_settlement_time_utc", {}).get(
+            item["symbol"], notice.get("settlement_time_utc", "09:00"))
         cutoff = int(datetime.fromisoformat(date + "T" + cutoff_time + ":00+00:00").timestamp() * 1000)
         minutes = 60 if date < "2024-11-11" else 30
         envelope = index_envelope(root / item["indexPriceKlines_key"], cutoff, minutes)

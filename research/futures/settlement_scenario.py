@@ -21,7 +21,6 @@ from research.futures.fut001 import (
     desired_weights,
     funding_window,
     generate_signals,
-    partition,
     signal_statistic,
     summarize,
 )
@@ -121,15 +120,13 @@ def monthly_bootstrap(days: list[dict], *, repetitions: int = 10_000) -> dict:
             "fraction_positive": sum(value > 0 for value in means) / repetitions}
 
 
-def score_period(signals: dict, fills: dict, events: dict, *, period: str,
-                 component: str, bps: int, scenario: str) -> dict:
-    """Keep rejected next-day orders in cash and close settled positions intraday."""
+def score_window(signals: dict, fills: dict, events: dict, *, start: int, end: int,
+                 label: str, component: str, bps: int, scenario: str) -> dict:
+    """Score a fixed calendar window with rejected orders and intraday exits."""
     if bps not in (20, 40):
         raise ValueError("unfrozen cost scenario")
-    if period not in ("discovery", "oos"):
-        raise ValueError(period)
-    start, end = ((START_MS, DISCOVERY_END_MS) if period == "discovery"
-                  else (DISCOVERY_END_MS, END_MS))
+    if start >= end or (end - start) % DAY_MS:
+        raise ValueError("invalid scoring window")
     previous = {}
     days = []
     unresolved = []
@@ -138,7 +135,8 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
     asset_gross = defaultdict(float)
     side_gross = defaultdict(float)
     for day in range(start, end, DAY_MS):
-        if partition(day) != period:
+        if datetime.fromtimestamp(day / 1000, UTC).year != \
+           datetime.fromtimestamp((day + DAY_MS) / 1000, UTC).year:
             previous = {}
             continue
         current = signals.get(day, {})
@@ -174,14 +172,14 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
                 settled.add(symbol)
                 forced_settlements += 1
         cost = turnover * bps / 20_000
-        days.append({"partition": period, "entry_ms": day,
+        days.append({"partition": label, "entry_ms": day,
                      "gross": gross, "funding_drag": funding_drag,
                      "transaction_drag": cost, "net": gross - funding_drag - cost,
                      "gross_exposure": sum(abs(weight) for weight in weights.values()),
                      "active_names": sum(weight != 0 for weight in weights.values())})
         previous = {symbol: weight for symbol, weight in weights.items()
                     if weight and symbol not in settled}
-    return {"period": period, "component": component,
+    return {"period": label, "component": component,
             "round_trip_bps": bps, "scenario": scenario,
             "status": "INCOMPLETE_DATA" if unresolved else "PROVISIONAL_SETTLEMENT_SCENARIO",
             "unresolved_exposures": unresolved, "rejected_orders": rejected_orders,
@@ -189,7 +187,17 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
             "asset_gross": dict(sorted(asset_gross.items())),
             "side_gross": dict(side_gross),
             "bootstrap": monthly_bootstrap(days) if not unresolved else None,
-            period: summarize(days, period) if not unresolved else None}
+            label: summarize(days, label) if not unresolved else None}
+
+
+def score_period(signals: dict, fills: dict, events: dict, *, period: str,
+                 component: str, bps: int, scenario: str) -> dict:
+    if period not in ("discovery", "oos"):
+        raise ValueError(period)
+    start, end = ((START_MS, DISCOVERY_END_MS) if period == "discovery"
+                  else (DISCOVERY_END_MS, END_MS))
+    return score_window(signals, fills, events, start=start, end=end, label=period,
+                        component=component, bps=bps, scenario=scenario)
 
 
 def score_discovery(signals: dict, fills: dict, events: dict, *, component: str,
