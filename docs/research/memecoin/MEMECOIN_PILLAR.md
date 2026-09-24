@@ -22,6 +22,8 @@ MC-014 saved signed transactions for the first at most three early buys per nati
 
 MC-015 froze such a test: normalized first-three signed buyer SOL-size dispersion on a separate ten-minute cohort, with direct Pump account quotes and the unchanged flow score as control. The dispersion top group's costed stress returns were negative in both temporal splits and both fees, and worse than the flow top on the same score-known subset in evaluation. Reject this exact rank as an entry basis under the tested curve route. Timely owner evidence and lower curve-exit risk alone do not establish beneficial independence, alternative liquidation or achieved Rocket fills.
 
+MC-016 checked a narrower signed-transaction control clue without rerunning economics: among 123 creations with multiple timely distinct selected owners, zero had different owners sharing a fee payer. This is no proof of independent prior funding. The actionable research gap remains route-aware liquidation and hypothetical Rocket order inclusion, with explicit unknowns where those cannot be measured.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
