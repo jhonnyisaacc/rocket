@@ -12,6 +12,8 @@ Forecast → opportunity ranking → derivatives/regime context → entry timing
 
 Research may use deeper Binance USD-M perpetual history; Hyperliquid is the intended execution venue and later overlap/forward-shadow validation target. Venue transfer is an empirical question. Data coverage, funding, delistings, and costs must be verified rather than assumed.
 
+The 2022–2025 Binance archive is now acquired and checksum verified for the first trend experiment. Its raw daily files retain flat, zero-volume rows after some contracts cease trading. Historical membership therefore requires observed tradability and funding, while exposed positions around delisting require a dated settlement outcome rather than a flat-bar exit or silent exclusion. This is a data-methodology fact, not an edge result.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).

@@ -43,7 +43,7 @@ def forecast(closes: list[float], annual_vol: float) -> tuple[float, float]:
 
 
 def funding_window(records: list[tuple], slots: list[int], start: int,
-                   end: int) -> tuple[bool, float]:
+                   end: int, *, allow_end_record: bool = False) -> tuple[bool, float]:
     """Check settlement cadence and sum payments in (start, end]."""
     index = bisect.bisect_right(slots, start) - 1
     if index < 0:
@@ -60,7 +60,13 @@ def funding_window(records: list[tuple], slots: list[int], start: int,
             total += current[3]
         previous = current
         index += 1
-    if previous[0] + previous[2] * HOUR_MS < end:
+    next_record = records[index + 1] if index + 1 < len(records) else None
+    if allow_end_record and next_record is not None and next_record[0] == end:
+        if next_record[0] - previous[0] > max(previous[2], next_record[2]) * HOUR_MS:
+            return False, 0.0
+        if start < next_record[1] <= end:
+            total += next_record[3]
+    elif previous[0] + previous[2] * HOUR_MS < end:
         return False, 0.0
     return True, total
 
@@ -106,7 +112,8 @@ def generate_signals(db: sqlite3.Connection) -> tuple[dict[int, dict[str, dict]]
             fill = by_time.get(entry)
             exit_bar = by_time.get(entry + DAY_MS)
             hold_funding_ok, funding_sum = funding_window(funding, slots, entry,
-                                                           entry + DAY_MS)
+                                                           entry + DAY_MS,
+                                                           allow_end_record=True)
             unresolved = []
             if fill is None or not fill[7]:
                 unresolved.append("missing_or_inactive_fill")

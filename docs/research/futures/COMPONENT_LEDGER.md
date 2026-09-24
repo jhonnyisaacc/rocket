@@ -6,7 +6,8 @@ Component states concern incremental value in the current architecture. Historic
 | --- | --- | --- | --- |
 | Multi-horizon time-series trend | Continuous directional forecast | `FROZEN_UNSCORED` | [FUT-001](experiments/FUT-001.md) fixes 20/60/120-day normalized forecasts and 2025 OOS falsifier before PnL. |
 | Realized/EWMA volatility | Forecast normalization and separate risk size | `FROZEN_UNSCORED` | FUT-001 fixes EWMA 0.94 and 5% annual floor; forecast and portfolio metrics will be separate. |
-| Point-in-time universe | Eligibility | `DATA_AUDIT` | 864 paired USDT archive directories found; row-level first/last bars, funding gaps and delistings still under audit. Current metadata cannot define old membership. |
+| Point-in-time universe | Eligibility | `DATA_AUDIT` | 864 paired USDT archive directories; 635 symbols with 2022–2025 rows and 517 with at least one eligible signal day. Post-cessation flat bars are ineligible; exposed settlement outcomes remain unresolved. Current metadata cannot define old membership. |
+| Forced settlement | Exit/data handling | `OPEN_RECONSTRUCTION` | Official Binance notices and settlement rules establish non-daily exits for delisted contracts. Minute index/trade archives are available for tested BADGERUSDT and PERPUSDT cases. Build a dated event/price table and validate every exposed case before scoring. |
 | Relative strength | Ranker | `UNTESTED_AS_INCREMENT` | Standalone quintiles failed in PR #31; after a viable base forecast, compare candidate selection with and without ranking. |
 | Funding, OI, basis, crowding | Derivatives context | `UNTESTED` | Require timestamped history; condition an already defined signal, measure incremental OOS value. No sign-only funding rule. |
 | COT | Context or possible regime feature | `UNTESTED_AS_INCREMENT` | Compare base against base plus causal COT state, with availability and release-time audit; do not make it a mandatory entry gate by default. |

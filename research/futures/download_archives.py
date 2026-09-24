@@ -14,6 +14,7 @@ import sys
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import UTC, datetime
@@ -46,8 +47,8 @@ def fetch(url: str, *, timeout: float = 30.0) -> bytes:
 
 def verified_archive(symbol: str, kind: str, month: str) -> tuple[bytes, dict]:
     key = archive_key(symbol, kind, month)
-    url = BASE + key
-    checksum_text = fetch(url + ".CHECKSUM").decode("ascii").strip().split()
+    url = BASE + urllib.parse.quote(key, safe="/")
+    checksum_text = fetch(url + ".CHECKSUM").decode("utf-8").strip().split()
     if len(checksum_text) != 2 or checksum_text[1] != Path(key).name:
         raise ValueError(f"malformed checksum: {key}")
     expected = checksum_text[0].lower()

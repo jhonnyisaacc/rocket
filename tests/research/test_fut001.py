@@ -22,6 +22,20 @@ def test_funding_includes_print_after_entry_open_and_detects_gap():
     assert funding_window(records[:2], slots[:2], start, start + DAY_MS)[0] is False
 
 
+def test_funding_interval_change_at_exit_boundary_is_complete():
+    start = 1_700_006_400_000
+    start -= start % HOUR_MS
+    records = [(start + h * HOUR_MS, start + h * HOUR_MS + 1, 1, 0.001)
+               for h in range(23)]
+    records.append((start + DAY_MS, start + DAY_MS + 1, 4, 0.002))
+    complete, paid = funding_window(records, [row[0] for row in records],
+                                    start, start + DAY_MS, allow_end_record=True)
+    assert complete is True
+    assert abs(paid - 0.023) < 1e-12
+    assert funding_window(records, [row[0] for row in records], start,
+                          start + DAY_MS)[0] is False
+
+
 def test_missing_exposed_exit_blocks_positive_verdict():
     day = 1_735_689_600_000  # 2025-01-01 UTC
     signals = {day: {"X": {"multi": 1.0, "single": 1.0, "vol": 1.0,
