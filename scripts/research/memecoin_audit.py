@@ -69,6 +69,18 @@ def base58_decode(value: str) -> bytes:
         (number.bit_length() + 7) // 8, "big")
 
 
+def signature_structure_issue(signature: str) -> str | None:
+    try:
+        raw = base58_decode(signature)
+    except (ValueError, IndexError):
+        return "INVALID_BASE58_SIGNATURE"
+    if len(raw) != 64:
+        return "INVALID_SIGNATURE_LENGTH"
+    if raw == bytes(64):
+        return "ZERO_SIGNATURE_PLACEHOLDER"
+    return None
+
+
 def decode_create_v2(response: dict, signature: str) -> dict:
     tx = response.get("result")
     if not isinstance(tx, dict) or tx.get("meta", {}).get("err") is not None:
@@ -94,7 +106,8 @@ def decode_create_v2(response: dict, signature: str) -> dict:
 
 
 def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
-          resume: bool = False, pace_seconds: float = 0) -> dict:
+          resume: bool = False, pace_seconds: float = 0,
+          quarantine_invalid_signatures: bool = False) -> dict:
     manifest = json.loads((session / "capture-manifest.json").read_text())
     segment = session / manifest["segment"]
     digest = hashlib.sha256(segment.read_bytes()).hexdigest()
@@ -106,6 +119,9 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
     observations: list[dict] = []
     decode_errors: list[dict] = []
     duplicate_notifications = 0
+    truncated_logs: list[dict] = []
+    quarantined_notifications: list[dict] = []
+    raw_notifications = 0
     create_hints: list[dict] = []
     frame_count = 0
     for raw, received_at, _ in replay_segment(segment):
@@ -125,12 +141,21 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
         value = result["value"]
         signature = value["signature"]
         slot = result["context"]["slot"]
+        raw_notifications += 1
+        if quarantine_invalid_signatures and (issue := signature_structure_issue(signature)):
+            quarantined_notifications.append({"signature": signature, "slot": slot,
+                                              "received_at": received_at.isoformat(),
+                                              "source_hash": hashlib.sha256(raw).hexdigest(),
+                                              "reason": issue})
+            continue
         if signature in notifications:
             duplicate_notifications += 1
             if notifications[signature]["slot"] != slot:
                 raise ValueError("conflicting notification slot")
             continue
         notifications[signature] = {"slot": slot, "received_at": received_at.isoformat()}
+        if value.get("err") is None and "Log truncated" in value.get("logs", []):
+            truncated_logs.append({"signature": signature, "slot": slot})
         if value.get("err") is None:
             for log_index, encoded in pump_data_logs(value.get("logs", [])):
                 if " " in encoded:  # Another program may log multiple fields.
@@ -194,6 +219,8 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                                  "received_at": received_at.isoformat()})
     if frame_count != manifest["frames"] or frame_count - 1 < manifest["notifications"]:
         raise ValueError("manifest count does not match replay")
+    if quarantine_invalid_signatures and raw_notifications != manifest["notifications"]:
+        raise ValueError("raw notification count does not match manifest")
     decoded_creates = []
     unresolved_creates = []
     for hint in create_hints:
@@ -403,6 +430,8 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
         "raw_frame_count": frame_count,
         "unique_notifications": len(notifications),
         "duplicate_notifications": duplicate_notifications,
+        "successful_transactions_with_truncated_logs": len(truncated_logs),
+        "truncated_log_sample": truncated_logs[:20],
         "successful_create_log_hints": create_hints,
         "idl_sha256": decoder.idl_sha256,
         "decoded_event_counts": {name: sum(item["event_type"] == name for item in observations)
@@ -438,6 +467,11 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
             else "INCOMPLETE_OR_UNVERIFIED"
         ),
     }
+    if quarantine_invalid_signatures:
+        summary.update({"signature_quarantine_policy": "reject invalid base58, non-64-byte, or all-zero signatures",
+                        "raw_notification_count": raw_notifications,
+                        "quarantined_notification_count": len(quarantined_notifications),
+                        "quarantined_notifications": quarantined_notifications})
     (session / "audit.json").write_text(json.dumps(summary, indent=2) + "\n")
     return summary
 
@@ -449,6 +483,8 @@ if __name__ == "__main__":
     parser.add_argument("--max-pages", type=int, default=20)
     parser.add_argument("--offline", action="store_true", help="replay saved RPC index pages")
     parser.add_argument("--resume", action="store_true", help="reuse saved pages, fetch later pages")
+    parser.add_argument("--quarantine-invalid-signatures", action="store_true",
+                        help="account for structurally invalid frames outside the signed transaction panel")
     parser.add_argument("--pace-seconds", type=float, default=0)
     arguments = parser.parse_args()
     if not 1 <= arguments.max_pages <= 250:
@@ -458,4 +494,5 @@ if __name__ == "__main__":
     print(json.dumps(audit(arguments.session, rpc_url=arguments.rpc_url,
                            max_pages=arguments.max_pages, offline=arguments.offline,
                            resume=arguments.resume,
-                           pace_seconds=arguments.pace_seconds), indent=2))
+                           pace_seconds=arguments.pace_seconds,
+                           quarantine_invalid_signatures=arguments.quarantine_invalid_signatures), indent=2))
