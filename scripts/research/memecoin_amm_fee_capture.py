@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 from datetime import UTC, datetime
@@ -65,6 +66,7 @@ def capture(route_path: Path, out: Path, rpc_url: str = RPC) -> dict:
         response = httpx.post(rpc_url, json=request, timeout=20)
         payload = {"http_status": response.status_code,
                    "raw_response_sha256": hashlib.sha256(response.content).hexdigest(),
+                   "raw_response_base64": base64.b64encode(response.content).decode(),
                    "body": response.json()}
     except (httpx.HTTPError, ValueError) as exc:
         payload = {"error": type(exc).__name__}
