@@ -143,6 +143,10 @@ def evaluate(session: Path, companion: Path) -> dict:
                                     row["log_index"]))
     companion_creates = [json.loads(line) for line in (companion / "creates.jsonl").read_text(
     ).splitlines()]
+    expected_reads = {(row["signature"], phase) for row in companion_creates
+                      for phase in ("entry", "exit")}
+    missing_reads = sorted(expected_reads - reads.keys())
+    unexpected_reads = sorted(reads.keys() - expected_reads)
     create_mismatches = []
     quarantined_signatures = {row["signature"] for row in audit.get(
         "quarantined_notifications", [])}
@@ -196,7 +200,8 @@ def evaluate(session: Path, companion: Path) -> dict:
                  "creator_bps": visible["creator_fee_basis_points"],
                  "creator_enabled": visible["creator"] != NATIVE_QUOTE}
                 if visible else None)
-        if (not data_gate or read_errors or create_mismatches or original is None
+        if (not data_gate or read_errors or create_mismatches or missing_reads
+                or unexpected_reads or original is None
                 or original["score"] is None):
             rows.append(row)
             continue
@@ -259,12 +264,46 @@ def evaluate(session: Path, companion: Path) -> dict:
     read_rows = [row[phase] for row in rows for phase in ("entry", "exit") if row[phase]]
     eligible = [row for row in rows if row["baseline_status"] != "OUTSIDE_BASELINE_UNIVERSE"
                 and universe[row["signature"]]["score"] is not None]
+    flow_scores = {row["signature"]: row for line in (
+        session / "mc005-flow-rows.jsonl").read_text().splitlines()
+        if (row := json.loads(line))}
+    for row in eligible:
+        original = universe[row["signature"]]
+        flow = flow_scores[row["signature"]]
+        if original["split"] != flow["split"]:
+            raise ValueError("baseline and flow splits differ")
+        row["split"] = original["split"]
+        row["flow_score"] = flow["flow_score"]
+
+    def group_summary(group: list[dict], fee: int) -> dict:
+        quoted = sum(row["direct_quote_status"] == "QUOTED" for row in group)
+        unavailable = sum(row["direct_quote_status"] == "EXIT_UNAVAILABLE" for row in group)
+        values = [row["direct_returns"][str(fee)] for row in group
+                  if row["direct_returns"][str(fee)] is not None]
+        return {"scored": len(group), "quoted": quoted, "exit_unavailable": unavailable,
+                "unknown_or_no_entry": len(group) - quoted - unavailable,
+                "stress_n": len(values), "stress_mean": statistics.mean(values) if values else None,
+                "stress_median": statistics.median(values) if values else None}
+
+    splits = {}
+    for split in ("development", "evaluation"):
+        group = [row for row in eligible if row["split"] == split]
+        ranked = sorted(group, key=lambda row: (-row["flow_score"], row["signature"]))
+        top = ranked[:(len(ranked) + 3) // 4]
+        rest = ranked[len(top):]
+        splits[split] = {"scored": len(group), "top_quartile_size": len(top),
+                         "fee_scenarios": {str(fee): {
+                             "all": group_summary(group, fee),
+                             "top_quartile": group_summary(top, fee),
+                             "rest": group_summary(rest, fee)} for fee in FEES}}
     result = {"schema": "rocket.memecoin.mc013-direct-curve.v1",
               "audit_sha256": digest(audit_path),
               "companion_manifest_sha256": digest(companion / "companion-manifest.json"),
               "identity_sha256": digest(session / "mc013-identity.json"),
-              "data_gate_pass": data_gate and not read_errors and not create_mismatches,
+              "data_gate_pass": (data_gate and not read_errors and not create_mismatches
+                                 and not missing_reads and not unexpected_reads),
               "read_errors": read_errors, "create_mismatches": create_mismatches,
+              "missing_reads": missing_reads, "unexpected_reads": unexpected_reads,
               "all_create_count": len(creates), "baseline_eligible_count": len(eligible),
               "read_status_counts": dict(Counter(row["status"] for row in read_rows)),
               "read_timely_count": sum(row["timely"] for row in read_rows),
@@ -283,6 +322,9 @@ def evaluate(session: Path, companion: Path) -> dict:
                                                   for row in read_rows),
               "eligible_direct_status_counts": dict(Counter(row["direct_quote_status"]
                                                            for row in eligible)),
+              "baseline_direct_status_counts": dict(Counter(
+                  f"{row['baseline_status']}=>{row['direct_quote_status']}" for row in eligible)),
+              "flow_split_descriptive": splits,
               "rows": rows,
               "scope": "Read-only contemporaneous curve account quotes; no achieved order fills or alternate exit route."}
     for fee in FEES:
