@@ -18,6 +18,8 @@ MC-012's later pool lookup found no listed non-Pump venue for 54 modeled curve-u
 
 MC-013 read Pump bonding-curve accounts at creation receipt +7/+67 seconds for every launch in a new covered ten-minute window. All 550 scheduled reads decoded and met the frozen timing bounds; 116/131 paired direct-account and event-state stress returns were equal. The unchanged high-flow group again had fewer modeled curve-unavailable exits, while its costed entry stress means were negative in both splits and fee scenarios. A direct account quote remains separate from an achieved fill or alternate-venue liquidation.
 
+MC-014 saved signed transactions for the first at most three early buys per native non-Mayhem creation on a new covered three-minute window. All 135 selected buys resolved to unique token-account owners by their creation's five-second checkpoint, but this short-window availability does not establish beneficial controller independence or a profitable feature. A first-three distinct-owner count added no variation beyond the capped buy count in that panel; further buyer features need a separately frozen economic test.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
