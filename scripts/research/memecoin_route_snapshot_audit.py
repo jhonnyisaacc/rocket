@@ -133,12 +133,15 @@ def visible_lifecycle(observations: list[dict], mint: str, received_at: str) -> 
                and row["event_type"] in ("CompleteEvent",
                                          "CompletePumpAmmMigrationEvent")
                and datetime.fromisoformat(row["available_at"]) <= received]
+    migrations = [row for row in visible if row["event_type"] ==
+                  "CompletePumpAmmMigrationEvent"]
+    latest_migration = max(migrations, key=lambda row: (row["slot"],
+                                                        row["available_at"])) if migrations else None
     return {"completion_events": sum(row["event_type"] == "CompleteEvent"
                                      for row in visible),
-            "migration_events": sum(row["event_type"] ==
-                                    "CompletePumpAmmMigrationEvent" for row in visible),
-            "last_migration_slot": max((row["slot"] for row in visible if row[
-                "event_type"] == "CompletePumpAmmMigrationEvent"), default=None)}
+            "migration_events": len(migrations),
+            "last_migration_slot": latest_migration["slot"] if latest_migration else None,
+            "last_migration_pool": latest_migration.get("pool") if latest_migration else None}
 
 
 def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
@@ -272,6 +275,9 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
         row["first"]["curve_complete"] = first_curve["complete"]
         row["first"]["visible_lifecycle"] = visible_lifecycle(
             observations, chosen["mint"], first_timing["received_at"])
+        row["first"]["migration_pool_matches_derived"] = (
+            row["first"]["visible_lifecycle"]["last_migration_pool"] == chosen["pool"]
+            if row["first"]["visible_lifecycle"]["migration_events"] else None)
         latest = visible_latest_slot(observations, chosen["mint"], first_timing["received_at"])
         row["first"]["last_visible_mint_slot"] = latest
         first_timely = (0 <= first_timing["dispatch_lag_seconds"] <= 2
@@ -336,6 +342,10 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
                                           "config": config,
                                           "last_visible_mint_slot": latest_second,
                                           "timely_and_fresh": timely and fresh})
+                    row["second"]["migration_pool_matches_derived"] = (
+                        row["second"]["visible_lifecycle"]["last_migration_pool"] ==
+                        chosen["pool"] if row["second"]["visible_lifecycle"][
+                            "migration_events"] else None)
                     if row["status"] == "POOL_PRESENT_INCOMPLETE" and timely and fresh:
                         row["status"] = "CANONICAL_POOL_VAULTS_DECODED"
                 except (TypeError, ValueError, KeyError) as exc:

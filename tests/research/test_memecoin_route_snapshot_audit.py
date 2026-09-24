@@ -62,8 +62,11 @@ def test_config_decodes_pinned_core_fields():
 
 def test_later_migration_is_not_backdated_to_first_read():
     observations = [{"mint": "m", "event_type": "CompletePumpAmmMigrationEvent",
-                     "available_at": "2026-09-24T10:00:10+00:00", "slot": 9}]
+                     "available_at": "2026-09-24T10:00:10+00:00", "slot": 9,
+                     "pool": "pool1"}]
     assert visible_lifecycle(observations, "m", "2026-09-24T10:00:09+00:00")[
         "migration_events"] == 0
     assert visible_lifecycle(observations, "m", "2026-09-24T10:00:11+00:00")[
         "last_migration_slot"] == 9
+    assert visible_lifecycle(observations, "m", "2026-09-24T10:00:11+00:00")[
+        "last_migration_pool"] == "pool1"
