@@ -18,6 +18,8 @@ The first [FUT-001 2025 OOS cheap gate](experiments/FUT-001-OOS.md) used the fro
 
 The selected 60-day control then failed its [frozen earlier-year replication](experiments/FUT-002-RESULT.md): 2021 was positive, but 2022 net was negative at 20bps across the full settlement stress. Its combined two-year gain cannot satisfy the predeclared requirement for both years. It is `REPLICATION_FAILED_2022` and remains unpromoted.
 
+The old multi-horizon baseline's [Bybit 2022 venue-transfer diagnostic](experiments/FUT-003-RESULT.md) found a weak positive gross statistic and tiny positive 20bps arithmetic mean, but negative compounding and a negative 40bps mean across settlement stress. This is another cost-sensitive result, with no stable directional or executable edge established. Bybit's 2022 sample is a different venue in a calendar year already inspected on Binance, not a new untouched regime.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
