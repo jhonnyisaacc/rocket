@@ -69,11 +69,19 @@ stated trading fee and net-return table differ by roughly a factor of ten.
 An ICE-labeled Yahoo index proxy is now acquired, but its bar timestamps
 are session labels, and its holiday gaps exceed ICE's stated index
 calendar. Its exact relation to the paper's series and release clock
-remain unresolved. It is a source and economic screen only;
-the [FUT-009 sparse delayed rule](experiments/FUT-009.md) is now frozen
-before macro-conditioned returns. It first tests post-study 2024 BTC
-perpetual gross, incremental and costed outcomes; 2025 is conditional.
-No macro-conditioned Rocket result exists yet.
+remain unresolved. The source screen did not inspect macro-conditioned
+Rocket returns. The [FUT-009 sparse delayed rule](experiments/FUT-009.md)
+was frozen before those returns and made post-study 2024 its first gate,
+with 2025 conditional on a pass.
+
+The [frozen post-study FUT-009 result](experiments/FUT-009-RESULT.md) then
+tested that distinct delayed proxy on BTC perpetuals. Its 209 active
+2024 positions averaged −8.229 bp price gross, 16.406 bp below the
+same-date always-long control; scheduled net was −6.403/−8.574 bp at
+5/10 bp per side with actual funding. The sample gate passed but the
+gross, incremental and cost gates failed. Close this exact rule; the
+conditional 2025 score was not run. The paper's spot VAR and disputed fee
+table remain separate.
 
 ## Established boundaries
 
