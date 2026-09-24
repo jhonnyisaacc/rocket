@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import base64
 import json
+import struct
 from pathlib import Path
 
 import pytest
@@ -14,7 +16,7 @@ from rocket.research.pump_execution import (
     pre_trade_state,
     sell,
 )
-from scripts.research.memecoin_audit import PUMP_PROGRAM, pump_data_logs
+from scripts.research.memecoin_audit import PUMP_PROGRAM, base58_decode, pump_data_logs
 
 ROOT = Path(__file__).resolve().parents[2]
 IDL = ROOT / "docs/research/memecoin/protocol/pump-81091419.json"
@@ -48,6 +50,18 @@ def test_pinned_decoder_rejects_truncated_event():
     encoded = FIXTURES["TradeEvent"]["encoded"]
     with pytest.raises(EventDecodeError):
         PumpEventDecoder(IDL).decode(encoded[:-12])
+
+
+def test_pinned_decoder_supports_explicit_curve_completion():
+    idl = json.loads(IDL.read_text())
+    discriminator = bytes(next(item["discriminator"] for item in idl["events"]
+                               if item["name"] == "CompleteEvent"))
+    mint = FIXTURES["CreateEvent"]["mint"]
+    raw = (discriminator + base58_decode(mint) * 3 + struct.pack("<q", 1_790_261_800)
+           + bytes(32))
+    event = PumpEventDecoder(IDL).decode(base64.b64encode(raw).decode())
+    assert event["event_type"] == "CompleteEvent"
+    assert event["fields"]["mint"] == mint
 
 
 def test_current_native_curve_quotes_reproduce_observed_fills():

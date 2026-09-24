@@ -87,8 +87,10 @@ class PumpEventDecoder:
         raw = idl_path.read_bytes()
         self.idl_sha256 = hashlib.sha256(raw).hexdigest()
         idl = json.loads(raw)
+        supported = {"CreateEvent", "TradeEvent", "CompleteEvent",
+                     "CompletePumpAmmMigrationEvent"}
         self.events = {bytes(event["discriminator"]): event["name"]
-                       for event in idl["events"] if event["name"] in {"CreateEvent", "TradeEvent"}}
+                       for event in idl["events"] if event["name"] in supported}
         self.types = {item["name"]: item["type"] for item in idl["types"]}
 
     def decode(self, encoded: str) -> dict[str, Any] | None:

@@ -153,6 +153,7 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                     "log_index": log_index,
                     "event_type": event["event_type"],
                     "mint": mint,
+                    "user": fields.get("user"),
                     "event_time": datetime.fromtimestamp(fields["timestamp"], UTC).isoformat(),
                     "available_at": received_at.isoformat(),
                     "source_hash": hashlib.sha256(raw).hexdigest(),
@@ -166,6 +167,10 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                     "virtual_token_reserves": fields.get("virtual_token_reserves"),
                     "real_token_reserves": fields.get("real_token_reserves"),
                     "token_total_supply": fields.get("token_total_supply"),
+                    "bonding_curve": fields.get("bonding_curve"),
+                    "pool": fields.get("pool"),
+                    "pool_migration_fee": fields.get("pool_migration_fee"),
+                    "mint_amount": fields.get("mint_amount"),
                     "is_buy": fields.get("is_buy"),
                     "sol_amount": fields.get("sol_amount"),
                     "token_amount": fields.get("token_amount"),
@@ -322,16 +327,20 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                 "virtual_sol_reserves", "virtual_token_reserves", "real_sol_reserves", "real_token_reserves"))
             continuity["native_nonmayhem_pass" if before_later == after_earlier
                        else "native_nonmayhem_fail"] += 1
-    quote_checks = {"pass": 0, "fail": 0, "unsupported": 0,
-                    "one_lamport_fee_discrepancy": 0, "failure_sample": []}
+    quote_checks = {"pass": 0, "fail": 0, "unsupported": 0, "dust_sell": 0,
+                    "one_lamport_fee_discrepancy": 0,
+                    "one_lamport_creator_fee_discrepancy": 0,
+                    "exact_input_completion_cap_rounding": 0, "failure_sample": []}
     for event in observations:
         if event["event_type"] != "TradeEvent":
             continue
         if event["quote_mint"] != NATIVE_QUOTE or event["mayhem_mode"]:
             quote_checks["unsupported"] += 1
             continue
-        if event["ix_name"] == "sell" and event["sol_amount"] == 0:
-            quote_checks["unsupported"] += 1  # Valid dust transfer, no cash exit.
+        if (event["ix_name"] == "sell" and event["sol_amount"] <=
+                event["fee"] + event["creator_fee"]):
+            quote_checks["unsupported"] += 1  # Dust transfer, no positive cash exit.
+            quote_checks["dust_sell"] += 1
             continue
         try:
             fees = FeeSchedule(event["fee_basis_points"], event["creator_fee_basis_points"],
@@ -340,10 +349,12 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
             exact_input = event["ix_name"] in ("buy_exact_sol_in", "buy_exact_quote_in")
             expected_protocol = (gross * fees.protocol_bps + 9999) // 10000
             expected_creator = (gross * fees.creator_bps + 9999) // 10000 if fees.creator_enabled else 0
-            if exact_input and event["fee"] == expected_protocol + 1 and event[
-                "creator_fee"] == expected_creator:
-                quote_checks["one_lamport_fee_discrepancy"] += 1
-            elif (expected_protocol, expected_creator) != (event["fee"], event["creator_fee"]):
+            protocol_delta = event["fee"] - expected_protocol
+            creator_delta = event["creator_fee"] - expected_creator
+            if exact_input and protocol_delta in (0, 1) and creator_delta in (0, 1):
+                quote_checks["one_lamport_fee_discrepancy"] += protocol_delta
+                quote_checks["one_lamport_creator_fee_discrepancy"] += creator_delta
+            elif (protocol_delta, creator_delta) != (0, 0):
                 raise ValueError("fee amount mismatch")
             state = pre_trade_state(event)
             if event["ix_name"] == "buy":
@@ -356,7 +367,11 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
                 quote_checks["unsupported"] += 1
                 continue
             if (quote["gross"], quote["tokens"]) != (gross, event["token_amount"]):
-                raise ValueError("fill amount mismatch")
+                if (exact_input and event["real_token_reserves"] == 0
+                        and buy_exact_output(state, event["token_amount"], fees)["gross"] == gross):
+                    quote_checks["exact_input_completion_cap_rounding"] += 1
+                else:
+                    raise ValueError("fill amount mismatch")
             quote_checks["pass"] += 1
         except (TypeError, ValueError) as exc:
             quote_checks["fail"] += 1
@@ -378,10 +393,9 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
         "duplicate_notifications": duplicate_notifications,
         "successful_create_log_hints": create_hints,
         "idl_sha256": decoder.idl_sha256,
-        "decoded_event_counts": {
-            "CreateEvent": sum(item["event_type"] == "CreateEvent" for item in observations),
-            "TradeEvent": sum(item["event_type"] == "TradeEvent" for item in observations),
-        },
+        "decoded_event_counts": {name: sum(item["event_type"] == name for item in observations)
+                                 for name in ("CreateEvent", "TradeEvent", "CompleteEvent",
+                                              "CompletePumpAmmMigrationEvent")},
         "event_decode_error_count": len(decode_errors),
         "event_decode_error_sample": decode_errors[:20],
         "event_transaction_identity_mismatches": identity_mismatches,
@@ -425,8 +439,8 @@ if __name__ == "__main__":
     parser.add_argument("--resume", action="store_true", help="reuse saved pages, fetch later pages")
     parser.add_argument("--pace-seconds", type=float, default=0)
     arguments = parser.parse_args()
-    if not 1 <= arguments.max_pages <= 100:
-        parser.error("max-pages must be 1..100")
+    if not 1 <= arguments.max_pages <= 250:
+        parser.error("max-pages must be 1..250")
     if not 0 <= arguments.pace_seconds <= 10:
         parser.error("pace-seconds must be 0..10")
     print(json.dumps(audit(arguments.session, rpc_url=arguments.rpc_url,
