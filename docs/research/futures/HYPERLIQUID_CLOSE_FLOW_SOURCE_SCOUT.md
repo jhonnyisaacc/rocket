@@ -1,7 +1,8 @@
 # Hyperliquid close-flow source and economic scout
 
-Status: `SOURCE_GATE_OPEN`, 2026-09-24. No fill archive was acquired, no
-conditioned return was calculated, and no trade rule was registered.
+Status: `FIXED_MIRROR_SAMPLE_VERIFIED`, 2026-09-24. One free 2025 block-fill
+mirror shard was acquired and structurally audited. No conditioned return was
+calculated, and no trade rule was registered.
 
 ## Mechanism and observable fields
 
@@ -52,14 +53,61 @@ not a complete historical market-wide panel. An earlier anonymous L2 HEAD
 probe returned 403; see the [order-book scout](ORDERBOOK_SOURCE_SCOUT.md).
 No billed S3 request or transfer was made here.
 
-The archive must be sampled before a strategy freeze to verify the actual
-envelope, wallet attribution, `liquidation` coverage, deduplication key,
-perpetual-versus-spot filtering, UTC/block chronology, and gaps. Decision
-time must be **after the complete source block is observed**, with a
+The original archive must still be cross-checked before any promotion, but a
+free mirror now supplies an initial source sample. Decision time must be
+**after the complete source block is observed**, with a
 specified processing and order-placement delay; a fill's exchange `time`
 alone is not proof that the whole block was available then. An executable
 backtest needs a contemporaneous entry/exit bid and ask, available depth,
 fees, and funding. L2 snapshots alone may not resolve queue or impact.
+
+### Free 2025 mirror: fixed return-free sample
+
+The public [gionuibk block-fill mirror](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block)
+contains Parquet rows with `block_number`, `block_time`, `local_time`, a JSON
+`events` array of wallet/fill pairs, and the original `node_fills_by_block`
+hourly path. A metadata-only listing found 1,076 files totaling 113.8 GB;
+75 distinct `batch_upto_YYYYMMDD` filename dates run from 2025-07-28 to
+2025-10-10. Other files use opaque `universal_data` names, and filename
+dates alone do **not** establish complete date coverage or licensing.
+
+We selected the first named 2025-07-28 [Parquet shard](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block/resolve/main/data/batch_upto_20250728_17.lz4_1765105625.parquet)
+for a source check before any price outcome calculation. The downloaded
+233,752,595 bytes have SHA-256
+`0fef107456e07dd63785f39b4366612071b1db1295ee03a0be6839ee77a66a69`.
+The [streaming source auditor](../../../research/futures/hyperliquid_close_flow_source_audit.py)
+(`python research/futures/hyperliquid_close_flow_source_audit.py SHARD.parquet`,
+with DuckDB installed) reported:
+
+| Check | Fixed shard result |
+| --- | ---: |
+| Original UTC hourly source paths | `20250728/14` through `/17` |
+| Block UTC time range | 2025-07-28 13:59:59.860357–17:59:59.854673 |
+| Blocks; sequence gaps or duplicates | 180,998; 0 |
+| All wallet-fill rows | 2,107,936 |
+| BTC / ETH wallet-fill rows | 139,954 / 187,120 |
+| BTC+ETH distinct trade keys with exactly two counterparties | 163,537 |
+| BTC+ETH missing wallet, `tid`, `closedPnl`, `crossed`, or `time` | 0 |
+| BTC+ETH marked liquidation fills | 1,654 |
+| BTC+ETH unmarked loss-realizing taker closes | 31,596 |
+| BTC+ETH marked loss-realizing taker closes | 780 |
+| Local receipt minus block time, median / p99 / max | 101.632 / 189.683 / 809.076 ms |
+
+The two-sided fill representation requires counting only the taker close,
+not both wallet rows, for a directional event. The liquidation marker appears
+on both counterparties; marked events must be excluded from the voluntary
+sample. The observed local receipt delay is a historical node observation,
+not a guarantee of Rocket's future latency. This is one four-hour mirror
+shard, with no independent source checksum, no book quotes and no proof of
+continuous coverage. The 2026 mirror was used for schema preview only; no
+2026 outcome was read.
+
+A [public explorer block](https://github.com/hyperliquid-dex/node/issues/32)
+was also queried as a free alternative. Its `blockDetails` and `txDetails`
+responses exposed submitted order actions but no fill outcomes, so it
+cannot replace the fill source for this question. Hyperliquid's
+[explorer rate limits](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/rate-limits-and-user-limits)
+also direct large historical requests to S3.
 
 ## Cost gate before a directional trial
 
@@ -71,19 +119,21 @@ post-trade price reversal measured from the distressed fill. Any event-study
 move measured from before the close includes pressure that occurred before
 Rocket could react and cannot be counted as its executable return.
 
-The cheapest meaningful next source gate is a **small, preselected archive
-sample** that checks fill fields and event counts without looking at future
-prices. First obtain object sizes and a transfer estimate with a signed
-requester-pays account, then cap the sample and confirm its cost before
-download. The subsequent economic gate would measure delayed post-block
-mid-price movement and displayed spread/depth on the same fixed hours,
-separately for voluntary loss closes and marked liquidations, with an
-unconditional same-side control. If plausible gross reversal is below the
-9 bp fee floor plus observed spread/impact, close the direction idea before
-a full archive purchase. If it clears, freeze one causal rule and distinct
-later-period replication before inspecting wider outcomes. There is
-currently no basis to set the event threshold, horizon, or wallet cohort.
+The fixed mirror sample clears the initial field and event-count gate for a
+**cheap gross economic pilot on 2025 data**. Before reading conditioned
+returns, freeze event aggregation, observation delay, entry/exit price proxy,
+horizon, baseline, sample dates, and falsifier. The pilot can use delayed
+trade prices as an optimistic gross proxy from the same source tape, while
+keeping marked liquidations out of the voluntary sample and comparing with
+an unconditional same-side control. If the gross proxy is below the 9 bp
+fee floor, close the direction idea before
+a full archive purchase. If it clears, cross-check the mirror with official
+source bytes and obtain bid/ask and depth evidence before treating it as executable.
+There is currently no paper-based effect size that sets the event threshold,
+horizon, or wallet cohort.
 
-**Decision:** source feasibility is promising but unverified at the archive
-level; economic feasibility is unknown. No FUT-010 experiment or production
-change follows from this scout. The 2026 final holdout remains unread.
+**Decision:** the free 2025 mirror resolves the first source and event-count
+gate. Its completeness, exact source fidelity, spread/depth and economic
+feasibility remain unverified. The next action is a frozen 2025 gross pilot;
+no FUT-010 result or production change follows from this scout. The 2026
+final holdout remains unread.
