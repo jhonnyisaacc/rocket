@@ -8,7 +8,7 @@ Discover, validate, and eventually integrate a crypto-perpetual strategy whose d
 
 ## Architecture and prior
 
-Forecast → opportunity ranking → derivatives/regime context → entry timing → risk/portfolio → decision. Start with a continuous multi-horizon time-series trend forecast, simple realized/EWMA volatility normalization, point-in-time tradable universe, and explicit portfolio construction. Forecast strength and position size are separate. Test relative strength, funding/OI, COT, and individual Pana timing components only as incremental ablations after the base signal is measurable. COT can remain context. No ML directional engine or broad parameter search at this stage.
+Forecast → opportunity ranking → derivatives/regime context → entry timing → risk/portfolio → decision. The first continuous multi-horizon time-series trend baseline used simple EWMA volatility normalization, a point-in-time tradable universe, and explicit portfolio construction; it did not survive cost robustness. A separately frozen spot/perpetual basis factor then failed its gross-information gate. Forecast strength and position size remain separate. Seek an independently motivated causal directional mechanism with an early gross falsifier before adding relative strength, funding/OI, COT, or Pana timing as incremental ablations. A distinct funding or positioning mechanism requires its own source and trial; COT can remain context. No ML directional engine or broad parameter search at this stage.
 
 Research may use deeper Binance USD-M perpetual history; Hyperliquid is the intended execution venue and later overlap/forward-shadow validation target. Venue transfer is an empirical question. Data coverage, funding, delistings, and costs must be verified rather than assumed.
 
@@ -19,6 +19,8 @@ The first [FUT-001 2025 OOS cheap gate](experiments/FUT-001-OOS.md) used the fro
 The selected 60-day control then failed its [frozen earlier-year replication](experiments/FUT-002-RESULT.md): 2021 was positive, but 2022 net was negative at 20bps across the full settlement stress. Its combined two-year gain cannot satisfy the predeclared requirement for both years. It is `REPLICATION_FAILED_2022` and remains unpromoted.
 
 The old multi-horizon baseline's [Bybit 2022 venue-transfer diagnostic](experiments/FUT-003-RESULT.md) found a weak positive gross statistic and tiny positive 20bps arithmetic mean, but negative compounding and a negative 40bps mean across settlement stress. This is another cost-sensitive result, with no stable directional or executable edge established. Bybit's 2022 sample is a different venue in a calendar year already inspected on Binance, not a new untouched regime.
+
+The distinct [FUT-004 spot/perpetual basis factor](experiments/FUT-004-RESULT.md) had a negative 2022 daily gross mean across predeclared settlement bounds and an approximately flat 2023 mean. It failed the frozen two-year gross-information gate before costs, so its conditional 2024/2025 tests were not run. This closes the tested one-day high-basis-long/low-basis-short perpetual factor, not every dated-futures basis or funding-carry idea.
 
 ## Established boundaries
 
