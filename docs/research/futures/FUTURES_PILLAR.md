@@ -53,6 +53,16 @@ event-minus-unconditional gross, and negative net after costs. The exact
 once-daily lower-tail ETH trade is closed. Conditional 2025 outcomes and
 the 2026 holdout remain unread.
 
+The [FUT-008 near-touch pressure pilot](experiments/FUT-008-RESULT.md)
+tested a frozen five-minute OKX BTC perpetual taker short after recent net
+selling exceeded displayed best-bid quantity. On the fixed 2023 and 2024
+days it had 107 and 116 eligible triggers, but mid-price gross performance
+was −0.233 and −0.318 bp below the always-short control, respectively.
+The optimistic bid-entry/ask-exit proxy lost −10.286 and −9.310 bp per
+trigger after 5 bp per side. The exact directional rule is closed. This
+small pilot does not test the paper's passive-buy toxicity finding, and
+conditional 2025 pressure outcomes remain unread.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
