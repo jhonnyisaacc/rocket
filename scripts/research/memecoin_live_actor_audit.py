@@ -23,7 +23,8 @@ def rows(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines()]
 
 
-def expected_selection(observations: list[dict]) -> tuple[list[dict], list[dict]]:
+def expected_selection(observations: list[dict], *, include_sol_amount: bool = False
+                       ) -> tuple[list[dict], list[dict]]:
     creates = [row for row in observations if row["event_type"] == "CreateEvent"]
     native = {row["mint"]: row for row in creates if row["quote_mint"] == NATIVE_QUOTE
               and not row["is_mayhem_mode"]}
@@ -57,6 +58,8 @@ def expected_selection(observations: list[dict]) -> tuple[list[dict], list[dict]
                              "event_token_amount": event["token_amount"],
                              "event_sha256": event["event_sha256"],
                              "frame_source_hash": event["source_hash"]})
+            if include_sol_amount:
+                expected[-1]["event_sol_amount"] = event["sol_amount"]
             if len(seen) == 3:
                 break
     return creates, expected
@@ -73,7 +76,8 @@ def evaluate(session: Path, companion: Path) -> dict:
             or manifest["source_segment_sha256"] != capture["segment_sha256"]):
         raise ValueError("companion source differs from primary capture")
     observed = rows(session / "observations.jsonl")
-    audited_creates, audited_selected = expected_selection(observed)
+    audited_creates, audited_selected = expected_selection(
+        observed, include_sol_amount=manifest.get("include_sol_amount", False))
     captured_creates = rows(companion / "creates.jsonl")
     captured_selected = rows(companion / "selected.jsonl")
     quarantine = {row["signature"] for row in audit.get("quarantined_notifications", [])}

@@ -50,7 +50,7 @@ def events_in_frame(record: dict, decoder: PumpEventDecoder) -> list[dict]:
 
 
 async def capture(session: Path, out: Path, *, max_seconds: int, max_bytes: int,
-                  max_selected: int, rpc_url: str) -> dict:
+                  max_selected: int, rpc_url: str, include_sol_amount: bool = False) -> dict:
     if out.exists():
         raise ValueError("output directory already exists")
     out.mkdir(parents=True)
@@ -168,6 +168,8 @@ async def capture(session: Path, out: Path, *, max_seconds: int, max_bytes: int,
                                           "event_token_amount": fields["token_amount"],
                                           "event_sha256": event["event_sha256"],
                                           "frame_source_hash": event["frame_source_hash"]}
+                                if include_sol_amount:
+                                    chosen["event_sol_amount"] = fields["sol_amount"]
                                 selected.append(chosen)
                                 task = asyncio.create_task(fetch(chosen))
                                 pending.add(task)
@@ -207,6 +209,8 @@ async def capture(session: Path, out: Path, *, max_seconds: int, max_bytes: int,
                "idl_sha256": decoder.idl_sha256,
                "creates_sha256": hashlib.sha256(creates_path.read_bytes()).hexdigest(),
                "selected_sha256": hashlib.sha256(selected_path.read_bytes()).hexdigest()}
+    if include_sol_amount:
+        summary["include_sol_amount"] = True
     (out / "companion-manifest.json").write_text(json.dumps(summary, indent=2) + "\n")
     return summary
 
@@ -218,13 +222,15 @@ if __name__ == "__main__":
     parser.add_argument("--max-seconds", type=int, default=240)
     parser.add_argument("--max-bytes", type=int, default=33554432)
     parser.add_argument("--max-selected", type=int, default=400)
+    parser.add_argument("--include-sol-amount", action="store_true")
     parser.add_argument("--rpc-url", default=RPC)
     args = parser.parse_args()
-    if not 180 <= args.max_seconds <= 300 or not 1024 <= args.max_bytes <= 33554432 or not (
-            1 <= args.max_selected <= 400):
-        parser.error("bounds: seconds 180..300, bytes 1024..33554432, selected 1..400")
+    if not 180 <= args.max_seconds <= 720 or not 1024 <= args.max_bytes <= 33554432 or not (
+            1 <= args.max_selected <= 1500):
+        parser.error("bounds: seconds 180..720, bytes 1024..33554432, selected 1..1500")
     print(json.dumps(asyncio.run(capture(args.session, args.out,
                                          max_seconds=args.max_seconds,
                                          max_bytes=args.max_bytes,
                                          max_selected=args.max_selected,
-                                         rpc_url=args.rpc_url)), indent=2))
+                                         rpc_url=args.rpc_url,
+                                         include_sol_amount=args.include_sol_amount)), indent=2))

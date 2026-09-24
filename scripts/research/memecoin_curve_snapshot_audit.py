@@ -109,7 +109,7 @@ def reserve_tuple(source: dict, *, event: bool = False) -> tuple[int, int, int, 
             source[f"real_{quote}_reserves"], source["real_token_reserves"])
 
 
-def evaluate(session: Path, companion: Path) -> dict:
+def evaluate(session: Path, companion: Path, *, identity_path: Path | None = None) -> dict:
     audit_path = session / "audit.json"
     audit = json.loads(audit_path.read_text())
     capture = json.loads((session / "capture-manifest.json").read_text())
@@ -167,7 +167,8 @@ def evaluate(session: Path, companion: Path) -> dict:
             create_mismatches.append(row["signature"])
     universe = {row["signature"]: row for line in (session / "universe.jsonl").read_text(
     ).splitlines() if (row := json.loads(line))}
-    identity = json.loads((session / "mc013-identity.json").read_text())
+    identity_file = identity_path or session / "mc013-identity.json"
+    identity = json.loads(identity_file.read_text())
     rows = []
     for signature, created in creates.items():
         original = universe.get(signature)
@@ -322,7 +323,7 @@ def evaluate(session: Path, companion: Path) -> dict:
     result = {"schema": "rocket.memecoin.mc013-direct-curve.v1",
               "audit_sha256": digest(audit_path),
               "companion_manifest_sha256": digest(companion / "companion-manifest.json"),
-              "identity_sha256": digest(session / "mc013-identity.json"),
+              "identity_sha256": digest(identity_file),
               "data_gate_pass": (data_gate and not read_errors and not create_mismatches
                                  and not missing_reads and not unexpected_reads),
               "read_errors": read_errors, "create_mismatches": create_mismatches,
@@ -365,8 +366,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("session", type=Path)
     parser.add_argument("companion", type=Path)
+    parser.add_argument("--identity", type=Path)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
-    result = evaluate(args.session, args.companion)
+    result = evaluate(args.session, args.companion, identity_path=args.identity)
     args.out.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps({key: value for key, value in result.items() if key != "rows"}, indent=2))
