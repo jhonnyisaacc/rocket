@@ -41,3 +41,11 @@ def test_late_funding_is_bounded_against_position_side():
     event = {"funding_official": 0.01, "funding_low": 0.01, "funding_high": 0.04}
     assert scenario.scenario_funding(event, 0.05, "adverse") == 0.04
     assert scenario.scenario_funding(event, -0.05, "adverse") == 0.01
+
+
+def test_monthly_bootstrap_keeps_single_month_together():
+    days = [{"entry_ms": START_MS, "net": 0.01},
+            {"entry_ms": START_MS + DAY_MS, "net": -0.01}]
+    result = scenario.monthly_bootstrap(days, repetitions=100)
+    assert result["months"] == 1
+    assert result["mean_daily_net_ci95"] == [0, 0]

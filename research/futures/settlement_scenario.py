@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import sqlite3
+from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -20,6 +22,7 @@ from research.futures.fut001 import (
     funding_window,
     generate_signals,
     partition,
+    signal_statistic,
     summarize,
 )
 
@@ -60,6 +63,7 @@ def reconstruct(db: sqlite3.Connection, signals: dict, candidates: list[dict]) -
             raise ValueError(f"invalid settlement envelope: {symbol} {candidate['date']}")
         item["unresolved"] = []
         item["funding"] = amount
+        item["return"] = prices[1] / row[0] - 1
         events[(day, symbol)] = {"open": row[0], "low": prices[0],
                                  "mid": prices[1], "high": prices[2],
                                  "funding_official": amount,
@@ -95,6 +99,28 @@ def scenario_funding(event: dict, weight: float, scenario: str) -> float:
     raise ValueError(scenario)
 
 
+def monthly_bootstrap(days: list[dict], *, repetitions: int = 10_000) -> dict:
+    """Resample whole calendar months so overlapping daily exposures stay together."""
+    groups = defaultdict(list)
+    for row in days:
+        month = datetime.fromtimestamp(row["entry_ms"] / 1000, UTC).strftime("%Y-%m")
+        groups[month].append(row["net"])
+    blocks = [(sum(values), len(values)) for _, values in sorted(groups.items())]
+    if not blocks:
+        return {"months": 0, "mean_daily_net_ci95": None, "fraction_positive": None}
+    rng = random.Random(20260924)
+    means = []
+    for _ in range(repetitions):
+        sample = [rng.choice(blocks) for _ in blocks]
+        means.append(sum(item[0] for item in sample) / sum(item[1] for item in sample))
+    means.sort()
+    return {"months": len(blocks), "repetitions": repetitions,
+            "seed": 20260924,
+            "mean_daily_net_ci95": [means[int(.025 * repetitions)],
+                                    means[int(.975 * repetitions)]],
+            "fraction_positive": sum(value > 0 for value in means) / repetitions}
+
+
 def score_period(signals: dict, fills: dict, events: dict, *, period: str,
                  component: str, bps: int, scenario: str) -> dict:
     """Keep rejected next-day orders in cash and close settled positions intraday."""
@@ -109,6 +135,8 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
     unresolved = []
     rejected_orders = 0
     forced_settlements = 0
+    asset_gross = defaultdict(float)
+    side_gross = defaultdict(float)
     for day in range(start, end, DAY_MS):
         if partition(day) != period:
             previous = {}
@@ -135,7 +163,10 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
                 continue
             event = events.get((day, symbol))
             result = scenario_return(event, weight, scenario) if event else item["return"]
-            gross += weight * result
+            contribution = weight * result
+            gross += contribution
+            asset_gross[symbol] += contribution
+            side_gross["long" if weight > 0 else "short"] += contribution
             funding_drag += weight * (scenario_funding(event, weight, scenario)
                                       if event else item["funding"])
             if event:
@@ -155,6 +186,9 @@ def score_period(signals: dict, fills: dict, events: dict, *, period: str,
             "status": "INCOMPLETE_DATA" if unresolved else "PROVISIONAL_SETTLEMENT_SCENARIO",
             "unresolved_exposures": unresolved, "rejected_orders": rejected_orders,
             "forced_settlements": forced_settlements,
+            "asset_gross": dict(sorted(asset_gross.items())),
+            "side_gross": dict(side_gross),
+            "bootstrap": monthly_bootstrap(days) if not unresolved else None,
             period: summarize(days, period) if not unresolved else None}
 
 
@@ -186,6 +220,9 @@ def main() -> None:
               "candidate_events": len(events),
               "events_requiring_source_investigation": sum(
                   event["status"] == "REQUIRES_SOURCE_INVESTIGATION" for event in events.values()),
+              "gross_signal_statistic": {
+                  component: signal_statistic(signals, component).get(args.period)
+                  for component in ("multi", "single")},
               "results": results}
     args.output.write_text(json.dumps(report, indent=2))
     print(json.dumps({"events": len(events),
