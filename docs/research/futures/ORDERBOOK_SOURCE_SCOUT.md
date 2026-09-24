@@ -1,6 +1,6 @@
 # Near-touch order-book source scout
 
-Status: `SINGLE_DAY_NEAR_TOUCH_SAMPLE_AUDITED`, 2026-09-24. This is a
+Status: `THREE_FIXED_L2_DAYS_AUDITED`, 2026-09-24. This is a
 return-free data and economic-feasibility check, not FUT-008 or an order-book
 strategy result. The [candidate paper](https://ssrn.com/abstract=6693260)
 reports that recent sell pressure relative to best-bid absorption capacity
@@ -59,14 +59,23 @@ The page's field-information panel describes `instId`, `action`
 as a millisecond Unix push timestamp.
 
 The reproducible [streaming audit](../../../research/futures/okx_l2_audit.py)
-of that one archive found:
+of that archive and fixed early/late comparison days found:
 
-| Fixed BTC-USDT-SWAP UTC day | Evidence |
-| --- | --- |
-| L2 archive | 390,010,114 compressed bytes; SHA-256 `437a49aabe412423b2f7ea1d5bd6571eef7f019c108201ead01dca9b2610f788`; one 2,803,224,169-byte `.data` member |
-| L2 records | 7,140,545 lines: 1,440 snapshots and 7,139,105 updates; every UTC minute represented |
-| Ordering and book | No decreasing/duplicate timestamps; maximum adjacent gap 597 ms; 1,440 minute checks found no empty or crossed best bid/ask; reconstructed book reached 400 levels per side |
-| Near-touch field | The opening reconstructed best-bid raw quantity was 59.2, showing the best price and its displayed size are present; historical contract-unit conversion is still to verify |
+| UTC day | L2 SHA-256 | Bytes | Messages | Maximum adjacent gap |
+| --- | --- | ---: | ---: | ---: |
+| [2023-04-01](https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/20230401/BTC-USDT-SWAP-L2orderbook-400lv-2023-04-01.tar.gz) | `cb38f07ba8f1770f6d91d9a7fbb020b9031b9888c7e7e2cf8dd438ce9a5e33fc` | 158,897,856 | 5,406,650 | 580 ms |
+| [2024-09-01](https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/20240901/BTC-USDT-SWAP-L2orderbook-400lv-2024-09-01.tar.gz) | `437a49aabe412423b2f7ea1d5bd6571eef7f019c108201ead01dca9b2610f788` | 390,010,114 | 7,140,545 | 597 ms |
+| [2025-01-01](https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/20250101/BTC-USDT-SWAP-L2orderbook-400lv-2025-01-01.tar.gz) | `2071e7ee70ac47a25eb7eae250e47b4ae8876a7cd6ea1287e377970246ade09c` | 350,454,127 | 7,066,075 | 546 ms |
+
+Each compressed archive contains one `.data` member with the same date
+stem, starts within 5 ms of its UTC midnight, ends within 32 ms of the next
+midnight, contains 1,440 snapshots, and has records in every UTC minute.
+All three had no decreasing or duplicate timestamps, no adjacent gap over
+one second, no invalid price/size/order-count levels, and no empty or crossed
+best bid/ask in 1,440 minute checks. The reconstructed book reached 400
+levels per side. The opening 2024 best-bid raw quantity was 59.2; its
+displayed price and size are present. These checks are structural, not a
+return calculation.
 
 The matching trade feed uses **UTC+8 daily boundaries**. The
 [September 1](https://static.okx.com/cdn/okex/traderecords/trades/daily/20240901/BTC-USDT-SWAP-trades-2024-09-01.zip)
@@ -78,17 +87,46 @@ The two files contain 1,331,285 trades within that UTC day and cover all
 1,440 minutes. Their trade IDs are consecutive within and across the files,
 and their timestamps are ordered. This establishes a source-level pairing
 path, not synchronized exchange event ordering between the two feeds.
+The corresponding adjacent trade ZIP objects for **2023-04-01/02** and
+**2025-01-01/02** each returned HTTP 200 to a fixed HEAD check; their bytes
+and cross-feed timing have not yet been audited. Separate fixed L2 HEAD
+checks returned HTTP 200 for **2024-01-01** (376,662,567 bytes),
+**2024-11-01** (463,948,861 bytes) and **2025-12-31** (372,594,332 bytes)
+as well as the audited early/late days. These five fixed checks establish
+availability across several periods, not continuous coverage between them.
+
+OKX's [2020 face-value adjustment](https://www.okx.com/ua-eu/help/adjustment-of-face-value-for-usdt-margined-perpetual-swap-futures-trading)
+specified 0.01 BTC per BTCUSDT perpetual contract. A later
+[2021 proposal to change it to 0.001 BTC was postponed](https://www.okx.com/help/postponement-of-face-value-adjustment),
+and the [OKX fee FAQ](https://www.okx.com/en-sg/help/trading-fee-rules-faq)
+still gives 0.01 BTC in its contract example (published 2024, updated
+2026). This supports **0.01 BTC per contract as a working conversion**
+for near-touch quantity. It is not an archived instrument specification
+from each sampled day, so size-dependent execution modeling must retain
+that provenance and check any intervening face-value notice.
 
 The local SHA-256 values identify the downloaded bytes; OKX did not supply
 an independent checksum manifest in this check. L2 has no sequence number,
 so the observed timestamp coverage and reconstructed book cannot prove that
-no update was dropped. One day cannot establish multi-year availability or
-stability. The sample is from OKX, so a positive result would still need
-Hyperliquid transfer and intended-venue execution-cost checks.
+no update was dropped. Three isolated days cannot establish continuous
+multi-year completeness or stability. The sample is from OKX, so a positive
+result would still need Hyperliquid transfer and intended-venue
+execution-cost checks.
 
-Next verify point-in-time contract units and timestamp/latency semantics,
-then check several fixed dates across the intended discovery and transfer
-periods before freezing a pressure/capacity rule. Compare plausible forward
-return with round-trip fees and spread at its actual horizon. Signed
+The intended venue's [published base perpetual fee](https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees)
+is **4.5 bp per taker fill**, or 9 bp for a two-sided taker round trip before
+spread and impact. The existing 5 bp-per-side research stress is therefore
+a 10 bp round-trip fee hurdle for a fully opened-and-closed short-horizon
+position. The paper's public abstract reports a return/toxicity association,
+not a return magnitude after that hurdle. Its passive-buy warning could
+inform entry avoidance without being an executable directional taker edge.
+This cost comparison is a prior feasibility bound; no conditioned returns
+or 2025 strategy outcomes were read.
+
+Next verify timestamp/latency semantics and economic scale before freezing
+a pressure/capacity rule; if the mechanism clears that gate, audit matching
+trade bytes for the early and late fixed days and map a continuous research
+window. Compare plausible forward return with round-trip fees and spread
+at its actual horizon. Signed
 Hyperliquid access remains a separate venue-transfer path. No strategy or
 production decision changes follow from this source audit.
