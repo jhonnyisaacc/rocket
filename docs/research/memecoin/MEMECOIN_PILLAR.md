@@ -20,6 +20,8 @@ MC-013 read Pump bonding-curve accounts at creation receipt +7/+67 seconds for e
 
 MC-014 saved signed transactions for the first at most three early buys per native non-Mayhem creation on a new covered three-minute window. All 135 selected buys resolved to unique token-account owners by their creation's five-second checkpoint, but this short-window availability does not establish beneficial controller independence or a profitable feature. A first-three distinct-owner count added no variation beyond the capped buy count in that panel; further buyer features need a separately frozen economic test.
 
+MC-015 froze such a test: normalized first-three signed buyer SOL-size dispersion on a separate ten-minute cohort, with direct Pump account quotes and the unchanged flow score as control. The dispersion top group's costed stress returns were negative in both temporal splits and both fees, and worse than the flow top on the same score-known subset in evaluation. Reject this exact rank as an entry basis under the tested curve route. Timely owner evidence and lower curve-exit risk alone do not establish beneficial independence, alternative liquidation or achieved Rocket fills.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).

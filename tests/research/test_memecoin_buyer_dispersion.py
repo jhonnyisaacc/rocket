@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from scripts.research.memecoin_buyer_dispersion import dispersion, evaluate, summarize
+from scripts.research.memecoin_buyer_dispersion import digest, dispersion, evaluate, summarize
 
 
 def buy(owner: str, lamports: int) -> dict:
@@ -45,9 +45,14 @@ def test_economic_evaluator_preserves_unscored_universe_and_empty_holdout(tmp_pa
         {"signature": "s2", "mint": "m2", "split": None, "status": "EXCLUDED",
          "score": None},
     ]
+    (session / "audit.json").write_text("{}")
+    (session / "mc015-identity.json").write_text("{}")
     (session / "universe.jsonl").write_text("".join(json.dumps(row) + "\n" for row in universe))
     direct_path = tmp_path / "direct.json"
-    direct_path.write_text(json.dumps({"data_gate_pass": True, "rows": [
+    direct_path.write_text(json.dumps({"data_gate_pass": True,
+                                       "audit_sha256": digest(session / "audit.json"),
+                                       "identity_sha256": digest(session / "mc015-identity.json"),
+                                       "rows": [
         {"signature": "s1", "identity_status": "RECHECKED_STRICT", "flow_score": 2,
          "direct_quote_status": "QUOTED", "direct_returns": {"155000": 0.1,
                                                            "1000000": -0.1},
@@ -57,7 +62,8 @@ def test_economic_evaluator_preserves_unscored_universe_and_empty_holdout(tmp_pa
                                                                 "1000000": None}},
     ]}))
     actor_path = tmp_path / "actor.json"
-    actor_path.write_text(json.dumps({"data_gate_pass": True, "rows": [
+    actor_path.write_text(json.dumps({"data_gate_pass": True,
+                                      "audit_sha256": digest(session / "audit.json"), "rows": [
         {"create_signature": "s1", "signature": "buy1", "token_account_owner": "owner1",
          "event_sol_amount": 10, "owner_available_by_checkpoint": True},
         {"create_signature": "s1", "signature": "buy2", "token_account_owner": "owner2",

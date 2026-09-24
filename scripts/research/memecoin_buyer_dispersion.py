@@ -60,6 +60,11 @@ def evaluate(session: Path, account_result: Path, actor_result: Path) -> dict:
     actor = json.loads(actor_result.read_text())
     if not direct["data_gate_pass"] or not actor["data_gate_pass"]:
         raise ValueError("covered direct account and signed actor inputs required")
+    audit_hash = digest(session / "audit.json")
+    if direct["audit_sha256"] != audit_hash or actor["audit_sha256"] != audit_hash:
+        raise ValueError("account and actor results must belong to this audited capture")
+    if direct["identity_sha256"] != digest(session / "mc015-identity.json"):
+        raise ValueError("direct quote identity check differs from this session")
     universe = [json.loads(line) for line in (session / "universe.jsonl").read_text().splitlines()]
     universe_by_signature = {row["signature"]: row for row in universe}
     direct_rows = {row["signature"]: row for row in direct["rows"]}
