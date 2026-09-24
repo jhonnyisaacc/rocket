@@ -10,6 +10,8 @@ For created native-SOL, non-Mayhem mints, **4,682/4,682** adjacent trade-state t
 
 Evidence: [`mc002-capture-20260924.tar.gz`](../data/mc002-capture-20260924.tar.gz), SHA-256 `7d2e3c8cd768f925aa9688e4e7e3464043fe44f712d36d9060f45aa68e73ba94`. It contains the raw segment, all 39 index pages, manifest, decoded observations, PIT snapshots, full universe and both result versions. Extract to a new directory, then run `python scripts/research/memecoin_audit.py DIRECTORY --offline --max-pages 60` and `python scripts/research/memecoin_baseline.py DIRECTORY`. That offline replay reproduced coverage and result counts.
 
+An additional read-only `getSignaturesForAddress` query from a second RPC host, `solana-rpc.publicnode.com`, independently matched the same **37,557/37,557** interior signatures across 39 pages. Its pages and audit are in [`mc002-second-rpc-index-20260924.tar.gz`](../data/mc002-second-rpc-index-20260924.tar.gz), SHA-256 `0018d88f12bc8ee34e07fc7e6a2325daafac2abbde04004d718787388f9ebc1b`. This checks provider dependence for signature coverage within the bounded interior window; it does not establish continuous coverage outside it.
+
 ## Frozen baseline result
 
 | Population | Count |
@@ -23,6 +25,8 @@ Evidence: [`mc002-capture-20260924.tar.gz`](../data/mc002-capture-20260924.tar.g
 The 70/30 chronological split assigned 29 scored launches to development and 12 to evaluation. Development had 16 quoted returns: all-quoted mean **−14.36%**, while the predeclared top curve-progress quartile had eight quoted returns with mean **−27.84%**. Evaluation had only **three** quoted returns; its all-quoted mean was **+0.16%**, and its top quartile had two quoted returns with mean **+4.66%**. The top score had ties, and nine of twelve evaluation launches lacked a numeric exit outcome. These numbers cannot establish a repeatable ranking or economic edge. The tiny apparent positive evaluation difference is especially sensitive to one name and informative censoring.
 
 An initial script version incorrectly labeled the twelve unavailable exits `NO_FILL`. The frozen design required censoring; the corrected result uses `CENSORED`, and the original result is preserved in the archive as `mc002-result-pre-censor-fix.json`. Quoted-return values did not change. This was a bookkeeping correction, not parameter tuning.
+
+A later contract audit found that MC-002's v1 snapshot fingerprint was computed before the `quote_mint` metadata field was appended. The archived v1 rows and hashes remain historical evidence; their numeric features and outcome counts are unchanged. Snapshot schema v2 includes `quote_mint` **inside** the fingerprint, and MC-003 uses v2. Reproducing exact MC-002 snapshot hashes requires the MC-002 commit (`53509ce`); current code reproduces its counts with corrected metadata provenance.
 
 ## Allowed and forbidden conclusions
 

@@ -145,11 +145,10 @@ def evaluate_session(session: Path) -> dict:
                 decision_time=decision, lifecycle_stage="bonding_curve",
                 discovery_source="pump_create_event:logsSubscribe",
                 protocol_version=f"pump-idl:{IDL_REVISION}",
-                fee_model_version="as-of-trade-bps-v1")
+                fee_model_version="as-of-trade-bps-v1", quote_mint=NATIVE_QUOTE)
         except SnapshotError as exc:
             record["reason"] = f"SNAPSHOT_INVALID:{exc}"
             continue
-        snapshot["quote_mint"] = NATIVE_QUOTE
         snapshots.append(snapshot)
         record["score"] = progress
         record["snapshot_fingerprint"] = snapshot["fingerprint"]

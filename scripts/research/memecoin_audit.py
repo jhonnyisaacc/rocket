@@ -9,12 +9,14 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import statistics
 import time
 from contextlib import nullcontext
 from datetime import UTC, datetime
 from itertools import pairwise
 from pathlib import Path
+from urllib.parse import urlparse
 
 import httpx
 
@@ -34,6 +36,29 @@ CREATE_V2 = hashlib.sha256(b"global:create_v2").digest()[:8]
 PUMP_PROGRAM = "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
 NATIVE_QUOTE = "11111111111111111111111111111111"
 IDL_PATH = Path(__file__).resolve().parents[2] / "docs/research/memecoin/protocol/pump-81091419.json"
+INVOKE_LOG = re.compile(r"^Program ([1-9A-HJ-NP-Za-km-z]+) invoke \[(\d+)\]$")
+RETURN_LOG = re.compile(r"^Program ([1-9A-HJ-NP-Za-km-z]+) (?:success|failed:.*)$")
+
+
+def pump_data_logs(logs: list[str]):
+    """Yield only data emitted by Pump, including nested Pump invocations."""
+    stack: list[str] = []
+    for index, line in enumerate(logs):
+        invoked = INVOKE_LOG.fullmatch(line)
+        if invoked:
+            depth = int(invoked.group(2))
+            stack = stack[:depth - 1]
+            stack.append(invoked.group(1))
+            continue
+        returned = RETURN_LOG.fullmatch(line)
+        if returned:
+            if stack and stack[-1] == returned.group(1):
+                stack.pop()
+            else:
+                stack.clear()
+            continue
+        if stack and stack[-1] == PUMP_PROGRAM and line.startswith("Program data: "):
+            yield index, line.removeprefix("Program data: ")
 
 
 def base58_decode(value: str) -> bytes:
@@ -107,10 +132,7 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
             continue
         notifications[signature] = {"slot": slot, "received_at": received_at.isoformat()}
         if value.get("err") is None:
-            for log_index, line in enumerate(value.get("logs", [])):
-                if not line.startswith("Program data: "):
-                    continue
-                encoded = line.removeprefix("Program data: ")
+            for log_index, encoded in pump_data_logs(value.get("logs", [])):
                 if " " in encoded:  # Another program may log multiple fields.
                     continue
                 try:
@@ -346,6 +368,7 @@ def audit(session: Path, *, rpc_url: str, max_pages: int, offline: bool = False,
         "capture_manifest_sha256": hashlib.sha256(
             (session / "capture-manifest.json").read_bytes()).hexdigest(),
         "index_source": "getSignaturesForAddress",
+        "index_provider_host": urlparse(rpc_url).hostname,
         "end_index_anchor": anchor,
         "index_page_count": len(list(index_dir.glob("page-*.json"))),
         "index_reached_start_slot": reached_start,

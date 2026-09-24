@@ -14,10 +14,25 @@ from rocket.research.pump_execution import (
     pre_trade_state,
     sell,
 )
+from scripts.research.memecoin_audit import PUMP_PROGRAM, pump_data_logs
 
 ROOT = Path(__file__).resolve().parents[2]
 IDL = ROOT / "docs/research/memecoin/protocol/pump-81091419.json"
 FIXTURES = json.loads((Path(__file__).parent / "fixtures/pump_events.json").read_text())
+
+
+def test_only_pump_program_data_is_decoded_from_nested_logs():
+    other = "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj"
+    valid = FIXTURES["TradeEvent"]["encoded"]
+    logs = [
+        f"Program {PUMP_PROGRAM} invoke [1]",
+        f"Program {other} invoke [2]",
+        "Program data: invalid-other-program-event",
+        f"Program {other} success",
+        f"Program data: {valid}",
+        f"Program {PUMP_PROGRAM} success",
+    ]
+    assert list(pump_data_logs(logs)) == [(4, valid)]
 
 
 @pytest.mark.parametrize("name", ["CreateEvent", "TradeEvent"])

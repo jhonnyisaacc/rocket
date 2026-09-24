@@ -16,7 +16,7 @@ from typing import Any
 from rocket.pit import Availability, PointInTime, iso, parse_datetime
 from rocket.workflows.memecoin import canonical_identity
 
-SCHEMA = "rocket.memecoin.pit-snapshot.v1"
+SCHEMA = "rocket.memecoin.pit-snapshot.v2"
 
 
 class SnapshotError(ValueError):
@@ -42,6 +42,7 @@ def build_snapshot(
     discovery_source: str,
     protocol_version: str,
     fee_model_version: str,
+    quote_mint: str | None = None,
 ) -> dict[str, Any]:
     """Freeze eligible observations; reject ambiguity instead of backfilling it.
 
@@ -56,6 +57,9 @@ def build_snapshot(
     decision = _required_time(decision_time, "decision_time")
     if not lifecycle_stage or not discovery_source or not protocol_version or not fee_model_version:
         raise SnapshotError("stage, discovery source and protocol/fee versions are required")
+    if quote_mint is not None and canonical_identity(
+        {"chain_id": "solana:mainnet", "mint": quote_mint}) is None:
+        raise SnapshotError("invalid quote mint")
     if not observations:
         raise SnapshotError("at least one observation is required")
 
@@ -103,6 +107,7 @@ def build_snapshot(
         "discovery_source": discovery_source,
         "protocol_version": protocol_version,
         "fee_model_version": fee_model_version,
+        "quote_mint": quote_mint,
         "features": dict(sorted(features.items())),
         "provenance": dict(sorted(provenance.items())),
     }

@@ -17,6 +17,7 @@ def snapshot(observations):
         discovery_source="pump_create_event",
         protocol_version="pump-layout-observed-v1",
         fee_model_version="unverified",
+        quote_mint=MINT,
     )
 
 
@@ -36,6 +37,7 @@ def test_snapshot_keeps_feature_provenance_and_deterministic_fingerprint():
     row = snapshot([observation()])
     assert row == snapshot([observation()])
     assert row["provenance"]["real_quote_reserves"]["available_at"] == "2026-09-24T00:00:03+00:00"
+    assert row["quote_mint"] == MINT
     assert "outcome" not in row
 
 
