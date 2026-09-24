@@ -1,7 +1,7 @@
 # Hyperliquid close-flow source and economic scout
 
-Status: `FIXED_MIRROR_SAMPLE_VERIFIED`, 2026-09-24. One free 2025 block-fill
-mirror shard was acquired and structurally audited. No conditioned return was
+Status: `TWO_FIXED_MIRROR_SAMPLES_AUDITED`, 2026-09-24. Two free 2025 block-fill
+mirror shards were acquired and structurally audited. No conditioned return was
 calculated, and no trade rule was registered.
 
 ## Mechanism and observable fields
@@ -102,6 +102,20 @@ shard, with no independent source checksum, no book quotes and no proof of
 continuous coverage. The 2026 mirror was used for schema preview only; no
 2026 outcome was read.
 
+We independently selected a later [2025-10-10 shard](https://huggingface.co/datasets/gionuibk/hyperliquid-node-fills-by-block/resolve/main/data/batch_upto_20251010_14.lz4_1765119892.parquet)
+before outcomes. Its 241,902,165 bytes have SHA-256
+`600e52955d8975614402f25404e141418a54a64e80ca0b016ebf44ccd82f703b`.
+The same auditor found 310,040 blocks, 2,011,536 wallet-fill rows, 344,566
+BTC/ETH rows, 41,703 unmarked loss-realizing taker closes and 880 marked
+liquidation fills. Selected fields were complete and all 172,283 BTC/ETH
+trade keys had exactly two counterparties. **There is one material block
+sequence break:** block 757948605 is followed by 758304396, leaving 355,790
+block numbers absent. Original source paths cover UTC hours `0`, `1`, and
+`10`–`14`, but not `2`–`9`. Any pilot must treat these as separate windows and
+must not bridge the gap with a position or interpolated price. A mirror
+filename can therefore hide a large internal coverage gap; the 75-date
+metadata inventory is not a continuous tape guarantee.
+
 A [public explorer block](https://github.com/hyperliquid-dex/node/issues/32)
 was also queried as a free alternative. Its `blockDetails` and `txDetails`
 responses exposed submitted order actions but no fill outcomes, so it
@@ -119,10 +133,11 @@ post-trade price reversal measured from the distressed fill. Any event-study
 move measured from before the close includes pressure that occurred before
 Rocket could react and cannot be counted as its executable return.
 
-The fixed mirror sample clears the initial field and event-count gate for a
-**cheap gross economic pilot on 2025 data**. Before reading conditioned
-returns, freeze event aggregation, observation delay, entry/exit price proxy,
-horizon, baseline, sample dates, and falsifier. The pilot can use delayed
+The fixed mirror samples clear the initial field and event-count gate for a
+**cheap gross economic pilot on 2025 data**. The [FUT-010 contract](experiments/FUT-010.md)
+now freezes event aggregation, observation delay, entry/exit price proxy,
+horizon, baseline, sample dates, and falsifier before conditioned returns.
+The pilot uses delayed
 trade prices as an optimistic gross proxy from the same source tape, while
 keeping marked liquidations out of the voluntary sample and comparing with
 an unconditional same-side control. If the gross proxy is below the 9 bp
@@ -132,8 +147,9 @@ source bytes and obtain bid/ask and depth evidence before treating it as executa
 There is currently no paper-based effect size that sets the event threshold,
 horizon, or wallet cohort.
 
-**Decision:** the free 2025 mirror resolves the first source and event-count
-gate. Its completeness, exact source fidelity, spread/depth and economic
-feasibility remain unverified. The next action is a frozen 2025 gross pilot;
+**Decision:** the free 2025 mirror resolves the initial field and event-count
+gate on the two audited shards. Its completeness, exact source fidelity,
+spread/depth and economic feasibility remain unverified. The next action is
+to score the frozen 2025 gross pilot within verified contiguous source windows;
 no FUT-010 result or production change follows from this scout. The 2026
 final holdout remains unread.
