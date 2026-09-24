@@ -26,6 +26,8 @@ MC-016 checked a narrower signed-transaction control clue without rerunning econ
 
 MC-017 measured the canonical PumpSwap account at the frozen receipt +67-second exit clock in a new covered panel. All 52 names with insufficient Pump curve sell liquidity had a null canonical pool in the timely confirmed bank snapshot; three present canonical pools belonged to names whose Pump entries were already unavailable. This rejects a canonical migration rescue for those 52 **at that observed snapshot**. Noncanonical venues and achieved liquidation remain unknown. Decoded pools carried positive virtual quote reserves and mixed Token-2022/legacy vault programs, so a route quote must use the pool's actual effective reserves and versioned fee semantics. No entry rank is promoted.
 
+MC-018 checked a later third-party pool listing for those 52 depleted direct exits and found no listed noncanonical pool. The one PumpSwap listing among controls was the canonical pool created after that control's frozen exit. This is a discovery lead check only; it does not establish the absence of another venue or assign realized zero cash recovery.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
