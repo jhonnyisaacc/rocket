@@ -127,6 +127,20 @@ def visible_latest_slot(observations: list[dict], mint: str, received_at: str) -
     return max(slots) if slots else None
 
 
+def visible_lifecycle(observations: list[dict], mint: str, received_at: str) -> dict:
+    received = datetime.fromisoformat(received_at)
+    visible = [row for row in observations if row.get("mint") == mint
+               and row["event_type"] in ("CompleteEvent",
+                                         "CompletePumpAmmMigrationEvent")
+               and datetime.fromisoformat(row["available_at"]) <= received]
+    return {"completion_events": sum(row["event_type"] == "CompleteEvent"
+                                     for row in visible),
+            "migration_events": sum(row["event_type"] ==
+                                    "CompletePumpAmmMigrationEvent" for row in visible),
+            "last_migration_slot": max((row["slot"] for row in visible if row[
+                "event_type"] == "CompletePumpAmmMigrationEvent"), default=None)}
+
+
 def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
     audit_path = session / "audit.json"
     audit = json.loads(audit_path.read_text())
@@ -256,6 +270,8 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
             rows.append(row)
             continue
         row["first"]["curve_complete"] = first_curve["complete"]
+        row["first"]["visible_lifecycle"] = visible_lifecycle(
+            observations, chosen["mint"], first_timing["received_at"])
         latest = visible_latest_slot(observations, chosen["mint"], first_timing["received_at"])
         row["first"]["last_visible_mint_slot"] = latest
         first_timely = (0 <= first_timing["dispatch_lag_seconds"] <= 2
@@ -267,7 +283,9 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
         if not first_timely or not first_fresh:
             row["status"] = "FIRST_READ_LATE_OR_STALE"
         elif pool_value is None:
-            row["status"] = "CANONICAL_POOL_ABSENT_AT_SNAPSHOT"
+            row["status"] = ("POOL_ABSENT_AFTER_VISIBLE_MIGRATION"
+                             if row["first"]["visible_lifecycle"]["migration_events"]
+                             else "CANONICAL_POOL_ABSENT_AT_SNAPSHOT")
         else:
             try:
                 first_pool = decode_pool(pool_value, chosen["mint"], chosen["pool_authority"])
@@ -308,6 +326,9 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
                     timely = 0 <= second_timing["response_lag_seconds"] <= 8
                     row["second"].update({"pool": second_pool,
                                           "curve_complete": second_curve["complete"],
+                                          "visible_lifecycle": visible_lifecycle(
+                                              observations, chosen["mint"],
+                                              second_timing["received_at"]),
                                           "base_vault": base, "quote_vault": quote,
                                           "effective_quote_reserves": (
                                               quote["amount"] + second_pool[

@@ -11,6 +11,7 @@ from scripts.research.memecoin_route_snapshot_audit import (
     decode_config,
     decode_pool,
     decode_token_account,
+    visible_lifecycle,
 )
 from scripts.research.memecoin_route_snapshot_capture import POOL_DISCRIMINATOR
 
@@ -57,3 +58,12 @@ def test_config_decodes_pinned_core_fields():
     struct.pack_into("<Q", raw, 40, 20)
     struct.pack_into("<Q", raw, 48, 5)
     assert decode_config(account(raw, PUMP_AMM_PROGRAM))["protocol_fee_bps"] == 5
+
+
+def test_later_migration_is_not_backdated_to_first_read():
+    observations = [{"mint": "m", "event_type": "CompletePumpAmmMigrationEvent",
+                     "available_at": "2026-09-24T10:00:10+00:00", "slot": 9}]
+    assert visible_lifecycle(observations, "m", "2026-09-24T10:00:09+00:00")[
+        "migration_events"] == 0
+    assert visible_lifecycle(observations, "m", "2026-09-24T10:00:11+00:00")[
+        "last_migration_slot"] == 9
