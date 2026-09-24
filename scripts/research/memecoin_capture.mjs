@@ -16,9 +16,9 @@ function arg(name) {
 const out = resolve(arg('--out'));
 const seconds = Number(arg('--seconds'));
 const maxBytes = Number(arg('--max-bytes'));
-if (!Number.isInteger(seconds) || seconds < 5 || seconds > 300 ||
-    !Number.isInteger(maxBytes) || maxBytes < 1024 || maxBytes > 268435456) {
-  throw Error('seconds must be 5..300 and max-bytes 1024..268435456');
+if (!Number.isInteger(seconds) || seconds < 5 || seconds > 900 ||
+    !Number.isInteger(maxBytes) || maxBytes < 1024 || maxBytes > 536870912) {
+  throw Error('seconds must be 5..900 and max-bytes 1024..536870912');
 }
 if (existsSync(out)) throw Error('capture directory already exists');
 mkdirSync(out, { recursive: true });

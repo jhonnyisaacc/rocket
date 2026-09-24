@@ -1,6 +1,6 @@
 # Read-only early-event research workflow
 
-Status: research tooling for PR #37. Requires Node 22+ and the Rocket Python environment. No signer, wallet, order endpoint, scheduler or live strategy decision is involved.
+Status: research tooling for PR #37. Requires Node 22+ and the Rocket Python environment. No signer, wallet, order endpoint, scheduler or live strategy decision is involved. The bounded collector supports up to 900 seconds and 512 MiB; choose limits from a design frozen before each cohort.
 
 1. Freeze the experiment design in `experiments/` before collecting its cohort. Choose a new output directory that does not exist. Run a bounded subscription, for example:
 
@@ -28,3 +28,7 @@ Status: research tooling for PR #37. Requires Node 22+ and the Rocket Python env
    Preserve all universe rows, including exclusions and unknowns. `QUOTED` is a modeled static-state quote, never an achieved fill. The stress file does not replace the original outcome file. A changed policy needs a new experiment/version, not an overwrite of the old conclusion.
 
 The pinned IDL is `protocol/pump-81091419.json`; its source revision and hash are in the Data Truth Registry and MC-001 report. A new protocol layout or fee regime must be validated against raw transactions before reuse. Compressed evidence archives in `data/` contain the raw segment and index responses needed for offline replay.
+
+MC-004 calibrates actual whole-transaction network fees and token-account movements on a fixed hash-selected set of MC-003 signatures. Extract both archives, then run `python scripts/research/memecoin_tx_accounting.py MC003_DIRECTORY MC004_DIRECTORY --report-only` to reproduce the saved report without network access. Its RPC reads are retrospective validation, never early features.
+
+MC-005's new order-flow rank is frozen in `experiments/MC-005-FROZEN.md`. On its fresh covered session, first run the audit and base quote script, then `python scripts/research/memecoin_flow_baseline.py DIRECTORY`. The new script reads the same point-in-time snapshots but ranks by five-second net buy count and reports both fee scenarios plus zero-recovery exit stress. Do not use a previous cohort as its evaluation result.

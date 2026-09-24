@@ -29,3 +29,11 @@ Parent MC-001. Status `OPEN` / no promotion. [Frozen question, mechanism, falsif
 ## MC-003 — exit feasibility and replication
 
 Parent MC-002. Status `REJECTED` as an entry basis. [Frozen design](experiments/MC-003-FROZEN.md) and [result](experiments/MC-003-RESULT.md). A new 300-second cohort yielded 102 creates, 52 scored names, 40 quoted exits and 12 exit-unavailable names. The unchanged rank's held-out all-quoted mean was −8.99% (11); top-quartile mean −8.05% (3). The zero-recovery stress mean was −33.67% for all 15 and −31.42% for the top four. Failure attribution: `NO_SIGNAL` for this simple rank under the frozen quote proxy; `EXECUTION_UNREPRODUCIBLE` for actual fills and zero-recovery valuation; `DATA_LIMITATION` for cohort duration and held-out size. No model is promoted. Raw and second-provider index evidence are archived; implementation commit `0f81aae`.
+
+## MC-004 — transaction accounting calibration
+
+Parent MC-003. Status `ACCEPTED` for bounded protocol/cost calibration, not for strategy entry. [Frozen selection](experiments/MC-004-FROZEN.md) and [result](experiments/MC-004-RESULT.md). All 56 selected transactions were retrieved and matched stream signature/slot. One transport version amendment was recorded before analysis without changing the sample. Forty-seven of 48 single-event token transfers reconciled to the event amount; the remaining create-and-buy lacked a pre-balance. Fifteen of 48 single-event network fees exceeded the older 155,000-lamport scenario. Failure attribution: `EXECUTION_UNREPRODUCIBLE` remains for hypothetical Rocket inclusion and exit fills; not a signal test. Raw responses and deterministic replay are archived.
+
+## MC-005 — early net flow on an independent covered panel
+
+Parent MC-003/MC-004. Status `FROZEN` before acquisition. [Design](experiments/MC-005-FROZEN.md): a 600-second bounded prospective capture, one early net buy-minus-sell score, the inherited clocks and population, a 70/30 chronological split, explicit exit-unavailability risk, zero-recovery stress and 155,000/1,000,000-lamport per-leg fee scenarios. No result exists until the new capture passes the protocol and coverage gate.

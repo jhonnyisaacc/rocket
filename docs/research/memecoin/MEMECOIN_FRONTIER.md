@@ -16,6 +16,8 @@ MC-002 extended the covered stream to 180 seconds: 37,557/37,557 inner-slot sign
 
 The next falsifiable question is whether genuinely early survival and manipulation-risk observations, coupled with transaction-level inclusion and exit feasibility, can improve net outcomes on new covered time windows. Acquire longer prospective panels and verify transaction balance deltas, observed entry failure, fees and exit routes before specifying that test. Preserve all unknown and unavailable outcomes. Do not retune the failed curve-progress cutoff on MC-002/MC-003.
 
+[MC-004](experiments/MC-004-RESULT.md) calibrated one part of that gate against 56 hash-selected MC-003 transaction records: all were retrieved and matched stream identity/slot. The median whole-transaction fee was 117,500 lamports for sampled single buys and 100,000 for sampled single sells, with 15/48 above the earlier 155,000-lamport per-leg scenario and large outliers. Token-account deltas were consistent with event amounts in 47/48 single-event transactions; the remaining buy created its mint in the same transaction and lacked a pre-balance. This does not measure a hypothetical Rocket order's inclusion or exit route. The next fresh panel must collect those facts and test prespecified survival/risk features, rather than further score tuning on MC-002/MC-003.
+
 ## Decision today
 
 Status `OPEN`: early event acquisition is technically viable in the tested windows. The simple curve-progress entry rank is rejected under the frozen proxy; broader economic ranking and executable exits remain unproven. No model or signal is promoted.
