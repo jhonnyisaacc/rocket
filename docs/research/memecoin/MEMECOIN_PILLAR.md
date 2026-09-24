@@ -12,6 +12,8 @@ Use simple survival and return baselines before nonlinear tabular models. Partic
 
 MC-010's independently covered fast-receipt cohort repeated a lower modeled curve-exit-unavailability rate for high early net flow, while its costed entry stress returns remained negative. Treat early flow as an unpromoted risk component. Verify beneficial buyers, alternate exit liquidity and actual inclusion before any production decision uses it.
 
+MC-011 later reconciled 142/144 sampled single-event early trades to a unique token-account owner; all identified owners matched the emitted event user, but two owner assignments remained ambiguous and 44 sampled transactions were routed through another top-level program. Owner agreement does not establish independent beneficial control, and later transaction reads cannot be backdated into a five-second feature.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
