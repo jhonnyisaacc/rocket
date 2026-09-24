@@ -1,0 +1,21 @@
+# Futures data readiness
+
+Status: source candidate verified, research dataset **not ready**. No `FUT-001` returns have been computed. This page is a gate, not a claim that the archive already supplies every required field.
+
+## Source and observed checks (2026-09-24)
+
+- [Binance's public-data repository](https://github.com/binance/binance-public-data/blob/master/README.md) documents downloadable USD-M futures monthly/daily kline archives, column meanings, and `.CHECKSUM` sidecars. A read-only probe of the underlying public archive listing at `https://s3-ap-northeast-1.amazonaws.com/data.binance.vision` returned XML for `data/futures/um/monthly/klines/`, including separate contract directories. This can enumerate names that a current exchange-info response omits. The listing is **file availability**, not proof of listing/delisting dates or tradability.
+- A full read-only inventory at 2026-09-24T14:25:43Z returned **1,018 distinct monthly kline directories**, including `BTCUSDT`, `ETHUSDT`, `FTTUSDT`, `LUNAUSDT`, and multiplier names. The count is a coverage bound, not 1,018 eligible perpetuals: contract type, valid months, quote asset, first/last actual trade and delisting status still require verification. The untracked JSON output was kept outside the PR because directory names alone are not a research dataset; rerun the catalog to reproduce the count at a later retrieval time.
+- PR #31 observed Hyperliquid's roughly 5,000-hour 1h candle limit; PR #32 observed about a year of 1d candles and a current-listed universe missing delistings. Hyperliquid alone cannot presently answer the broad long-history frontier. It remains the intended overlap/forward-shadow venue.
+- The official archive kline schema includes open/close time, OHLC, base volume and quote asset volume. Archive completeness, repaired files, anomalous candles, contract type and historical settlement/funding coverage are still unverified. Funding history may need a separate timestamped source; absent funding must remain missing.
+
+## Required acquisition contract before scoring
+
+1. Inventory **all** USD-M perpetual contract candidates from historical archive keys, not today's exchange list. Distinguish USDT/USDC quote assets, dated futures, renamed/multiplier contracts and duplicate economic exposure. Preserve raw symbol and mapping history. First/last archive file only bounds coverage; verify first/last actual bar and known listing/delisting records where possible.
+2. Download immutable monthly daily bars with source key, retrieval time, checksum/size, dataset version and local SHA-256. Verify source `.CHECKSUM`, parse header variants, timestamps, duplicate/missing intervals, OHLC invariants, positive prices, quote volume, and unexpected discontinuities. Reject or flag rather than silently filling gaps. Keep delisted names and record archive revisions.
+3. Define membership at decision time from observed completed bars and lagged rolling quote turnover, a warmup requirement and explicit availability; do not assume an archive directory or a future bar implies earlier tradability. Avoid today's top-100 or current market-cap ranks. Conservative first-bar and stale-data rules must be frozen before PnL.
+4. Acquire historical funding settlements with timestamp and source. Audit coverage, interval changes, missing hours, and mapping to held positions. Build costs from explicit fee, spread and slippage scenarios; assess capacity from lagged turnover. Missing funding cannot be zero-filled. Test more severe cost cases.
+5. Freeze chronological discovery/OOS windows and a final untouched holdout before signal outcomes. Keep asset and calendar-period breakdown and account for overlapping outcomes. Hash the accepted normalized tape and specification.
+6. Only after the base signal survives on Binance, check Hyperliquid overlap with its own symbol map, prices, funding and venue costs. A Binance result does not establish Hyperliquid execution performance.
+
+`research/futures/archive_catalog.py` is the first small inventory tool. It only lists archive keys and never constructs a trading universe from listing names. Its output may be used to plan acquisition, not to authorize a backtest by itself.
