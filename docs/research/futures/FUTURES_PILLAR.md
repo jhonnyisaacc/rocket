@@ -22,6 +22,8 @@ The old multi-horizon baseline's [Bybit 2022 venue-transfer diagnostic](experime
 
 The distinct [FUT-004 spot/perpetual basis factor](experiments/FUT-004-RESULT.md) had a negative 2022 daily gross mean across predeclared settlement bounds and an approximately flat 2023 mean. It failed the frozen two-year gross-information gate before costs, so its conditional 2024/2025 tests were not run. This closes the tested one-day high-basis-long/low-basis-short perpetual factor, not every dated-futures basis or funding-carry idea.
 
+The [FUT-005 CME BTC positioning-change trial](experiments/FUT-005.md) is frozen before COT-conditioned outcomes. Its signed prior comes from a published pre-2023 study, while the [source audit](COT_SOURCE_FEASIBILITY.md) establishes report release lags, including exceptional 2023/2025 delays. It remains an unscored BTC-only hypothesis, not a proven COT regime feature or a validated strategy.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
