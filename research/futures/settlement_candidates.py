@@ -2,8 +2,9 @@
 
 The default candidate cutoff is 09:00 UTC, with dated notice overrides. Each
 notice must confirm the time and affected symbol before any row can repair
-FUT-001 outcome data. Minute
-index closes approximate, but do not equal, the official second-level average.
+FUT-001 outcome data. Late trade minutes expand the price sensitivity through
+the end of the last active minute. Minute index closes approximate, but do not
+equal, the official second-level average.
 """
 
 from __future__ import annotations
@@ -58,6 +59,14 @@ def build(probes: dict, notices: dict, root: Path) -> list[dict]:
         cutoff = int(datetime.fromisoformat(date + "T" + cutoff_time + ":00+00:00").timestamp() * 1000)
         minutes = 60 if date < "2024-11-11" else 30
         envelope = index_envelope(root / item["indexPriceKlines_key"], cutoff, minutes)
+        latest_cutoff = max(cutoff, last + MINUTE_MS)
+        alternatives = [index_envelope(root / item["indexPriceKlines_key"], candidate_cutoff,
+                                       minutes)
+                        for candidate_cutoff in range(cutoff, latest_cutoff + 1, MINUTE_MS)]
+        conservative = None if any(value is None for value in alternatives) else {
+            "low": min(value["mean_low"] for value in alternatives),
+            "high": max(value["mean_high"] for value in alternatives),
+        }
         candidate = {
             "symbol": item["symbol"], "date": date,
             "assumed_settlement_ms": cutoff,
@@ -67,6 +76,9 @@ def build(probes: dict, notices: dict, root: Path) -> list[dict]:
             "approx_index_settlement_price": envelope["mean_close"] if envelope else None,
             "minute_index_mean_low": envelope["mean_low"] if envelope else None,
             "minute_index_mean_high": envelope["mean_high"] if envelope else None,
+            "latest_candidate_settlement_ms": latest_cutoff,
+            "cutoff_sensitivity_mean_low": conservative["low"] if conservative else None,
+            "cutoff_sensitivity_mean_high": conservative["high"] if conservative else None,
             "minute_index_source_key": item["indexPriceKlines_key"],
             "minute_index_sha256": item["indexPriceKlines_sha256"],
             "minute_trade_source_key": item["klines_key"],
@@ -75,7 +87,7 @@ def build(probes: dict, notices: dict, root: Path) -> list[dict]:
                 item["symbol"], notice["source_url"]),
             "status": "UNVERIFIED_SYMBOL_TIME_AND_MINUTE_APPROXIMATION",
         }
-        if envelope is None or last > cutoff:
+        if envelope is None or conservative is None or last > cutoff:
             candidate["status"] = "REQUIRES_SOURCE_INVESTIGATION"
         candidates[(item["symbol"], date)] = candidate
     return [candidates[key] for key in sorted(candidates)]

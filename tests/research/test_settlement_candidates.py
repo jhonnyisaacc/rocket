@@ -26,7 +26,7 @@ def test_notice_cutoff_override_is_used(tmp_path: Path):
     with zipfile.ZipFile(output, "w") as archive:
         archive.writestr("index.csv", "open_time,open,high,low,close\n"
                          + "".join(f"{minute * 60000},1,1,1,1\n"
-                                   for minute in range(330, 390)))
+                                   for minute in range(330, 391)))
     key = "index.zip"
     (tmp_path / key).write_bytes(output.getvalue())
     probes = {"results": [{
@@ -40,5 +40,7 @@ def test_notice_cutoff_override_is_used(tmp_path: Path):
     candidates = build(probes, notices, tmp_path)
     assert len(candidates) == 1
     assert candidates[0]["assumed_settlement_ms"] == 390 * 60000
+    assert candidates[0]["latest_candidate_settlement_ms"] == 391 * 60000
     assert candidates[0]["approx_index_settlement_price"] == 1
+    assert candidates[0]["cutoff_sensitivity_mean_low"] == 1
     assert candidates[0]["notice_candidate_url"] == "https://example.com/port3"

@@ -14,6 +14,7 @@ from pathlib import Path
 
 from research.futures.fut001 import (
     DAY_MS,
+    END_MS,
     START_MS,
     desired_weights,
     funding_window,
@@ -23,6 +24,7 @@ from research.futures.fut001 import (
 )
 
 DISCOVERY_END_MS = int(datetime(2025, 1, 1, tzinfo=UTC).timestamp() * 1000)
+PRICE_STRESS = 0.05
 
 
 def reconstruct(db: sqlite3.Connection, signals: dict, candidates: list[dict]) -> dict:
@@ -45,18 +47,24 @@ def reconstruct(db: sqlite3.Connection, signals: dict, candidates: list[dict]) -
                                     allow_end_record=True)
         if not ok:
             raise ValueError(f"funding gap before settlement: {symbol} {candidate['date']}")
+        later_funding = sum(record[3] for record in funding
+                            if candidate["assumed_settlement_ms"] < record[1]
+                            <= candidate["latest_candidate_settlement_ms"])
         if candidate["assumed_settlement_ms"] <= day or \
            candidate["assumed_settlement_ms"] >= day + DAY_MS:
             raise ValueError(f"invalid settlement cutoff: {symbol} {candidate['date']}")
-        prices = (candidate["minute_index_mean_low"],
+        prices = (candidate["cutoff_sensitivity_mean_low"],
                   candidate["approx_index_settlement_price"],
-                  candidate["minute_index_mean_high"])
+                  candidate["cutoff_sensitivity_mean_high"])
         if any(price is None or price <= 0 for price in prices) or not prices[0] <= prices[1] <= prices[2]:
             raise ValueError(f"invalid settlement envelope: {symbol} {candidate['date']}")
         item["unresolved"] = []
         item["funding"] = amount
         events[(day, symbol)] = {"open": row[0], "low": prices[0],
                                  "mid": prices[1], "high": prices[2],
+                                 "funding_official": amount,
+                                 "funding_low": min(amount, amount + later_funding),
+                                 "funding_high": max(amount, amount + later_funding),
                                  "status": candidate["status"]}
     return events
 
@@ -64,27 +72,45 @@ def reconstruct(db: sqlite3.Connection, signals: dict, candidates: list[dict]) -
 def scenario_return(event: dict, weight: float, scenario: str) -> float:
     if scenario == "mid":
         price = event["mid"]
-    elif scenario == "adverse":
+    elif scenario in ("adverse", "adverse_stress"):
         price = event["low"] if weight > 0 else event["high"]
-    elif scenario == "favorable":
+        if scenario == "adverse_stress":
+            price *= 1 - PRICE_STRESS if weight > 0 else 1 + PRICE_STRESS
+    elif scenario in ("favorable", "favorable_stress"):
         price = event["high"] if weight > 0 else event["low"]
+        if scenario == "favorable_stress":
+            price *= 1 + PRICE_STRESS if weight > 0 else 1 - PRICE_STRESS
     else:
         raise ValueError(scenario)
     return price / event["open"] - 1
 
 
-def score_discovery(signals: dict, fills: dict, events: dict, *, component: str,
-                    bps: int, scenario: str) -> dict:
+def scenario_funding(event: dict, weight: float, scenario: str) -> float:
+    if scenario == "mid":
+        return event["funding_official"]
+    if scenario in ("adverse", "adverse_stress"):
+        return event["funding_high"] if weight > 0 else event["funding_low"]
+    if scenario in ("favorable", "favorable_stress"):
+        return event["funding_low"] if weight > 0 else event["funding_high"]
+    raise ValueError(scenario)
+
+
+def score_period(signals: dict, fills: dict, events: dict, *, period: str,
+                 component: str, bps: int, scenario: str) -> dict:
     """Keep rejected next-day orders in cash and close settled positions intraday."""
     if bps not in (20, 40):
         raise ValueError("unfrozen cost scenario")
+    if period not in ("discovery", "oos"):
+        raise ValueError(period)
+    start, end = ((START_MS, DISCOVERY_END_MS) if period == "discovery"
+                  else (DISCOVERY_END_MS, END_MS))
     previous = {}
     days = []
     unresolved = []
     rejected_orders = 0
     forced_settlements = 0
-    for day in range(START_MS, DISCOVERY_END_MS, DAY_MS):
-        if partition(day) != "discovery":
+    for day in range(start, end, DAY_MS):
+        if partition(day) != period:
             previous = {}
             continue
         current = signals.get(day, {})
@@ -110,24 +136,32 @@ def score_discovery(signals: dict, fills: dict, events: dict, *, component: str,
             event = events.get((day, symbol))
             result = scenario_return(event, weight, scenario) if event else item["return"]
             gross += weight * result
-            funding_drag += weight * item["funding"]
+            funding_drag += weight * (scenario_funding(event, weight, scenario)
+                                      if event else item["funding"])
             if event:
                 turnover += abs(weight)
                 settled.add(symbol)
                 forced_settlements += 1
         cost = turnover * bps / 20_000
-        days.append({"partition": "discovery", "entry_ms": day,
+        days.append({"partition": period, "entry_ms": day,
                      "gross": gross, "funding_drag": funding_drag,
                      "transaction_drag": cost, "net": gross - funding_drag - cost,
                      "gross_exposure": sum(abs(weight) for weight in weights.values()),
                      "active_names": sum(weight != 0 for weight in weights.values())})
         previous = {symbol: weight for symbol, weight in weights.items()
                     if weight and symbol not in settled}
-    return {"component": component, "round_trip_bps": bps, "scenario": scenario,
+    return {"period": period, "component": component,
+            "round_trip_bps": bps, "scenario": scenario,
             "status": "INCOMPLETE_DATA" if unresolved else "PROVISIONAL_SETTLEMENT_SCENARIO",
             "unresolved_exposures": unresolved, "rejected_orders": rejected_orders,
             "forced_settlements": forced_settlements,
-            "discovery": summarize(days, "discovery") if not unresolved else None}
+            period: summarize(days, period) if not unresolved else None}
+
+
+def score_discovery(signals: dict, fills: dict, events: dict, *, component: str,
+                    bps: int, scenario: str) -> dict:
+    return score_period(signals, fills, events, period="discovery",
+                        component=component, bps=bps, scenario=scenario)
 
 
 def main() -> None:
@@ -135,17 +169,20 @@ def main() -> None:
     parser.add_argument("database", type=Path)
     parser.add_argument("candidates", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--period", choices=("discovery", "oos"), default="discovery")
     args = parser.parse_args()
     db = sqlite3.connect(args.database)
     signals, _, fills = generate_signals(db)
     candidates = json.loads(args.candidates.read_text())["events"]
     events = reconstruct(db, signals, candidates)
-    results = [score_discovery(signals, fills, events, component=component,
-                               bps=bps, scenario=scenario)
+    results = [score_period(signals, fills, events, period=args.period,
+                            component=component, bps=bps, scenario=scenario)
                for component in ("multi", "single")
                for bps in (20, 40)
-               for scenario in ("adverse", "mid", "favorable")]
-    report = {"meaning": "provisional discovery sensitivity only; not accepted FUT-001 PnL",
+               for scenario in ("adverse_stress", "adverse", "mid", "favorable",
+                                "favorable_stress")]
+    report = {"meaning": "provisional settlement sensitivity; not accepted FUT-001 PnL",
+              "period": args.period, "price_stress_fraction": PRICE_STRESS,
               "candidate_events": len(events),
               "events_requiring_source_investigation": sum(
                   event["status"] == "REQUIRES_SOURCE_INVESTIGATION" for event in events.values()),

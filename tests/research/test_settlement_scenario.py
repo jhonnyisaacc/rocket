@@ -17,7 +17,9 @@ def test_intraday_settlement_and_next_day_rejected_order(monkeypatch):
     }
     fills = {START_MS: {"XUSDT": True}, START_MS + DAY_MS: {"XUSDT": False}}
     events = {(START_MS, "XUSDT"): {"open": 100, "low": 90, "mid": 95,
-                                     "high": 110, "status": "PROVISIONAL"}}
+                                     "high": 110, "funding_official": 0.01,
+                                     "funding_low": 0.01, "funding_high": 0.01,
+                                     "status": "PROVISIONAL"}}
     result = scenario.score_discovery(signals, fills, events, component="multi",
                                       bps=20, scenario="mid")
     assert result["unresolved_exposures"] == []
@@ -32,3 +34,10 @@ def test_adverse_price_depends_on_position_side():
     event = {"open": 100, "low": 90, "mid": 100, "high": 110}
     assert scenario.scenario_return(event, 0.05, "adverse") == pytest.approx(-0.1)
     assert scenario.scenario_return(event, -0.05, "adverse") == pytest.approx(0.1)
+    assert scenario.scenario_return(event, 0.05, "favorable_stress") == pytest.approx(0.155)
+
+
+def test_late_funding_is_bounded_against_position_side():
+    event = {"funding_official": 0.01, "funding_low": 0.01, "funding_high": 0.04}
+    assert scenario.scenario_funding(event, 0.05, "adverse") == 0.04
+    assert scenario.scenario_funding(event, -0.05, "adverse") == 0.01
