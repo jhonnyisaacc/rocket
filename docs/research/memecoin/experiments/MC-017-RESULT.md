@@ -1,0 +1,30 @@
+# MC-017 result — canonical route absent for depleted Pump exits at the observed clock
+
+Status: **accepted as bounded canonical route-state evidence**, with other venues, cash recovery and Rocket inclusion still unknown. The [design](MC-017-FROZEN.md), [pinned PumpSwap IDL](../protocol/pump-amm-81091419.json) and acquisition/audit implementation were committed before evaluating the fresh cohort. No entry score or fee assumption was retuned.
+
+## Covered prospective panel
+
+The read-only Solana Labs `confirmed` Pump log window ran for 600 seconds, from subscription acknowledgment at 2026-09-24 18:43:26.912 UTC through 18:53:26.911 UTC. It saved 107,413 notifications in 107,414 raw frames under the 512-MiB bound, without collector errors; raw segment SHA-256 `0af55e31732e554a4bd2bb1b191fe0dd07b205942ddf038a5851d4f5587a5c4c`. The independent publicnode index matched **107,302/107,302** valid interior signatures, with zero missing/extra valid signatures or structural quarantines. There were zero successful truncated logs, event decoder failures, signed transaction identity mismatches, native non-Mayhem reserve-continuity failures or material integer quote failures. The pinned Pump IDL decoded 279 creates, 31,382 trades, seven completions and six migration events. All 279 create receipts met the coarse five-second event-time screen (median 1.179 seconds, p90 1.582, maximum 2.058); earlier delayed-feed panels still prevent a continuous actionability claim.
+
+The unchanged baseline kept 278 covered creation rows, 154 with a five-second score and full 67-second log window. Later signed `getTransaction` checks strictly resolved 151/154 scored creation identities; three compound/routed cases remain unresolved. The Pump curve companion parsed the entire raw segment and saved **558/558** timely, Pump-owned, decodable receipt +7/+67 account reads for all 279 emitted creates. Its direct account data gate passed. Among the 154 scored names, the direct model classified 89 `QUOTED`, 52 `EXIT_UNAVAILABLE`, three `ENTRY_UNAVAILABLE`, five fee-state unknown, two stale account context and three unresolved creation identity. The 52 unavailable curve sells all had insufficient real quote liquidity, with real quote reserves of 1 to 9,310,422 lamports (median 3), and none had `complete=true` in the exit account.
+
+## Canonical PumpSwap state near +67 seconds
+
+The concurrent route companion parsed all 107,414 frames, selected every 169 native non-Mayhem creation, and saved **169/169** first reads of the bonding curve, derived canonical PumpSwap pool and AMM config in a single confirmed bank response. Every first read passed the prespecified dispatch and response window; response lag from the +67-second target was median 0.268 seconds, p90 0.371 and maximum 1.045. Three present pools triggered and completed the second same-bank curve/pool/base-vault/quote-vault/config read by +75 seconds; all decoded with valid mint, owner, token-program, pool and PDA relationships. The route audit data gate passed with no selection, read or source mismatch.
+
+| Direct Pump outcome in the 169 native creations | Count | Canonical pool absent at timely first bank snapshot | Pool and vaults decoded |
+| --- | ---: | ---: | ---: |
+| Curve sell `QUOTED` | 89 | 89 | 0 |
+| Curve sell `EXIT_UNAVAILABLE` | 52 | **52** | 0 |
+| Curve entry `ENTRY_UNAVAILABLE` | 3 | 0 | 3 |
+| Other excluded or unknown direct status | 25 | 25 | 0 |
+
+No completion or migration event for any of the 52 curve-exit-unavailable mints was visible by its first route response. All three present pools followed visible same-mint migration events; each event's emitted pool address matched the independently derived canonical PDA. Their curves were already complete before the modeled receipt +7-second entry, so these names do **not** supply recovered inventory for the frozen hypothetical strategy. The 52 absent pools establish absence of this **canonical PumpSwap pool at each saved confirmed bank snapshot**. They do not rule out an unobserved alternative venue, a later pool, or a realizable liquidation value; the zero-recovery number remains stress only.
+
+The three pool snapshots showed base vaults owned by Token-2022 and WSOL quote vaults owned by the legacy SPL Token program. Each pool's decoded `virtual_quote_reserves` was positive (about 17.585 SOL), so raw WSOL vault balances alone would materially understate the effective quote reserve. The official [PumpSwap description](https://github.com/pump-fun/pump-public-docs/blob/81091419e4457566469d4e2a27f64ed84d42419c/docs/PUMP_SWAP_README.md) defines effective quote reserve as quote-vault amount plus pool virtual quote reserve; the on-chain values here supersede its descriptive all-zero example for this cohort. No size-aware PumpSwap sell cash is calculated: dynamic fee tiers, swap rounding, hypothetical inventory, order inclusion and achieved fill require separate validation.
+
+## Evidence and implication
+
+The [full archive](../data/mc017-canonical-route-20260924.tar.xz) contains the raw stream, independent index pages, decoded observations, baseline and flow rows, signed creation responses, all direct and route account replies, the separate timestamped known-pool calibration read, and the frozen reports. Archive SHA-256 `592fe7e5fbbb8f70f4b448b0ec35e19f1f35d641930c3ef49a2704d1683d9063` (38 MiB). Extracted offline replay matched all **ten** derived-file hashes byte for byte; final route report SHA-256 `b9908c92251575049a9451f2a8235724edbe62fc8ca87ebbbfefd618cacff4b2`.
+
+Failure attribution for the still-open economic question: `EXECUTION_UNREPRODUCIBLE` for hypothetical Rocket inclusion and fills, `OTHER_ROUTE_STATE_UNKNOWN` for noncanonical liquidation, and `LONG_WINDOW_RELIABILITY_UNPROVEN` beyond these bounded windows. This panel strengthens the exclusion of a **canonical migration repair** for depleted 67-second curve exits. It does not validate an entry edge or authorize `ENTER`. Next, test only a route with actual as-of pool state and size-aware fees, and measure hypothetical order inclusion/failure, before spending another untouched feature holdout.

@@ -24,6 +24,8 @@ MC-015 froze such a test: normalized first-three signed buyer SOL-size dispersio
 
 MC-016 checked a narrower signed-transaction control clue without rerunning economics: among 123 creations with multiple timely distinct selected owners, zero had different owners sharing a fee payer. This is no proof of independent prior funding. The actionable research gap remains route-aware liquidation and hypothetical Rocket order inclusion, with explicit unknowns where those cannot be measured.
 
+MC-017 measured the canonical PumpSwap account at the frozen receipt +67-second exit clock in a new covered panel. All 52 names with insufficient Pump curve sell liquidity had a null canonical pool in the timely confirmed bank snapshot; three present canonical pools belonged to names whose Pump entries were already unavailable. This rejects a canonical migration rescue for those 52 **at that observed snapshot**. Noncanonical venues and achieved liquidation remain unknown. Decoded pools carried positive virtual quote reserves and mixed Token-2022/legacy vault programs, so a route quote must use the pool's actual effective reserves and versioned fee semantics. No entry rank is promoted.
+
 An eventual JSON decision may express `ENTER`, `WATCH`, `WAIT`, `AVOID` or `NO_TRADE` with mint, lifecycle, discovery, survival, risk, expectancy, liquidity, participant context, trigger, execution estimate, invalidation, reasons and uncertainty. The vocabulary is provisional. No production recommendation is authorized by this document.
 
 Current research question and admission gate: [MEMECOIN_FRONTIER.md](MEMECOIN_FRONTIER.md). Sources and semantics: [DATA_TRUTH_REGISTRY.md](DATA_TRUTH_REGISTRY.md). Historical conclusions: [KNOWLEDGE_LEDGER.md](KNOWLEDGE_LEDGER.md).
