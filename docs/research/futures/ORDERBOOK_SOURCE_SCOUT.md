@@ -1,6 +1,6 @@
 # Near-touch order-book source scout
 
-Status: `HISTORICAL_L2_LISTING_VERIFIED_BYTES_UNAUDITED`, 2026-09-24. This is a
+Status: `SINGLE_DAY_NEAR_TOUCH_SAMPLE_AUDITED`, 2026-09-24. This is a
 return-free data and economic-feasibility check, not FUT-008 or an order-book
 strategy result. The [candidate paper](https://ssrn.com/abstract=6693260)
 reports that recent sell pressure relative to best-bid absorption capacity
@@ -48,26 +48,47 @@ show the objects are absent. No signed/requester-billed download was made.
 [OKX's official historical-data page](https://www.okx.com/historical-data)
 advertises high-resolution L2 order books from March 2023 and tick-level
 trades from September 2021. Its public download dialog exposed **Perpetual**
-and **BTC-USDT**, with 400- and 5,000-level choices. A fixed UTC
-**2024-09-01** query at 400 levels returned one listed export,
-`BTC-USDT-SWAP-L2orderbook-400lv-2024-09-02.tar.gz`, with a displayed size
-of **384.19 MB**. The file-date suffix is one day after the selected period;
-the archive's actual coverage must be checked rather than inferred from its
-name. The page's field-information panel describes `instId`, `action`
+and **BTC-USDT**, with 400- and 5,000-level choices. The browser dialog's
+2024-09-01 selection listed a **2024-09-02** L2 filename; the public site's
+download-link endpoint, queried with explicit UTC epoch bounds for
+**2024-09-01**, returned the [2024-09-01 400-level archive](https://static.okx.com/cdn/okx/match/orderbook/L2/400lv/daily/20240901/BTC-USDT-SWAP-L2orderbook-400lv-2024-09-01.tar.gz).
+The archive itself starts at `2024-09-01 00:00:00.005 UTC` and ends at
+`23:59:59.978 UTC`, confirming the latter as the correct fixed UTC source.
+The page's field-information panel describes `instId`, `action`
 (`snapshot` or `update`), ask/bid price, quantity and order count, and `ts`
-as a millisecond Unix push timestamp. That schema is compatible with a
-reconstructed best-bid-capacity measure, subject to checking update order,
-gaps, snapshot resets, contract units and timestamp alignment against trades.
-The listing and field definitions were verified in the UI; archive bytes,
-checksum, completeness and downloadable access were **not** validated.
-This is also an OKX venue sample, so a positive finding would still need a
-separate Hyperliquid transfer and execution-cost check.
+as a millisecond Unix push timestamp.
 
-Next validate a bounded OKX archive sample: record its digest, unpacked
-schema, actual UTC coverage, snapshot/update continuity, best-bid size and
-contract units, then pair it with timestamp-compatible trade data. Compare
-plausible forward return with round-trip fees/spread before registering a
-rule. Signed Hyperliquid access remains an independent venue-transfer path.
-If historical L2 bytes are not accessible, prospective collection/shadow is
-a distinct path and cannot masquerade as a historical OOS test. No strategy
-or production decision changes follow from this scout.
+The reproducible [streaming audit](../../../research/futures/okx_l2_audit.py)
+of that one archive found:
+
+| Fixed BTC-USDT-SWAP UTC day | Evidence |
+| --- | --- |
+| L2 archive | 390,010,114 compressed bytes; SHA-256 `437a49aabe412423b2f7ea1d5bd6571eef7f019c108201ead01dca9b2610f788`; one 2,803,224,169-byte `.data` member |
+| L2 records | 7,140,545 lines: 1,440 snapshots and 7,139,105 updates; every UTC minute represented |
+| Ordering and book | No decreasing/duplicate timestamps; maximum adjacent gap 597 ms; 1,440 minute checks found no empty or crossed best bid/ask; reconstructed book reached 400 levels per side |
+| Near-touch field | The opening reconstructed best-bid raw quantity was 59.2, showing the best price and its displayed size are present; historical contract-unit conversion is still to verify |
+
+The matching trade feed uses **UTC+8 daily boundaries**. The
+[September 1](https://static.okx.com/cdn/okex/traderecords/trades/daily/20240901/BTC-USDT-SWAP-trades-2024-09-01.zip)
+and [September 2](https://static.okx.com/cdn/okex/traderecords/trades/daily/20240902/BTC-USDT-SWAP-trades-2024-09-02.zip)
+ZIPs are both needed for the L2 UTC day. Their respective SHA-256 digests
+are `89e5e30f8ecf7074b40e92eb2dcfe604012083402ec6c1220bc7ab240483fd44`
+and `bddb2da7041465f912b232736f961a19847f05060058c67100391003d0f3edd3`.
+The two files contain 1,331,285 trades within that UTC day and cover all
+1,440 minutes. Their trade IDs are consecutive within and across the files,
+and their timestamps are ordered. This establishes a source-level pairing
+path, not synchronized exchange event ordering between the two feeds.
+
+The local SHA-256 values identify the downloaded bytes; OKX did not supply
+an independent checksum manifest in this check. L2 has no sequence number,
+so the observed timestamp coverage and reconstructed book cannot prove that
+no update was dropped. One day cannot establish multi-year availability or
+stability. The sample is from OKX, so a positive result would still need
+Hyperliquid transfer and intended-venue execution-cost checks.
+
+Next verify point-in-time contract units and timestamp/latency semantics,
+then check several fixed dates across the intended discovery and transfer
+periods before freezing a pressure/capacity rule. Compare plausible forward
+return with round-trip fees and spread at its actual horizon. Signed
+Hyperliquid access remains a separate venue-transfer path. No strategy or
+production decision changes follow from this source audit.
