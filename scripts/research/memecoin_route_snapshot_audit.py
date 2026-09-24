@@ -272,7 +272,7 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
             row["reason"] = str(exc)
             rows.append(row)
             continue
-        row["first"]["curve_complete"] = first_curve["complete"]
+        row["first"]["curve"] = first_curve
         row["first"]["visible_lifecycle"] = visible_lifecycle(
             observations, chosen["mint"], first_timing["received_at"])
         row["first"]["migration_pool_matches_derived"] = (
@@ -331,7 +331,7 @@ def evaluate(session: Path, companion: Path, direct_path: Path) -> dict:
                         latest_second is None or second_slot >= latest_second)
                     timely = 0 <= second_timing["response_lag_seconds"] <= 8
                     row["second"].update({"pool": second_pool,
-                                          "curve_complete": second_curve["complete"],
+                                          "curve": second_curve,
                                           "visible_lifecycle": visible_lifecycle(
                                               observations, chosen["mint"],
                                               second_timing["received_at"]),
