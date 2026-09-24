@@ -133,3 +133,44 @@ tractable acquisition problem, not a demonstrated impossibility. Freeze
 FUT-012 only after a multi-date independent-episode sample and exact
 entry/exit proxy coverage are established. Do not select a shorter hold,
 coin or shock date from any return in this source-only work.
+
+## Complete-day reconstruction: source gate cleared for a cheap pilot
+
+The public inventory lists 24 numbered hourly shards (`0`–`23`) for
+seven 2025 batch dates. September 18 and 25 were selected first as
+calendar-spaced full days; August 14 and October 4 were then selected
+from the same metadata inventory to bracket them. The
+[four-day SHA manifest](source_manifests/hyperliquid_full_days_2025.json)
+pins all 96 downloaded Parquet files, 4,540,345,911 bytes in total. Every
+hourly object matched its metadata size. Reading each day's 24 files
+together in block-number order found one **fully consecutive** block
+stream per day with no duplicate block ranges or source gaps:
+
+| UTC day | Consecutive blocks | Market liquidation trades | Backstop trades | Market-wide raw 5m bins | Time-eligible 5m bins | 30m-spaced market-wide episodes | HYPE spaced / both trade proxies present |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 2025-08-14 | 1,062,039 | 47,856 | 235 | 82 | 77 | 24 | 16 / 16 |
+| 2025-09-18 | 1,086,383 | 753 | 0 | 25 | 25 | 9 | 6 / 6 |
+| 2025-09-25 | 1,082,973 | 17,848 | 0 | 95 | 87 | 28 | 23 / 23 |
+| 2025-10-04 | 1,077,543 | 656 | 0 | 24 | 24 | 12 | 9 / 9 |
+| **Total** | **4,308,938** | **67,113** | **235** | **226** | **213** | **73** | **54 / 54** |
+
+The August 14 backstop rows are **not** ordinary liquidated-wallet taker
+closes: their taker differs from `liquidatedUser` and their direction is
+`Liquidated Cross Long` or `Liquidated Isolated Long`. The auditor's 235
+taker/close exception counts on that day are exactly these backstop
+rows. All market-method rows on the four days have matching paired
+markers, one liquidated-wallet taker, and closing directions. There were
+no marked trades with a block receipt over 60 seconds late. The
+eligibility counter then checked, using trade **timestamps only**, that
+each of 54 HYPE episodes has at least one observed trade in both the
+proposed ten-second entry and exit proxy windows. This establishes price
+source presence, not spread, depth, quote availability, latency, or a
+tradable fill.
+
+The four dates supply a multi-date cheap HYPE gross pilot sample, but
+Aug 14 and Sep 25 together contribute 39 of 54 HYPE episodes and were
+large liquidation cascades. Date breakdowns and chronological-half
+controls are therefore essential; pooled fill-weighted performance
+would mislead. No outcome price was read in this reconstruction. A
+separate [FUT-012 contract](experiments/FUT-012.md) freezes the intended
+pilot and source hashes before any conditioned return.

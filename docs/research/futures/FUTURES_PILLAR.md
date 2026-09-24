@@ -110,15 +110,14 @@ incremental gate. Neither result validates a front-end cohort edge or a
 live decision.
 
 The distinct [market-liquidation source audit](HYPERLIQUID_LIQUIDATION_SOURCE_SCOUT.md)
-then checked twelve metadata-selected 2025 fill shards without reading
-conditioned future prices. All 31,020 marked BTC/ETH/HYPE trades in these
-samples were market-method closes with paired markers and the liquidated
-wallet as taker. They occupied only 197 market-wide five-minute bins;
-49 bins allowed a delayed entry and 120-minute exit within continuous
-source coverage, and a 30-minute separation left 21 episodes. This is
-too clustered for a return trial on these fragments. The source gate
-continues with full-day stitching; no liquidation strategy result or
-production change exists.
+first found just 21 separated market-wide episodes in twelve fragmented
+2025 shards. Four complete SHA-pinned days subsequently yielded
+4,308,938 consecutive blocks and 54 separated HYPE episodes with both
+entry and exit trade-proxy timestamps present. Backstop rows were shown
+to have different semantics and are excluded. The [FUT-012 contract](experiments/FUT-012.md)
+freezes a delayed HYPE trial across these four dates and chronological
+halves before any conditioned return is inspected. No liquidation
+strategy result or production change exists.
 
 ## Established boundaries
 

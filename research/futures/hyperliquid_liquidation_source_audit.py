@@ -33,12 +33,12 @@ def epoch_ms(value: datetime) -> int:
     return int(value.replace(tzinfo=UTC).timestamp() * 1000)
 
 
-def audit(path: Path) -> dict[str, object]:
+def audit(paths: list[Path]) -> dict[str, object]:
     connection = duckdb.connect()
     cursor = connection.execute(
         "SELECT block_number, block_time, local_time, events, _src "
         "FROM read_parquet(?) ORDER BY block_number",
-        [str(path)],
+        [[str(path) for path in paths]],
     )
     counts: collections.Counter[str] = collections.Counter()
     source_paths: collections.Counter[str] = collections.Counter()
@@ -133,8 +133,8 @@ def audit(path: Path) -> dict[str, object]:
     )
     top_bins = sorted(event_bins.items(), key=lambda row: (-row[1], row[0]))[:12]
     return {
-        "path": str(path),
-        "sha256": sha256(path),
+        "paths": [str(path) for path in paths],
+        "source_sha256": {path.name: sha256(path) for path in paths},
         "first_block_time": first_time,
         "last_block_time": last_time,
         "counts": dict(counts),
@@ -171,7 +171,7 @@ def audit(path: Path) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("parquet", type=Path)
+    parser.add_argument("parquet", nargs="+", type=Path)
     args = parser.parse_args()
     print(json.dumps(audit(args.parquet), indent=2, sort_keys=True))
 

@@ -8,6 +8,7 @@ Use after the paired-fill structural auditor has validated each shard.
 from __future__ import annotations
 
 import argparse
+import bisect
 import collections
 from datetime import UTC, datetime
 import json
@@ -34,21 +35,30 @@ def rounded_segment_bounds(first_ms: int, last_ms: int) -> tuple[int, int]:
     return start, end
 
 
-def spaced_count(times: list[int]) -> int:
-    count = 0
+def spaced_times(times: list[int]) -> list[int]:
+    chosen: list[int] = []
     last_selected: int | None = None
     for time in sorted(set(times)):
         if last_selected is None or time >= last_selected + THIRTY_MINUTES_MS:
-            count += 1
+            chosen.append(time)
             last_selected = time
-    return count
+    return chosen
 
 
-def audit(path: Path) -> dict[str, object]:
+def spaced_count(times: list[int]) -> int:
+    return len(spaced_times(times))
+
+
+def has_trade(times: list[int], start: int) -> bool:
+    index = bisect.bisect_left(times, start)
+    return index < len(times) and times[index] < start + PROXY_MS
+
+
+def audit(paths: list[Path]) -> dict[str, object]:
     connection = duckdb.connect()
     cursor = connection.execute(
         "SELECT block_number, block_time, events FROM read_parquet(?) ORDER BY block_number",
-        [str(path)],
+        [[str(path) for path in paths]],
     )
     segments: list[dict[str, object]] = []
     previous_block: int | None = None
@@ -59,13 +69,19 @@ def audit(path: Path) -> dict[str, object]:
             if previous_block is None or block_number != previous_block + 1:
                 if current is not None:
                     segments.append(current)
-                current = {"first_ms": block_ms, "last_ms": block_ms, "bins": set()}
+                current = {
+                    "first_ms": block_ms,
+                    "last_ms": block_ms,
+                    "bins": set(),
+                    "trade_times": collections.defaultdict(list),
+                }
             assert current is not None
             current["last_ms"] = block_ms
             previous_block = block_number
             for wallet, fill in json.loads(events_json):
                 if fill.get("coin") not in COINS or fill.get("crossed") is not True:
                     continue
+                current["trade_times"][fill["coin"]].append(int(fill["time"]))
                 marker = fill.get("liquidation")
                 if not marker or marker.get("method") != "market":
                     continue
@@ -79,6 +95,7 @@ def audit(path: Path) -> dict[str, object]:
     by_coin_raw: collections.Counter[str] = collections.Counter()
     by_coin_eligible: collections.Counter[str] = collections.Counter()
     eligible_by_coin: dict[str, set[int]] = collections.defaultdict(set)
+    proxy_ready_by_coin: dict[str, set[int]] = collections.defaultdict(set)
     segment_rows: list[dict[str, object]] = []
     all_raw: set[int] = set()
     all_eligible: set[int] = set()
@@ -95,9 +112,15 @@ def audit(path: Path) -> dict[str, object]:
         for coin in COINS:
             raw = [time for c, time in raw_bins if c == coin]
             eligible = [time for c, time in eligible_bins if c == coin]
+            trade_times = sorted(segment["trade_times"][coin])
             by_coin_raw[coin] += len(raw)
             by_coin_eligible[coin] += len(eligible)
             eligible_by_coin[coin].update(eligible)
+            for time in spaced_times(eligible):
+                entry = time + ENTRY_DELAY_MS
+                exit_time = entry + HOLD_MS
+                if has_trade(trade_times, entry) and has_trade(trade_times, exit_time):
+                    proxy_ready_by_coin[coin].add(time)
         raw_times = {time for _, time in raw_bins}
         eligible_times = {time for _, time in eligible_bins}
         all_raw.update(raw_times)
@@ -114,12 +137,15 @@ def audit(path: Path) -> dict[str, object]:
             }
         )
     return {
-        "path": str(path),
+        "paths": [str(path) for path in paths],
         "segments": segment_rows,
         "raw_five_minute_bins_by_coin": dict(sorted(by_coin_raw.items())),
         "eligible_five_minute_bins_by_coin": dict(sorted(by_coin_eligible.items())),
         "eligible_spaced_episodes_by_coin": {
             coin: spaced_count(list(eligible_by_coin[coin])) for coin in sorted(COINS)
+        },
+        "eligible_spaced_with_both_trade_proxies_by_coin": {
+            coin: len(proxy_ready_by_coin[coin]) for coin in sorted(COINS)
         },
         "market_wide_raw_five_minute_bins": len(all_raw),
         "market_wide_eligible_five_minute_bins": len(all_eligible),
@@ -129,7 +155,7 @@ def audit(path: Path) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("parquet", type=Path)
+    parser.add_argument("parquet", nargs="+", type=Path)
     args = parser.parse_args()
     print(json.dumps(audit(args.parquet), indent=2, sort_keys=True))
 
