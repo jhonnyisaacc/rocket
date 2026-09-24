@@ -16,6 +16,8 @@ The 2022–2025 Binance archive is now acquired and checksum verified for the fi
 
 The first [FUT-001 2025 OOS cheap gate](experiments/FUT-001-OOS.md) used the frozen multi-horizon forecast and predeclared bounds for 70 historical settlement events. Its arithmetic mean at 20bps was slightly positive but uncertain; compounding was negative, and the mean turned negative at 40bps throughout the settlement sensitivity range. This exact portfolio is `COST_SENSITIVE_NOT_PROMOTED`. The 60-day control had a higher one-year point estimate but a wide uncertainty interval and negative discovery history; it is not a selected successor. The intended Hyperliquid venue and 2026 holdout remain untested.
 
+The selected 60-day control then failed its [frozen earlier-year replication](experiments/FUT-002-RESULT.md): 2021 was positive, but 2022 net was negative at 20bps across the full settlement stress. Its combined two-year gain cannot satisfy the predeclared requirement for both years. It is `REPLICATION_FAILED_2022` and remains unpromoted.
+
 ## Established boundaries
 
 The full Pana stack admitted no primary sample in PR #28 and PR #31. This rejects it as the starting baseline, not each pullback, reaction, or confirmation component. Staged `ZONE` is a useful state representation, but scoring it as an entry lost after costs. The tested `TheoryV2` implementation also lost. The frozen `daily-trb-50d-v1` combined event mean was negative after 20bps and 40bps plus funding; that exact rule is rejected, not trend, momentum, or all breakouts. The standalone cross-sectional quintile implementation did not validate; relative strength remains an untested ranker. Details, limits, and reopening rules are in [historical evidence](HISTORICAL_EVIDENCE.md).
