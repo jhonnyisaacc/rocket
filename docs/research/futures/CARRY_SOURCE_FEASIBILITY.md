@@ -24,9 +24,26 @@ boundary, so downstream code must enforce an explicit half-open interval.
 Raw responses are retained in ignored local research data; the eight raw
 response SHA-256 hashes are recorded in the probe output. The probe checked
 time order, slots, contract symbols, candle bounds and non-duplicated rows.
-It computed no price, funding or strategy returns. Full-history continuity,
-publication timing, price convention, revision risk and delistings remain
-unverified.
+It computed no price, funding or strategy returns.
+
+A subsequent full [coverage collector](../../../research/futures/hyperliquid_carry_coverage.py)
+cached 100 half-month funding/yearly-candle responses for the same two coins
+over 2024–2025. The local manifest SHA-256 is
+`bbc203b8b0d5411ed109ce1677ddc85c94d321c36d68af0dbdd58a9bfc770431`;
+it lists every raw-response SHA-256. Both coins have all 731 expected daily
+candles and 17,543 of 17,544 expected hourly funding slots. Each lacks the
+2024-08-15 13:00 UTC funding record. Independent seven-hour API requeries
+confirmed the same omission, raw SHA-256
+`2ad88701fe3bde55d8b9869dfb1afe17e9daa8c8e3b00258415585a4830c3eaf`
+for BTC and
+`0f8fa4fc3903ff699556b4d9d059654154eec5db1b9d4481780d2df6dc60ddbd`
+for ETH. The data do not prove whether the payment was absent or simply
+missing from the API; a candidate position crossing that hour needs an
+explicit funding bound or exclusion before any result is read. The
+checksum-repaired Binance futures database has all 731 BTCUSDT and ETHUSDT
+daily bars and 2,193 funding rows per contract in the same interval.
+Historical publication timing, exact executable prices, funding revisions,
+and collateral conversion remain unverified.
 
 A long Binance perp / short Hyperliquid perp pair would collect the difference
 in funding only when Hyperliquid funding paid to the short exceeds Binance

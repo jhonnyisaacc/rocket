@@ -9,6 +9,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import time
+import urllib.error
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,8 +25,15 @@ URL = "https://api.hyperliquid.xyz/info"
 def request_json(body: dict) -> tuple[bytes, list[dict]]:
     request = urllib.request.Request(URL, data=json.dumps(body).encode(),
                                      headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=30) as response:
-        raw = response.read()
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                raw = response.read()
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429 or attempt == 3:
+                raise
+            time.sleep(25)
     payload = json.loads(raw)
     if not isinstance(payload, list):
         raise ValueError(f"unexpected Hyperliquid response for {body['type']}")
