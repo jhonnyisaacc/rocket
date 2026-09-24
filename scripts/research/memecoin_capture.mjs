@@ -27,6 +27,8 @@ const fd = openSync(`${out}/${segment}`, 'wx');
 const sha = createHash('sha256');
 let bytes = 0;
 let frames = 0;
+let syncCount = 0;
+let lastSyncAt = Date.now();
 let notifications = 0;
 let createLogHints = 0;
 let firstSlot = null;
@@ -80,10 +82,15 @@ function append(raw, receivedAt) {
   const line = Buffer.from(`${JSON.stringify(record)}\n`);
   if (bytes + line.length > maxBytes) throw Error('CAPTURE_DISK_BOUND');
   writeSync(fd, line);
-  fsyncSync(fd);
   sha.update(line);
   bytes += line.length;
   frames++;
+  // Keep synchronous disk flushes bounded without stalling every WebSocket callback.
+  if (frames % 64 === 0 || Date.now() - lastSyncAt >= 250) {
+    fsyncSync(fd);
+    syncCount++;
+    lastSyncAt = Date.now();
+  }
 }
 
 async function fetchCreateTransaction(signature) {
@@ -176,9 +183,10 @@ try { endSlot = await slot(); } catch { errors.push('end_slot_unavailable'); }
 let endIndexAnchor = null;
 try { endIndexAnchor = await endAnchor(); } catch { errors.push('end_index_anchor_unavailable'); }
 fsyncSync(fd);
+syncCount++;
 closeSync(fd);
 const manifest = {
-  schema: 'rocket.memecoin.capture-session.v1',
+  schema: 'rocket.memecoin.capture-session.v2',
   program_id: PROGRAM,
   commitment: 'confirmed',
   endpoint_host: new URL(WS_URL).host,
@@ -195,6 +203,8 @@ const manifest = {
   segment,
   segment_sha256: sha.digest('hex'),
   frames,
+  fsync_policy: 'every 64 frames or 250 ms on append, plus final sync',
+  fsync_count: syncCount,
   notifications,
   create_log_hints: createLogHints,
   create_transaction_responses: createTransactionResponses,
