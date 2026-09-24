@@ -54,3 +54,7 @@ USD-M futures kline ZIPs on 2025-01-01 returned 404. Aggregate trades are
 therefore the verified raw source for that ten-second question at this point.
 The 16.64 GB acquisition is feasible in the current workspace only with
 streamed parsing and disk-space checks; it is not an edge or promotion gate.
+The [paper-to-execution economic gate](ORDERFLOW_ECONOMIC_GATE.md) now
+separates the paper's sub-fee ten-second opening forecast from its distinct
+four-to-twelve-hour post-imbalance regression and defers a full 2025 download
+until a bounded, costed falsifier is frozen.
