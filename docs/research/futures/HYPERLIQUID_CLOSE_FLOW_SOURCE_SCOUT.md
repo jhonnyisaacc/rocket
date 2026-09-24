@@ -1,8 +1,8 @@
 # Hyperliquid close-flow source and economic scout
 
 Status: `TWO_FIXED_MIRROR_SAMPLES_AUDITED`, 2026-09-24. Two free 2025 block-fill
-mirror shards were acquired and structurally audited. No conditioned return was
-calculated, and no trade rule was registered.
+mirror shards were acquired and structurally audited before the FUT-010 rule
+was frozen and scored; its result is linked below.
 
 ## Mechanism and observable fields
 
@@ -40,18 +40,51 @@ an outcome is read. A closing sell and a closing buy imply opposite
 reversal directions; forced liquidations may instead have continuation.
 These distinctions prohibit pooling the two into a single signed signal.
 
+An [author presentation from May 2026](https://drive.google.com/file/d/1qUTWDaL6j-cWBO8myGAg7cGxLjMBLs3C/view)
+clarifies the cohort mechanism (slides 17 and 20): front-end wallets use
+`FrontendMarket` orders, have short active sessions, and submit few orders.
+It calls this an observable behavioral label, with 97.5% of users never
+switching labels in its sample. That retrospective stability statistic is
+**not** permission to use a full-sample label at an earlier decision time.
+The fill mirror contains `oid` but no order `tif`, so it cannot establish
+which closing fills came from `FrontendMarket` orders or build the stated
+wallet cohort by itself. Historical order records with wallet, `oid`, `tif`,
+timestamp and complete enough prior activity must be joined to fills, with
+the label computed only from prior orders.
+
+The presentation's HYPE chart (slide 47) shows close-loser taker mid-price
+markouts diverging by roughly 5–10 bp more from 30 to 120 minutes than at
+30 minutes, and the three wallet cohorts have broadly similar curves when
+conditioned on close-loser state. This is a visual reading of an earlier
+paper version, **not** a precise delayed-entry BTC/ETH return or a costed
+forecast. It suggests that a predeclared longer-horizon, state-conditioned
+trial could be more discriminating than simply adding a wallet label to
+the already failed 30-minute FUT-010 rule; it cannot rescue that rule.
+
 ## Historical access and timing
 
 The [official historical-data page](https://hyperliquid.gitbook.io/hyperliquid-docs/historical-data)
 points to `s3://hl-mainnet-node-data/node_fills_by_block`; older fills are
-under `node_fills` in a different format. It says requester pays transfer
-costs. L2 snapshots are in a separate `hyperliquid-archive` bucket, with
+under `node_fills` in a different format. It also lists `replica_cmds` for
+historical L1 transactions, a possible order-intent source. A [public mirror
+of its object inventory](https://huggingface.co/datasets/gionuibk/hyperliquid-replica-cmds)
+exists, but it has not been sampled for `FrontendMarket`, wallet/`oid`
+joinability, or time coverage. The official archive says requester pays
+transfer costs. L2 snapshots are in a separate `hyperliquid-archive` bucket, with
 possible gaps and delayed uploads. The [user-fill API](https://hyperliquid.gitbook.io/Hyperliquid-docs/for-developers/api/info-endpoint)
 returns at most 2,000 fills per response and makes only the 10,000 most
 recent fills per user available. That API is a schema/live spot-check path,
 not a complete historical market-wide panel. An earlier anonymous L2 HEAD
 probe returned 403; see the [order-book scout](ORDERBOOK_SOURCE_SCOUT.md).
 No billed S3 request or transfer was made here.
+
+The [official order-status API](https://hyperliquid.gitbook.io/Hyperliquid-docs/for-developers/api/info-endpoint#query-order-status-by-oid-or-cloid)
+exposes an order's `tif`, including `FrontendMarket`, when given wallet and
+`oid`. Its `historicalOrders` listing returns only the 2,000 most recent
+orders per wallet; neither endpoint is yet verified as a complete 2025
+market-wide cohort history. A narrow `orderStatus` spot check for fixed
+fill `oid`s is a cheaper first joinability test than acquiring the whole
+`replica_cmds` archive.
 
 The original archive must still be cross-checked before any promotion, but a
 free mirror now supplies an initial source sample. Decision time must be
@@ -144,12 +177,15 @@ an unconditional same-side control. If the gross proxy is below the 9 bp
 fee floor, close the direction idea before
 a full archive purchase. If it clears, cross-check the mirror with official
 source bytes and obtain bid/ask and depth evidence before treating it as executable.
-There is currently no paper-based effect size that sets the event threshold,
-horizon, or wallet cohort.
+The May 2026 author presentation supplies a qualitative 120-minute HYPE
+markout, but no precise delayed-entry BTC/ETH effect size or executable
+threshold for FUT-010.
 
 **Decision:** the free 2025 mirror resolves the initial field and event-count
 gate on the two audited shards. Its completeness, exact source fidelity and
 spread/depth remain unverified. The subsequent [FUT-010 result](experiments/FUT-010-RESULT.md)
 failed the base-fee-floor gate for the exact all-wallet delayed rule. The
-source paper's classified front-end cohort and its effect magnitude remain
-the next source/economic question. The 2026 final holdout remains unread.
+source paper's front-end label is now partially specified by its author
+presentation, but historical order fields and a point-in-time join remain
+unverified. The chart's HYPE markout is insufficient to infer a costed
+delayed BTC/ETH return. The 2026 final holdout remains unread.
