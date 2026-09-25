@@ -50,11 +50,11 @@ threshold rescue. No conditional 2025 order-flow result was read.
 The distinct [BTC-to-altcoin lead-lag source audit](CROSS_CRYPTO_LEAD_LAG_SOURCE_SCOUT.md)
 verified official BTC spot and ETH/SOL perpetual minute clocks across
 three fixed 2024/2025 months without scoring a conditioned return. The
-[FUT-013 contract](experiments/FUT-013.md) freezes a simple positive BTC
-sign transfer, one-minute decision delay, ten-minute nonoverlapping
-hold and same-event controls before outcome inspection. This is a
-cost-aware perpetual falsifier of one information-diffusion rule, not
-a reproduction of the source paper's broader spot model.
+[frozen FUT-013 result](experiments/FUT-013-RESULT.md) scored a simple
+positive BTC sign transfer with one-minute delay and nonoverlapping
+ten-minute holds. All four 2025 ETH/SOL cells had mean optimistic gross
+between −0.316 and +0.213 bp, far below the 9 bp fee floor. Close
+that exact rule. It does not refute the source paper's fitted spot model.
 
 The [funding product/source check](FUNDING_DIRECTION_SOURCE_SCOUT.md) found
 that the published high-return carry trade requires a spot hedge, so it is
