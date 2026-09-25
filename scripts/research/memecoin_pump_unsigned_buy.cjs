@@ -13,10 +13,10 @@ const out = process.argv[3];
 if (!out || fs.existsSync(out)) throw new Error('new output path required');
 const user = new web3.PublicKey('HatUYhTtyCHruT9MoYxNKqw3A3wXYP43gsQoFbgqSsFZ');
 const rpc = process.env.MC022_RPC || 'https://solana-rpc.publicnode.com';
-const spend = new BN('10000000');
-const maxSpend = new BN('10100000');
+const spend = new BN(process.argv[4] || '10000000');
+const maxSpend = spend.muln(101).divn(100);
 const buybackFeeRecipient = new web3.PublicKey('5YxQFdt3Tr9zJLvkFccqXVUwhdTWJQc1fFg2YPbxvxeD');
-const record = {schema:'rocket.memecoin.mc022-unsigned-buy.v1',sdkVersion:'2.0.0',mint:mint.toBase58(),
+const record = {schema:process.env.MC_BUY_SCHEMA || 'rocket.memecoin.mc022-unsigned-buy.v1',sdkVersion:'2.0.0',mint:mint.toBase58(),
   user:user.toBase58(),rpc,budgetLamports:spend.toString(),maxSpendLamports:maxSpend.toString(),
   computeLimit:400000,computeUnitPriceMicroLamports:100000,calls:[]};
 function save(){fs.writeFileSync(out,JSON.stringify(record,null,2)+'\n');}
@@ -67,7 +67,7 @@ function dec(x){return x?.toString(10);}
     buybackFeeRecipient:buybackFeeRecipient.toBase58()};
   record.quote={quotedBaseAmount:quoted.toString(),requestedBaseAmount:minimum.toString()};save();
   if(minimum.isZero())throw new Error('zero buy amount at bank');
-  if(a[5].lamports<15000000)throw new Error('public simulation buyer below funding gate');
+  if(new BN(a[5].lamports).lt(spend.addn(5000000)))throw new Error('public simulation buyer below funding gate');
   const instructions=[];
   if(!a[4])instructions.push(spl.createAssociatedTokenAccountIdempotentInstruction(user,userAta,user,mint,tokenProgram));
   instructions.push(await sdk.PUMP_SDK.getBuyV2InstructionRaw({user,mint,creator:curve.creator,amount:minimum,
