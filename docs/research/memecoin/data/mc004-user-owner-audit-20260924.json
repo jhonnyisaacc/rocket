@@ -1,0 +1,396 @@
+{
+  "schema": "rocket.memecoin.mc004-user-owner-audit.v1",
+  "observations_sha256": "18fc467516f087140ca27b1a91054a1756906a618db45fbd0087c5bc45813b55",
+  "selection_sha256": "70d0359719367c70d71fb354604d21f0dc8fa85890642ea0e621a37b8ddcbf1c",
+  "counts": {
+    "MATCH": 47,
+    "MISMATCH": 1
+  },
+  "rows": [
+    {
+      "signature": "33nNw18sAARrQD8bDrDC1CXDKwnVCU7fQqo3DgkhMkFBnmHUVGtoNnoir9gL1qzaynALiJziJzUiEYR14dFiWQQz",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "event_sized_token_account_owner": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "transaction_response_sha256": "1db88cf4b5a6a08286cd88ce698cbfaffb11699489f0db3cda4464f78ed1460b"
+    },
+    {
+      "signature": "XMY7Paw9A2CRU92fRnUz4jbvPaCMw2zuZVFDwjGeiXXnKzqRmuq3Mmho7JQL4rZTXDEppyh7jE325F8MYTqj1sf",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "5x2R9ipGB2s4gniJb46HBdL2FknuHtyaFs4kqeBF4d7Y",
+      "event_sized_token_account_owner": "5x2R9ipGB2s4gniJb46HBdL2FknuHtyaFs4kqeBF4d7Y",
+      "transaction_response_sha256": "44312d66bfddba6201f343e238945158a2eba0625bbf15e7b35e8498692188c1"
+    },
+    {
+      "signature": "3sSXdSUN1u5cFKrioqZCq7CzkPEqL6BrRSmSzF34NfRPLADKKN2kbN1PZnxuSinCLVqnxkcKjXCgWr4m2k5UYRQf",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "SfR74gVQZad1gHhwvjCxWfZyzLa5hfDp51HA1uTnN52",
+      "event_sized_token_account_owner": "SfR74gVQZad1gHhwvjCxWfZyzLa5hfDp51HA1uTnN52",
+      "transaction_response_sha256": "c39b8e8c0ba9b22f40039ef55f353e62ce7705367d35ddf7b8ed0a70c27b9a47"
+    },
+    {
+      "signature": "2v4K6sP6EYM4BnFqmEzUoSXCp5AtGx2bZoxzyUYean6nVAoy5zzXUUm5Db5hwUvuWUC9YVwkJprQkm7knXWcZmVi",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "event_sized_token_account_owner": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "transaction_response_sha256": "c218ad981e5cbdd59df9822f2892c4298da898720a0bb80342eb34f2c99e5e1f"
+    },
+    {
+      "signature": "3ZKKmXi1uuQRBPtUEUQcPa2U3JttnJu4fBGtyyikcSqAb5j5cxFWeCbJVwATNGUevJDT6zEqYJGdGu7vLJwZTDbL",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "EeCmb2qvEU1ncvjWTgserU6hRFdLvKVdkzjvKwEvVaKh",
+      "event_sized_token_account_owner": "EeCmb2qvEU1ncvjWTgserU6hRFdLvKVdkzjvKwEvVaKh",
+      "transaction_response_sha256": "33630556e939d1c8c0bc5cfbb60c09f09fd9d9926ad16558d0edb817189cd8a6"
+    },
+    {
+      "signature": "xPP3ufNMowaHjtACuKJ1tUwBZeY2qbtd5xi2C8zoHzwdbX8cpzusFvEoSsoGohCUD8VCKL5cokaSefQnmQgoyS3",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "BqLihk5vKqVk14aPg6B5552iUyEoGLZTvrRcoYKinhVQ",
+      "event_sized_token_account_owner": "BqLihk5vKqVk14aPg6B5552iUyEoGLZTvrRcoYKinhVQ",
+      "transaction_response_sha256": "ef300c3836c8fb7540ffe39a668afba4326eb21d706de770ecaa73b7df54ca7b"
+    },
+    {
+      "signature": "5JEqW2wkSJcmnxzjxv96PqneaNFfGA59KoXEKN5hkSg55ocZiyGEzTWDqwLALzensxoiABENuzXf5o1eM5CFwwFR",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "event_sized_token_account_owner": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "transaction_response_sha256": "72425aed22c45d2e36914f22a8f4edfee04cc4780f676bace482f29a5ab892df"
+    },
+    {
+      "signature": "2kQeGjvnMD8nc6kSroZZ3c4wXq81cKYThisiTEGwKx7bdxFaXLkUFPdaxiigZj9crWZBuQGy3Y4iCzs1W7Qqjtyw",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "HyTquoXnphhp1DYPCqmX9R2y6jm5ioPxgy65diiGUK1G",
+      "event_sized_token_account_owner": "HyTquoXnphhp1DYPCqmX9R2y6jm5ioPxgy65diiGUK1G",
+      "transaction_response_sha256": "57d3ae71ca577c88ef3e50f709f7aacdd20727d832d7421a8a5d6ffd33b323b5"
+    },
+    {
+      "signature": "57FNxyxMDTcyYEMNWFHqjQoyPUPrdkp7BCErxELTiDNQNjp5N1cNxh9JxQhVbmEutvhnuyfaBkUPbgZS8kJJ3P8a",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "9nt6TJRoFEEfRCkqDQThx8iyyK9uaJNsFVcSL5GUq8XG",
+      "event_sized_token_account_owner": "9nt6TJRoFEEfRCkqDQThx8iyyK9uaJNsFVcSL5GUq8XG",
+      "transaction_response_sha256": "f3b183013bf0306f176fbec39afa2f8d2911b3f5e24c629fcbf5e8ec49d6593a"
+    },
+    {
+      "signature": "2BZws3isdpQNhLKSgseghAJZRfoLGMYHizDhongbVEUzj36qEz3HVSyfCva35PPFq7MmhDKoiJuD39iNFN93pg4a",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "8Xet46GjBhdUYwQkNkYkgSVXAdpfuzaQY4q8QztyzXJn",
+      "event_sized_token_account_owner": "8Xet46GjBhdUYwQkNkYkgSVXAdpfuzaQY4q8QztyzXJn",
+      "transaction_response_sha256": "e8dba5cadf0d5ffc709706a3aa947cbebc2ff04c0dc58e8a66d43acad6ff3136"
+    },
+    {
+      "signature": "34q5hah8hEm5xxTHdzFM3DVEHeNasokUrPQsWGdYHJsfPPSGxc6Ac1PP7PmYtEhUKuvEPrKv68YTkMF5G1E1znPq",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "BTtZHKrMfQQyARhE3sDFew7jW4HCQLND8ebkewyWBDAN",
+      "event_sized_token_account_owner": "BTtZHKrMfQQyARhE3sDFew7jW4HCQLND8ebkewyWBDAN",
+      "transaction_response_sha256": "1a878f892279a71d8728a4928b85d53a1f127ba8f44b4f170325a528832361a1"
+    },
+    {
+      "signature": "5CqFD6vTYnp45s94ctRHcJRLChhqh8C5GDALR5zd1NPt7hgPmrzNdv9Jp1VVVCmEkudNWHgzUicQ2R8Swv1uae1j",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "Fe56vF6RuWYxbXRoovjqLjthcHxs9CvEVxqZR3sotftS",
+      "event_sized_token_account_owner": "Fe56vF6RuWYxbXRoovjqLjthcHxs9CvEVxqZR3sotftS",
+      "transaction_response_sha256": "ed3a6aa45be3d38868656bdf3338c0d1c6fd4ff2d929e173044a63f08c63a2ea"
+    },
+    {
+      "signature": "2UbipFRrJatfZjHn7h57z6J6hwaqBmYvE8kW2ATA8XziZTietaYV8N9vkSZzTBExLqVnveyzuhinNgVgg5paekAs",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "hMo9EYUtTa2EU9USrMyMMjQphxT5gznEZMjemX9wFLS",
+      "event_sized_token_account_owner": "hMo9EYUtTa2EU9USrMyMMjQphxT5gznEZMjemX9wFLS",
+      "transaction_response_sha256": "3c22561206fdaa63fb04c6238156cf36fdc0a5bae7a1257334c241b78aa09b05"
+    },
+    {
+      "signature": "5yDdq3d8VoRMGZyxqovbvAxFKZ1FjUNBc9GFqXypVjeZgKPW2btS4j3mQigQdJ7kJ7yya3fU682XZVrVEvveGdBf",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "BJy6XQG6VB3B6sm8GkFymGzEF8qDWu5e2KYYf79Bi4FP",
+      "event_sized_token_account_owner": "BJy6XQG6VB3B6sm8GkFymGzEF8qDWu5e2KYYf79Bi4FP",
+      "transaction_response_sha256": "e1a4f57ddcbf999e743060f53ae1043bce1058fd493062fff94e91e9c0cb9730"
+    },
+    {
+      "signature": "3udDvMSyzvRdcy6N59KbQLWxAarLmV2KfEwnGXFQBNB9iBwe7DiuEAbeUtL4BphdXdobomUgMHjHVmgdauGWD8Vc",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "5YzqxFxd2LJ9tSkwmpEbrYp2XXbc6uV46sP6vLLjEKAY",
+      "event_sized_token_account_owner": "5YzqxFxd2LJ9tSkwmpEbrYp2XXbc6uV46sP6vLLjEKAY",
+      "transaction_response_sha256": "11d3d23565bf57ec3dc85fa85f3f92b047505bd97b0db9378fdef8441ac3c37a"
+    },
+    {
+      "signature": "4i5zrLeN9aS7kcYpDX2kXJ6N5MDL2yHPiZ5yysSn7tDr9J6n6Cw21YQG4EN3z7Yox4HwtJuf1LHnP6ugNQ8FMTpU",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "BbXWUzz3Cc4YpMqnoUMDdz6UHR7mUd2bttGiGfQinQvg",
+      "event_sized_token_account_owner": "BbXWUzz3Cc4YpMqnoUMDdz6UHR7mUd2bttGiGfQinQvg",
+      "transaction_response_sha256": "29abab90f0dad96b47386cc755a31a333028c5864f2ef15b58bea3ce1a33749e"
+    },
+    {
+      "signature": "3ziKFezM4KymeUwvywRfXRitxPHaga9JNwKdK9RLAWThooyivhwEUgohjaJTMg47qAgVobDAhMcaE4P7PoxPi7Vh",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "88887QrRZPZmsstEXsoXXB8E7nbmUDde4Gp5s7jG3ENu",
+      "event_sized_token_account_owner": "88887QrRZPZmsstEXsoXXB8E7nbmUDde4Gp5s7jG3ENu",
+      "transaction_response_sha256": "e6f30b0cbd5591681909df6c463c43358c6fb376316ca1dab0b97b3b83787460"
+    },
+    {
+      "signature": "4fggNG1D6M2cKWq6Q7rbk4C5X1oL12BPiiLC52KtXqtvdg716efBocjZyrkoFWSbMjZLfbdtmcY4u2FYWw94vbfj",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "BpuSMK3CtgAqiH6veEnZVh8NfHwT2ijJgJEAWYaFQNRL",
+      "event_sized_token_account_owner": "BpuSMK3CtgAqiH6veEnZVh8NfHwT2ijJgJEAWYaFQNRL",
+      "transaction_response_sha256": "48f08faab42a40016b850d6d4fb05b846b10520b40ad7983c665ef9e5f00bcad"
+    },
+    {
+      "signature": "2QZ4BSffVJAXJ9a1P4jue1G1y2cvPXaySKtFY9LcbrbHP4WbG3hJPeCck3573bqKHtS2FwvxEUigJJF5nmSNE6JA",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2s6dRFXmJejeUhNx2f3KcYJgrJRxUwFmoChwFduKcATg",
+      "event_sized_token_account_owner": "2s6dRFXmJejeUhNx2f3KcYJgrJRxUwFmoChwFduKcATg",
+      "transaction_response_sha256": "73ee65b150cdd3b8d4741808d6d8239689272d345d3968a152881801b7d13865"
+    },
+    {
+      "signature": "5MoomH4sSWCjcGNgVhpmp3DGyRSH5UiEHhhSL6QorjwWcYnzDSyuMAJnXfsRpaezrdcP5g2MYmG6vQhK84Tuywyz",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "311BetvUQ2PWt7eNKsWKBYFKDQ78XARikKSd1rp2Hwvy",
+      "event_sized_token_account_owner": "311BetvUQ2PWt7eNKsWKBYFKDQ78XARikKSd1rp2Hwvy",
+      "transaction_response_sha256": "4525eeaada7367588635381942f3435d9ad10325fb4cbcde70bd0619b1f9aafe"
+    },
+    {
+      "signature": "4QBWyr2pXh1QPXW44q7a652R2kneSJcWycwdQdRnHjv89KUo97xeLjn5qDBxYX6vux58nMAY6F3gCrdHZ9yzowjp",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "Fi9fjEmzM7ieUEwT5LtFiYBrnz8EFYFYSqgZg5F2T8T8",
+      "event_sized_token_account_owner": "Fi9fjEmzM7ieUEwT5LtFiYBrnz8EFYFYSqgZg5F2T8T8",
+      "transaction_response_sha256": "4723628819498d02cbcbe3ca6c29dd48fe7b9b1ded14e9e395724b21bcf3d112"
+    },
+    {
+      "signature": "42qcddKjK7zUmf54ePRBLoKks4AFoTmpbpS5VVtgNdVLSPY2tByPU2LiLXdyZvvhoF8iFLAoFrdMtdKpLVLgJCEP",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "event_sized_token_account_owner": "2KH6dU7kfB7v37Y3BdFkN6ADRY1xGEVyESm27ucDcjvJ",
+      "transaction_response_sha256": "704d5c4c8ad52bf0c1ff642e59919876b995f77ec5c3e1fe439561f34229446b"
+    },
+    {
+      "signature": "3tJikZQCUJ8D1QymVApWDW3Yav7Ksct18FBgRdH6gUfnYZJZHCe8qRemoZwcBHV7fdxPNgxqyCS91xTgxir9w23Z",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "2R652pjG8obWH74yochSpr5gDstpkX4JBV86V5G54XkU",
+      "event_sized_token_account_owner": "2R652pjG8obWH74yochSpr5gDstpkX4JBV86V5G54XkU",
+      "transaction_response_sha256": "68ef5eee21129993f7f4dfd0a46c0b4cc8d9fdbb09ee3b792eda8f782521892c"
+    },
+    {
+      "signature": "5eMUXQVsVric67mMTKZMdGDU4VcfA6Fgp6g4Cj86LfdEKf9JjRjnQaxtnNAPPXYmZVKsPMykcwfCjQkWHnjiidsd",
+      "stratum": "single_buy",
+      "status": "MATCH",
+      "event_user": "8j1eQufRSCvjGzEkN4LfQV3QkzR2zjqbfztmiVCXrStE",
+      "event_sized_token_account_owner": "8j1eQufRSCvjGzEkN4LfQV3QkzR2zjqbfztmiVCXrStE",
+      "transaction_response_sha256": "22796df77ba861c717a036af5cd0e1b0f946e207189b985a554c78e6b1dcd3ff"
+    },
+    {
+      "signature": "5J1RzajiNt15nZNsNtkKFvS2nez24thTX6nxyWfEeS8tCiebhxkhwuiGJBMF7MHpnG8PdcGvNqLHUEoAKDKyHTEk",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "GzbWnjUMPkP1Xx2BcrrR61HHemGcMnY8sn1ZCqQJeNz1",
+      "event_sized_token_account_owner": "GzbWnjUMPkP1Xx2BcrrR61HHemGcMnY8sn1ZCqQJeNz1",
+      "transaction_response_sha256": "d2f94c4479da37817243b0355b886ba8a416c46fafff4b739c5c04da3cd950ea"
+    },
+    {
+      "signature": "3fYbkaqj6n4jh6SerArA1iAmV54QMiiFnLHTWeez47p7v1cCTwuwNTS9PoLNCQhR9RRBHnT5UCZTMmknd2qQzj7m",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "JC5vsXekWDvCDds18PCnDhN4PWGagSj8TdDcU2GNqpvm",
+      "event_sized_token_account_owner": "JC5vsXekWDvCDds18PCnDhN4PWGagSj8TdDcU2GNqpvm",
+      "transaction_response_sha256": "9f558b9e0cf138c59e3bc1a514cef76075699f71b1ef2e326e7f194a9df54144"
+    },
+    {
+      "signature": "7CW5TagVoSzkuU4yVYvLamSCQgT1riD67fwEEJWaLd16tiNpsQ5jN6V2Uwa8s1VCPqUmnNUgeNcdeNE2Aa1KKFY",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "E8CxmCznfD6vuitkgTLpm92p8kozZfzhr7Axqw2pVYb7",
+      "event_sized_token_account_owner": "E8CxmCznfD6vuitkgTLpm92p8kozZfzhr7Axqw2pVYb7",
+      "transaction_response_sha256": "72bcae975ff1a85d25614315df2a069f85c14b3712ae0f58cd3c9a876826964d"
+    },
+    {
+      "signature": "3cQgoeXZsT7etcim823gURChjAyTSBijy7nBrSxtUdxeG285p9udutUnvYCPtKsQbAR2y5m4C5RFbSn2PK1d8xGG",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "YARSciE3tFureJbF9YmeBSxY946V24DmeKhuV3AoyXW",
+      "event_sized_token_account_owner": "YARSciE3tFureJbF9YmeBSxY946V24DmeKhuV3AoyXW",
+      "transaction_response_sha256": "3a1f8c39fad75dfc652f535bba9fbed33bc2f2bb457ad4e193078df60169e74e"
+    },
+    {
+      "signature": "4GEQd8aaJoSyYtjZ4Mrb836uqzNRhDaSbx83FKU7ho62SG33EMR6pBWsR8FKLCkV6diEXPiXiV8HMANThYKcgi9s",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "7ENLcxc9b9Q4Je6CMFUoUqsmw2d2RYimxGBKc5Z9aQWT",
+      "event_sized_token_account_owner": "7ENLcxc9b9Q4Je6CMFUoUqsmw2d2RYimxGBKc5Z9aQWT",
+      "transaction_response_sha256": "98003a4db8edec44f5a0a4fea9daa0a1d8e4d45843044d41f314835ad289d519"
+    },
+    {
+      "signature": "67LrhmhLP6LV6PCU92PoS7pHU1WXVoDH8GH5geaFtTffCAwR4LKQd3EA4YuZ5vsy45zLzocqa3ex6Q5NVszjB2eq",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "931EKdy2CvK33w5Zdixw5C3wqfYP5CYD8ErSRaYzmqNM",
+      "event_sized_token_account_owner": "931EKdy2CvK33w5Zdixw5C3wqfYP5CYD8ErSRaYzmqNM",
+      "transaction_response_sha256": "0141e7d91976f56a61a526a94344d8a411412c46d4b4edecf81cc9caa16b850f"
+    },
+    {
+      "signature": "4zNDyFS8Y7oDLqWN8sXFAXUbZWozUVw2YUfq12owyVntJBgZV3U58qDKHP2L9VSiTzdXHqsmdHS1EUZb3Gn7deJV",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "ELxcKrDwPRKcKJNEMkqdUgHRtXhMtQsbT8KbtRh51SCC",
+      "event_sized_token_account_owner": "ELxcKrDwPRKcKJNEMkqdUgHRtXhMtQsbT8KbtRh51SCC",
+      "transaction_response_sha256": "b4ec043ffa66bf1ccf3fe9f2598bc476ff094afc27ecb0b0a357841d5ddfa44c"
+    },
+    {
+      "signature": "3sGdhMVy6ybenT7bTZnv8VkwBSWwN8iXtwLPzLY2Ljs1hUzhpyU1hLx5j235KAS2PzXeY9UHVXtaNuUXS7CdHBz",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "F8F4GUTngFrfQYf3aBGbtxi151QuduxffLukauJMWf2u",
+      "event_sized_token_account_owner": "F8F4GUTngFrfQYf3aBGbtxi151QuduxffLukauJMWf2u",
+      "transaction_response_sha256": "a1a7f49262ad8de568b043d42de77569e9b98b7b57bb02bebb98745662e2caca"
+    },
+    {
+      "signature": "4RagpGZgvoWjRBGfDqp8zicsMXmKoZz6AKzB3vVvsezCtEYa2aGqsXxXC9L9tf4hheSHmbajfPRMZyG9ED9YyGk5",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "4mCSvXentdi4kwrXEpnwwVzysZf49Zh4rWe8uUZJtEcd",
+      "event_sized_token_account_owner": "4mCSvXentdi4kwrXEpnwwVzysZf49Zh4rWe8uUZJtEcd",
+      "transaction_response_sha256": "f6f39aec230f4f469331dd5a0bc4c5c9d9b48e658fefabc5c516d768a1fef017"
+    },
+    {
+      "signature": "mCYUxJwdJGEiZUmNFmtdEYkVn5rpmFBPiP8H5oaZio3mwh3Hg4BZmGaDskfHsN9ZA3prAoJaXU2mFqd5EC8qVA3",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "HHKRf17Mx3zFtacFKyx9AJfZfMvS7uPmCuR4G9Ko7vHk",
+      "event_sized_token_account_owner": "HHKRf17Mx3zFtacFKyx9AJfZfMvS7uPmCuR4G9Ko7vHk",
+      "transaction_response_sha256": "4ab72e5a6f0b876f0b79509401daec693e0da7c37f1419522b9b83a4720f8d24"
+    },
+    {
+      "signature": "4JMcg4bKCynBHReRt4MdJSfEZszM8xu1jrT7RDvZi6aPKbqN4DZ1LJHCqdKjkXrhffYhK7m85xt5BTk8cmB2yFoG",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "E7iosBqYXrqnUJ6kiJ3AFB2a1RjkL6fxgzqfwuq2kAG3",
+      "event_sized_token_account_owner": "E7iosBqYXrqnUJ6kiJ3AFB2a1RjkL6fxgzqfwuq2kAG3",
+      "transaction_response_sha256": "018194244c1f140936610b28b3c319e6c053938504f5d3291867621d3d33f3c0"
+    },
+    {
+      "signature": "2eCiyEmwHGvFKzWS9mmBsEQCJg5obe9jLu6YpN6sQ3ZGpAPgVBDPycSeLFqjSAt48d8pwQuYnpotBFk8jU9dC8L7",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "HatjYt6MN1rqkW8NGwJqetPY1QC5kRtBHLoKy2siWNXL",
+      "event_sized_token_account_owner": "HatjYt6MN1rqkW8NGwJqetPY1QC5kRtBHLoKy2siWNXL",
+      "transaction_response_sha256": "4007d36c298275ffdbf94e10fe2e93137fbfe9d9dc6f73d5ba7188dfe722e092"
+    },
+    {
+      "signature": "5vLFwzS6634LirsQeRmbmXbYxykmxB9isexQijVeVucekJ4JbjkWiqUnGUT61zFBTe3BhDdtJYh4bp49QmvhqQYf",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "A41V82DpaKMuuZLJphaiNb4aNaq7CGBG8Szecmzq9Tnt",
+      "event_sized_token_account_owner": "A41V82DpaKMuuZLJphaiNb4aNaq7CGBG8Szecmzq9Tnt",
+      "transaction_response_sha256": "f31277b71d2fe8dc9f26185c55032e01ed71675d19f91367fd54d1c97c5a832c"
+    },
+    {
+      "signature": "3KXaabNt4MvAqHAn34HcG7TgZEzjGD4UtBS2sZSkWxNtvguNt5hRHmJLZt9GGzYkgj5c3KqXGajfqqJbfXjyGFiq",
+      "stratum": "single_sell",
+      "status": "MISMATCH",
+      "event_user": "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+      "event_sized_token_account_owner": "ApsmBJpaVmDkKAnrRgKTAmt6XunBw4SdtbTAAdKBD3D7",
+      "transaction_response_sha256": "d5185be127dc7ef01413b97d660f05ab8634b41e111f97e601636b75cf1cc96e"
+    },
+    {
+      "signature": "25qxrWLUocv37179LsiRYS2zKUCyaNujRqHNsM8gX5XJHmVpNBQmfdpFvxMLZTsakKny3LxNJNHJcWf54um9XJGE",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "FNvLdMfo2aB9xf14x4TFN3dr2TDpKz78Rji1k8bTx4bs",
+      "event_sized_token_account_owner": "FNvLdMfo2aB9xf14x4TFN3dr2TDpKz78Rji1k8bTx4bs",
+      "transaction_response_sha256": "876eea9bd15c67271501022aa17af22c1b69690af9093ecfbaca0433e0ae3e94"
+    },
+    {
+      "signature": "DpBELmpWHVTTTpTnDoUrVYC5PxvtZEjPYQ1tRSztk1hRJ67FwpXYzX1147QYPBzAZvE5guWzYtLf9AutvHMAVCu",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "FaBdxRyY5m82y5vPoeUAHMw6hBNk5NPyvhM2expJ96kZ",
+      "event_sized_token_account_owner": "FaBdxRyY5m82y5vPoeUAHMw6hBNk5NPyvhM2expJ96kZ",
+      "transaction_response_sha256": "942cc143409a9d7815f1f724f9cf74d76295b3060b584f59fecc08d4e8a2393a"
+    },
+    {
+      "signature": "2PuvGHusaujakK2Hrv437UoLGZ5LU2ZHC4oVXE93aG22Hb4ZnMmdwGeppwtYnwCZxrD1WXDCosMQaN1hWNY5gAi5",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "3w2XwgAFq4v8jt3ZgsK7vPHbmXGHrnFgoMzLaZKqxQT4",
+      "event_sized_token_account_owner": "3w2XwgAFq4v8jt3ZgsK7vPHbmXGHrnFgoMzLaZKqxQT4",
+      "transaction_response_sha256": "7dd39275eef2b0ce65838758f5c64a9ddd4d0247f07251f1519ac5dd59203dae"
+    },
+    {
+      "signature": "26fxEGXsUrTbDP23x8LKgt6JV5tSEQtVGgsBTAB5d353GqqLpzc8DqQJMi65y6pM4W44T6zgqzhodG65GiZsghny",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "8fmJTYHPyaPQ6jHngEPH3cKrVCfrpahtJoLK3h1T3akR",
+      "event_sized_token_account_owner": "8fmJTYHPyaPQ6jHngEPH3cKrVCfrpahtJoLK3h1T3akR",
+      "transaction_response_sha256": "7b36cfe9f06780751af52b411629ab27d28adbf9b3e8ec826832e85986309fc8"
+    },
+    {
+      "signature": "43a67cWH4RF8rqp5Eu5W7y6hgQ9oMEeBZiaeutumJbHxHhMqHrUhnBRfERCFjQ7UM5wuVWMDJD5kNVBr2Lpg3t31",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "ssssswdk4RR8HqkE3uwUWzDbd6mXFTTPjcXBKNzQ57E",
+      "event_sized_token_account_owner": "ssssswdk4RR8HqkE3uwUWzDbd6mXFTTPjcXBKNzQ57E",
+      "transaction_response_sha256": "1858120e4e555af4287595c600f9214a929a54b7465ce198b437c7d4753bfb6b"
+    },
+    {
+      "signature": "rVEHXzKmSKVo8hu4cVZhADkvjaaVYJDVm9RgXJpZstS5B3fnyeYHPP7ti8HJwo1WpXiLzzpENmMQTPeagpLrqSa",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "GqZTirCiMNuDGiCLUrEDKEsTecCddEjPdHjst63DkDjS",
+      "event_sized_token_account_owner": "GqZTirCiMNuDGiCLUrEDKEsTecCddEjPdHjst63DkDjS",
+      "transaction_response_sha256": "3076eb0fe80c7ff1f11aed402f9422071acb61ff9146c385058bc58cca49f5a3"
+    },
+    {
+      "signature": "2NVYgNfJevgxHfTv4aBdfX2EWq2mwqWmjXFEgwGWShAdqGavaoGpQfS1S77RHFTMgtCDEdHa2ShtfMquLB1JxD3z",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "9VhXEPw3SaiVP5rak2Mdxmwd2TEnj2gYsLRuJxB1cYz4",
+      "event_sized_token_account_owner": "9VhXEPw3SaiVP5rak2Mdxmwd2TEnj2gYsLRuJxB1cYz4",
+      "transaction_response_sha256": "58d47680ec72e2070968d10caa6853db7f5f7db0e2c66795cc3f1acaee0c6baf"
+    },
+    {
+      "signature": "3GjJ6uQ5s84kjVkoq9GT6HTpmVGYZepL7uYwKx5a2ZRBNtFaUuVyZ2xNMrpnDvCeM1cZWXbrAUToxr3z1tzA9yNr",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "BqLihk5vKqVk14aPg6B5552iUyEoGLZTvrRcoYKinhVQ",
+      "event_sized_token_account_owner": "BqLihk5vKqVk14aPg6B5552iUyEoGLZTvrRcoYKinhVQ",
+      "transaction_response_sha256": "3673b6844cc7d037a4e584a6aaf19062269aa2056a3b3a8a1dd5ba8fcff8e88f"
+    },
+    {
+      "signature": "3LriYrWd2dNesJ72j8uEXJzMYnJW159FWU5CwSKZ1zVFF1u1Zgn7GdAabK1M7VAKBSnq4yM2NauR7GNiyCwVGx4E",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "8BKWiAymDH2NC91cFsNShzT2ptZi9TjxZGepih4C2kYY",
+      "event_sized_token_account_owner": "8BKWiAymDH2NC91cFsNShzT2ptZi9TjxZGepih4C2kYY",
+      "transaction_response_sha256": "c865374e512963c051e17d57fbd27d79f903a29e8037aec3ac15f48a06d5e0c3"
+    },
+    {
+      "signature": "4GEgLmmW5ESK8v6UjK74Wo7fEmkFR6VwNhgUw3fKziumnjdikpsTRwf8UwpWx66mCXRQtoGtFHD2oaYnAQSEPtDC",
+      "stratum": "single_sell",
+      "status": "MATCH",
+      "event_user": "2zafsmSGA3eUS2HawzcnDHRVri6MWtZ1pVUDquZNzSFi",
+      "event_sized_token_account_owner": "2zafsmSGA3eUS2HawzcnDHRVri6MWtZ1pVUDquZNzSFi",
+      "transaction_response_sha256": "883b3863785e3377fc25c5c3512503ed5011384e78ff1c988f4818203c15c93b"
+    }
+  ],
+  "interpretation": "Event user can be a routed intermediary; account owner is not automatically beneficial owner."
+}

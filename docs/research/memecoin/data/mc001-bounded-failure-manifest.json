@@ -1,0 +1,25 @@
+{
+  "schema": "rocket.memecoin.capture-session.v1",
+  "program_id": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+  "commitment": "confirmed",
+  "endpoint_host": "api.mainnet-beta.solana.com",
+  "started_at": "2026-09-24T14:31:35.063Z",
+  "subscription_ack_at": "2026-09-24T14:31:35.989Z",
+  "ended_at": "2026-09-24T14:31:48.744Z",
+  "start_slot": 450056681,
+  "end_slot": 450056733,
+  "first_notification_slot": 450056683,
+  "last_notification_slot": 450056720,
+  "requested_seconds": 20,
+  "max_bytes": 8388608,
+  "segment": "segment-000000000000.jsonl",
+  "segment_sha256": "abefcaca6b4d452dfa5c00278914e03af910a22113c102c432bab10939e79092",
+  "frames": 4087,
+  "notifications": 4086,
+  "create_log_hints": 7,
+  "end_reason": "frame_or_disk_error",
+  "errors": [
+    "CAPTURE_DISK_BOUND"
+  ],
+  "coverage_status": "UNVERIFIED"
+}

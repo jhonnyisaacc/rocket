@@ -1,0 +1,1567 @@
+{
+  "schema": "rocket.memecoin.mc016-payer-overlap.v1",
+  "audit_sha256": "aa56081be2f64a79bf5719f7916dd427f72a2de8ccdba98c1c443aa3903da034",
+  "actor_result_sha256": "e1cacd495c9237d1ffd3190d86ae586a825923b32cabb0c0642707504fa7e39e",
+  "selected_core_buys": 401,
+  "timely_usable_buys": 390,
+  "unknown_or_late_buys": 11,
+  "creates_with_selected_buys": 172,
+  "multi_owner_eligible_creates": 123,
+  "complete_multi_owner_eligible_creates": 121,
+  "different_owners_shared_payer_creates": 0,
+  "timely_owner_equals_fee_payer_buys": 388,
+  "timely_owner_is_signer_buys": 390,
+  "distinct_timely_payers": 274,
+  "payers_seen_across_multiple_creates": 43,
+  "rows": [
+    {
+      "create_signature": "128VWVqi77Yiez58eD2CdtHKKtMNySgYpkygPhERuDRmgyH7FxjC9mJd8CdAGBWAaeq4VgLQ2Cz1UedDvtcosNYz",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "1wPVwGq5zoANgTbpSSLzxqRBDau1ppmMi4mWQe2i71Ceh34mbFwU8FzrCYF3TN6KuD2aJmvVp2HDEMU1enp1PGy",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "1xFqQt63fm43tPC7XQ59bWBzx17gkBjbtbvS4Uj6qe2WkMNcW8vukM5DJX1QGH3xZ2Xg6o3SihuYjvTNmsNBmYo",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "22MVqHWym8EtvBPJQ6F4VYqKQ8ufdvDgi5TeCFYkNgAgBdUinxBhDuNGBxMYTT6ia1EA5CNhvsyBJExqkoBZUUHX",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "23X3TZta1N1e2VPR9a2t1yu7NAw7bmxNSr2gLdmpqgNXqz6rBDGRq9nTDwXg38T8LzyewJzBzYYP53KkKM2wGGxd",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2451idpfmLvHD8afJwM6ugRwU9WgNswpoVsxk62fgvam161NEAqizoi1W4x1ZSs9GaUDvdjEJQtw7XWMDjdxECgr",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "247C8gX7JTjfdqp2SFMrgcN28vNChiwzEb7Gzz3uLZRUUQipFdQFv9gt8SBvNUiWA1mTKndRdAe1hd5YEuFsyUYL",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "25drVpkndCPu3CtwFhP1yzS5UqcsyNgnLfFbQ1EWJ1GanqZmJWP1W4pXk6B9F7ZUqRZKkpZXvD2UZQFHdXtvQq9i",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "25r6k2E5ndG8uC8TRvt9Y9GHQXHvkMJGuS5Nz3eEBKw7WG6CLk9NczrdYt8dZtSyDHVuDYRwjVVcvbh8T9jD8x6G",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "28KRa41jdE87Ywq5TmCVKhR3n9CHbB2JvM226hAGyd6cbEsPPU26mtFRke4ziV3yD7sB2xUam2ktN3apYbje39PC",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "29qrJnvjS56MuER4iCZ5TToNtDJhg21h9huJ7R26p9juV9N3sL2MY3oJw3oa5ksyBGQ4Csc8NVqM63VcfBmBFtcW",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2ABMFjHn62peKGv5Kvq88wEV9NuWw8qSMnnsGVqw9MQiFJxZayd5H6yd9LZ5wxnFMciX3a54vfb4aL89dsPJEiuf",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2Bo9fBkYPEYPJzUQnJSuX4Y9DJCjngfChwwhQbPS86DEEychp5JAnnPXmo1LMr85yk6a9xmvhymbsudThMpeYLyZ",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2DN47BSdR45L6fji83xPMwWK683fzKANcufNHy3U8tmqtzELZ4RgQgeUuCtS5GC4g2QQRhwUaguRavUTDcgeSR2J",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2DeEWwwim7KpTudq11BYiJaiHnawSFUX2TDnGURjAaSE986m6BFi8xSt3kiotb965hYLXLbzHiSYZbTKqqVFt7bh",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2HbK1aD8a6oWbyxdT7xHpmTasSMTUph7pBPQmaYiFCnzxYAGrLFPHaFUKcCkpodyzFSfum4fTZyXchJ8xGdLx7S1",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2LMwXpgV9hWNA4EHU6RJzyaKpicb8hdKW3LmrwiyKdTBrYGEFWnhHfYXjur5HCGZ23ZjsewLUQkdmkXhdkGV924P",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2N62KwYh1VMVpm8H2J43rqVcZxJBkV3gQtoqgV291V9bw8G6R5FpzEesQ2xo9C9W4QvRJNKWpHpYhMLoMbMuiH5r",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2SEDAJubwPFmsop26YdgUrnnh2zwrBQ5s4bN7B4gNnXXYe8WFWGyi4Psmk5ifobyjHSNF2F9BkaHSFhS6tQr324w",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2SWg2sLJPZgw7cexQ4tEKCbSLXik7qGnuC2NWcnpeu4RoPuX67beCV4q2mkbsnNJ7SizyvkzxfrBQbxXGemeSzt6",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2UFpGGva4irovzQTm2FiBidkNKSFdugfv1q9uYYFz5Z44CTABAE8dqh7P13imoEeiL2JH7bs2EhB4p6CcEwTJxoX",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2WEiXC2r5Q6jkEmQkiD4tAbFgExSvgydtBEVjsBdZnbQY7YypB5DUWhNcpX9VEWDErcEYm1LRx9SooRF6mBy8ex6",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2WbqNC97R7sVuZYmLiNGzdA4hQG1i42uwACNgBMzAX2cu82hH2v38u7Pe3dm2tPRaKg1pzSqiw6vaKJf24EK5h6b",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2WkFaAXCzEhoLuVUWcViC7DG6SmTkNgNCn68Q4efmexVV1ctGkqEi5E2bwAawKPykqpCRzFNQSDV8uFSM4YVrkGH",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2YXbG2JQQtbnn7ZJVy7EkihRxHXT63Fv6dFd2qBtEWbk6fQBt8oLshNpmAPzgjFmGidGJGwNtkrurXU97QvipfDr",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2ZEJ6c4eNWRPkHtVQ9GKbwcE1mgucGPCXT3DMBy3pNPDaMqeuTLp1cAmQAir8NtQk4aChtQ2NVQFF6EHVhUjuZJN",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2ZSckyLWcYfwkxJSaPUXBb4RcP9JnxXsP8VHNeRd6jXRyRMtAkEexqTjuajSzo6xjMErHVNtxFJYrxn6pZFknVYZ",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2aZDEtF1yJv6A2z6G5auarW7DiGcYJuFc7yfzdmmD3MFMYw36X9RrgQ2LX3MoJyjEQ1yQ3nEUJW9GQjs3vw93MsU",
+      "selected_buys": 3,
+      "timely_buys": 0,
+      "distinct_timely_owners": 0,
+      "distinct_timely_payers": 0,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2cwHZsfzzffdxfowA6gmzB3KhY2XUiXEqZHWb85rJuuuKvx29mSkcg314eKFTaF98RjMDGTBkzPAd3bqU6aqPTaH",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2dBAntPsyKRk5Uj4DhQkZs9y7Xcbhy8mb3XFufAogknrcLAEmgF4oMj93T8briugqnzF5nPe6HmeRSUuDpmRXf23",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2ed1KMcwHZk11Vmassh2DicLya1sCkJokKuRxkheyXzvJ8ih9ezuV4yjbJH8L4zQ6kQYTwAJPzC2QhnHVC7jBYzJ",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2gzbKRA3dn2FYLcSqBLPHfAHdARi9EJiLFj1pFisFHXyzWYwg7LcWydhYfVVdk65Ff7G78kqbrSrrjBfzpaZgAHs",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2hnuZn1FveewBWKVb3DswarK9ifUZCrC8tbdL84XC6nBjB9Gaj87oTrZT9bJGtm14orBzXuCZRQycJyCdjjSYujD",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2ijXJKFEKV9hCgxmWuYYkuEPdmEH7osiEbEeW42bE2feJwxafJh8cZtdmsa6TurdfZdC7z52x98TzXDLew5GKyNn",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2kUUNYk93JiaMtt3atc5f6r26XeQqFGaKq4K5uZcdJVZ6J1H5kR6Qt8N5v5YobE8BYspUmo89fbUYV9L7aVvXdhc",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2n8Xh4U4GvYJnvrS7xYWxHyYnGb2MQyqmJyPrDWTvS5eVmE6W5C8X8tdikmrG2JoJSvkDzxekehkUvCMTBKmnsLe",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2nSdwFgb5w3yqiiVN7S3ySabXtbwFMxjhHFSWdMsU6CUGAVQRNu7iBDapMvcTevi4n4G7FmuYZZyQ5Mvq3ahjKKu",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2osF9oA9kPtsoRaZ4H4V3kKGyMgbY762HXKpECJBxKBQoTZEFDqVEroiGZcsQW9yYfPV7z9UbJDcyBfKmejAeaCC",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2qZE92mNfK55WLgpZDXvawYHUf3NXD15SHbfjp8uxhQLeiTobw6AwT1XnJnxc6Upxbdf8aA4zHAtv3v8kM5vFWsU",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "2wKVU3fv57Sa1ZVCJDyhs1vDLJ28d7uUvgs8DNdtY6ymKSPDoRHaSPhukMVipKF5CjsCUDJgJuVdTmc2CE8BfiGk",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "31vv3BTmXijpbnuJaQ6QzQeY79L7RVh8yWMZgyqXh6ZqKoPgQoeASSiZXjd7UEozSVPqxpKZov8QHpurHRjB2hiR",
+      "selected_buys": 1,
+      "timely_buys": 0,
+      "distinct_timely_owners": 0,
+      "distinct_timely_payers": 0,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "31zFJrfgSjxWp7uQNpPoJRuLxjYPBXZ6CXaMbsJzqEAawo5kB5F7BqSGiD4oc5N71z2ckP13bMK33CsWnmUPB8pQ",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "32yJECL3xRcDdLPN2Z7c8LSzBfyTG91NkjK1pWWK9CoyEJ3sfLi9rpdctzurXPnows7SoPntr49jeauBDnrN4iWD",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "32zoZZySnHDJ78KUZpata8Bot1Kb7AWxzj7UMovNG9eRgGuhzMRySNtygJDiWgSf4UCLKpeAHHgE4WU72YGGHUrD",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "34Zg3Zhxkt9Jh3KpuwurQ9UjgMWTWkWBZaJbjYeKRxWbbbMyKSizdFcyvQY1cQvMJSXK786cyNRMEqaevUU9oJb",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "358auf4i8S9wTuvbFKiUK6g8vKLGLpsDvW393EkbW4zx1CXE5Y9oSqYoiZckcSCiGeGEmUzK5UbN185AHEwZr2n6",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "35bh2Js6bDDUdEBssyh2Z2jxg59wqw3AQMtyw2CaCfBL57iiUAfLzps3Z8WPxRwxTDMRJjC81d2yBWpWSKADnRQC",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "35dbCQiSeWm8uudgadrWnLwTKkCN2yk4xG4FbpFZi82dHa4Ggzj1DcRk8H8c2S7VQu5YqBi7vuwhDHi1sYKWjMkZ",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "35iLMJJYobjZ2JezoTAQJSmsAcVew63FW8aAFH3tUqGmgRY76MWu6cZvzH1NAQFqx1wFijCyDp6tGKbGkByMSxYZ",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "39Gs4PCzzaoHnNT2hHaGT1i3NKYJPF5Xw8rgBgm6KFbmf7rkngVUHkNRLSBnp8LvbpPgcn8BDD29HZ6Frj6nLhGZ",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "39WCvyLGFFcfbk87wWpBDinuVA5UupcEbu5yMHMAEz4AhMYS9hZ3dqzksPyJsDFa4xTowG8HjsjtahwF9yJvczW3",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3AEhomHyUraLZwZcXT9S6edrbK1krqPr8zL8jeHdgKHtHdHYmWJLctiC1vXy41quhoFLipJZaBbhNxDfubuGcrHX",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3AjiAj25oBM3DgFUCb9psbFNZK46bxPNkW5ny49FMHudDgYYww4SoQvcvxWwsQDSC6FQwN3rtHyUCtBRjZK8eYra",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3ArpBAQPXHU4LcCxNRvQEmYxmGaRAUcVA1VPNXZ2pEnxiTJojNMD6sMWzvpPku85HTZ9kuBjCvjNGWpS1RRhLxpg",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3FoWk6eVHYiV1hqHBawi3g1QcQJiHWyvNx7Q5uC4aoaKuZNkVvfG36K36bc6iRWzpDDcteaXSta3eVGHjaJebsaD",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3HMXyGbnx17dEbsBYCuYRosLuMi6Bx2qV3mVUmaeEfftGCMuzr9wAV4XEMsXEz8JuuyoQKpAnsM3i7t555ouRHcZ",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3HgHaQr7bRXuEYQob6uXyEXK9b4STosGRnPHcZemcqeCXPbHkmvtVYxyrCjJBbVWwD4z3cBckPwrosNq4SrYMmsN",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3HsA3SERrTFPtfptTMotYRXEhydg96eETFzqT6Zc6Vxe9movYRqTLLQVvD8qXnxKuEAo7AWKw6C8GJ8DRfT7AFRT",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3MGqtc6gvzcZTzZWMyTUy11hsxRi97QoGRCx7Vf4mkS7WZQv4eYMtGZttMJJVKzY8rJKE9WGkwzQhubtf4x38uFx",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3QtPgUFjnZFdGGTapb4dUdFWNQsse3WzzkFy837warcL5K6Fg1aC6AuNwaToakexuT3EBohbKzbc6w1rYd5oGiA7",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3Rs51GbcvNNTDmVW2b6iTFNH5bk7J3UkjWiQXzG1uHoNUfvSBVsn3QUabyw34c71d5Wb6MUDLbrvigYtUkp7WZ9q",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3Ug4AhLAaUW4VxadqWpEPS2avJchV63nRQq9jUZx1pT2EP2u2SSzDJmEQnGHA7t6rWUoEgRK53ffRvUQvAY2rXJe",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3UgqoN7MNaGcy4N8LrZR6e4ZLQi27A4wU6Xk24HCpmU8tuRcA7ukANFQDtbqsoyFuFbhXqnVT8nuQygVK6UdRwnW",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3UjwGPDLbmBdrBPa6NvHbHb7ggbKEGHgRKa35WHs98cNWt3vJ9bvPpgFZPT7mrT9MYa9uswT13oYhJ3rSEPPMHkJ",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3WthawVhYgf2STAnGzu9928zjqLskS46ini8k7atTToT1BNgXgs1q9gV4YkFCrDe8S3bmuwAtro3qh4KYkZEAgqw",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3ZstfASeGQXUr4ygFnJRrzA4v22z57rSc3CTTS7ENTEZiXnRYx8CooQ2WNjyRY9HvbVuukCnpaHqdmggFedRxBfm",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3a7GUgtojodHPxD3VMHZDKTFpvHk9XPGnLfdjXgX4EhNaPP7tXH5w8HPPP6fXqDauLKqUnt34z46PEEJ3QprLDYh",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3b4eKQjm6X62Js2Tgs7DgQR1NDuop5PJ5XoMmfDKemJrzm1f5vpghnBzubGYi3Jt9zVM3yUuGb3M4pDWjdtkfXUz",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3eVdU158DHSGx3KTe9XqMe5zrnQ3pbRBci63EGr2pmFEhqeKEXCPDikpWgkcja3KerPvPt26GhiGguv5PwdenwYG",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3fksKGwZkgRj9SjRitoVyRpPNPBTQPngnwt5zyCiLDiMXH6h2ufjWZ8ykZmWN2rtfm8LPHdQgbRrPSL6BpE82Hdp",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3jC4Y7kQxq5HwirYs1EJb8bjEzsUZU5Cf47gTWPWH4wHjBmFk6x5e6ApzqjtUvcNtks5EvgF2mZDRCyTxGE3nnvj",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3jiEup8Wh2V4iXSpWeb2SSTdt4Cb4QUsnEKV8GFKwqrEBiZXNRPLFpwsKHq1b6ueAbzNTvoAcEJUxhyVs2HJf23t",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3oqawVT5KiV13pXCkWJ3FNKtxU2eB7xpDmrkywMB2gDVGv2hPZajVLMQSKPJqFkrroco6HVaAtFyMwRkrw6WNjt",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3pUdkLBXnKJDCKJMoLpsWM517CrMNaJQnP9A557JdGWkACQMKwTvpr9rdw6zU9id9Kir9Ta3ucfjwbcPnQFDrv1r",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3vwniTr9NRByZfPDE3EmZJgEUvPN5mdk6kDrCH7jhB9eqMhYpGMdA5bmDrNd47UXBH1E7VPY6HWz7chq5PhMA19D",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "3vxhL1j7hSWokBk6W7Gh4govojuTBh9txa8uWeKVw1Xbwx2HyUEt5Q826TAgSDaNCcr1ewusvtabouLL9HtGJDuS",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "43DJKKBspUs6CqxJnAWfbBE49P8xyjLbC3ggptA5n54B85yZMfM7jg1PqM4dK3iMzZLmzcQcfrwk3jLPZcGqme4X",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "43Z4BMmJBdn33WdDFNeAifMNfsxnXqAEqGPCPFaaoof2ZUSPPMVWZm9DcfTgkDSyZb3Gct7rCgLPG63ZLGR84prd",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "47E25UegQDyBz6PQPAGumFixzt6gQgq87E1nzVDYucZV3h6GtiD6asMrJqifFKNszsE8K4cf9wrugbxTJQq6FeEU",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "48dFsBbzp3etfsTvTxYJuYjre4rZ9JP1ianxyApUKUH6DKE4X35s8gomoHX576uzot4NPKbnLm6omUgWE2hddvku",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4A9Ch8Rs4PTHTjgC4XmXKLNFRRbVAyEhJbYPjbaFWt4V4Hh35agYRdcsaXejz5M6tmVzH9J1s233LrwVko3mSYtp",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4HtFKGDfSnCCBekciujEN5CdK6MZ4KcGe41x3vy1PTgd5FtY53Y4niFkqgWct6daqQkuL5spVhvT9RhukUUDsouS",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4MAo9fhkdpU6EQ249QGonkgb2UBdCutfFAxn9qxg2MSJTBe3ntkh1B4uQnRMhgVArnkWrZxY5XpUFqmtfZ1j6XBZ",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4MboFSWn293XjZhXeitpko6ob6LjHZkUHUDRR9n2e1h4vjsz6YE6jJdtKDubK37GnavpSsATxvMG3b1hVro2hmj8",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4PVRa1DnocWPaMyuvjiaWBL3cjwY8Zst79w6JhKtgqbSUbeR2LRea6ZpSWwim759eoGXXPgiMqApLeKsE3a8nJGb",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4PYbRDT3gPkDZEZv1yZ1hSVJ9qAdB87Fjyac99YjhGCDmLxgWfnVmG27Ct3cUWku99G4vnkgAzbXRJs2JzWkfifn",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4QeGPw4p3vncqLFabvfjBpR1ePPQth5hWWhDqHACFipcQWK2YKnw78FoRFRww3rLSLbrL3BmpDBTQ7M4ay364Sqb",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4TiftRyNZfUwwELifwKaRZcc9dw6hjuj7AyVUrvrz7gHF1pjF9MtnfJum1GjDd39NMKTB9xJPegBvecNbz59URhc",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4aunhUttEkYZ1kB6m8RfYCmyjX7BYbe7CCT8UDd7UEPv11ttmEFdkVV9tPggpe4XLok1UbX49EncnvMVDhSGjMce",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4cbDHq2gnz97fGmQqUVjnXvCVf8bV7Nqa5Pfn2ebMCkV5mNVQXZCgWW4sjy7HqYs5iNepbXgHsp3mjK2ipBxCw4T",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4d97FCF489RZ4at1dM7aRZxv53YthkD9dJbMbUgofJRMrCuAA2E7oVwLiQnZgtKnuU6RU5rmtQdpcNBUB4fXtiuY",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4dJhnxBiahXgntKsdVyHH5ahyKovRr5eqrVCKhorZSaaXmtXC6FD5frV9LeSfcMidnUsF58vzhCAWfyyeWZeJ2mo",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4fMGBuTfWGCWoxY6FYeYPag7WAHvjoMs6vJ1WQfLCtndns4Y7FE1H4HFWKduSyrsgJjKAv3fQ6tdvQ9vZjKM2VXf",
+      "selected_buys": 3,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4g6r2Uwx4V64fX8q2ztnSdj1gaqHGo1mtiiRbPnbAhazV72DE3rNP6bsDvMDpCn4UtDJt92qSmpxbeHaEzVagENG",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4h46gZo9ktjCtk77cA5mmzeDQPz7AJkf7HZF9r982Dpshm58vvjKkSxWzRmLqjeRgopg2389yCnqA499YcuZiwQK",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4iDBHKcyVMDbeTpqKrFPNkCj2RoqxUmfoMk7Kigz64DjqbiWL1PhdUWgW2e1wED7Niz8ZTxDdE7QrCL8poDS86rP",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4iJeBMD5VTUPYVgzJdVPJ7mWUhYzvkGyoSi5yMAyuEzns8ayLDQuRGHTahNVT8qbsfCX13cVz65Lc2u5ZUKqWvPM",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4k8VUALDrjC8bWpkL8s9wRtWhzrwgRofSaBThk1AANWHxA31a2NyJRckiUpzXzoT8558mEqweKxYVzWZy7E7PAQZ",
+      "selected_buys": 1,
+      "timely_buys": 0,
+      "distinct_timely_owners": 0,
+      "distinct_timely_payers": 0,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4kuVuMqNbVqBGAfgkceotyZENVfpDCDrmbHKweCqPXLkrWhVZKYucd62Rg58AvPvVsqzsZntXCTpHuns7T6QEYaX",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4o9EDopKvT3ChJC9hrNam7dxjNP6p9mCMdCSUtQLwGz7SbPbsoMKJiqDAbyo7PzfpB2T8eDQvKgJ3m4rnqbuafsp",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4o9YoCJvb54PcB7BarUsCCbuGhykEgxcXathiXBtseSFG28TrmZn5EbGh9WfVSP2AMSEmrzvRhPapVNmbLaZ72od",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4pdeSjvRpY7TcME3TW5WR73wNbJEq6mR1eiNKdp5HeCTNpCcEX39YdETUG2YSdygXZRr1KhSv1bjPUYp5KFh9J3u",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4qdtPa5DjnALUhnoLYnr18EW5AiJwf3zr4RLPYbW9eMdcw9QRdeEaTHDo5M2SsQWH6mcumjTtRtXrZ4apKRAjtD6",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4s3fQjaNar7BGxtQ8ceUpesJcJ7tCQ3bCTcywEhHegBzwr6VV6DF1sNXqGms1HmtGMpeZwryyq1Mnj2qXq28YmJP",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4sjc18nZXguh1ofHGHtjfm5fG7RQki1GPPuRd554kuBJQhzNUQ8dLdhcgdDYmkkBoMRsezgM6s2Bw7Q6DuZ4UQQh",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4twEEMDTXvtvq1MYCHTMSki6nCmeMnLZhcHHQK1ZS5pZRT5NCJvQ6QrZNCWz6he7KMBFa3CP75JDztp8N3jGd772",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4wABUo4XBpbBCaLATU62mYcf4NoYkkf7aGZgiAenS5JxmykaJRk7ZHh7rJmfDDUiBMF3TKbRUC1dYc3gF2s34gGB",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4ybm6NUz3hN1yG1FwNb79Hu6YXUC8BXFWtSiRdYRtNKP1uB6hMqmgXoj3xV4SfgZjSW3H6y5V1jpXBjFttm4gSVf",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "4zLcCUngkpir3aUS4vhjnqhiBJ972dHSGzhnvxEmHZQxyoiHq1XXGQEXb56uEgwgKoJWtXofi2GtYi3MEoTBgGJV",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "54SqqC4THFDhPRyroBftvnhEcgDXYi7tpAq67pf8Mbs55hb2KQvMb1RjgCRmb4ffCGqDFjLh6yyAbyX9KXZqXH3a",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "56WLhkWEqw1T4hvUAVnphgr9CafPq1xRmFhjXgN5aFXbdFG9GkJ5JewHagfbvjNxX7Af5D2JvYfw9tjH8UJu49BA",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "58pNJryRQ3cLz5eEUCXxYtLP6LkrZDg133KdMhxNMpuBKFRr3dadHQJULJ95RW6nZNEK86zSLs2vD3ZU5tyrXrf7",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "59LQbX8hv6DfdLY5hW3ZzfghvmaEA3cb2gGPnx4VSx3TyQyzwQEE2YebJMJoqTUFjnzrYmSZnrszPvYHsAMmj9N",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5BkNb1YxnMF3vwEGv3nDvXSGLBGxBDaZcX6tEHwyLsH9gUuQBvax35NwuHzYtZLk49a95duLpsr5Qo2ZnWLTUwXm",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5CJ5ZUmC46Kfq4Xt4NAevTrhvZ6x66pRBu4meZDWu9KRvWjoJXZCC95JZzA3KwoeCyrFnkKLvS1ZtgyCnogddk4L",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5FfMDh9qE1Yrk8LxMxXtE2hwJNwoNq3qiGjnqsjaUrmSr8ZQobp1bkTfDK7K6W3hAZFgsERAdYDB7xoAbKD51gda",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5Gx1GRotoaGZkuAmBEZbvN3qhAiYTQ7NY4FtEt5wY9VnGFhFNw4Sy4bJSn2EnfvufyoAke6baeKZS7V6WQkXYCMM",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5Hjy3m6z5UhqJpP9Egob7qmpxgzq1kqz13HqmXyW5W1xdhbzt1qPitKmeK7k4LsUM3R2pP89FB1psQbrmgw5EQqj",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5J3zBYS53tayceKHNgXNEwrZxqsz5NqdmEHfK8NVXPqBjVv44XWzdV5VLSNN6AMcy3phTKi7tSTHtSMBwJDqPLYZ",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5LcPSAMiHAp4gHKMNQAgugxFYeu5uhGiZx4pMcTvCFaAZuKKUqPMH544vHoyn39cpvsAMjiczzupid27TPBCwkma",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5TDCuMjnkhN7xXN4XzaRx8eJXK72atCe4wDNbSRpQfeumy9WkRd24UtMUasGuBiiVS2t2gtUsYbp4aM572xdJM8V",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5UFyGEFzuSWQKi2LhAVGgnkQmsFHfnFoQdzQiBuXnwSxfjdutyJHVW4Cxuu424yhatoCWDuFakZvMEbUL4W6Pt4J",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5bZE2wpmnkdyAz5GJKAjVVATpeHa8vMbuyAUiMEbh7JCX5cng8RWrL7xwcUASyMsvSXienoLuXKMdTKyLMAAPrv6",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5fUemh8MWzVPpUrWV3TZWu7sHd3bhaimdww75oyqpbPhHGTC5Pki27RmE7oZs4TsuxU9GudpnvKVwCD5suHreStP",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5iRPci8SLz1Kmckr97a4JcNaV3yUJ1jZuT3LVVhMhJvsCgMzL5zPsnvGpMaNm61kPLsRv6LXpqDuqqtLdhEoVj8e",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5ij9yMafKqNN8LYkDpPGFsEDBov2JZLTiueXHSQFEEuMjg5LfALQEyqjEvZtc1UxvVSGyBRvAHrVcTzMpo4i8joq",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5inwuhPjBKYv4FKYZhMrYswtCpNTdfH7FhpWtp8LUJPze7xAPvhhR4qxFRXP6F7BzTYZGxFA8fkB8moS8CxKCurm",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5jX89DszaqxNYgD1sBNwHVdPHLpeTnSByEQrMQT5ukhp8Jjt4Fu8C6Xaw3e13Qcu12nc1WwP1gUzcjNoJKtNQaaa",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5k1eyahz5fDNwBvtMeNsiytPQQR1jLKcad4Qf4mWVNrZJULUzfaNQsE8jCoF7cLwPHKcymPNbLQ2DUjXQYaNETmr",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5q3nLdqJRTrCnF6cucu9bRBL3pwhg928sa5ZFy3CqCVdL84ZcKyftNHHwFg2ET9Mjhp9PTa5rnV13Vs471HTCL13",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5qbpZjrjqCNMVx3m9wazXK5jQuZiRfSfoJsR9m99ovnVScd5dfXttEFjFuayTTAP75LniKPE8KyFHxh6rzaYkpiR",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5r72EMYQVcF8g5GRYfreLgF6M5qns8SKkMBHxyWHzMDihr6387wH6MFV6rC65e5ivygZ7o4BpZJ7p8ErhsgZQLbo",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5vpofA4ZoGRawnExxBgJ6D4mMe6ESXkRmZQwfwskBsKdocZEgjN1RowchwsewhvGH4ZjDJyedgmGNGpsFAWogeVY",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5x9rVmKsbaXWXxHDcmRxGSbE3gF5UJN4FgmTnG6VsUgEi17Lj4HsdUxvQh3SDdNzV9v3StHWAdd6uL7WF5yF7ZpS",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "5yPbEPUqTJT1puJWSgqYqUqTbcEpkowffVkYpT5NnLFhAWxpNMM8tssmLa748AshtW1w6sn81rDxipez5BFTPRdr",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "64PwQBRf1kN4w7HRu34eT6hnjDTgMNawTX8CLEAPm61AnvDiuFKTvXARdxtaJgpgcZyYj8Lp1WyRorWNMhoFNWcb",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "65TMQ4uzF3qgkRWwG43646rFzijJUyUuhjL4pMThK3weDdtWvCScGjd23Ug7Q3QnnaEeZkme2EZVxoZFijPLnCoM",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "7HsnwmLuTHu2Z7MgmZDtet23YKuQrXa8LVP96bdpTTUNpg6eMdGonjNXi7HdzSS78WuCdyBTUKZVnEYY1dLPq3r",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "88KFUVzMTXH5VmPeiQRbuNbVPzFmwHDGG22fiV34cS3KYxmAAH9Wtdpd1whMgRYfTKbnCv96r4yqcKyyLkGfAwC",
+      "selected_buys": 1,
+      "timely_buys": 0,
+      "distinct_timely_owners": 0,
+      "distinct_timely_payers": 0,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "8xRzktLExTnQBXVvJ1jbM483H7q11NN8xaLikR5g19s3sgnSk6GMy5MHntSUgYKVT2xnm4YesGqfKuwRrAyR5LJ",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "959XNzAN4X5ta63WH7kFkELPgaHJwKNbC92sChKJHsdnvHPFYZX8BWNbudHyXf3CB1Pg7J7NbNaH5nWEBZUwdHr",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "9ZNfm7ZxfMGKXcnb6kkNmNuJMS55FoCNi1Ks7wvK9yn5pVoBd8aLg5Cmbsnf6nFghWuTwCrfroPsZ1aoriULCum",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "C3VoQV1mPnUBgqb1YBfPswHMiWCicS2q5uxMyvCkudrk1VpfkTtaVRmPqsK7fsFQti5SDgRigyNab7kVDNGsscp",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "CuR7Hba6MwrBiaBbBFyvKYkqx7uk7iVyxwGy1AKxtysNQrhY5RXUVoxujCd7VZuAx6CvzKej1NALGrcfyXnjTUi",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "D88bbgS1HfYf7v63q7ecvxG4NQ5pqirzubLfwZdQrHGyDhrxtEEqXp9HSFWXYEeP2hfsGCK5QJck4pokpg6TpiX",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "GFcCJRbiDaZcg2hoaWLBU5BKjcZfBfhEejZN2mJ3owpHGsik5oNhTsm4uqZhvoRUuAQUnMh9s2FrtC3hfhJ3qQq",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "Gvmqf34DApUbKMZjHJMvJqhf9ocqwQpAgdrARRpBqjZxSCbWQuhVFZBwVQoeaj5zDvyZcgPzRPoXH49w3M1RK4B",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "Mbh2CPWzj5CnwcNR5vjiNBZSusshWYAtWEG29eomKddEJ5YefmQuL4j1MK3XHp5sh7wZFrniMhdHkEm1dCqqUys",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "MgyjNrTPjPiT52jXff96xg4bUgcoCeEBfuXub6CdJ1XQHpLqG1jLcrXQDdikqRc7mAWDzjusqiZ1Qa6f5WE7ByG",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "NxQTNhvPWXjvzSd1bJQNSmjsoR4FEDJ88FF8EjXJgY1pRj5jTrHAKmF1sTyGzPT7JrHrfW7JvtvBCsjKZiErvoQ",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "NzWdBfYydxhbQNe22WPKv8GaPzyH68GHuT5SJJ7ySF31eHp3xmQtUpdMJDNBrupGUXqDePRgFWsLnqS3pxzQRdx",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "QZ9JozsyL6vkHpS7ebrJpKJjbZFcwDXc27Pz7FiNjeWnd37KbwZ2jCnkG7uqoc39PsudJn5xYNrg225Ynjvj72R",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "RTXBnn7Nrwbn7hhhvNtauyyXAphAYqDiqb7gCYJMaTC2KCpT2Fkc1oC61igvrcyKy5uWmqiL9PNhudgFs7vNofS",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "SqWoAnSMsqHzjUPfBcbkh7kowLM2Y488saeff4k6KNprtGTDTdYXUG48nZgdZupW1Ft8iiitzCo8GXQo5AByWNo",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "UDMQhS5LPVRuiW3TMVMEaYS9D6S1NSaCrAGq5rW8ArqPgna5MeSJw1VyuEWVujir2DbDGLFBfr9rtbQfu3Wi8en",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "UZiv9Jok1znact6nfe5bcmcnBvmDBmq94DjGwLkqdC15hkciHDAyK8EThLtWqVgxZBJW3ZP67F8CwKfXSi7Yh6g",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "UkDBYyX5AagoYg9BXWSvnLwWkQ3sN6V7CXaCNY7fyDAfGTqgaYk9evHbSfRFWaZuASHDv3GYm2KuehukcNK916i",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "Um19LY9c7LbZmkGe2c5zzLPL9VZLiUV1RsgLmdkiaUAEuDzy1J9vtss9Wt3euwMJ61kkgU63JXybeHBSuwEBqxw",
+      "selected_buys": 3,
+      "timely_buys": 0,
+      "distinct_timely_owners": 0,
+      "distinct_timely_payers": 0,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "XRe4bD4xeeFmoz7TsueX7UpweUPERikH9vUx9jVgMR6HJXugD9pEojtNffXMtUS9kvjWhaFJtARi7WreqePVVy1",
+      "selected_buys": 3,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "b39K73gtKws1B4gVDR8k79VFifP1iT4kmRTYyCLsuKq7WYGdDXsE6nsYpbKHZGp8hkWXFuEYgbRx9NQXBLgah2s",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "bDzsxEpRfxp5CoF9XrG6uGFaph5PnYW69MZCHyd9WVhfAPcDA8gs7SqPoGnbS1kpN7nB5QhFPeFN6L5kTMREVmH",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "e952nT5JbjyEbPkCZQNhmKncNBWFBG8kdhRN6FLM9CchogxB9kAh4sNnHhjFM27VHsuDCjvrjhm3q945Lfd22Nw",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "eRe8jh3E2K7apyhWh8SFMmdQaWWVKv6eHdqbRUWasdoqipfkxMrQQrBBtQbpBdT6X2jYadHvi2VdRViFS5E9gts",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "f2XEXLgcAWRF1eAH2XrG8X7B7ykQ649Nu9D8KbRtkVKuVdSJrBMHzE2mZfE2EKzbGAijgQEEfwsZBpxtiiDVUtg",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "h8rMo3Rt35YNf9mMNREM5cWw387Hs81tzUMr4sDMR6DRCfo842ndPVrQdJyC6VMwhXLw14BAEnA3esDmuFqZNQa",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "vmQ9KieGRFXAb1pHp7yNZiNUvPFJVrgKgwqM1c4dA9chVsKZCoQPp1yxFFDmDQP7t8PWubGamKDVFtNpznBoPYz",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "w2ebZ76wwRpgv4A4sB3BNiQHS773zLrYt8tUCTbeeqYY1X86LNwhJ1DfCjLELCSsawPF6Ch1YWNrAYGSjVVms4z",
+      "selected_buys": 2,
+      "timely_buys": 2,
+      "distinct_timely_owners": 2,
+      "distinct_timely_payers": 2,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "w5E1m4AWfFFPmNmq2J15XkkrzKDV2UQxUaEsgoLHtFnHRjCTuQByZwsh48YzJa1R5GRjrrm1Qn4eHxYJ59zW6My",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "wMxtngy6xQHm5M3aNseydgEi62czW5xDtoaMngP2H45pvukZLZnqgpa1eHTs7h68KJPxAcrgT2Nq2P4F3P4QNPL",
+      "selected_buys": 3,
+      "timely_buys": 3,
+      "distinct_timely_owners": 3,
+      "distinct_timely_payers": 3,
+      "multi_owner_eligible": true,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "zSBXYzUeTqER9Y6xY7ZJoZsNbN9FvtU4bNvVakUzPHrHdjfh9hT8HiZZY8QQ2HChJ93kbe7Mqf9CKQJrHCZ56nb",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "zSVHL48U9UuXURPhRiGDgpxcvDVpCXGDNoju6dW9N6UsdchuVQAxsSeJ94M2tVhZJyQ5wVarWJ61Rv4EgBaanEB",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    },
+    {
+      "create_signature": "zXL8yTt2iybXWSiPGUh8CDNpUfWZLCSZoUbZ6NFaow5au8vySW6AFgrh7xEDp9DYTctRztJmpNEKCmGDVjQgaGr",
+      "selected_buys": 1,
+      "timely_buys": 1,
+      "distinct_timely_owners": 1,
+      "distinct_timely_payers": 1,
+      "multi_owner_eligible": false,
+      "different_owners_shared_payer": false
+    }
+  ],
+  "scope": "Shared transaction payer is observable; funding and beneficial control are not inferred."
+}
