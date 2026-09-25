@@ -47,6 +47,15 @@ strongly; the pooled gross and net cheap gates failed. Close this exact
 always-signed order-flow contract, with no asset, month, sign, clock or
 threshold rescue. No conditional 2025 order-flow result was read.
 
+The distinct [BTC-to-altcoin lead-lag source audit](CROSS_CRYPTO_LEAD_LAG_SOURCE_SCOUT.md)
+verified official BTC spot and ETH/SOL perpetual minute clocks across
+three fixed 2024/2025 months without scoring a conditioned return. The
+[FUT-013 contract](experiments/FUT-013.md) freezes a simple positive BTC
+sign transfer, one-minute decision delay, ten-minute nonoverlapping
+hold and same-event controls before outcome inspection. This is a
+cost-aware perpetual falsifier of one information-diffusion rule, not
+a reproduction of the source paper's broader spot model.
+
 The [funding product/source check](FUNDING_DIRECTION_SOURCE_SCOUT.md) found
 that the published high-return carry trade requires a spot hedge, so it is
 not evidence for a standalone short-perpetual decision. A separate 2026
@@ -99,9 +108,10 @@ contiguous hours with an optimistic delayed trade-price proxy. All 222
 scheduled BTC/ETH events were active, but July/October mean gross was
 +3.873/+3.431 bp, below the 9 bp base taker fee floor on both dates;
 July also lagged its always-short control. Close this exact all-wallet
-five-minute-flow, thirty-minute-hold rule. The paper's classified wallet
-cohort, forced liquidations, actual bid/ask and 2026 final holdout remain
-separate and untested.
+five-minute-flow, thirty-minute-hold rule. At this stage the paper's
+classified wallet cohort, forced liquidations, actual bid/ask and 2026
+final holdout were separate; the forced-HYPE rule was later tested in
+FUT-012 and failed its own incremental gate.
 
 The [author slide and HYPE source follow-up](HYPERLIQUID_CLOSE_FLOW_SOURCE_SCOUT.md)
 identified `FrontendMarket` orders as part of the paper's front-end wallet
