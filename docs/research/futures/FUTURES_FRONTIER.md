@@ -1,6 +1,6 @@
 # Futures frontier
 
-Status: `OPEN`, one active question, 2026-09-24.
+Status: `OPEN`, one active question, 2026-09-25.
 
 **Question:** Can a causal crypto-perpetual directional mechanism show stable gross information across periods, then retain useful expectancy after funding, turnover and intended-venue execution costs?
 
@@ -32,4 +32,4 @@ The [FUT-012 market-liquidation trial](experiments/FUT-012-RESULT.md) scored 54 
 
 The [Bybit source audit](INDEPENDENT_VENUE_DATA.md) supplies a second venue's 2022 perp tape, but that year has already been inspected for trend and cannot be called a fresh market-regime holdout. A separate [Hyperliquid carry source check](CARRY_SOURCE_FEASIBILITY.md) has full 2024–2025 BTC/ETH daily candles and all but one shared hourly funding slot. Cross-venue carry has a structural funding payoff but requires a two-venue hedge and contract-level accounting; its data-coverage gate is mostly resolved, while economic viability and product fit remain open. It is not a directional signal or an inspected strategy return.
 
-The [open-interest source scout](POSITIONING_SOURCE_SCOUT.md) verified small Bybit daily windows in 2022, 2024 and 2025, including a delisted symbol whose later OI rows are zero. Binance's historical OI endpoint is documented as recent-only. Bybit OI measures both sides together, so source feasibility alone does not define a directional forecast. Next inspect full row coverage and timestamp semantics alongside a separately justified positioning mechanism before registering another strategy trial.
+The [open-interest source audit](POSITIONING_SOURCE_SCOUT.md) now covers all 190 existing Bybit 2022 price/funding candidates: 59,174 daily OI rows against 58,414 observed price days, with 340 active price days missing OI and stale positive OI after GST closed. The 2022 source panel is feasible with explicit missing and delisting masks, but today's catalog is not a complete historical-universe proof. Binance's historical OI endpoint is documented as recent-only. Bybit OI sums both sides and supplies no directional sign by itself. Next establish a separately justified positioning mechanism, observation lag, subsequent-year coverage and a fresh chronology before registering an OI trial; do not infer an edge from the source audit.

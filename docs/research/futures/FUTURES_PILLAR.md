@@ -1,6 +1,6 @@
 # Futures pillar
 
-Status: authoritative current doctrine, 2026-09-24. Read the [constitution](../RESEARCH_CONSTITUTION.md), then this pillar, then the [frontier](FUTURES_FRONTIER.md). The [historical evidence](HISTORICAL_EVIDENCE.md) and old PRs support conclusions but do not set the next task.
+Status: authoritative current doctrine, 2026-09-25. Read the [constitution](../RESEARCH_CONSTITUTION.md), then this pillar, then the [frontier](FUTURES_FRONTIER.md). The [historical evidence](HISTORICAL_EVIDENCE.md) and old PRs support conclusions but do not set the next task.
 
 ## Goal and boundary
 
@@ -25,6 +25,14 @@ The distinct [FUT-004 spot/perpetual basis factor](experiments/FUT-004-RESULT.md
 The [FUT-005 CME BTC positioning-change trial](experiments/FUT-005.md) was frozen before COT-conditioned outcomes. Its signed prior came from a published pre-2023 study, while the [source audit](COT_SOURCE_FEASIBILITY.md) established report release lags, including exceptional 2023/2025 delays.
 
 Its subsequently frozen [2023–2024 result](experiments/FUT-005-RESULT.md) failed the 2023 gross and net gate: 2023 gross mean daily return was −0.07429% and 20bps net was −0.09036%. The 2024 net arithmetic mean was positive but compounded return was negative and gains were Q1 concentrated. This closes the exact standalone paper-signed COT-change trade after conservative release delay; COT as context or a separately tested incremental feature remains open. Conditional 2025 COT outcomes were not read.
+
+The separate [Bybit open-interest source audit](POSITIONING_SOURCE_SCOUT.md)
+checked all 190 pre-2023 catalog candidates against observed 2022 price
+days, finding 59,174 daily OI rows but 340 active price days without OI
+and 151 positive GST OI rows after its last price bar. This supports a
+masked historical participation panel, not a signed positioning forecast
+or a point-in-time publication guarantee. A directional OI rule needs its
+own mechanism, lag, later-year coverage and frozen chronology.
 
 The [quarter-hour order-flow paper](https://arxiv.org/html/2607.09426v2)
 supplied a distinct intraday prior. Its first-ten-second *opening forecast*
