@@ -1,0 +1,13 @@
+# Rocket research constitution
+
+Authority: this page defines reusable research method. A strategy pillar applies it to one domain; a frontier names the one current question. Experiment and component ledgers record evidence. Historical PRs and notes remain evidence, never current instructions.
+
+1. State a falsifiable question, mechanism, baseline, cheapest useful falsifier, data requirements, and decision rule before scoring outcomes. Freeze structural parameters and record the specification and source revision. Count materially different trials, including failures.
+2. Use information available at each decision time. Preserve raw timestamps, publication or settlement times, missing values, delistings, and acquisition provenance. Do not project a current universe backward. Use completed bars and a specified subsequent fill; never substitute a different clock without a new specification.
+3. Separate directional forecast, candidate ranking, context, entry timing, and portfolio risk. Measure a component against the same base strategy with an ablation. A reduced trade count is not proof of better signal.
+4. Include fees, slippage, spread assumptions, funding, turnover, missing-data handling, and cost stress. Report signal-level outcomes and portfolio outcomes separately. Never call overlapping events independent observations.
+5. Use a chronological discovery/OOS split at the cheap gate. Check asset, period, side, concentration, and broad parameter stability. Escalate promising candidates to walk-forward, uncertainty estimates, multiple-trial accounting, and an untouched holdout. Use purging or embargo when labels overlap; reserve prospective shadow for a frozen candidate.
+6. Prefer simple, interpretable rules. A narrow optimum, post-result filter, or late switch of the primary metric weakens evidence. Record failure attribution (`NO_SIGNAL`, `NO_SAMPLE`, `COST_DRAG`, `DATA_LIMITATION`, `OVERFIT`, `REGIME_DEPENDENT`, `CONCENTRATION`, `SURVIVORSHIP_BIAS`, `FACTOR_BREAKDOWN`, or a documented other reason).
+7. For each conclusion state what the evidence says, what it does not say, why, and what would reopen it. Reopen a rejection only for independent data, a demonstrated bug, a genuinely different mechanism, replication, or operator direction. A rule change receives a new experiment ID.
+
+Component promotion: `UNTESTED` → `DISCOVERY_SIGNAL` → `OOS_CANDIDATE` → `ROBUST_COMPONENT`. Strategy promotion: `RESEARCH` → `CANDIDATE` → `FROZEN` → `SHADOW` → `ACCEPTED`. A backtest cannot skip to `ACCEPTED`. A frozen shadow records each decision and exact specification immutably; changed rules start a new version.
