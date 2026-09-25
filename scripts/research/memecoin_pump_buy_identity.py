@@ -19,6 +19,7 @@ def capture(selection_path: Path, out: Path) -> dict:
     if out.exists():
         raise ValueError("output file exists")
     selection = json.loads(selection_path.read_text())
+    experiment = "mc023" if selection["schema"] == "rocket.memecoin.mc023-selection.v1" else "mc022"
     rows = []
     with httpx.Client(timeout=20) as client:
         for chosen in selection["selected"]:
@@ -48,7 +49,7 @@ def capture(selection_path: Path, out: Path) -> dict:
                 row["status"] = "UNRESOLVED"
                 row["error"] = f"{type(exc).__name__}:{exc}"
             rows.append(row)
-            out.write_text(json.dumps({"schema": "rocket.memecoin.mc022-identity.v1",
+            out.write_text(json.dumps({"schema": f"rocket.memecoin.{experiment}-identity.v1",
                                        "selection_sha256": hashlib.sha256(
                                            selection_path.read_bytes()).hexdigest(),
                                        "rows": rows}, indent=2, sort_keys=True) + "\n")
