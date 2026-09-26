@@ -152,6 +152,8 @@ class FMPClient:
             ("ratios_ttm", "/ratios-ttm", {"symbol": symbol}),
             ("analyst_estimates", "/analyst-estimates", {"symbol": symbol, "period": "annual", "page": 0, "limit": 4}),
         ):
+            # Keep fetching the endpoint for operational coverage, but do not treat
+            # current-period estimates as a revision history inside this mapper.
             try:
                 payload[name] = self._get(endpoint, params=params)
                 if any(row.get("symbol", symbol).upper() != symbol.upper() for row in _rows(payload[name])):
@@ -196,6 +198,40 @@ class FMPClient:
             source="fmp",
             extras={"symbol": symbol.upper()},
         )
+
+    def analyst_estimates(self, symbol: str) -> ProviderResult:
+        """Current same-period consensus rows for snapshot persistence. Not a revision history."""
+        retrieved = datetime.now(UTC)
+        if not self.api_key:
+            return ProviderResult(
+                status=OperationalStatus.UNAVAILABLE,
+                failure_kind="NO_SETUP",
+                source="fmp.analyst-estimates",
+                extras={"symbol": symbol, "reason": "FMP_API_KEY unset"},
+            )
+        try:
+            rows = [
+                row for row in _rows(self._get("/analyst-estimates", params={"symbol": symbol, "period": "annual", "page": 0, "limit": 8}))
+                if str(row.get("symbol", symbol)).upper() == symbol.upper()
+            ]
+            return ProviderResult(
+                status=OperationalStatus.HEALTHY if rows else OperationalStatus.PARTIAL,
+                records=tuple(rows),
+                retrieved_at=retrieved,
+                source="fmp.analyst-estimates",
+                extras={
+                    "symbol": symbol.upper(),
+                    "availability_basis": "current consensus snapshot persisted as of retrieval; not historical vintage",
+                },
+            )
+        except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
+            return ProviderResult(
+                status=OperationalStatus.UNAVAILABLE,
+                failure_kind=failure_kind(exc),
+                source="fmp.analyst-estimates",
+                retrieved_at=retrieved,
+                extras={"symbol": symbol.upper()},
+            )
 
     def politician_trades(self) -> ProviderResult:
         retrieved = datetime.now(UTC)

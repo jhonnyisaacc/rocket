@@ -1,9 +1,10 @@
 """Historical listed-security prices with split/dividend-adjusted comparison."""
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import httpx
 
+from rocket.clock import session_close, session_day
 from rocket.providers.http import get_read
 
 
@@ -48,3 +49,65 @@ def transaction_context(history, transaction_date, *, now):
             "historical_availability": None, "history_retrieved_at": history["retrieved_at"],
             "move_since_transaction": current["adjusted_close"] / then["adjusted_close"] - 1,
             "move_basis": "adjusted close comparison, including corporate actions; not politician execution price"}
+
+
+def daily_bars(ticker, *, http=None, range="2y"):
+    """Daily OHLC labeled by session date. Availability is session close, not retrieval time."""
+    owns = http is None
+    client = http or httpx.Client(timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+    url = f"https://query2.finance.yahoo.com/v8/finance/chart/{ticker}"
+    try:
+        response = get_read(client, url, params={"range": range, "interval": "1d", "events": "splits,div"})
+        response.raise_for_status()
+        data = response.json()["chart"]["result"][0]
+        if data["meta"]["symbol"] != ticker:
+            raise ValueError("historical asset identity mismatch")
+        quote = data["indicators"]["quote"][0]
+        records = []
+        opens = quote.get("open") or [None] * len(quote["close"])
+        for stamp, close, high, low, open_px in zip(
+            data["timestamp"], quote["close"], quote["high"], quote["low"], opens, strict=True,
+        ):
+            if close is None:
+                continue
+            day = datetime.fromtimestamp(stamp, UTC).date()
+            records.append({
+                "date": day.isoformat(),
+                "open": None if open_px is None else float(open_px),
+                "close": float(close),
+                "high": None if high is None else float(high),
+                "low": None if low is None else float(low),
+            })
+        return {
+            "source": "Yahoo Finance chart API",
+            "citation": url,
+            "retrieved_at": datetime.now(UTC).isoformat(),
+            "availability_basis": "daily bar available_at is NYSE session close; not the Yahoo retrieval clock",
+            "records": records,
+        }
+    finally:
+        if owns:
+            client.close()
+
+
+def bars_eligible_at(history, decision_time):
+    rows = []
+    for row in history.get("records", []):
+        try:
+            day = date.fromisoformat(row["date"])
+        except (TypeError, ValueError):
+            continue
+        if not session_day(day):
+            continue
+        available = session_close(day).astimezone(UTC)
+        if available > decision_time:
+            continue
+        if row.get("close") in (None, ""):
+            continue
+        rows.append({
+            **row,
+            "event_time": available.isoformat(),
+            "available_at": available.isoformat(),
+            "source": history.get("source"),
+        })
+    return rows
