@@ -16,6 +16,9 @@ from rocket.providers.http import get_read
 from rocket.providers.protocols import ProviderResult
 
 FMP_STABLE_URL = "https://financialmodelingprep.com/stable"
+# This plan returns HTTP 402 above limit 25 or for page >= 1. Do not raise the ceiling.
+FMP_CHAMBER_LATEST_PAGE = 0
+FMP_CHAMBER_LATEST_LIMIT = 25
 
 
 def _finite(value: Any) -> float | None:
@@ -198,6 +201,7 @@ class FMPClient:
         )
 
     def politician_trades(self) -> ProviderResult:
+        """House and senate latest rows at page 0, limit 25. Larger pages are not requested."""
         retrieved = datetime.now(UTC)
         if not self.api_key:
             return ProviderResult(
@@ -206,14 +210,16 @@ class FMPClient:
                 source="fmp",
                 extras={"reason": "FMP_API_KEY unset"},
             )
+        params = {"page": FMP_CHAMBER_LATEST_PAGE, "limit": FMP_CHAMBER_LATEST_LIMIT}
         try:
-            house = _rows(self._get("/house-latest"))
-            senate = _rows(self._get("/senate-latest"))
+            house = _rows(self._get("/house-latest", params=params))
+            senate = _rows(self._get("/senate-latest", params=params))
         except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
             return ProviderResult(
                 status=OperationalStatus.UNAVAILABLE,
-                failure_kind=type(exc).__name__,
+                failure_kind=failure_kind(exc),
                 source="fmp",
+                extras={"page": FMP_CHAMBER_LATEST_PAGE, "limit": FMP_CHAMBER_LATEST_LIMIT},
             )
         records = tuple(
             parse_politician_row("house", row) for row in house

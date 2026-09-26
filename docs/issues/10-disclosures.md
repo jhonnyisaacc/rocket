@@ -21,7 +21,44 @@ The export covers published 278-T reports, not all holdings or annual disclosure
 Each row is joined to the exact person's official OGE PDF URL for the index
 posting date. `disclosure_date_basis=OGE_INDEX_POSTED_DATE` identifies this date;
 it is not the signature date or an assumed historical availability timestamp.
-Missing joins remain unknown. Exports over 14 days old or future-dated fail closed.
+Missing joins remain unknown. Exports over 14 days old or future-dated fail closed
+with `failure_kind=OC_STALE` and no transaction rows.
+
+## Open Cabinet lag
+
+Rocket re-fetches the Open Cabinet export on every disclosures run. It cannot force
+Open Cabinet to republish. A 278-T filing (the PDF URL contains `278-T` or `278T`)
+with no joined Open Cabinet transaction row sets `needs_structured_source`.
+`OC_STALE` means the export is missing, future-dated, older than 14 days, or earlier
+than that filing's OGE index date. `MISSING_STRUCTURED_ROWS` means the export date is
+current but that PDF still has zero rows. Official rows stay `FILING_OBSERVED` /
+`FILING_NOT_TRADE_ROW`. A filename is not a ticker. Until the export covers the PDF,
+use Quiver or a manual read of the official PDF. That gap is not a quiet empty filing.
+
+## OGE outage
+
+OGE index and collection reads retry transport errors and HTTP 500–504 only:
+3 attempts, sleeping 1s before the second and 2s before the third. Schema failures
+and other HTTP statuses are not retried. After those attempts, executive
+`ExternalOutage` is `PROVIDER_FAILURE` and `ACTION_REQUIRED`, never a silent
+`NO_NEW_RECORDS`. Seen ids are only records actually returned; an outage does not
+mark the OGE window as scanned. The next healthy executive fetch sets
+`executive_recovery_rescan` and reports filings that were not already seen.
+
+## Pelosi secondary
+
+`pelosi_secondary_history` is optional. HTTP 402/403 stay `Entitlement` and HTTP 429
+stays `RateLimit` on that entry. Neither makes the overall job `PARTIAL` or
+`ACTION_REQUIRED` when official House filings succeed. Official House PTR remains
+the Pelosi source of truth. Entitling FMP `house-trades-by-name`, or ingesting PTR
+PDFs, is a later choice. This job does not invent Pelosi trades from filing metadata.
+
+## FMP chamber latest
+
+`house-latest` and `senate-latest` are capped at `page=0` and `limit=25`. A larger
+limit or `page>=1` returns HTTP 402 on the current plan and maps to `Entitlement`.
+The cap stays in place for this plan. Broader chamber coverage stays on official
+House search. `rocket disclosures` does not ingest those pages.
 
 Caller portfolio/watch coverage must be known before proposing an entry or watch.
 Absent, unreadable or malformed caller reference files leave listed opportunities

@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
+import time
+from collections.abc import Callable, Sequence
 from datetime import UTC, datetime, timedelta
 from html import unescape
 from urllib.parse import urljoin
@@ -14,6 +15,9 @@ HOUSE_SEARCH_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure"
 HOUSE_SEARCH_RESULT_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult"
 OGE_INDEX_URL = "https://www.oge.gov/web/oge.nsf/Officials%20Individual%20Disclosures%20Search%20Collection?OpenForm"
 OGE_API_URL = "https://extapps2.oge.gov/201/Presiden.nsf/API.xsp/v2/rest"
+# Three attempts. Sleep 1s before the second and 2s before the third.
+# Transport errors and HTTP 500-504 only; schema errors and other 4xx do not retry.
+OGE_RETRY_SLEEPS = (1, 2)
 
 
 def _links(html: str, *, base_url: str) -> list[str]:
@@ -89,17 +93,35 @@ class OfficialOGEExecutiveDisclosureProvider:
         index_url: str = OGE_INDEX_URL,
         document_urls: Sequence[str] | None = None,
         http: httpx.Client | None = None,
+        sleep: Callable[[float], None] | None = None,
     ) -> None:
         self.subject = subject
         self.index_url = index_url
         self.document_urls = tuple(document_urls or ())
         self.http = http or httpx.Client(timeout=20.0, follow_redirects=True)
+        self._sleep = sleep or time.sleep
+
+    def _read(self, url: str, **kwargs):
+        delays = (0, *OGE_RETRY_SLEEPS)
+        for attempt, delay in enumerate(delays):
+            if delay:
+                self._sleep(delay)
+            try:
+                response = self.http.get(url, **kwargs)
+                response.raise_for_status()
+                return response
+            except (httpx.TransportError, httpx.HTTPStatusError) as exc:
+                retryable = isinstance(exc, httpx.TransportError) or (
+                    isinstance(exc, httpx.HTTPStatusError) and 500 <= exc.response.status_code <= 504
+                )
+                if not retryable or attempt == len(delays) - 1:
+                    raise
+        raise AssertionError("unreachable OGE retry state")
 
     def fetch(self) -> list[dict[str, str | None]]:
         if self.document_urls:
             return [self._filing(url, "UNKNOWN", None) for url in dict.fromkeys(self.document_urls)]
-        index = self.http.get(self.index_url)
-        index.raise_for_status()
+        index = self._read(self.index_url)
         if OGE_API_URL not in index.text:
             raise ValueError("OGE collection schema missing its public records API")
         latest = self._page(subject="", start=0, length=1)
@@ -148,8 +170,7 @@ class OfficialOGEExecutiveDisclosureProvider:
                     f"columns[{i}][search][regex]": "false",
                 }
             )
-        response = self.http.get(OGE_API_URL, params=params)
-        response.raise_for_status()
+        response = self._read(OGE_API_URL, params=params)
         page = response.json()
         if not isinstance(page, dict) or not isinstance(page.get("data"), list) or not isinstance(
             page.get("recordsFiltered"), int
