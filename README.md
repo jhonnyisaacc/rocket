@@ -18,3 +18,17 @@ python3 -m venv .venv
 ```
 
 Secrets come from the process environment (existing names). Rocket never deletes or rewrites them. Callers pass private state paths explicitly.
+
+## Research data
+
+Large research payloads (for example the ~1GB Solana memecoin follower-study
+captures) live outside git in the public dataset
+[jhonnyisaacc/rocket](https://huggingface.co/datasets/jhonnyisaacc/rocket),
+laid out under the same `docs/research/...` paths they were captured from.
+Small manifests and code stay in the repo; anything over ~1MB goes to the
+dataset. Fetch what you need, for example:
+
+```bash
+hf download jhonnyisaacc/rocket --repo-type=dataset \
+  --include 'docs/research/memecoin/data/*'
+```
