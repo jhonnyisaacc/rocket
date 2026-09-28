@@ -156,3 +156,39 @@ def test_registry_approval_must_be_literal_true(tmp_path, approved):
         book, {'BE': context()}, refresh_inventory=True, now=NOW)
     assert result.payload['positions'][0]['quantity'] == 9
     assert result.payload['pending_review'][0]['mint'] == MINT
+
+@pytest.mark.parametrize('amount', ['150', '450'])
+def test_partial_decrease_and_increase_inspect_movements(amount):
+    old = {MINT: {'mint': MINT, 'ticker': 'BE', 'quantity': 3, 'token_accounts': ['account']}}
+    result, calls = fetch([account(amount)], [account(amount)], previous=old, movement=True)
+    assert result.status is O.HEALTHY
+    movement = next(r for r in result.records if r['mint'] == MINT)['movement']
+    assert movement['previous_quantity'] == 3
+    assert movement['current_quantity'] == float(amount) / 100
+    assert movement['history_complete'] is False
+    assert len(movement['transactions']) == 1  # owner + token account duplicate signature
+    assert movement['transactions'][0]['mint'] == MINT
+    assert ('primary.test', 'getTransaction') in calls
+
+
+def test_unchanged_balances_do_not_fetch_history():
+    old = {MINT: {'mint': MINT, 'ticker': 'BE', 'quantity': 3}}
+    result, calls = fetch([account()], [account()], previous=old)
+    assert result.status is O.HEALTHY
+    assert not any(method == 'getTransaction' for _, method in calls)
+
+
+def test_history_failure_does_not_destroy_valid_snapshot():
+    handler, _ = handler_for([account('150')], [account('150')])
+    def fail_history(request):
+        if b'getSignaturesForAddress' in request.content:
+            return httpx.Response(503)
+        return handler(request)
+    with httpx.Client(transport=httpx.MockTransport(fail_history)) as http:
+        result = SolanaOndoInventory(http=http, urls=['https://primary.test'], registry=REGISTRY).fetch(
+            address=ADDRESS, now=NOW, previous={MINT: {'quantity': 3}})
+    assert result.status is O.HEALTHY
+    row = next(r for r in result.records if r['mint'] == MINT)
+    assert row['quantity'] == 1.5
+    assert not row['movement']['history_complete']
+    assert row['movement']['failure_kind']
