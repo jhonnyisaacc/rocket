@@ -6,9 +6,12 @@ import pytest
 from rocket.models import OperationalStatus
 from rocket.providers.hyperliquid import (
     HyperliquidPerps,
+    fetch_closed_candles,
+    fetch_funding_history,
     fetch_perp_markets,
     overlay_l2_spread,
     parse_candles,
+    parse_funding_history,
     parse_meta_and_asset_ctxs,
     spread_bps_from_book,
     spread_bps_from_impact,
@@ -135,6 +138,90 @@ def test_parse_candles_sorts_and_drops_invalid():
     )
     assert [row["timestamp_ms"] for row in rows] == [1_000, 2_000]
     assert rows[0]["source"] == "hyperliquid"
+
+
+def test_fetch_closed_candles_reuses_info_and_drops_open_bar():
+    end_ms = int(NOW.timestamp() * 1000)
+    day = 86_400_000
+    closed_open = end_ms - day
+    still_open = end_ms - day // 2
+    payload = [
+        {"t": closed_open, "o": "1", "h": "2", "l": "1", "c": "1.5", "v": "1", "s": "BTC", "i": "1d"},
+        {"t": still_open, "o": "1", "h": "3", "l": "1", "c": "2", "v": "1", "s": "BTC", "i": "1d"},
+    ]
+    seen = {}
+
+    class _Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return payload
+
+    class _Client:
+        def post(self, url, json):
+            seen["url"] = url
+            seen["body"] = json
+            return _Response()
+
+        def close(self):
+            raise AssertionError("injected client must not be closed")
+
+    rows = fetch_closed_candles(["kPEPE"], interval="1d", lookback_days=10, now=NOW, http=_Client())
+    assert seen["url"].endswith("/info")
+    assert seen["body"]["type"] == "candleSnapshot"
+    assert seen["body"]["req"]["coin"] == "kPEPE"
+    assert "BTC" not in rows
+    assert [row["timestamp_ms"] for row in rows["KPEPE"]] == [closed_open]
+    assert seen["body"]["req"]["interval"] == "1d"
+
+
+def test_parse_funding_history_sorts_and_drops_bad_rows():
+    rows = parse_funding_history(
+        [
+            {"coin": "BTC", "fundingRate": "0.0001", "time": 2_000},
+            {"coin": "BTC", "fundingRate": "nan", "time": 3_000},
+            {"coin": "ETH", "fundingRate": "-0.0002", "time": 1_000},
+            {"fundingRate": "0.1"},
+        ]
+    )
+    assert [row["timestamp_ms"] for row in rows] == [1_000, 2_000]
+    assert rows[0]["funding_rate"] == pytest.approx(-0.0002)
+    assert rows[1]["coin"] == "BTC"
+    assert rows[0]["source"] == "hyperliquid"
+
+
+def test_fetch_funding_history_is_one_unsigned_info_call():
+    seen = {}
+
+    class _Response:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return [{"coin": "BTC", "fundingRate": "0.0000125", "premium": "0", "time": 1_700_000_000_000}]
+
+    class _Client:
+        def post(self, url, json):
+            seen["url"] = url
+            seen["body"] = json
+            return _Response()
+
+        def close(self):
+            raise AssertionError("injected client must not be closed")
+
+    result = fetch_funding_history("BTC", start_ms=10, end_ms=20, http=_Client())
+    assert seen["url"].endswith("/info")
+    assert seen["body"] == {
+        "type": "fundingHistory",
+        "coin": "BTC",
+        "startTime": 10,
+        "endTime": 20,
+    }
+    assert result.status is OperationalStatus.HEALTHY
+    assert result.extras["signing"] is False
+    assert result.extras["paged"] is False
+    assert result.records[0]["funding_rate"] == pytest.approx(0.0000125)
 
 
 def test_module_never_signs():

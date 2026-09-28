@@ -38,6 +38,25 @@ MAX_SLIPPAGE_BPS = 25.0
 STRUCTURE_BARS = 6
 MIN_SETUP_BARS = 24
 NO_CHASE_PCT = 0.02
+# Research interpretation. Not the PR #28 75–86% daily-impulse band.
+RETRACE_SHALLOW = 0.50
+RETRACE_DEEP = 0.86
+WEEKLY_LOOKBACK = 4
+DAILY_LOOKBACK = 6
+MS_4H = 4 * 3_600_000
+MS_1D = 24 * 3_600_000
+MS_1W = 7 * 24 * 3_600_000
+DAILY_CANDLE_LOOKBACK_DAYS = 120
+WEEKLY_CANDLE_LOOKBACK_DAYS = 210
+COT_SCOPE = "market/regime context; no per-altcoin COT signal"
+KNOWN_COT_REGIMES = frozenset({"bullish", "bearish", "neutral"})
+# A report in any of these states is missing or stale. Regime stays unknown.
+COT_REPORT_FAILURES = frozenset({"STALE", "UNAVAILABLE", "PARTIAL"})
+THEORY_NOTE = (
+    "Staged momentum and COT research for a human decision. "
+    "Not the PR #28 primary pullback contract and not an entry recommendation."
+)
+STAGED_STATES = ("NO_BIAS", "BIAS", "IN_PLAY", "ZONE", "EXTENDED", "NO_TRADE")
 
 
 def _asset_key(candidate: Mapping[str, Any]) -> str:
@@ -63,15 +82,166 @@ def _direction(candidate: Mapping[str, Any]) -> str | None:
     return None
 
 
+def effective_cot_regime(cot_regime: str, cot_context: Mapping[str, Any] | None) -> str:
+    raw = str((cot_context or {}).get("regime") if cot_context is not None else cot_regime).lower()
+    if raw not in {"bullish", "bearish", "neutral"}:
+        raw = "unknown"
+    if cot_context is not None and cot_context.get("status") not in {"OK", "OVERRIDE"}:
+        raw = "unknown"
+    return raw
+
+
+def cot_alignment(regime: str, direction: str) -> str:
+    """Market-regime COT versus a row direction. Against does not drop the row."""
+    normalized = regime.strip().lower()
+    if normalized not in {"bullish", "bearish", "neutral"}:
+        return "unknown"
+    if direction not in {"long", "short"}:
+        return "n/a"
+    if normalized == "neutral":
+        return "n/a"
+    agrees = (normalized == "bullish" and direction == "long") or (
+        normalized == "bearish" and direction == "short"
+    )
+    return "aligned" if agrees else "against"
+
+
 def cot_regime_passes(regime: str, direction: str | None) -> bool:
     normalized = regime.strip().lower()
-    if normalized not in {"bullish", "bearish", "neutral"} or direction not in {"long", "short"}:
+    if normalized not in KNOWN_COT_REGIMES or direction not in {"long", "short"}:
         return False
     if normalized == "bullish":
         return direction == "long"
     if normalized == "bearish":
         return direction == "short"
     return True
+
+
+def resolve_scan_cot(
+    cot_regime: str,
+    cot_context: Mapping[str, Any] | None,
+) -> tuple[str, str]:
+    """Scan-level regime and status. A failed report is unknown even if a bias was parsed."""
+    status = str((cot_context or {}).get("status") or "")
+    regime = effective_cot_regime(cot_regime, cot_context)
+    if status in COT_REPORT_FAILURES:
+        return "unknown", status
+    if not status:
+        status = "CLAIMED" if regime in KNOWN_COT_REGIMES else "MISSING"
+    return regime, status
+
+
+def _row_direction(row: Mapping[str, Any]) -> str:
+    direction = row.get("direction")
+    if direction in {"long", "short"}:
+        return str(direction)
+    return "none"
+
+
+def regime_required(row: Mapping[str, Any]) -> bool:
+    """A directional book row needs a regime. NO_TRADE does not."""
+    return _row_direction(row) in {"long", "short"} and row.get("state") != "NO_TRADE"
+
+
+def regime_for_row(row: Mapping[str, Any], scan_regime: str, status: str) -> str:
+    """Keep a regime a replay already claimed. A missing or stale report clears it."""
+    if status in COT_REPORT_FAILURES:
+        return "unknown"
+    if scan_regime in KNOWN_COT_REGIMES:
+        return scan_regime
+    claimed = str(row.get("cot_regime") or "").lower()
+    if claimed in KNOWN_COT_REGIMES:
+        return claimed
+    return "unknown"
+
+
+def annotate_cot_row(row: Mapping[str, Any], scan_regime: str, status: str) -> dict[str, Any]:
+    """Label COT. Unknown on a directional row is WAIT. Against does not drop or block."""
+    updated = dict(row)
+    direction = _row_direction(updated)
+    regime = regime_for_row(updated, scan_regime, status)
+    updated["cot_regime"] = regime
+    updated["cot_alignment"] = cot_alignment(regime, direction)
+    reasons = [str(item) for item in (updated.get("reasons") or []) if str(item) != "cot_regime_unknown"]
+    updated.pop("action", None)
+    if regime_required(updated) and regime == "unknown":
+        reasons.append("cot_regime_unknown")
+        updated["action"] = "WAIT"
+    updated["reasons"] = reasons
+    return updated
+
+
+def stamp_cot_book(
+    observations: Sequence[Any],
+    scan_regime: str,
+    status: str,
+) -> tuple[list[Any], list[dict[str, Any]]]:
+    observations_out: list[Any] = []
+    staged: list[dict[str, Any]] = []
+    for observation in observations:
+        if not isinstance(observation, Mapping):
+            observations_out.append(observation)
+            continue
+        copied = dict(observation)
+        candidates_out: list[Any] = []
+        for candidate in observation.get("candidates") or []:
+            if not isinstance(candidate, Mapping):
+                candidates_out.append(candidate)
+                continue
+            cand = dict(candidate)
+            stage = cand.get("research_stage")
+            if isinstance(stage, Mapping) and stage.get("state") in STAGED_STATES:
+                annotated = annotate_cot_row(stage, scan_regime, status)
+                cand["research_stage"] = annotated
+                staged.append(annotated)
+            candidates_out.append(cand)
+        copied["candidates"] = candidates_out
+        observations_out.append(copied)
+    return observations_out, staged
+
+
+def agreed_book_regime(rows: Sequence[Mapping[str, Any]], scan_regime: str, status: str) -> str:
+    if status in COT_REPORT_FAILURES:
+        return "unknown"
+    if scan_regime in KNOWN_COT_REGIMES:
+        return scan_regime
+    claimed = {
+        str(row.get("cot_regime") or "").lower()
+        for row in rows
+        if regime_required(row) and str(row.get("cot_regime") or "").lower() in KNOWN_COT_REGIMES
+    }
+    if len(claimed) == 1:
+        return claimed.pop()
+    return "unknown"
+
+
+def build_bot_decision(
+    rows: Sequence[Mapping[str, Any]],
+    regime: str,
+    status: str,
+) -> dict[str, Any]:
+    """Bot-facing COT decision. Never ENTER_LONG or ENTER_SHORT. Unknown is WAIT, not NO_TRADE."""
+    required = any(regime_required(row) for row in rows)
+    failed = regime == "unknown" or status in COT_REPORT_FAILURES
+    if required and failed:
+        action: str | None = "WAIT"
+        reason = "cot_regime_unknown"
+        shown = "unknown"
+    elif required:
+        action = None
+        reason = "cot_alignment_labeled"
+        shown = regime
+    else:
+        action = "NO_TRADE"
+        reason = "no_directional_row"
+        shown = "unknown" if failed else regime
+    return {
+        "action": action,
+        "reason": reason,
+        "regime_required": required,
+        "cot_regime": shown,
+        "cot_status": status,
+    }
 
 
 def trade_decision(
@@ -141,11 +311,7 @@ def build_funnel(
     evidence: list[Evidence] = []
     unique_members: set[str] = set()
     macro_checks: list[bool] = []
-    effective_cot = str((cot_context or {}).get("regime") if cot_context is not None else cot_regime).lower()
-    if effective_cot not in {"bullish", "bearish", "neutral"}:
-        effective_cot = "unknown"
-    if cot_context is not None and cot_context.get("status") not in {"OK", "OVERRIDE"}:
-        effective_cot = "unknown"
+    effective_cot = effective_cot_regime(cot_regime, cot_context)
     for observation in payload.get("observations") or []:
         if not isinstance(observation, Mapping):
             continue
@@ -258,9 +424,9 @@ def build_funnel(
     funnel = {
         **counts,
         "cot_regime": effective_cot,
-        "cot_scope": "market/regime context; no per-altcoin COT signal",
+        "cot_scope": COT_SCOPE,
         "macro_context_validated": bool(macro_checks) and all(macro_checks),
-        "universe_policy": "top_100_market_cap_plus_liquid_perps",
+        "universe_policy": "top_100_market_cap_intersect_hyperliquid_perps",
         "universe_size_target": UNIVERSE_SIZE,
     }
     return funnel, final_candidates, evidence
@@ -487,6 +653,322 @@ def setup_from_candles(bars: Sequence[Mapping[str, Any]] | None) -> dict[str, An
     return {"valid": False, "reason": "mixed_or_insufficient_structure", "structure": structure}
 
 
+def _bar_open_ms(bar: Mapping[str, Any]) -> int | None:
+    raw = bar.get("timestamp_ms")
+    if isinstance(raw, (int, float)) and not isinstance(raw, bool) and math.isfinite(float(raw)):
+        return int(raw)
+    stamp = parse_datetime(bar.get("timestamp"))
+    if stamp is None:
+        return None
+    return int(stamp.timestamp() * 1000)
+
+
+def closed_bars(
+    bars: Sequence[Mapping[str, Any]] | None,
+    *,
+    decision_time: datetime,
+    interval_ms: int,
+) -> list[dict[str, float]]:
+    """Completed OHLC only. Future opens and still-open bars are unseen."""
+    decision_ms = int(decision_time.timestamp() * 1000)
+    parsed: list[dict[str, float]] = []
+    for bar in bars or ():
+        if not isinstance(bar, Mapping):
+            continue
+        ohlc = _ohlc((bar,))
+        if not ohlc:
+            continue
+        opened = _bar_open_ms(bar)
+        if opened is None or opened > decision_ms or opened + interval_ms > decision_ms:
+            continue
+        parsed.append({**ohlc[0], "timestamp_ms": float(opened)})
+    parsed.sort(key=lambda row: row["timestamp_ms"])
+    return parsed
+
+
+def _close_change(bars: Sequence[Mapping[str, float]], lookback: int) -> float | None:
+    if len(bars) < lookback + 1:
+        return None
+    previous = float(bars[-(lookback + 1)]["close"])
+    last = float(bars[-1]["close"])
+    if previous <= 0 or not math.isfinite(previous) or not math.isfinite(last):
+        return None
+    change = (last - previous) / previous
+    if not math.isfinite(change):
+        return None
+    return change
+
+
+def _bias_label(change: float | None) -> str:
+    if change is None:
+        return "UNKNOWN"
+    if change > 0:
+        return "long"
+    if change < 0:
+        return "short"
+    return "none"
+
+
+def _fmt_metric(value: float | None) -> str:
+    if value is None:
+        return "UNKNOWN"
+    return f"{value:.4f}"
+
+
+def momentum_summary(
+    *,
+    weekly_change: float | None,
+    daily_change: float | None,
+    structure: str | None,
+    retrace: float | None,
+) -> str:
+    return (
+        f"weekly_close_change={_fmt_metric(weekly_change)}; "
+        f"daily_close_change={_fmt_metric(daily_change)}; "
+        f"structure_4h={structure or 'UNKNOWN'}; "
+        f"retrace_4h={_fmt_metric(retrace)}"
+    )
+
+
+def confirmed_impulse(
+    bars: Sequence[Mapping[str, float]],
+    direction: str | None,
+) -> dict[str, float | str] | None:
+    """Last 4h extreme with one later close. RESEARCH INTERPRETATION, not PR #28."""
+    if direction not in {"long", "short"} or len(bars) < 2:
+        return None
+    body = list(bars)[:-1]
+    if direction == "long":
+        terminal_idx = max(range(len(body)), key=lambda index: (body[index]["high"], index))
+        terminal = float(body[terminal_idx]["high"])
+        origin = min(float(row["low"]) for row in body[: terminal_idx + 1])
+        if terminal <= origin:
+            return None
+        return {"direction": "long", "origin": origin, "terminal": terminal}
+    terminal_idx = min(range(len(body)), key=lambda index: (body[index]["low"], -index))
+    terminal = float(body[terminal_idx]["low"])
+    origin = max(float(row["high"]) for row in body[: terminal_idx + 1])
+    if origin <= terminal:
+        return None
+    return {"direction": "short", "origin": origin, "terminal": terminal}
+
+
+def retrace_fraction(impulse: Mapping[str, Any], close: float) -> float | None:
+    origin = float(impulse["origin"])
+    terminal = float(impulse["terminal"])
+    if impulse.get("direction") == "long":
+        span = terminal - origin
+        if span <= 0:
+            return None
+        return (terminal - close) / span
+    span = origin - terminal
+    if span <= 0:
+        return None
+    return (close - terminal) / span
+
+
+def research_zone(impulse: Mapping[str, Any]) -> list[float]:
+    origin = float(impulse["origin"])
+    terminal = float(impulse["terminal"])
+
+    def price(ratio: float) -> float:
+        if impulse.get("direction") == "long":
+            return terminal - ratio * (terminal - origin)
+        return terminal + ratio * (origin - terminal)
+
+    band = [price(RETRACE_SHALLOW), price(RETRACE_DEEP)]
+    return [min(band), max(band)]
+
+
+def stage_symbol(
+    *,
+    bars_4h: Sequence[Mapping[str, Any]] | None,
+    bars_1d: Sequence[Mapping[str, Any]] | None,
+    bars_1w: Sequence[Mapping[str, Any]] | None,
+    decision_time: datetime,
+    eligible_liquid: bool,
+    cot_regime: str,
+) -> dict[str, Any]:
+    """Staged research state. Mixed 4h structure is recorded, not a crash or a drop."""
+    weekly_closed = closed_bars(bars_1w, decision_time=decision_time, interval_ms=MS_1W)
+    daily_closed = closed_bars(bars_1d, decision_time=decision_time, interval_ms=MS_1D)
+    h4_closed = closed_bars(bars_4h, decision_time=decision_time, interval_ms=MS_4H)
+    regime = cot_regime if cot_regime in {"bullish", "bearish", "neutral"} else "unknown"
+    if not weekly_closed and not daily_closed and not h4_closed:
+        return {
+            "evaluated": False,
+            "state": "NO_TRADE",
+            "direction": "none",
+            "weekly_bias": "UNKNOWN",
+            "daily_bias": "UNKNOWN",
+            "structure_4h": None,
+            "entry_research_zone": None,
+            "invalidation": None,
+            "momentum": momentum_summary(
+                weekly_change=None, daily_change=None, structure=None, retrace=None
+            ),
+            "reasons": ["candles_missing"],
+            "cot_alignment": cot_alignment(regime, "none"),
+        }
+    weekly_change = _close_change(weekly_closed, WEEKLY_LOOKBACK)
+    daily_change = _close_change(daily_closed, DAILY_LOOKBACK)
+    weekly_bias = _bias_label(weekly_change)
+    daily_bias = _bias_label(daily_change)
+    structure = structure_state(h4_closed) if h4_closed else None
+    reasons: list[str] = []
+    if structure == "MIXED":
+        reasons.append("mixed_4h_structure")
+    agreed = weekly_bias in {"long", "short"} and weekly_bias == daily_bias
+    directional = [bias for bias in (weekly_bias, daily_bias) if bias in {"long", "short"}]
+    single = None
+    if not agreed and len(set(directional)) == 1 and (
+        weekly_bias in {"UNKNOWN", "none"} or daily_bias in {"UNKNOWN", "none"}
+    ):
+        single = directional[0]
+    if weekly_bias in {"long", "short"} and daily_bias in {"long", "short"} and weekly_bias != daily_bias:
+        reasons.append("weekly_daily_disagree")
+    bias_direction = weekly_bias if agreed else single
+    impulse = confirmed_impulse(h4_closed, bias_direction) if bias_direction else None
+    close = h4_closed[-1]["close"] if h4_closed else None
+    retrace = retrace_fraction(impulse, close) if impulse is not None and close is not None else None
+    zone = research_zone(impulse) if impulse is not None else None
+    invalidation = float(impulse["origin"]) if impulse is not None else None
+    if zone is not None:
+        reasons.append("research_interpretation_retracement_50_86")
+    extended = retrace is not None and retrace < RETRACE_SHALLOW
+    in_zone = retrace is not None and RETRACE_SHALLOW <= retrace <= RETRACE_DEEP
+    if not eligible_liquid:
+        state = "NO_TRADE"
+        direction = "none"
+        reasons.append("not_liquid_top100_perp")
+    elif extended and bias_direction:
+        state = "EXTENDED"
+        direction = str(bias_direction)
+        reasons.append("chasing_beyond_research_band")
+    elif agreed and in_zone:
+        state = "ZONE"
+        direction = str(weekly_bias)
+        reasons.append("inside_research_band")
+    elif agreed:
+        state = "IN_PLAY"
+        direction = str(weekly_bias)
+        if retrace is not None and retrace > RETRACE_DEEP:
+            reasons.append("deeper_than_research_band")
+        elif impulse is None:
+            reasons.append("4h_impulse_unconfirmed")
+    elif bias_direction:
+        state = "BIAS"
+        direction = str(bias_direction)
+        if weekly_bias == "UNKNOWN" or daily_bias == "UNKNOWN":
+            reasons.append("bias_warmup_unknown")
+    else:
+        state = "NO_BIAS"
+        direction = "none"
+        if weekly_bias == "UNKNOWN" or daily_bias == "UNKNOWN":
+            reasons.append("bias_warmup_unknown")
+    return {
+        "evaluated": True,
+        "state": state,
+        "direction": direction,
+        "weekly_bias": weekly_bias,
+        "daily_bias": daily_bias,
+        "structure_4h": structure,
+        "entry_research_zone": zone,
+        "invalidation": invalidation,
+        "momentum": momentum_summary(
+            weekly_change=weekly_change,
+            daily_change=daily_change,
+            structure=structure,
+            retrace=retrace,
+        ),
+        "reasons": reasons,
+        "cot_alignment": cot_alignment(regime, direction),
+    }
+
+
+def research_row(
+    candidate: Mapping[str, Any],
+    stage: Mapping[str, Any],
+    *,
+    cot_regime: str,
+) -> dict[str, Any]:
+    features = candidate.get("features") if isinstance(candidate.get("features"), Mapping) else {}
+    liquidity = candidate.get("liquidity") if isinstance(candidate.get("liquidity"), Mapping) else {}
+    open_interest = liquidity.get("open_interest")
+    if open_interest is None:
+        open_interest = features.get("open_interest_usd")
+    regime = cot_regime if cot_regime in {"bullish", "bearish", "neutral"} else "unknown"
+    return {
+        "asset": candidate.get("symbol"),
+        "asset_key": _asset_key(candidate),
+        "venue": candidate.get("venue"),
+        "contract_symbol": candidate.get("contract_symbol"),
+        "state": stage.get("state"),
+        "direction": stage.get("direction") if stage.get("direction") in {"long", "short"} else "none",
+        "reasons": list(stage.get("reasons") or []),
+        "weekly_bias": stage.get("weekly_bias") or "UNKNOWN",
+        "daily_bias": stage.get("daily_bias") or "UNKNOWN",
+        "momentum": stage.get("momentum"),
+        "cot_regime": regime,
+        "cot_alignment": stage.get("cot_alignment") or cot_alignment(regime, "none"),
+        "structure_4h": stage.get("structure_4h"),
+        "entry_research_zone": stage.get("entry_research_zone"),
+        "invalidation": stage.get("invalidation"),
+        "mark_price": features.get("mark_px"),
+        "funding": features.get("funding"),
+        "quote_volume_24h": liquidity.get("quote_volume_24h"),
+        "open_interest_usd": open_interest,
+        "evaluated": bool(stage.get("evaluated")),
+    }
+
+
+def apply_staged_book(
+    observation: dict[str, Any],
+    *,
+    candles_4h: Mapping[str, Sequence[Mapping[str, Any]]],
+    candles_1d: Mapping[str, Sequence[Mapping[str, Any]]],
+    candles_1w: Mapping[str, Sequence[Mapping[str, Any]]],
+    decision_time: datetime,
+    cot_regime: str,
+) -> dict[str, Any]:
+    regime = cot_regime if cot_regime in {"bullish", "bearish", "neutral"} else "unknown"
+    for candidate in observation.get("candidates") or []:
+        if not isinstance(candidate, dict):
+            continue
+        coin = str(candidate.get("contract_symbol") or "").upper()
+        liquidity = candidate.get("liquidity")
+        eligible_liquid = bool(
+            coin
+            and candidate.get("ranking_state") == "ELIGIBLE"
+            and isinstance(liquidity, Mapping)
+            and liquidity.get("state") == "PASS"
+        )
+        stage = stage_symbol(
+            bars_4h=candles_4h.get(coin) if coin else (),
+            bars_1d=candles_1d.get(coin) if coin else (),
+            bars_1w=candles_1w.get(coin) if coin else (),
+            decision_time=decision_time,
+            eligible_liquid=eligible_liquid,
+            cot_regime=regime,
+        )
+        candidate["research_stage"] = research_row(candidate, stage, cot_regime=regime)
+    return observation
+
+
+def _staged_book(payload: Mapping[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for observation in payload.get("observations") or []:
+        if not isinstance(observation, Mapping):
+            continue
+        for candidate in observation.get("candidates") or []:
+            if not isinstance(candidate, Mapping):
+                continue
+            stage = candidate.get("research_stage")
+            if isinstance(stage, Mapping) and stage.get("state") in STAGED_STATES:
+                rows.append(dict(stage))
+    return rows
+
+
 def apply_setup_candles(
     observation: dict[str, Any],
     candles_by_coin: Mapping[str, Sequence[Mapping[str, Any]]],
@@ -571,94 +1053,116 @@ def _candidate_row(
     }
 
 
+def _perp_gap(row: Mapping[str, Any], reason: str) -> dict[str, Any]:
+    return {
+        "symbol": str(row.get("symbol") or "").upper(),
+        "canonical_asset_id": row.get("canonical_asset_id"),
+        "rank": row.get("rank"),
+        "reason": reason,
+    }
+
+
+def resolve_top100_perp(
+    row: Mapping[str, Any],
+    contracts_by_symbol: Mapping[str, Sequence[Mapping[str, Any]]],
+    ids_by_symbol: Mapping[str, Sequence[str]],
+    *,
+    cap_symbols: set[str],
+    perp_list_status: str,
+) -> tuple[Mapping[str, Any] | None, str | None]:
+    """Map one market-cap row onto one Hyperliquid perp, or a gap reason.
+
+    Direct name match stays the rule. Hyperliquid lists some 1000-unit perps with
+    a leading K (KPEPE, KSHIB). That alias is used only when it is unique, the
+    plain symbol is not itself a perp, and the K-name is not its own top-100 ticker.
+    """
+    symbol = str(row.get("symbol") or "").upper()
+    if not symbol or not row.get("canonical_asset_id"):
+        return None, "missing_identity"
+    if perp_list_status != "available":
+        return None, "perpetual_metadata_unavailable"
+    identities = ids_by_symbol.get(symbol, ())
+    if len(identities) != 1:
+        return None, "ambiguous_symbol"
+    direct = contracts_by_symbol.get(symbol, ())
+    if len(direct) > 1:
+        return None, "ambiguous_symbol"
+    if len(direct) == 1:
+        return direct[0], None
+    alias = "K" + symbol
+    aliased = contracts_by_symbol.get(alias, ())
+    if len(aliased) == 1 and alias not in cap_symbols:
+        return aliased[0], None
+    return None, "no_hyperliquid_perp"
+
+
 def build_live_observation(
     market_cap: Sequence[Mapping[str, Any]],
     perps: Sequence[Mapping[str, Any]],
     *,
     now: datetime,
+    perp_list_status: str = "available",
 ) -> dict[str, Any]:
-    """Join current top-100 market-cap rows to Hyperliquid perps without ticker-only identity."""
+    """Top-100 market-cap rows intersected with Hyperliquid perps. Unmapped names are gaps."""
     contracts_by_symbol: dict[str, list[Mapping[str, Any]]] = {}
     for perp in perps:
         if isinstance(perp, Mapping) and perp.get("name"):
             contracts_by_symbol.setdefault(str(perp["name"]).upper(), []).append(perp)
     ids_by_symbol = _ids_by_symbol(market_cap)
+    cap_symbols = {
+        str(row.get("symbol") or "").upper()
+        for row in market_cap
+        if isinstance(row, Mapping) and row.get("symbol")
+    }
     members: list[dict[str, Any]] = []
     candidates: list[dict[str, Any]] = []
-    known_ids: set[str] = set()
+    gaps: list[dict[str, Any]] = []
     stamp = now.isoformat()
     joined = 0
+    considered = 0
     for row in market_cap:
         if not isinstance(row, Mapping):
             continue
+        considered += 1
         symbol = str(row.get("symbol") or "").upper()
         canonical = row.get("canonical_asset_id")
-        contract = _contract_for_row(row, contracts_by_symbol.get(symbol, ()), ids_by_symbol)
-        if contract is not None:
-            joined += 1
+        contract, gap_reason = resolve_top100_perp(
+            row,
+            contracts_by_symbol,
+            ids_by_symbol,
+            cap_symbols=cap_symbols,
+            perp_list_status=perp_list_status,
+        )
+        if contract is None:
+            gaps.append(_perp_gap(row, gap_reason or "no_hyperliquid_perp"))
+            continue
+        joined += 1
         rank = row.get("rank")
+        contract_name = str(contract["name"])
         member = {
             "symbol": symbol,
             "canonical_asset_id": canonical,
-            "venue": "hyperliquid" if contract is not None else None,
-            "contract_symbol": str(contract["name"]) if contract is not None else None,
-            "quote_currency": str(contract.get("quote_currency") or "USDC") if contract is not None else "USD",
+            "venue": "hyperliquid",
+            "contract_symbol": contract_name,
+            "quote_currency": str(contract.get("quote_currency") or "USDC"),
             "universe_source": row.get("universe_source") or "current_top_market_cap",
             "rank": rank,
             "exchange_contract_type": "perpetual",
+            "name_alias": contract_name if contract_name != symbol else None,
         }
         members.append(member)
-        if canonical:
-            known_ids.add(str(canonical).lower())
-        ranking = "ELIGIBLE" if canonical and contract is not None else "UNKNOWN"
         candidates.append(
             _candidate_row(
                 symbol=symbol,
                 canonical_asset_id=canonical,
-                venue=member["venue"],
+                venue="hyperliquid",
                 contract=contract,
-                ranking_state=ranking,
+                ranking_state="ELIGIBLE",
                 universe_source=str(member["universe_source"]),
                 rank=rank,
                 stamp=stamp,
             )
         )
-    unresolved = 0
-    for symbol, contracts in sorted(contracts_by_symbol.items()):
-        for contract in contracts:
-            mapped = ids_by_symbol.get(symbol, [])
-            canonical = mapped[0] if len(mapped) == 1 else None
-            if canonical and canonical.lower() in known_ids:
-                continue
-            unresolved += 1
-            members.append(
-                {
-                    "symbol": symbol,
-                    "canonical_asset_id": canonical,
-                    "venue": "hyperliquid",
-                    "contract_symbol": str(contract["name"]),
-                    "quote_currency": str(contract.get("quote_currency") or "USDC"),
-                    "universe_source": "liquid_perpetual",
-                    "rank": None,
-                    "data_completeness": "complete" if canonical else "incomplete",
-                    "missingness_reason": None if canonical else "canonical_asset_id_unresolved",
-                    "exchange_contract_type": "perpetual",
-                }
-            )
-            if not canonical:
-                continue
-            candidates.append(
-                _candidate_row(
-                    symbol=symbol,
-                    canonical_asset_id=canonical,
-                    venue="hyperliquid",
-                    contract=contract,
-                    ranking_state="BELOW_RANK_THRESHOLD",
-                    universe_source="liquid_perpetual",
-                    rank=None,
-                    stamp=stamp,
-                )
-            )
     return {
         "observation_timestamp": stamp,
         "source": "live:CoinGecko+Hyperliquid",
@@ -668,8 +1172,11 @@ def build_live_observation(
         "join": {
             "market_cap_source": "coingecko",
             "perpetual_source": "hyperliquid",
+            "top100_count": considered,
+            "mapped_perp_count": joined,
             "joined_count": joined,
-            "unresolved_perp_count": unresolved,
+            "perp_gap_count": len(gaps),
+            "perp_gap": gaps,
             "spread_source": "hyperliquid impactPxs; half-spread slippage, depth not imputed",
         },
     }
@@ -716,8 +1223,6 @@ class CryptoWorkflow:
         warnings = []
         if not funnel["macro_context_validated"]:
             warnings.append("core macro evidence unavailable")
-        if funnel["cot_regime"] not in {"bullish", "bearish", "neutral"}:
-            warnings.append("COT regime unavailable; COT is not applied as an asset-level signal")
         extra_warnings = replay_payload.get("warnings") or ()
         warnings.extend(str(item) for item in extra_warnings if item)
         if candidates:
@@ -761,6 +1266,31 @@ class CryptoWorkflow:
         if funnel.get("incomplete_evaluations") and mode is Mode.LIVE and operational is OperationalStatus.HEALTHY:
             operational = OperationalStatus.PARTIAL
         decision = trade_decision(candidates, research=research, operational=operational)
+        scan_regime, cot_status = resolve_scan_cot(cot_regime, cot_context)
+        observations_out, staged = stamp_cot_book(observations, scan_regime, cot_status)
+        book_regime = agreed_book_regime(staged, scan_regime, cot_status)
+        if book_regime in KNOWN_COT_REGIMES and cot_status == "MISSING":
+            cot_status = "CLAIMED"
+        if book_regime != scan_regime:
+            observations_out, staged = stamp_cot_book(observations, book_regime, cot_status)
+        funnel["cot_regime"] = book_regime
+        bot_decision = build_bot_decision(staged, book_regime, cot_status)
+        if book_regime not in KNOWN_COT_REGIMES:
+            warnings.append("COT regime unavailable; COT is not applied as an asset-level signal")
+        perp_gap: list[dict[str, Any]] = []
+        for observation in observations_out:
+            if not isinstance(observation, Mapping):
+                continue
+            join = observation.get("join")
+            if not isinstance(join, Mapping):
+                continue
+            for item in join.get("perp_gap") or []:
+                if isinstance(item, Mapping):
+                    perp_gap.append(dict(item))
+        staged_states = {name: 0 for name in STAGED_STATES}
+        for row in staged:
+            staged_states[str(row["state"])] += 1
+        funnel["staged_states"] = staged_states
         result = ResearchResult(
             workflow=WORKFLOW_SCAN,
             status=research,
@@ -784,8 +1314,15 @@ class CryptoWorkflow:
                 "cot_context": dict(cot_context or {}),
                 "cava_context_status": cava_status,
                 "final_candidates": candidates,
+                "candidates": staged,
+                "perp_gap": perp_gap,
+                "perp_gap_count": len(perp_gap),
                 "trade_decision": decision,
-                "observations": list(observations),
+                "bot_decision": bot_decision,
+                "cot_regime": book_regime,
+                "observations": observations_out,
+                "cot_scope": COT_SCOPE,
+                "theory_note": THEORY_NOTE,
                 "execution_enabled": False,
                 "loaded_live_context": False,
             },
@@ -808,12 +1345,18 @@ class CryptoWorkflow:
         universe=None,
         perps=None,
         candles: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+        daily_candles: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
+        weekly_candles: Mapping[str, Sequence[Mapping[str, Any]]] | None = None,
         cot_regime: str = "unknown",
         cot_context: Mapping[str, Any] | None = None,
     ) -> ResearchResult:
         from rocket.providers.cftc import fetch_cot_context
         from rocket.providers.coingecko import fetch_top_universe
-        from rocket.providers.hyperliquid import fetch_perp_markets, fetch_setup_candles
+        from rocket.providers.hyperliquid import (
+            fetch_closed_candles,
+            fetch_perp_markets,
+            fetch_setup_candles,
+        )
         from rocket.workflows.macro import MacroWorkflow
 
         observed = now or datetime.now(UTC)
@@ -842,11 +1385,14 @@ class CryptoWorkflow:
                     "mode": "LIVE",
                     "funnel": {"universe": 0, "final_candidates": 0, "universe_size_target": UNIVERSE_SIZE},
                     "final_candidates": [],
+                    "candidates": [],
                     "trade_decision": {
                         "direction": "NO_TRADE",
                         "reason": "required_provider_unavailable",
                         "candidate_count": 0,
                     },
+                    "cot_scope": COT_SCOPE,
+                    "theory_note": THEORY_NOTE,
                     "execution_enabled": False,
                 },
                 warnings=("live current-universe discovery is unavailable",),
@@ -870,7 +1416,12 @@ class CryptoWorkflow:
             cot_context = fetch_cot_context(now=observed)
         cava = self.store.load_context("cava") if self.store else None
         perp_records = perps_result.records if perps_result.status is OperationalStatus.HEALTHY else ()
-        observation = build_live_observation(discovery.records, perp_records, now=observed)
+        observation = build_live_observation(
+            discovery.records,
+            perp_records,
+            now=observed,
+            perp_list_status="available" if perps_result.status is OperationalStatus.HEALTHY else "unavailable",
+        )
         if candles is None:
             coins = [
                 str(row.get("contract_symbol"))
@@ -882,9 +1433,32 @@ class CryptoWorkflow:
                 and row.get("contract_symbol")
             ]
             candles = fetch_setup_candles(coins, now=observed)
+            daily_candles = fetch_closed_candles(
+                coins,
+                interval="1d",
+                lookback_days=DAILY_CANDLE_LOOKBACK_DAYS,
+                now=observed,
+            )
+            weekly_candles = fetch_closed_candles(
+                coins,
+                interval="1w",
+                lookback_days=WEEKLY_CANDLE_LOOKBACK_DAYS,
+                now=observed,
+            )
+        else:
+            daily_candles = daily_candles or {}
+            weekly_candles = weekly_candles or {}
         observed = now or datetime.now(UTC)
         observation["observation_timestamp"] = observed.isoformat()
         apply_setup_candles(observation, candles)
+        apply_staged_book(
+            observation,
+            candles_4h=candles,
+            candles_1d=daily_candles,
+            candles_1w=weekly_candles,
+            decision_time=observed,
+            cot_regime=effective_cot_regime(cot_regime, cot_context),
+        )
         live_warnings: list[str] = []
         if perps_result.status is not OperationalStatus.HEALTHY:
             live_warnings.append("hyperliquid perpetual metadata unavailable")
@@ -921,10 +1495,11 @@ class CryptoWorkflow:
                      and row["liquidity"]["state"] == "PASS"]
         for row in requested:
             coin = str(row["contract_symbol"])
+            candle_key = coin.upper()
             providers.append({"name": f"hyperliquid.candles:{coin}",
-                              "status": "HEALTHY" if coin in candles else "UNAVAILABLE",
-                              "failure_kind": None if coin in candles else "CandleAcquisitionFailed",
-                              "coverage": str(len(candles.get(coin, ())))})
+                              "status": "HEALTHY" if candle_key in candles else "UNAVAILABLE",
+                              "failure_kind": None if candle_key in candles else "CandleAcquisitionFailed",
+                              "coverage": str(len(candles.get(candle_key, ())))})
         if macro_result is not None:
             providers.extend(item.to_dict() for item in macro_result.operational.providers)
         else:
