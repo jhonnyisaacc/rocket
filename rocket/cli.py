@@ -288,7 +288,14 @@ def disclosures(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Official House + OGE filings. Healthy no-new is not a provider failure."""
+    """Official House + OGE filings. Healthy no-new is not a provider failure.
+
+    FMP house-latest and senate-latest stay at page 0 and limit 25. This command
+    does not ingest them. Larger limits and page 1+ are paywalled (HTTP 402
+    Entitlement); broader chamber coverage stays on official House search.
+    Pelosi FMP history is optional: Entitlement or RateLimit does not make the
+    job ACTION_REQUIRED when official House filings succeed.
+    """
     del json_out
     from rocket.providers.disclosures import (
         OfficialHouseDisclosureProvider,
@@ -335,12 +342,25 @@ def disclosures(
     fmp = FMPClient()
     history = fmp.person_history() if "nancy_pelosi" in selected else None
     if history is not None:
-        status["pelosi_secondary_history"] = {"status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK", "failure_kind": history.failure_kind,
-                                               "source_family": "secondary", "record_provider": "fmp"}
+        status["pelosi_secondary_history"] = {
+            "status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK",
+            "failure_kind": history.failure_kind,
+            "source_family": "secondary", "record_provider": "fmp", "optional": True,
+        }
     historical_records = list(history.records) if history else []
+    coverage = None
     if trump_history:
         historical_records.extend(trump_history.records)
         secondary.extend(trump_history.records)
+        from rocket.providers.open_cabinet import structured_coverage
+
+        coverage = structured_coverage(
+            executive,
+            exported_at=trump_history.extras.get("exported_at"),
+            covered_urls=[row.get("source_url") for row in trump_history.records],
+            now=datetime.now(UTC),
+            export_usable=trump_history.status is OperationalStatus.HEALTHY,
+        )
     from rocket.candidates import caller_references
     references, reference_coverage = caller_references()
     emit_result(
@@ -363,6 +383,7 @@ def disclosures(
             portfolio_tickers=references["portfolio"], watch_tickers=references["watch"],
             cross_system_coverage=reference_coverage,
             research_opportunities=True,
+            structured_coverage=coverage,
         ),
         human=human,
     )

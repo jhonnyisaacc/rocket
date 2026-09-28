@@ -120,6 +120,7 @@ class DisclosureWorkflow:
         cross_system_coverage=None,
         historical_price_fetcher=None,
         history_acquisition=None,
+        structured_coverage: Mapping[str, Any] | None = None,
     ) -> ResearchResult:
         decided = now or datetime.now(UTC)
         reference_coverage = cross_system_coverage or {
@@ -142,6 +143,17 @@ class DisclosureWorkflow:
         selected_people = {person_id(s) or s for s in subjects} if subjects is not None else None
         if selected_people is not None:
             unique = {key: row for key, row in unique.items() if row["person_id"] in selected_people}
+        coverage = dict(structured_coverage or {})
+        uncovered = {
+            row["source_url"]: row
+            for row in coverage.get("uncovered_filings") or []
+            if isinstance(row, Mapping) and row.get("source_url")
+        }
+        for record in unique.values():
+            gap = uncovered.get(record.get("source_url_reference"))
+            if gap and record.get("source_family") == "executive":
+                record["needs_structured_source"] = True
+                record["structured_source_status"] = gap.get("status")
         seen_state = self.store.load_state("disclosures_seen") or {}
         seen = {str(item) for item in seen_state.get("unique_ids", [])}
         new_records = [record for record in unique.values() if record["unique_id"] not in seen]
@@ -155,8 +167,9 @@ class DisclosureWorkflow:
                            for record in new_records)
                     else "NO_NEW_RECORDS"
                 )
-        failed = sum(1 for value in health.values() if isinstance(value, dict) and value.get("status") == "UNAVAILABLE")
-        if health and failed == len(health):
+        required = [value for value in health.values() if isinstance(value, dict) and not value.get("optional")]
+        failed = sum(1 for value in required if value.get("status") == "UNAVAILABLE")
+        if required and failed == len(required):
             operational = OperationalStatus.UNAVAILABLE
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
             research_result = "PROVIDER_FAILURE"
@@ -168,6 +181,24 @@ class DisclosureWorkflow:
             operational = OperationalStatus.HEALTHY
             research = ResearchStatus.ACTION_REQUIRED if new_records else ResearchStatus.NO_SETUP
             research_result = "NEW_RECORDS" if new_records else "NO_NEW_RECORDS"
+        executive_info = health.get("executive")
+        prior_executive = self.store.load_state("disclosures_executive") or {}
+        executive_outage = (
+            isinstance(executive_info, dict)
+            and executive_info.get("status") == "UNAVAILABLE"
+            and executive_info.get("failure_kind") == "ExternalOutage"
+        )
+        recovery_rescan = bool(
+            isinstance(executive_info, dict)
+            and executive_info.get("status") != "UNAVAILABLE"
+            and prior_executive.get("failure_kind") == "ExternalOutage"
+        )
+        if isinstance(executive_info, dict):
+            self.store.save_state("disclosures_executive", {
+                "status": executive_info.get("status"),
+                "failure_kind": executive_info.get("failure_kind"),
+                "updated_at": decided.isoformat(),
+            })
         evidence = [
             Evidence(
                 source=record["source_family"],
@@ -284,6 +315,13 @@ class DisclosureWorkflow:
             persist_candidates(self.store, "disclosures", [r for r in opportunities if r.get("ticker")], now=decided)
             if opportunities and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
                 research = ResearchStatus.ACTION_REQUIRED
+        coverage_gap = bool(coverage.get("needs_structured_source"))
+        if executive_outage:
+            research = ResearchStatus.ACTION_REQUIRED
+            research_result = "PROVIDER_FAILURE"
+        elif coverage_gap and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
+            research = ResearchStatus.ACTION_REQUIRED
+        attention = executive_outage or coverage_gap or recovery_rescan
         import json
 
         from rocket.candidates import content_id
@@ -313,23 +351,26 @@ class DisclosureWorkflow:
                 "cross_system_coverage": reference_coverage,
                 "material_change": material_change,
                 "execution_enabled": False,
+                "structured_coverage": coverage or None,
+                "executive_recovery_rescan": recovery_rescan,
             },
             evidence=tuple(evidence),
-            presentation={"market_result": material_change, "silent": not material_change,
-                          "diagnostic_only": bool(failed and not material_change)},
+            presentation={"market_result": material_change or attention, "silent": not material_change and not attention,
+                          "diagnostic_only": bool(failed and not material_change and not attention)},
             reasons=(ResearchReason(ReasonCode.REQUIRED_PROVIDER_UNAVAILABLE,
                                     tuple(health), True),) if operational is OperationalStatus.UNAVAILABLE else (),
             warnings=(
                 *warnings,
                 *(
                     ("disclosures are delayed context and require independent portfolio evidence",)
-                    if new_records
+                    if new_records or coverage_gap or executive_outage
                     else ()
                 ),
+                *((coverage.get("interim"),) if coverage_gap and coverage.get("interim") else ()),
             ),
         )
         self.store.save_result(result)
-        if research is ResearchStatus.INSUFFICIENT_EVIDENCE:
+        if research is ResearchStatus.INSUFFICIENT_EVIDENCE or operational is OperationalStatus.UNAVAILABLE:
             return result
         self.store.save_state(
             "disclosures_seen",
