@@ -127,6 +127,9 @@ if __name__ == "__main__":
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--max-seconds", type=int, default=240)
     args = parser.parse_args()
+    from rocket.research.governance import require_prospective_admission
+
+    require_prospective_admission()
     if not 60 <= args.max_seconds <= 360:
         parser.error("max-seconds must be 60..360")
     print(json.dumps(asyncio.run(capture(args.session, args.out,

@@ -1,4 +1,5 @@
 /* MC-022: one unsigned, read-only Pump buy simulation at a scheduled clock. */
+require('./research_admission.cjs')();
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');

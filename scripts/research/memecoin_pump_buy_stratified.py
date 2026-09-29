@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import argparse
-import base64
 import asyncio
+import base64
 import json
 import os
 import subprocess
@@ -148,6 +148,9 @@ if __name__ == "__main__":
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--max-seconds", type=int, default=420)
     args = parser.parse_args()
+    from rocket.research.governance import require_prospective_admission
+
+    require_prospective_admission()
     if not 300 <= args.max_seconds <= 600:
         parser.error("max-seconds must be 300..600")
     print(json.dumps(asyncio.run(capture(args.session, args.out,

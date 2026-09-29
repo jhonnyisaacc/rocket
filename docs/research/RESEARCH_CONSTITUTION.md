@@ -15,3 +15,7 @@ Evaluate point-in-time availability, protocol truth, calibration, base rates, ra
 Every durable conclusion uses `KNOWN`, `OPEN`, `CANDIDATE` or `REJECTED` and records what evidence shows, what it does not show, why it is believed, and a reopening condition. Reopen `REJECTED` only for new independent data, a method/data bug, a materially different mechanism, a transfer/replication test or explicit operator decision. Do not search thresholds to rescue a failed result.
 
 Component promotion: `UNTESTED → DISCOVERY_SIGNAL → OOS_CANDIDATE → ROBUST_COMPONENT`. Strategy promotion: `RESEARCH → CANDIDATE → FROZEN → SHADOW → ACCEPTED`. A changed policy receives a new version. Freeze and record all prospective decisions, including abstentions and failures, before resolving outcomes. Execution remains disabled until separately authorized.
+
+## Direction control
+
+Before meaningful new research, use the machine-readable family state, checkpoint and independent workflow review in [WORKFLOW_GOVERNANCE.md](WORKFLOW_GOVERNANCE.md). Experiment validity does not confer direction permission. A result suspends automatic continuation pending family review; calibration cannot clear negative economic evidence. Historical next steps never override a stopped family.

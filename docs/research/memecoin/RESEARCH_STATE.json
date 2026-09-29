@@ -1,0 +1,240 @@
+{
+  "schema": "rocket.research-state.v1",
+  "domain": "memecoin",
+  "objective": "Very rare fixed-risk opportunities with realistically reachable 20x/50x/100x upside; abstention preferred to activity",
+  "decision_state": "RESEARCH_ONLY_NO_EDGE_VALIDATED",
+  "recommendation": "PIVOT_TO_EXTREME_RUNNER_RESEARCH",
+  "current_hypothesis_family": "extreme_runner_actor_confluence",
+  "active_experiment": null,
+  "admissions": {
+    "ER-001": {
+      "checkpoint": {
+        "schema": "rocket.research-checkpoint.v1",
+        "domain": "memecoin",
+        "experiment": "ER-001",
+        "proposer": "rocket_research_author",
+        "hypothesis_family": "extreme_runner_actor_confluence",
+        "previous_result": "WORKFLOW-AUDIT-20260929",
+        "economic_gate_status": "UNTESTED",
+        "category": "retrospective_discovery",
+        "work_kind": "alpha_research",
+        "new_information": "Leakage-safe conditional reachable-20x base-rate lift for at least two credible actors without strong observed links versus launch-period controls",
+        "can_change_decision": true,
+        "decision_change": "Fail: stop actor-watch investment. Pass: propose independent ER-002 temporal replication, never strategy acceptance.",
+        "materially_different": true,
+        "mechanism_difference": "Prior completed extreme-runner histories and common-control-aware confluence, rather than five-second curve progress, raw net flow or first-three size dispersion",
+        "stop_rule_status": "CLEAR",
+        "operator_review_required": false,
+        "design": "docs/research/memecoin/experiments/ER-001-FROZEN.md",
+        "operator_authorization": {
+          "evidence": "docs/research/memecoin/experiments/ER-001-OPERATOR-AUTHORIZATION.md",
+          "sha256": "b6f1c1530a8edff85a650cdbc5f059cf8e6eb984513efae147acb7dbcf2eb665",
+          "scope": "ER-001 and bounded internal acquisition/reconstruction/analysis only"
+        },
+        "allowed_steps": [
+          "source_semantics",
+          "dataset_acquisition",
+          "historical_reconstruction",
+          "deterministic_analysis"
+        ],
+        "design_version": "1.1"
+      },
+      "review": {
+        "schema": "rocket.workflow-review.v1",
+        "packet_sha256": "f0df8bc6596a2ad73bb175c83afc88291a489c9328752f1da1e999e46e6c014e",
+        "reviewer": "independent_workflow_reviewer_er001",
+        "decision": "WORKFLOW_OK",
+        "checks": {
+          "stop_rule_complies": true,
+          "family_evidence_considered": true,
+          "mechanism_distinct": true,
+          "decision_value": true,
+          "infrastructure_justified": true,
+          "operator_review_satisfied": true
+        },
+        "reasons": [
+          {
+            "finding": "SCOPE",
+            "assessment": "Workflow validity only; no profitability or outcome judgment. No outcome rows or effect tables inspected."
+          },
+          {
+            "finding": "STOP_AND_FAMILY",
+            "assessment": "Generic early-launch family remains REJECTED with zero budget and six scoped economic failures. ER-001 uses its separate single retrospective budget; any terminal result suspends continuation, and ER-002 remains outside authorization."
+          },
+          {
+            "finding": "DISTINCT_MECHANISM",
+            "assessment": "Completed prior extreme-runner histories, common-control-aware confluence and seven-day size-aware outcomes differ materially from five-second raw flow, curve progress and short-horizon dispersion tests."
+          },
+          {
+            "finding": "PROSPECTIVE_AMENDMENT",
+            "assessment": "v1.1 corrects unequal matching weights/control reuse, unknown-exposure misclassification, route-label interval coverage and deduplicated fee-specific prior-token labels before final outcome inspection. Primary thresholds, endpoint, lag and temporal split remain frozen."
+          },
+          {
+            "finding": "CAUSAL_CLOCK",
+            "assessment": "Five-minute features end at +295s; prior token horizons and contributing observable evidence must finish by wallet entry minus 5s. Candidate self-history and future successes are excluded. Historical reconstruction is explicitly separate from Rocket receipt availability."
+          },
+          {
+            "finding": "CONTROLS_AND_UNCERTAINTY",
+            "assessment": "Outcome-blind complete launch registry and frozen date/protocol/cap/liquidity matching include failed launches. Equal candidate weighting, replacement disclosure, matched-set day bootstrap and unknown bounds are explicit. Cap/liquidity conditioning estimates predictive association, not a causal buying effect."
+          },
+          {
+            "finding": "REACHABILITY",
+            "assessment": "Primary labels require full-position reserve/fee quotes including modeled costs and compatible interval coverage; known negatives require complete seven-day route evidence. Candles, isolated prints and incomplete noncanonical route histories cannot pass."
+          },
+          {
+            "finding": "PROPORTIONAL_ACQUISITION",
+            "assessment": "Bounded semantic validation then development acquisition then untouched temporal slice is justified by potential directional value. Actual deficient source intervals remain diagnostics and do not replace the March-August 2026 primary corpus. Large paid acquisition, production infrastructure and live execution remain excluded."
+          },
+          {
+            "finding": "OPERATOR_AUTHORIZATION",
+            "assessment": "Direct user attachment 9a2a2e90-343a-4467-905f-acf6ac310136 explicitly authorizes ER-001, review, moderate/public acquisition, bounded reconstruction and small research scripts. Checkpoint authorization file hash was verified."
+          },
+          {
+            "finding": "INTERNAL_STEPS",
+            "assessment": "require_experiment_step revalidates the same digest-bound active admission and frozen allowed_steps without spending an additional experiment budget; stale or unlisted steps fail closed."
+          }
+        ]
+      },
+      "gate": {
+        "schema": "rocket.workflow-gate.v1",
+        "decision": "WORKFLOW_OK",
+        "experiment": "ER-001",
+        "family": "extreme_runner_actor_confluence",
+        "family_status": "OPEN",
+        "packet_sha256": "f0df8bc6596a2ad73bb175c83afc88291a489c9328752f1da1e999e46e6c014e",
+        "reasons": [],
+        "allowed_categories": [
+          "feasibility_probe",
+          "retrospective_discovery"
+        ],
+        "execution_enabled": false
+      },
+      "started_at": "2026-09-29T21:33:54.423665+00:00",
+      "status": "SUSPENDED",
+      "suspension": {
+        "reason": "Latest operator instruction limits this iteration to audit/design/feasibility; full ER-001 analysis must not proceed",
+        "evidence": "/Users/jhonny/.codex/attachments/e0ffb0b4-a0e8-4860-a762-a4a709b1af1b/pasted-text-1.txt",
+        "recorded_at": "2026-09-29T21:39:12.423650+00:00"
+      }
+    }
+  },
+  "families": {
+    "generic_early_launch_signals": {
+      "status": "REJECTED",
+      "economic_gate_status": "FAILED_COSTED_PROXY",
+      "independent_economic_failures": 6,
+      "consecutive_economic_failures": 6,
+      "economic_evidence": [
+        {
+          "experiment": "MC-003",
+          "cohort": "MC-003-prospective-window",
+          "mechanism": "curve_progress",
+          "outcome": "NEGATIVE",
+          "evidence": "docs/research/memecoin/experiments/MC-003-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        },
+        {
+          "experiment": "MC-005",
+          "cohort": "MC-005-prospective-window",
+          "mechanism": "net_flow",
+          "outcome": "NONROBUST",
+          "evidence": "docs/research/memecoin/experiments/MC-005-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        },
+        {
+          "experiment": "MC-006",
+          "cohort": "MC-006-prospective-window",
+          "mechanism": "net_flow",
+          "outcome": "NEGATIVE",
+          "evidence": "docs/research/memecoin/experiments/MC-006-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        },
+        {
+          "experiment": "MC-010",
+          "cohort": "MC-010-prospective-window",
+          "mechanism": "net_flow",
+          "outcome": "NEGATIVE",
+          "evidence": "docs/research/memecoin/experiments/MC-010-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        },
+        {
+          "experiment": "MC-013",
+          "cohort": "MC-013-prospective-window",
+          "mechanism": "net_flow",
+          "outcome": "NEGATIVE",
+          "evidence": "docs/research/memecoin/experiments/MC-013-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        },
+        {
+          "experiment": "MC-015",
+          "cohort": "MC-015-prospective-window",
+          "mechanism": "buyer_size_dispersion",
+          "outcome": "NEGATIVE",
+          "evidence": "docs/research/memecoin/experiments/MC-015-RESULT.md",
+          "independence_scope": "disjoint launch window; same day/regime, not independent market regimes"
+        }
+      ],
+      "continuation_budget": 0,
+      "operator_review_required": true,
+      "allowed_categories": [],
+      "forbidden_categories": [
+        "prospective_alpha",
+        "infrastructure_calibration",
+        "retrospective_discovery",
+        "feasibility_probe"
+      ],
+      "last_evidence_checkpoint": "MC-022",
+      "latest_result_path": "docs/research/memecoin/experiments/MC-022-RESULT.md",
+      "research_debt": [
+        "MC-003 curve-progress rejected",
+        "MC-005/006/010/013 net-flow entry unvalidated; risk association retained",
+        "MC-015 dispersion rejected",
+        "MC-016..022 calibration did not improve alpha evidence",
+        "MC-023 local archive/audit pending; no accepted result; no further capture authorized"
+      ],
+      "reopening_conditions": [
+        "new_independent_data",
+        "invalid_prior_test",
+        "different_mechanism",
+        "transfer_replication",
+        "operator_decision"
+      ],
+      "stop_rationale": "Replicated economic failure across distinct windows and two failed nearby mechanisms; fast receipts/direct quotes did not rescue quoted-only returns. This closes automatic investment, not all possible memecoin alpha."
+    },
+    "extreme_runner_actor_confluence": {
+      "status": "REVIEW_REQUIRED",
+      "component_stage": "UNTESTED",
+      "economic_gate_status": "UNTESTED",
+      "independent_economic_failures": 0,
+      "consecutive_economic_failures": 0,
+      "economic_evidence": [],
+      "continuation_budget": 0,
+      "operator_review_required": true,
+      "allowed_categories": [
+        "feasibility_probe",
+        "retrospective_discovery"
+      ],
+      "forbidden_categories": [
+        "prospective_alpha",
+        "infrastructure_calibration"
+      ],
+      "last_evidence_checkpoint": "WORKFLOW-AUDIT-20260929",
+      "latest_result_path": "docs/research/memecoin/WORKFLOW_AUDIT.md",
+      "research_debt": [
+        "No leakage-safe extreme-runner lift measured",
+        "Six-month balanced launch corpus not yet acquired",
+        "Bounded public source probe did not establish six-month launch population, 90-day signed wallet/funding histories or complete seven-day route-depth coverage",
+        "Admission suspended after operator narrowed iteration scope; no economic result or additional economic failure"
+      ],
+      "reopening_conditions": [
+        "new_independent_data",
+        "invalid_prior_test",
+        "different_mechanism",
+        "transfer_replication",
+        "operator_decision"
+      ],
+      "stop_rationale": "Actor-confluence mechanism remains untested. Existing admission preserved but suspended by latest scope instruction. Review source adequacy and authorize resumption before full ER-001; no automatic expensive acquisition, ER-002 or production.",
+      "data_gate_status": "DATA_INSUFFICIENT_FOR_PRIMARY_ER001"
+    }
+  }
+}

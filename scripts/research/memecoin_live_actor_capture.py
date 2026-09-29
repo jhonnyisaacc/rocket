@@ -225,6 +225,9 @@ if __name__ == "__main__":
     parser.add_argument("--include-sol-amount", action="store_true")
     parser.add_argument("--rpc-url", default=RPC)
     args = parser.parse_args()
+    from rocket.research.governance import require_prospective_admission
+
+    require_prospective_admission()
     if not 180 <= args.max_seconds <= 720 or not 1024 <= args.max_bytes <= 33554432 or not (
             1 <= args.max_selected <= 1500):
         parser.error("bounds: seconds 180..720, bytes 1024..33554432, selected 1..1500")

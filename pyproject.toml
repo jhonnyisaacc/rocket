@@ -21,6 +21,7 @@ dev = [
 ]
 research = [
     "websockets>=15.0,<16",
+    "pyarrow>=21,<24",
 ]
 
 [project.scripts]

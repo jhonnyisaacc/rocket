@@ -1,5 +1,17 @@
 # Memecoin Frontier
 
+Status: superseding direction decision, 2026-09-29.
+
+**Decision: PIVOT_TO_EXTREME_RUNNER_RESEARCH.** Generic early-launch entry family is REJECTED for automatic investment; zero continuation budget. Existing ranks remain rejected/unpromoted. Execution certainty did not establish alpha. See [workflow audit](WORKFLOW_AUDIT.md) and canonical [family state](RESEARCH_STATE.json).
+
+**Current question:** Does leakage-safe credible actor confluence at a realistic five-minute checkpoint materially lift size-aware reachable-20x probability relative to matched launch-period controls?
+
+**Current permitted scope:** audit, frozen design and bounded feasibility only, per the latest operator instruction. The independently reviewed ER-001 admission is retained as SUSPENDED; no full labels or effect tables were computed. Actor confluence remains UNTESTED, with a data gate of DATA_INSUFFICIENT_FOR_PRIMARY_ER001 and direction status REVIEW_REQUIRED. Resume only after source adequacy and operator scope are reviewed. No prospective Pump capture, wallet-watch infrastructure, browser/X orchestration or ENTER. Expensive acquisition/ER-002 requires operator approval. See [feasibility evidence](ER-001-FEASIBILITY.md).
+
+The sections below preserve the earlier trajectory as historical evidence. Their next-step paragraphs are superseded and do not authorize work.
+
+## Historical Frontier through MC-022
+
 Status: current, 2026-09-24. One live question; update after each accepted or rejected experiment.
 
 **Question:** Which features genuinely observable during the earliest token lifecycle contain information about later economically tradable outcomes after realistic execution?

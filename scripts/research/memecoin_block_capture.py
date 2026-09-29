@@ -135,6 +135,9 @@ if __name__ == "__main__":
     parser.add_argument("--seconds", type=int, required=True)
     parser.add_argument("--max-bytes", type=int, required=True)
     args = parser.parse_args()
+    from rocket.research.governance import require_prospective_admission
+
+    require_prospective_admission()
     if not 5 <= args.seconds <= 900 or not 1024 <= args.max_bytes <= 536870912:
         parser.error("seconds must be 5..900 and max-bytes 1024..536870912")
     result = asyncio.run(capture(args.out, args.seconds, args.max_bytes))

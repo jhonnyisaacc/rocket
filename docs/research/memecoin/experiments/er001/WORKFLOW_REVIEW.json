@@ -1,0 +1,56 @@
+{
+  "schema": "rocket.workflow-review.v1",
+  "packet_sha256": "f0df8bc6596a2ad73bb175c83afc88291a489c9328752f1da1e999e46e6c014e",
+  "reviewer": "independent_workflow_reviewer_er001",
+  "decision": "WORKFLOW_OK",
+  "checks": {
+    "stop_rule_complies": true,
+    "family_evidence_considered": true,
+    "mechanism_distinct": true,
+    "decision_value": true,
+    "infrastructure_justified": true,
+    "operator_review_satisfied": true
+  },
+  "reasons": [
+    {
+      "finding": "SCOPE",
+      "assessment": "Workflow validity only; no profitability or outcome judgment. No outcome rows or effect tables inspected."
+    },
+    {
+      "finding": "STOP_AND_FAMILY",
+      "assessment": "Generic early-launch family remains REJECTED with zero budget and six scoped economic failures. ER-001 uses its separate single retrospective budget; any terminal result suspends continuation, and ER-002 remains outside authorization."
+    },
+    {
+      "finding": "DISTINCT_MECHANISM",
+      "assessment": "Completed prior extreme-runner histories, common-control-aware confluence and seven-day size-aware outcomes differ materially from five-second raw flow, curve progress and short-horizon dispersion tests."
+    },
+    {
+      "finding": "PROSPECTIVE_AMENDMENT",
+      "assessment": "v1.1 corrects unequal matching weights/control reuse, unknown-exposure misclassification, route-label interval coverage and deduplicated fee-specific prior-token labels before final outcome inspection. Primary thresholds, endpoint, lag and temporal split remain frozen."
+    },
+    {
+      "finding": "CAUSAL_CLOCK",
+      "assessment": "Five-minute features end at +295s; prior token horizons and contributing observable evidence must finish by wallet entry minus 5s. Candidate self-history and future successes are excluded. Historical reconstruction is explicitly separate from Rocket receipt availability."
+    },
+    {
+      "finding": "CONTROLS_AND_UNCERTAINTY",
+      "assessment": "Outcome-blind complete launch registry and frozen date/protocol/cap/liquidity matching include failed launches. Equal candidate weighting, replacement disclosure, matched-set day bootstrap and unknown bounds are explicit. Cap/liquidity conditioning estimates predictive association, not a causal buying effect."
+    },
+    {
+      "finding": "REACHABILITY",
+      "assessment": "Primary labels require full-position reserve/fee quotes including modeled costs and compatible interval coverage; known negatives require complete seven-day route evidence. Candles, isolated prints and incomplete noncanonical route histories cannot pass."
+    },
+    {
+      "finding": "PROPORTIONAL_ACQUISITION",
+      "assessment": "Bounded semantic validation then development acquisition then untouched temporal slice is justified by potential directional value. Actual deficient source intervals remain diagnostics and do not replace the March-August 2026 primary corpus. Large paid acquisition, production infrastructure and live execution remain excluded."
+    },
+    {
+      "finding": "OPERATOR_AUTHORIZATION",
+      "assessment": "Direct user attachment 9a2a2e90-343a-4467-905f-acf6ac310136 explicitly authorizes ER-001, review, moderate/public acquisition, bounded reconstruction and small research scripts. Checkpoint authorization file hash was verified."
+    },
+    {
+      "finding": "INTERNAL_STEPS",
+      "assessment": "require_experiment_step revalidates the same digest-bound active admission and frozen allowed_steps without spending an additional experiment budget; stale or unlisted steps fail closed."
+    }
+  ]
+}

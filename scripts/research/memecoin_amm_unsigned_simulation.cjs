@@ -1,4 +1,5 @@
 /* MC-021: bounded, read-only inventory-backed PumpSwap sell simulation. */
+require('./research_admission.cjs')();
 const fs = require('node:fs');
 const crypto = require('node:crypto');
 const path = require('node:path');

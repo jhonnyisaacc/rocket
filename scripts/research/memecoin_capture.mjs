@@ -4,6 +4,9 @@ import { createHash } from 'node:crypto';
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, writeFileSync, writeSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import requireAdmission from './research_admission.cjs';
+requireAdmission();
+
 const PROGRAM = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P';
 const WS_URL = process.env.SOLANA_WS_URL || 'wss://api.mainnet-beta.solana.com/';
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com/';

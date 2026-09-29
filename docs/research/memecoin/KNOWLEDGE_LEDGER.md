@@ -38,3 +38,11 @@ Status: current summary, 2026-09-24. Historical source paths are on #27 (`d01d86
 | K31 `KNOWN` | MC-022's new 180-second stream matched 13,443/13,443 independently indexed interior signatures, with 73 decoded creates and no log/decode failures. The first five eligible native non-Mayhem creates had strict later signed identity. Five fixed-budget unsigned Pump `buy_v2` simulations returned by receipt +12 seconds; four succeeded, while one failed `TooMuchSolRequired` after required quote rose to 10,532,647 lamports above a 10,100,000-lamport cap across three slots. | This measures program simulation feasibility and one slippage failure in five first selected launches. It does not measure real signing, fee auction, landing, attained inventory, exit or expectancy. Later identity evidence is not a five-second feature. | Replicate across prespecified launch-time, size and latency strata and connect entry outcomes to route-aware exits; separate authorization is needed for funded landing truth. |
 
 No validated memecoin edge or accepted strategy is recorded.
+
+## Direction checkpoint 2026-09-29
+
+`REJECTED`: automatic continuation of generic early-launch entry signals, based on MC-003/005/006/010/013/015 disjoint economic windows (same-day regime caveat). Flow retains candidate exit-risk status only. MC-016..022 calibration does not reopen alpha. `OPEN` / `UNTESTED`: rare extreme-runner credible-actor confluence, with one retrospective falsifier and no observed lift. Reopen stopped work only through reviewed evidence/authorization in [family state](RESEARCH_STATE.json). See [audit](WORKFLOW_AUDIT.md).
+
+## Workflow/feasibility checkpoint — 2026-09-29
+
+Generic early-launch research is REJECTED for automatic continuation: six disjoint launch-window negative/nonrobust economic outcomes, with same-day/regime independence limits. Infrastructure success does not reverse those outcomes. Actor-confluence rare-runner research remains UNTESTED. Its independently reviewed admission was suspended after the operator limited this iteration to audit/design/feasibility. The [bounded archive probe](ER-001-FEASIBILITY.md) demonstrates promising fields but not a complete primary corpus; no tail rates or alpha claim are available. Reopen only with reviewed source adequacy and operator authorization for the resumed scope.

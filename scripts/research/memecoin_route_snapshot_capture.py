@@ -227,6 +227,9 @@ if __name__ == "__main__":
     parser.add_argument("--max-bytes", type=int, default=33554432)
     parser.add_argument("--rpc-url", default=RPC)
     args = parser.parse_args()
+    from rocket.research.governance import require_prospective_admission
+
+    require_prospective_admission()
     if not 600 <= args.max_seconds <= 900 or not 1024 <= args.max_bytes <= 33554432:
         parser.error("bounds: seconds 600..900, bytes 1024..33554432")
     print(json.dumps(asyncio.run(capture(args.session, args.out,
