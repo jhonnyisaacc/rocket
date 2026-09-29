@@ -1,0 +1,560 @@
+{
+  "description": "Parsed ISM industry contraction lists from official PR Newswire releases. Rank 1 is most contracting. Headline PMI is context only.",
+  "as_of": "2026-09-16",
+  "reports": {
+    "manufacturing": [
+      {
+        "report_month": "December 2025",
+        "reference_month": "2025-12",
+        "pmi": 47.9,
+        "contracting": [
+          {
+            "industry": "apparel, leather & allied products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "textile mills",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "paper products",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "chemical products",
+            "trend": "contracting",
+            "rank": 5
+          },
+          {
+            "industry": "printing & related support activities",
+            "trend": "contracting",
+            "rank": 6
+          },
+          {
+            "industry": "nonmetallic mineral products",
+            "trend": "contracting",
+            "rank": 7
+          },
+          {
+            "industry": "petroleum & coal products",
+            "trend": "contracting",
+            "rank": 8
+          },
+          {
+            "industry": "primary metals",
+            "trend": "contracting",
+            "rank": 9
+          },
+          {
+            "industry": "miscellaneous manufacturing",
+            "trend": "contracting",
+            "rank": 10
+          },
+          {
+            "industry": "plastics & rubber products",
+            "trend": "contracting",
+            "rank": 11
+          },
+          {
+            "industry": "fabricated metal products",
+            "trend": "contracting",
+            "rank": 12
+          },
+          {
+            "industry": "machinery",
+            "trend": "contracting",
+            "rank": 13
+          },
+          {
+            "industry": "food, beverage & tobacco products",
+            "trend": "contracting",
+            "rank": 14
+          },
+          {
+            "industry": "transportation equipment",
+            "trend": "contracting",
+            "rank": 15
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-47-9-december-2025-ism-manufacturing-pmi-report-302649307.html",
+        "publication_at": "2026-01-02T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "January 2026",
+        "reference_month": "2026-01",
+        "pmi": 52.6,
+        "contracting": [
+          {
+            "industry": "textile mills",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "nonmetallic mineral products",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "electrical equipment, appliances & components",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "petroleum & coal products",
+            "trend": "contracting",
+            "rank": 5
+          },
+          {
+            "industry": "plastics & rubber products",
+            "trend": "contracting",
+            "rank": 6
+          },
+          {
+            "industry": "furniture & related products",
+            "trend": "contracting",
+            "rank": 7
+          },
+          {
+            "industry": "miscellaneous manufacturing",
+            "trend": "contracting",
+            "rank": 8
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-52-6-january-2026-ism-manufacturing-pmi-report-302675443.html",
+        "publication_at": "2026-02-02T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "February 2026",
+        "reference_month": "2026-02",
+        "pmi": 52.4,
+        "contracting": [
+          {
+            "industry": "apparel, leather & allied products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "furniture & related products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "petroleum & coal products",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "food, beverage & tobacco products",
+            "trend": "contracting",
+            "rank": 5
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-52-4-february-2026-ism-manufacturing-pmi-report-302699883.html",
+        "publication_at": "2026-03-02T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "March 2026",
+        "reference_month": "2026-03",
+        "pmi": 52.7,
+        "contracting": [
+          {
+            "industry": "plastics & rubber products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "furniture & related products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "food, beverage & tobacco products",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-52-7-march-2026-ism-manufacturing-pmi-report-302730721.html",
+        "publication_at": "2026-04-01T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "April 2026",
+        "reference_month": "2026-04",
+        "pmi": 52.7,
+        "contracting": [
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "petroleum & coal products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "food, beverage & tobacco products",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-52-7-april-2026-ism-manufacturing-pmi-report-302759226.html",
+        "publication_at": "2026-05-01T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "May 2026",
+        "reference_month": "2026-05",
+        "pmi": 54.0,
+        "contracting": [
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 1
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-54-may-2026-ism-manufacturing-pmi-report-302786165.html",
+        "publication_at": "2026-06-01T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "June 2026",
+        "reference_month": "2026-06",
+        "pmi": 53.3,
+        "contracting": [
+          {
+            "industry": "paper products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "furniture & related products",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-53-3-june-2026-ism-manufacturing-pmi-report-302814991.html",
+        "publication_at": "2026-07-01T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "July 2026",
+        "reference_month": "2026-07",
+        "pmi": 55.6,
+        "contracting": [
+          {
+            "industry": "chemical products",
+            "trend": "contracting",
+            "rank": 1
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-55-6-july-2026-ism-manufacturing-pmi-report-302840669.html",
+        "publication_at": "2026-08-03T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "August 2026",
+        "reference_month": "2026-08",
+        "pmi": 54.6,
+        "contracting": [
+          {
+            "industry": "wood products",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "chemical products",
+            "trend": "contracting",
+            "rank": 2
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/manufacturing-pmi-at-54-6-august-2026-ism-manufacturing-pmi-report-302865127.html",
+        "publication_at": "2026-09-01T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      }
+    ],
+    "services": [
+      {
+        "report_month": "December 2025",
+        "reference_month": "2025-12",
+        "pmi": 54.4,
+        "contracting": [
+          {
+            "industry": "management of companies & support services",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "professional, scientific & technical services",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "educational services",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "construction",
+            "trend": "contracting",
+            "rank": 5
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-4-december-2025-ism-services-pmi-report-302654304.html",
+        "publication_at": "2026-01-06T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "January 2026",
+        "reference_month": "2026-01",
+        "pmi": 53.8,
+        "contracting": [
+          {
+            "industry": "other services",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "transportation & warehousing",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "management of companies & support services",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "arts, entertainment & recreation",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "wholesale trade",
+            "trend": "contracting",
+            "rank": 5
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-53-8-january-2026-ism-services-pmi-report-302678227.html",
+        "publication_at": "2026-02-04T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "February 2026",
+        "reference_month": "2026-02",
+        "pmi": 56.1,
+        "contracting": [
+          {
+            "industry": "retail trade",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "arts, entertainment & recreation",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "transportation & warehousing",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-56-1-february-2026-ism-services-pmi-report-302702978.html",
+        "publication_at": "2026-03-04T15:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "March 2026",
+        "reference_month": "2026-03",
+        "pmi": 54.0,
+        "contracting": [
+          {
+            "industry": "retail trade",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "public administration",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-march-2026-ism-services-pmi-report-302734026.html",
+        "publication_at": "2026-04-06T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "April 2026",
+        "reference_month": "2026-04",
+        "pmi": 53.6,
+        "contracting": [
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "real estate, rental & leasing",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "retail trade",
+            "trend": "contracting",
+            "rank": 3
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-53-6-april-2026-ism-services-pmi-report-302761674.html",
+        "publication_at": "2026-05-05T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "May 2026",
+        "reference_month": "2026-05",
+        "pmi": 54.5,
+        "contracting": [
+          {
+            "industry": "real estate, rental & leasing",
+            "trend": "contracting",
+            "rank": 1
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-5-may-2026-ism-services-pmi-report-302789082.html",
+        "publication_at": "2026-06-03T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "June 2026",
+        "reference_month": "2026-06",
+        "pmi": 54.0,
+        "contracting": [
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "educational services",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "management of companies & support services",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "public administration",
+            "trend": "contracting",
+            "rank": 4
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-june-2026-ism-services-pmi-report-302817275.html",
+        "publication_at": "2026-07-06T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "July 2026",
+        "reference_month": "2026-07",
+        "pmi": 54.1,
+        "contracting": [
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "other services",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "health care & social assistance",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "real estate, rental & leasing",
+            "trend": "contracting",
+            "rank": 4
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-54-1-july-2026-ism-services-pmi-report-302843134.html",
+        "publication_at": "2026-08-05T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      },
+      {
+        "report_month": "August 2026",
+        "reference_month": "2026-08",
+        "pmi": 55.4,
+        "contracting": [
+          {
+            "industry": "agriculture, forestry, fishing & hunting",
+            "trend": "contracting",
+            "rank": 1
+          },
+          {
+            "industry": "construction",
+            "trend": "contracting",
+            "rank": 2
+          },
+          {
+            "industry": "management of companies & support services",
+            "trend": "contracting",
+            "rank": 3
+          },
+          {
+            "industry": "finance & insurance",
+            "trend": "contracting",
+            "rank": 4
+          },
+          {
+            "industry": "health care & social assistance",
+            "trend": "contracting",
+            "rank": 5
+          }
+        ],
+        "source_url": "https://www.prnewswire.com/news-releases/services-pmi-at-55-4-august-2026-ism-services-pmi-report-302868046.html",
+        "publication_at": "2026-09-03T14:00:00+00:00",
+        "publication_date_basis": "first/third US business day at 10:00 America/New_York"
+      }
+    ]
+  }
+}
