@@ -34,7 +34,11 @@ def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -
 
 
 def emit_result(result: ResearchResult, *, human: bool) -> None:
-    _emit(result.to_dict(), human=human, result=result)
+    payload = result.to_dict()
+    summary = result.payload.get("decision_summary")
+    if isinstance(summary, dict):
+        payload["decision_summary"] = summary
+    _emit(payload, human=human, result=result)
     raise typer.Exit(exit_code(result))
 
 
@@ -288,7 +292,14 @@ def disclosures(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Official House + OGE filings. Healthy no-new is not a provider failure."""
+    """Official House + OGE filings. Healthy no-new is not a provider failure.
+
+    FMP house-latest and senate-latest stay at page 0 and limit 25. This command
+    does not ingest them. Larger limits and page 1+ are paywalled (HTTP 402
+    Entitlement); broader chamber coverage stays on official House search.
+    Pelosi FMP history is optional: Entitlement or RateLimit does not make the
+    job ACTION_REQUIRED when official House filings succeed.
+    """
     del json_out
     from rocket.providers.disclosures import (
         OfficialHouseDisclosureProvider,
@@ -335,12 +346,25 @@ def disclosures(
     fmp = FMPClient()
     history = fmp.person_history() if "nancy_pelosi" in selected else None
     if history is not None:
-        status["pelosi_secondary_history"] = {"status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK", "failure_kind": history.failure_kind,
-                                               "source_family": "secondary", "record_provider": "fmp"}
+        status["pelosi_secondary_history"] = {
+            "status": "UNAVAILABLE" if history.status is OperationalStatus.UNAVAILABLE else "OK",
+            "failure_kind": history.failure_kind,
+            "source_family": "secondary", "record_provider": "fmp", "optional": True,
+        }
     historical_records = list(history.records) if history else []
+    coverage = None
     if trump_history:
         historical_records.extend(trump_history.records)
         secondary.extend(trump_history.records)
+        from rocket.providers.open_cabinet import structured_coverage
+
+        coverage = structured_coverage(
+            executive,
+            exported_at=trump_history.extras.get("exported_at"),
+            covered_urls=[row.get("source_url") for row in trump_history.records],
+            now=datetime.now(UTC),
+            export_usable=trump_history.status is OperationalStatus.HEALTHY,
+        )
     from rocket.candidates import caller_references
     references, reference_coverage = caller_references()
     emit_result(
@@ -363,6 +387,7 @@ def disclosures(
             portfolio_tickers=references["portfolio"], watch_tickers=references["watch"],
             cross_system_coverage=reference_coverage,
             research_opportunities=True,
+            structured_coverage=coverage,
         ),
         human=human,
     )
@@ -427,6 +452,16 @@ def options_evaluate(
     emit_result(OptionsWorkflow(store=store).evaluate(domain, rows), human=human)
 
 
+def _raw_frames(payload: object) -> bool:
+    rows = payload.get("frames", payload.get("rows", payload)) if isinstance(payload, dict) else payload
+    return (
+        isinstance(rows, list)
+        and bool(rows)
+        and isinstance(rows[0], dict)
+        and ("raw" in rows[0] or "raw_base64" in rows[0])
+    )
+
+
 @memecoin_app.command("status")
 def memecoin_status(
     state_dir: Path | None = typer.Option(None, "--state-dir"),
@@ -442,42 +477,173 @@ def memecoin_status(
 
 @memecoin_app.command("scan")
 def memecoin_scan(
-    input_file: Path = typer.Option(..., "--input", exists=True, readable=True),
+    input_file: Path | None = typer.Option(None, "--input", exists=True, readable=True),
+    spool: Path | None = typer.Option(None, "--spool"),
     state_dir: Path | None = typer.Option(None, "--state-dir"),
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
+    """Rank a bounded intake feed. A WATCH_ENTER row is not a buy."""
     del json_out
-    from rocket.workflows.memecoin import MemecoinWorkflow
+    from datetime import UTC, datetime
 
-    raw = json.loads(input_file.read_text(encoding="utf-8"))
-    rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
-    store = ResearchStore(state_dir or rocket_home())
-    emit_result(MemecoinWorkflow(store=store).scan(rows), human=human)
+    import httpx
+
+    from rocket.models import OperationalStatus, ProviderHealth
+    from rocket.workflows.memecoin import MemecoinWorkflow
+    from rocket.workflows.memecoin_radar import (
+        confirm_helius,
+        default_spool_path,
+        helius_endpoint,
+        is_legacy_snapshot,
+        radar_rows_from_payload,
+        scan_feed,
+        scan_spool,
+    )
+
+    root = state_dir or rocket_home()
+    store = ResearchStore(root)
+    helius = None
+    try:
+        if input_file is not None:
+            raw = json.loads(input_file.read_text(encoding="utf-8"))
+            if is_legacy_snapshot(raw):
+                rows = raw.get("rows", raw) if isinstance(raw, dict) else raw
+                result = MemecoinWorkflow(store=store).scan(rows)
+            else:
+                decided = datetime.now(UTC)
+                helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+                rows = radar_rows_from_payload(raw)
+                if helius is not None:
+                    rows, health = confirm_helius(rows, helius, now=decided)
+                    providers = (health,)
+                else:
+                    providers = (ProviderHealth(
+                        "helius", OperationalStatus.UNAVAILABLE, decided, "HELIUS_API_KEY_ABSENT", "not_called",
+                    ),)
+                result = scan_feed(rows, now=decided, store=store, providers=providers)
+        else:
+            spool_path = spool or default_spool_path(root)
+            helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+            result = scan_spool(spool_path, store=store, helius_client=helius)
+    finally:
+        if helius is not None:
+            helius.close()
+    emit_result(result, human=human)
 
 
 @memecoin_app.command("collect")
 def memecoin_collect(
-    spool: Path = typer.Option(..., "--spool"),
+    spool: Path | None = typer.Option(None, "--spool"),
     input_file: Path | None = typer.Option(None, "--input", exists=True, readable=True),
     state_dir: Path | None = typer.Option(None, "--state-dir"),
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Append raw frames to the spool. Not a strategy job and not a live websocket."""
+    """Append a bounded spool snapshot. Not a strategy job and not a live websocket."""
     del json_out
+    import httpx
+
     from rocket.capture.spool import RawCaptureSpool
     from rocket.workflows.memecoin import MemecoinWorkflow, frames_from_payload
+    from rocket.workflows.memecoin_radar import (
+        collect_snapshot,
+        default_spool_path,
+        helius_endpoint,
+        radar_rows_from_payload,
+    )
 
-    raw = json.loads(input_file.read_text(encoding="utf-8")) if input_file else []
-    writer = RawCaptureSpool(spool, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
+    root = state_dir or rocket_home()
+    spool_path = spool or default_spool_path(root)
+    store = ResearchStore(root)
+    raw = json.loads(input_file.read_text(encoding="utf-8")) if input_file else None
+    if not _raw_frames(raw):
+        from rocket.workflows.memecoin_radar import bound_spool
+
+        bound_spool(spool_path)
+    writer = RawCaptureSpool(spool_path, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
     try:
-        result = MemecoinWorkflow(store=ResearchStore(state_dir or rocket_home())).collect(
-            writer,
-            frames_from_payload(raw),
-        )
+        if _raw_frames(raw):
+            result = MemecoinWorkflow(store=store).collect(writer, frames_from_payload(raw))
+        else:
+            browser = None if raw is not None else httpx.Client(timeout=10.0)
+            helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+            try:
+                observations = None if raw is None else radar_rows_from_payload(raw)
+                result = collect_snapshot(
+                    writer,
+                    store=store,
+                    observations=observations,
+                    client=browser,
+                    helius_client=helius,
+                )
+            finally:
+                if browser is not None:
+                    browser.close()
+                if helius is not None:
+                    helius.close()
     finally:
         writer.close()
+    if not _raw_frames(raw):
+        from rocket.workflows.memecoin_radar import bound_spool
+
+        bound_spool(spool_path)
+    emit_result(result, human=human)
+
+
+@memecoin_app.command("radar")
+def memecoin_radar(
+    spool: Path | None = typer.Option(None, "--spool"),
+    input_file: Path | None = typer.Option(None, "--input", exists=True, readable=True),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Collect one snapshot and scan it. One JSON object. A WATCH_ENTER row is not a buy."""
+    del json_out
+    import httpx
+
+    from rocket.capture.spool import RawCaptureSpool
+    from rocket.workflows.memecoin_radar import (
+        bound_spool,
+        default_spool_path,
+        helius_endpoint,
+        radar_rows_from_payload,
+        run_radar,
+    )
+
+    root = state_dir or rocket_home()
+    spool_path = spool or default_spool_path(root)
+    store = ResearchStore(root)
+    if input_file is not None:
+        try:
+            raw = json.loads(input_file.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            configuration_failure("memecoin.radar", store, human=human)
+    else:
+        raw = None
+    bound_spool(spool_path)
+    writer = RawCaptureSpool(spool_path, max_bytes=8 * 1024 * 1024 * 1024, reserve_bytes=1024 * 1024 * 1024)
+    browser = None
+    helius = None
+    try:
+        browser = None if raw is not None else httpx.Client(timeout=10.0)
+        helius = httpx.Client(timeout=10.0) if helius_endpoint() else None
+        observations = None if raw is None else radar_rows_from_payload(raw)
+        result = run_radar(
+            writer,
+            store=store,
+            observations=observations,
+            client=browser,
+            helius_client=helius,
+        )
+    finally:
+        if browser is not None:
+            browser.close()
+        if helius is not None:
+            helius.close()
+        writer.close()
+    bound_spool(spool_path)
     emit_result(result, human=human)
 
 

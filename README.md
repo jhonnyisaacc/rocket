@@ -22,3 +22,17 @@ Secrets come from the process environment (existing names). Rocket never deletes
 ## Research
 
 The current crypto futures research hierarchy begins with the [research constitution](docs/research/RESEARCH_CONSTITUTION.md), [futures pillar](docs/research/futures/FUTURES_PILLAR.md), and [single frontier](docs/research/futures/FUTURES_FRONTIER.md). Historical PRs remain evidence; no research result enables execution.
+
+## Research data
+
+Large research payloads (for example the ~1GB Solana memecoin follower-study
+captures) live outside git in the public dataset
+[jhonnyisaacc/rocket](https://huggingface.co/datasets/jhonnyisaacc/rocket),
+laid out under the same `docs/research/...` paths they were captured from.
+Small manifests and code stay in the repo; anything over ~1MB goes to the
+dataset. Fetch what you need, for example:
+
+```bash
+hf download jhonnyisaacc/rocket --repo-type=dataset \
+  --include 'docs/research/memecoin/data/*'
+```
