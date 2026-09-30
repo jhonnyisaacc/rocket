@@ -17,9 +17,8 @@ import sqlite3
 import time
 import urllib.request
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-
 
 SYMBOL = "BTCUSDT"
 YEARS = (2022, 2023, 2024, 2025)
@@ -70,7 +69,7 @@ def audit_month(folder: Path, year: int, month: int) -> dict:
     if digest != expected[0]:
         archive_path.unlink()
         raise ValueError(f"ZIP checksum mismatch: {name}")
-    start = int(datetime(year, month, 1, tzinfo=timezone.utc).timestamp() * 1000)
+    start = int(datetime(year, month, 1, tzinfo=UTC).timestamp() * 1000)
     count = 0
     with zipfile.ZipFile(archive_path) as archive:
         member = name[:-4] + ".csv"
@@ -104,8 +103,8 @@ def audit_funding(database: Path) -> dict:
     result = {}
     with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as connection:
         for year in YEARS:
-            start = int(datetime(year, 1, 1, tzinfo=timezone.utc).timestamp() * 1000)
-            end = int(datetime(year + 1, 1, 1, tzinfo=timezone.utc).timestamp() * 1000)
+            start = int(datetime(year, 1, 1, tzinfo=UTC).timestamp() * 1000)
+            end = int(datetime(year + 1, 1, 1, tzinfo=UTC).timestamp() * 1000)
             slots = list(connection.execute(
                 "SELECT slot_ms,stamp_ms,interval_hours FROM funding "
                 "WHERE symbol=? AND slot_ms>=? AND slot_ms<? ORDER BY slot_ms",

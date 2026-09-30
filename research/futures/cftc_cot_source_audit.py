@@ -13,6 +13,7 @@ import io
 import json
 import zipfile
 from datetime import date, timedelta
+from itertools import pairwise
 from pathlib import Path
 
 YEARS = range(2020, 2026)
@@ -99,7 +100,7 @@ def audit(directory: Path) -> dict:
     missing_exceptions = set(EXCEPTION_RELEASES) - {item["asof"] for item in records}
     if missing_exceptions:
         raise ValueError(f"exceptional reports absent: {sorted(missing_exceptions)}")
-    gaps = [(right - left).days for left, right in zip(dates, dates[1:])]
+    gaps = [(right - left).days for left, right in pairwise(dates)]
     report = {"scope": "CME BTC legacy COT futures-only 2020-2025 source and release audit",
               "contract_code": CODE, "files": files, "total_reports": len(records),
               "first_asof": records[0]["asof"], "last_asof": records[-1]["asof"],

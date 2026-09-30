@@ -17,7 +17,6 @@ from collections import Counter
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-
 SOURCE_SHA256 = "330480474ef50919a17998ffa2210471fde23d17dd2165319985299393754d88"
 NEW_YORK = ZoneInfo("America/New_York")
 
@@ -50,7 +49,7 @@ def build_manifest(source: Path) -> dict:
         if prior_stamp is not None and stamp <= prior_stamp:
             raise ValueError("duplicate or disordered source timestamp")
         prior_stamp = stamp
-        label = dt.datetime.fromtimestamp(stamp, dt.timezone.utc).astimezone(NEW_YORK)
+        label = dt.datetime.fromtimestamp(stamp, dt.UTC).astimezone(NEW_YORK)
         date = label.date()
         if date in seen or not dt.date(2017, 1, 1) <= date <= dt.date(2025, 12, 31):
             raise ValueError("duplicate or out-of-range session date")
@@ -67,7 +66,7 @@ def build_manifest(source: Path) -> dict:
             raise ValueError("close outside source high/low")
         # This timestamp is an explicit conservative policy, not Yahoo's bar timestamp.
         available = dt.datetime.combine(date + dt.timedelta(days=1),
-                                        dt.time(3), dt.timezone.utc)
+                                        dt.time(3), dt.UTC)
         if available.astimezone(NEW_YORK).date() != date:
             raise ValueError("availability clock does not fall after New York session")
         rows.append({"session_date_ny": date.isoformat(), "close": close,

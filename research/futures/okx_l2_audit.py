@@ -26,7 +26,7 @@ def digest_file(path: Path) -> str:
 
 
 def audit(path: Path, day: dt.date) -> dict:
-    start = int(dt.datetime.combine(day, dt.time(), dt.timezone.utc).timestamp() * 1000)
+    start = int(dt.datetime.combine(day, dt.time(), dt.UTC).timestamp() * 1000)
     end = start + 86_400_000
     expected_member = path.name.removesuffix(".tar.gz") + ".data"
     digest = digest_file(path)
@@ -139,7 +139,7 @@ def audit(path: Path, day: dt.date) -> dict:
 
 def audit_trades(paths: list[Path], day: dt.date) -> dict:
     """Check both UTC+8 trade files overlapping one UTC order-book day."""
-    start = int(dt.datetime.combine(day, dt.time(), dt.timezone.utc).timestamp() * 1000)
+    start = int(dt.datetime.combine(day, dt.time(), dt.UTC).timestamp() * 1000)
     end = start + 86_400_000
     expected_columns = ("instrument_name", "trade_id", "side", "price", "size", "created_time")
     files = []

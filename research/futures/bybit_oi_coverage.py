@@ -8,15 +8,14 @@ from __future__ import annotations
 
 import argparse
 import collections
-from datetime import UTC, datetime
 import hashlib
 import json
-from pathlib import Path
 import sys
 import time
+from datetime import UTC, datetime
+from pathlib import Path
 
 from research.futures.bybit_source_audit import DAY_MS, request_json
-
 
 START = int(datetime(2022, 1, 1, tzinfo=UTC).timestamp() * 1000)
 END = int(datetime(2023, 1, 1, tzinfo=UTC).timestamp() * 1000)

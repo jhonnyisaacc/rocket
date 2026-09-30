@@ -15,7 +15,6 @@ import zipfile
 from collections import defaultdict
 from pathlib import Path
 
-
 DXY_SHA = "8c8427fa1ed62c38466fed10b4785d1754f8f25227100c8a7e053047a1143e40"
 HOURLY_REPORT_SHA = "bcbcfdb4d6b5af752abf65edbbcff5258c9cdfacace0b948d5dcc7add7425af1"
 FUNDING_DB_SHA = "e42cfcfc5d244293a9a3327a5009c05723c541b1d86ed3a5050a08c7f97e863b"
@@ -37,7 +36,7 @@ def check(path: Path, expected: str) -> None:
 
 
 def ms(day: dt.date, hour: int) -> int:
-    return int(dt.datetime.combine(day, dt.time(hour), dt.timezone.utc).timestamp() * 1000)
+    return int(dt.datetime.combine(day, dt.time(hour), dt.UTC).timestamp() * 1000)
 
 
 def source_rows(path: Path) -> list[dict]:
@@ -49,7 +48,7 @@ def source_rows(path: Path) -> list[dict]:
     prior = None
     for row in rows:
         day = dt.date.fromisoformat(row["session_date_ny"])
-        expected = dt.datetime.combine(day + dt.timedelta(days=1), dt.time(3), dt.timezone.utc)
+        expected = dt.datetime.combine(day + dt.timedelta(days=1), dt.time(3), dt.UTC)
         if row["available_at_utc"] != expected.isoformat() or (prior and day <= prior):
             raise ValueError("noncausal or disordered DXY as-of row")
         prior = day

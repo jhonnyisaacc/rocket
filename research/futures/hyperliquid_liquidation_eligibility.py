@@ -10,12 +10,11 @@ from __future__ import annotations
 import argparse
 import bisect
 import collections
-from datetime import UTC, datetime
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
-
 
 COINS = {"BTC", "ETH", "HYPE"}
 FIVE_MINUTES_MS = 300_000

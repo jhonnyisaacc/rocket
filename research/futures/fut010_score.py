@@ -9,14 +9,13 @@ from __future__ import annotations
 import argparse
 import bisect
 import collections
-from datetime import UTC, datetime
 import hashlib
 import json
 import random
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
-
 
 SOURCES = {
     "2025-07-28": "0fef107456e07dd63785f39b4366612071b1db1295ee03a0be6839ee77a66a69",

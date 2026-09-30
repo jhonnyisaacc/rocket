@@ -16,6 +16,7 @@ import sqlite3
 import zipfile
 from collections import defaultdict
 from datetime import UTC, date, datetime
+from itertools import pairwise
 from pathlib import Path
 
 from research.futures.cftc_cot_source_audit import CODE, YEARS, available_date
@@ -60,7 +61,7 @@ def load_cot(directory: Path) -> list[dict]:
         raise ValueError("CFTC count changed")
     if [row["available"] for row in rows] != sorted(row["available"] for row in rows):
         raise ValueError("CFTC releases not chronological")
-    for previous, current in zip(rows, rows[1:]):
+    for previous, current in pairwise(rows):
         current["delta"] = current["balance"] - previous["balance"]
     rows[0]["delta"] = None
     return rows

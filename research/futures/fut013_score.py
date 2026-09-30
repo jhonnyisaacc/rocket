@@ -8,13 +8,12 @@ import csv
 import hashlib
 import io
 import json
-from pathlib import Path
 import random
 import statistics
 import zipfile
+from pathlib import Path
 
 from research.futures.cross_crypto_minute_source_audit import audit_zip
-
 
 MONTHS = ("2024-11", "2025-04", "2025-08")
 TARGETS = ("ETHUSDT", "SOLUSDT")
@@ -36,17 +35,17 @@ def bars(raw: bytes, month: str) -> list[tuple[float, float, float, float]]:
         raise ValueError(f"incomplete source month {month}")
     first = min(stamps)
     data = []
-    with zipfile.ZipFile(io.BytesIO(raw)) as archive:
-        with archive.open(archive.namelist()[0]) as member:
-            reader = csv.reader(io.TextIOWrapper(member, encoding="utf-8-sig"))
-            for row in reader:
-                if row and row[0].lower().replace(" ", "_") == "open_time":
-                    continue
-                unit = 1000 if len(row[0]) == 16 else 1
-                stamp = int(row[0]) // unit
-                if stamp != first + len(data) * MINUTE_MS:
-                    raise ValueError(f"unsorted or missing minute {month}/{stamp}")
-                data.append((float(row[1]), float(row[4]), float(row[5]), float(row[7])))
+    with (zipfile.ZipFile(io.BytesIO(raw)) as archive,
+          archive.open(archive.namelist()[0]) as member):
+        reader = csv.reader(io.TextIOWrapper(member, encoding="utf-8-sig"))
+        for row in reader:
+            if row and row[0].lower().replace(" ", "_") == "open_time":
+                continue
+            unit = 1000 if len(row[0]) == 16 else 1
+            stamp = int(row[0]) // unit
+            if stamp != first + len(data) * MINUTE_MS:
+                raise ValueError(f"unsorted or missing minute {month}/{stamp}")
+            data.append((float(row[1]), float(row[4]), float(row[5]), float(row[7])))
     return data
 
 

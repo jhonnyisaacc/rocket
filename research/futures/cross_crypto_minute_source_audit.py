@@ -7,14 +7,13 @@ from __future__ import annotations
 
 import argparse
 import csv
-from datetime import UTC, datetime
 import hashlib
 import io
 import json
-from pathlib import Path
 import urllib.request
 import zipfile
-
+from datetime import UTC, datetime
+from pathlib import Path
 
 BASE = "https://data.binance.vision/"
 MONTHS = ("2024-11", "2025-04", "2025-08")

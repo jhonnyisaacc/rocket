@@ -42,7 +42,7 @@ def next_day(day: str) -> str:
 
 def start_ms(day: str) -> int:
     return int(dt.datetime.combine(
-        dt.date.fromisoformat(day), dt.time(), dt.timezone.utc,
+        dt.date.fromisoformat(day), dt.time(), dt.UTC,
     ).timestamp() * 1000)
 
 

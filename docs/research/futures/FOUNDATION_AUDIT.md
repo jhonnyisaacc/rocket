@@ -60,7 +60,7 @@ revalidate the merge against the then-current revisions.
 
 - Local command: `python -m pytest tests/research tests/workflows/test_crypto.py tests/contract/test_safety_boundary.py tests/contract/test_operational_vs_research.py -ra`: **82 passed** (48 research tests plus 34 crypto/safety tests).
 - `ruff check research/futures tests/research`: passed after the three
-  behavior-preserving scorer lint fixes. `git diff --check`: passed.
+  behavior-preserving scorer lint fixes. The first remote run found additional Ruff 0.16.6 import/UTC/pairwise/context-manager checks absent from local Ruff 0.13.3; those were corrected, the final local check uses 0.16.6, and CI pins that version. FUT-005 was replayed again after its pairwise change and still matched byte for byte. `git diff --check`: passed.
 - FUT-001 OOS and FUT-002/003/005/006/007 replayed from retained local inputs,
   on already scored windows only, byte for byte against the recorded reports.
   FUT-004 economic JSON matched exactly after excluding its current

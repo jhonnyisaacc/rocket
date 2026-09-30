@@ -4,15 +4,13 @@ from __future__ import annotations
 
 import argparse
 import collections
-from datetime import UTC, datetime
 import hashlib
 import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
-
 from fut011_score import hour_block_interval, summarize, vwap
-
 
 FIVE_MIN_MS = 300_000
 THIRTY_MIN_MS = 1_800_000
@@ -44,7 +42,7 @@ def read_date(paths: list[Path], date: str) -> tuple[dict[int, float], list[tupl
         [[str(path) for path in paths]],
     )
     previous: int | None = None
-    day_start = timestamp_ms(datetime.strptime(date, "%Y%m%d"))
+    day_start = timestamp_ms(datetime.strptime(date, "%Y%m%d").replace(tzinfo=UTC))
     day_end = day_start + 86_400_000
     first_ms: int | None = None
     last_ms: int | None = None
@@ -133,7 +131,7 @@ def score(manifest_path: Path, root: Path) -> dict[str, object]:
             source_sha256[item["filename"]] = item["sha256"]
         flow, trades, source_counts[date] = read_date(paths, date)
         times = [row[0] for row in trades]
-        day_start = timestamp_ms(datetime.strptime(date, "%Y%m%d"))
+        day_start = timestamp_ms(datetime.strptime(date, "%Y%m%d").replace(tzinfo=UTC))
         day_end = day_start + 86_400_000
         eligible = sorted(t for t in flow if day_start <= t and t + ENTRY_MS + HOLD_MS + PROXY_MS <= day_end)
         retained = []
