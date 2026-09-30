@@ -1,9 +1,10 @@
 # Futures frontier
 
-Status: `CONSOLIDATION_ONLY_NO_ADMITTED_EXPERIMENT`, 2026-09-30.
+Status: `FOUNDATION_READY_NO_ADMITTED_EXPERIMENT`, 2026-09-30.
 
-**Current question:** Is PR #38 a coherent, mergeable and verified canonical
-foundation whose family decisions prevent automatic continuation after failure?
+**Question resolved for this pass:** PR #38 is a coherent, mergeable and verified
+canonical foundation with family decisions that stop automatic continuation
+after failure. No current strategy question or successor is admitted.
 The closing audit is in [FOUNDATION_AUDIT.md](FOUNDATION_AUDIT.md).
 
 The [family audit](FAMILY_AUDIT.md) consolidates FUT-001 through FUT-013 and

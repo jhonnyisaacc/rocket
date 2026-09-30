@@ -1,9 +1,12 @@
 # PR #38 canonical foundation audit
 
-Status: `CANONICAL_FOUNDATION_BLOCKED`, 2026-09-30. Temporary closing blocker:
-GitHub must execute and pass the new narrow offline research workflow on the
-pushed branch. Local checks below pass. No strategy, FUT-014 or carry trial is
-admitted; this status concerns research hygiene only.
+Status: `CANONICAL_FOUNDATION_READY`, 2026-09-30. The research history,
+family admission policy, main reconciliation and narrow automated verification
+are complete. [GitHub research CI](https://github.com/jhonnyisaacc/rocket/actions/runs/36755956070)
+passed on `e5e4e46`: offline tests, pinned Ruff and whitespace checks. The PR
+is mergeable and remains a draft; it has not been merged. This readiness
+concerns the research foundation, not a validated strategy or an admission.
+
 
 ## Reconciliation findings and changes
 
@@ -82,5 +85,7 @@ revalidate the merge against the then-current revisions.
 
 Foundation readiness requires coherent documents, safe main reconciliation,
 passing automated checks and no unreviewed successor. It does not require
-resolving every strategy-source limit or validating an edge. Final status and
-remote CI evidence will be recorded after the pushed workflow completes.
+resolving every strategy-source limit or validating an edge. Remote CI evidence is recorded above. No current hygiene blocker or operator
+policy decision remains. Any future carry product or family reopening requires
+its separate approval; #37 shared-file reconciliation is a future merge task,
+with compatible policy preservation documented here.
