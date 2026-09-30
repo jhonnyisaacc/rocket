@@ -1,5 +1,7 @@
 # Quarter-hour order flow: paper-to-execution economic gate
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-006 result](experiments/FUT-006-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `PAPER_PRIOR_ONLY`, 2026-09-24. This is a decision on research
 priority, not FUT-006, a Rocket backtest, or a rejection of all order flow.
 No order-flow-conditioned 2025 return was read for this note.

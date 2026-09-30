@@ -1,5 +1,7 @@
 # FUT-004 pre-result data amendment and selected closure gate
 
+Current lifecycle: `HISTORICAL_PRE_RESULT_DATA_RECORD`. Subsequent [FUT-004-RESULT](FUT-004-RESULT.md) supersedes the prospective next step. Frozen inputs and source limitations below are preserved.
+
 Status: `FROZEN_BEFORE_BASIS_OUTCOMES`, 2026-09-24. The [FUT-004 strategy rule and falsifier](FUT-004.md) are unchanged. No basis-ranked future return, side contribution, portfolio PnL, or 2024/2025 factor result has been inspected.
 
 ## Why the futures tape changed

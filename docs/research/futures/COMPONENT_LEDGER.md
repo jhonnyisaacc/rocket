@@ -1,5 +1,7 @@
 # Futures component ledger
 
+Current component roles are subordinate to the [family decision](FAMILY_AUDIT.md). `UNTESTED` and open incremental roles carry zero automatic trial budget; every future use requires the [admission gate](EXPERIMENT_ADMISSION.md). Source feasibility is not directional information.
+
 Component states concern incremental value in the current architecture. Historical failures of a whole strategy do not automatically reject a component.
 
 | Component | Role | Status | Evidence / next discriminating test |

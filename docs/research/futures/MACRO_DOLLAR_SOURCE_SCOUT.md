@@ -1,5 +1,7 @@
 # Daily dollar-index forecast: economic and source screen
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-009 result](experiments/FUT-009-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SPARSE_DELAYED_PROXY_SOURCE_READY`, 2026-09-24. No dollar-conditioned
 Rocket return, fitted coefficient, or new strategy rule has been scored.
 This is a possible **daily BTC directional** mechanism after FUT-008, not a

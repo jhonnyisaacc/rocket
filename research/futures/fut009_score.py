@@ -12,7 +12,7 @@ import math
 import random
 import sqlite3
 import zipfile
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -227,7 +227,8 @@ def score(year: int, dxy_path: Path, hourly_folder: Path, funding_db: Path,
     months = defaultdict(list)
     for row in scheduled:
         months[row["entry_day"][:7]].append(row)
-    mean = lambda values: sum(values) / len(values) if values else 0.0
+    def mean(values):
+        return sum(values) / len(values) if values else 0.0
     gross_active = mean([row["price_gross"] for row in active])
     incremental = mean([row["price_gross"] - row["always_long_gross"] for row in active])
     longest_run = run = 0

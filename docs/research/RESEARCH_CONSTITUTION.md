@@ -11,3 +11,26 @@ Authority: this page defines reusable research method. A strategy pillar applies
 7. For each conclusion state what the evidence says, what it does not say, why, and what would reopen it. Reopen a rejection only for independent data, a demonstrated bug, a genuinely different mechanism, replication, or operator direction. A rule change receives a new experiment ID.
 
 Component promotion: `UNTESTED` → `DISCOVERY_SIGNAL` → `OOS_CANDIDATE` → `ROBUST_COMPONENT`. Strategy promotion: `RESEARCH` → `CANDIDATE` → `FROZEN` → `SHADOW` → `ACCEPTED`. A backtest cannot skip to `ACCEPTED`. A frozen shadow records each decision and exact specification immutably; changed rules start a new version.
+
+## Family direction admission
+
+Experiment validity and permission to continue a research family are separate.
+Each pillar must maintain a canonical family audit and written admission ledger.
+Before a new contract or outcome score, record a distinct mechanism, motivation
+independent of inspected favorable outcomes, causal observability, source
+feasibility, product/execution fit, cheap falsifier, fresh chronology, explicit
+family budget/stop rule and independent review. Denials remain in the ledger.
+The proposer cannot approve its own admission or fabricate operator approval.
+Each result suspends automatic continuation pending family review; data and
+execution calibration do not erase negative economic evidence.
+
+Futures applies this through [its family admission gate](futures/EXPERIMENT_ADMISSION.md).
+Other pillars may enforce a stronger domain-specific machine-readable gate;
+this written futures gate grants no exemption from those controls. The pending
+memecoin PR #37's governance remains scoped to its pillar and implementation.
+Shared policy must preserve both domains' admission requirements when reconciled.
+
+The futures 2026 final holdout remains sealed for exploration. Access requires
+an independently reviewed frozen promotion candidate, explicit authorization
+under the pillar's promotion protocol and a recorded one-time evaluation plan.
+A new paper, admitted cheap trial or source availability does not authorize it.

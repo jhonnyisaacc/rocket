@@ -15,7 +15,7 @@ were checked before scoring. The ignored local source manifest SHA-256 is
 `263c64597d44619e45a23fe540182cc0ef2af9bf52b1216718634e79b363db1a`;
 the funding database SHA-256 is
 `e42cfcfc5d244293a9a3327a5009c05723c541b1d86ed3a5050a08c7f97e863b`.
-The [scorer](../../../research/futures/fut007_score.py) checked all 540
+The [scorer](../../../../research/futures/fut007_score.py) checked all 540
 prior eight-hour rates for each daily 180-day reference window, used the
 00:00 settlement only after its actual timestamp, then delayed entry to
 the 01:00 hourly open. Each target held to the next 01:00 open. Funding

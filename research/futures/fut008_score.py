@@ -218,7 +218,8 @@ def score_day(root: Path, day: str) -> dict:
                       "entry_delay_ms": entry["age_ms"], "exit_delay_ms": exit_["age_ms"]})
     triggered = [row for row in valid if row["trigger"]]
     flow_only = [row for row in valid if row["net_sell_positive"]]
-    subset = lambda rows, key: [row[key] for row in rows]
+    def subset(rows, key):
+        return [row[key] for row in rows]
     trigger_mid = mean(subset(triggered, "mid_gross"))
     all_mid = mean(subset(valid, "mid_gross"))
     trigger_exec = mean(subset(triggered, "executable_gross"))

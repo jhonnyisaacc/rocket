@@ -1,5 +1,7 @@
 # Intraday order-flow source scout
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-006 result](experiments/FUT-006-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SAMPLE_ONLY`, 2026-09-24. This is a fixed read-only source check,
 not FUT-006, a frozen direction rule or a return study.
 

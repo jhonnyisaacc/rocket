@@ -1,5 +1,7 @@
 # Hyperliquid market-liquidation source and sample audit
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-012 result](experiments/FUT-012-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `TWELVE_METADATA_SELECTED_SHARDS_AUDITED_RETURN_FREE`, 2026-09-24. No
 liquidation-conditioned future return, trading rule, or FUT-012 contract
 has been calculated or registered. This scout tests whether the free

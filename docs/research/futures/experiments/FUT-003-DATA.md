@@ -1,5 +1,7 @@
 # FUT-003 Bybit normalization and settlement gate
 
+Current lifecycle: `HISTORICAL_PRE_RESULT_DATA_RECORD`. Subsequent [FUT-003-RESULT](FUT-003-RESULT.md) supersedes the prospective next step. Frozen inputs and source limitations below are preserved.
+
 Status: `READY_FOR_FROZEN_SCORE`, 2026-09-24, before inspecting any Bybit strategy return. The [FUT-003 contract](FUT-003.md) fixes the forecast, costs, chronology and falsifier.
 
 The 2,468 checked Bybit API pages normalize into a separate SQLite tape with 67,721 daily bars, 249,579 funding records, and one retained but nontradable malformed BCH first bar. Its SHA-256 is `3bdcddde730fdf4242fafc96857296e1110a948d53de7d1956ada222592e0de5`. The unscored candidate settlement JSON SHA-256 is `a05ce9d3a15094d3a31830b6317003e2677f92d30cd72295021d37f311e0939f`.

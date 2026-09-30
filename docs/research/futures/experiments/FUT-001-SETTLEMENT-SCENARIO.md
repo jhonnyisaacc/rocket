@@ -1,5 +1,7 @@
 # FUT-001 settlement sensitivity: provisional discovery observation
 
+Current lifecycle: `HISTORICAL_PRE_RESULT_DATA_RECORD`. Subsequent [FUT-001-OOS](FUT-001-OOS.md) supersedes the prospective next step. Frozen inputs and source limitations below are preserved.
+
 Status: `PROVISIONAL_DATA_RECONSTRUCTION`, 2026-09-24. This is **not** the accepted FUT-001 result or its 2025 OOS cheap gate. The 2025 OOS returns were not requested from the scenario scorer.
 
 ## Bound and decision rule frozen before OOS access

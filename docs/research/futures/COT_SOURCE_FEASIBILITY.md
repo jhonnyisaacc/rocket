@@ -1,5 +1,7 @@
 # CME BTC COT source and publication audit
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-005 result](experiments/FUT-005-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SOURCE_AUDITED_UNSCORED`, 2026-09-24. This audit does not inspect
 COT-conditioned BTC returns or choose a signal threshold.
 

@@ -9,7 +9,7 @@ committed at `c72b085`. No 2025 signal return or 2026 holdout was scored.
 
 The official Binance BTCUSDT and ETHUSDT daily `aggTrades` ZIPs for
 November–December 2024 and January 1, 2025 were downloaded with matching
-`.CHECKSUM` files. The [source audit](../../../research/futures/fut006_source_acquire.py)
+`.CHECKSUM` files. The [source audit](../../../../research/futures/fut006_source_acquire.py)
 verified each official ZIP hash, seven-column schema, UTC date bounds,
 ordered timestamps, consecutive aggregate IDs within and across all 62 days
 per contract, and all scheduled signal and delayed price-proxy windows. BTC
@@ -26,7 +26,7 @@ trade in seconds 20–29 supplied the entry proxy, and the same clock twelve
 hours later supplied the exit proxy. Positions were continuous and
 nonoverlapping; fee cost depended on actual target changes, with initial
 entry and final exit charged. Both assets and all **122** scheduled portfolio
-intervals were included. The [deterministic scorer](../../../research/futures/fut006_score.py)
+intervals were included. The [deterministic scorer](../../../../research/futures/fut006_score.py)
 used the frozen 5 bp-per-side primary and 10 bp-per-side stress, plus actual
 signed funding. The ignored local result SHA-256 is
 `ffcd1db8d55a65c5cee5c4b6af05ae916d4eb630f0c53f31d2ac69901a94007d`.

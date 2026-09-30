@@ -1,5 +1,7 @@
 # Near-touch order-book source scout
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-008 result](experiments/FUT-008-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `THREE_FIXED_L2_DAYS_AUDITED`, 2026-09-24. This is a
 return-free data and economic-feasibility check, not FUT-008 or an order-book
 strategy result. The [candidate paper](https://ssrn.com/abstract=6693260)

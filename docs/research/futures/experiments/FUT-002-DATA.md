@@ -1,5 +1,7 @@
 # FUT-002 earlier tape and cessation gate
 
+Current lifecycle: `HISTORICAL_PRE_RESULT_DATA_RECORD`. Subsequent [FUT-002-RESULT](FUT-002-RESULT.md) supersedes the prospective next step. Frozen inputs and source limitations below are preserved.
+
 Status: `READY_FOR_FROZEN_SCORE`, 2026-09-24. This records data and outcome-handling decisions before inspecting any 2021–2022 portfolio returns. The falsifier and strategy parameters remain those in [FUT-002](FUT-002.md).
 
 ## Data provenance

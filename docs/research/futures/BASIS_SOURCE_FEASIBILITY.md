@@ -1,5 +1,7 @@
 # Spot/perpetual basis source feasibility
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-004 result](experiments/FUT-004-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `ROW_LEVEL_SOURCE_READY`, 2026-09-24. This is a source audit for a possible new directional mechanism, **not** FUT-004 or an outcome test. No basis forecast-times-return or new portfolio score was inspected. A data-quality check counted extreme same-day spot/perpetual close ratios without using future returns.
 
 One candidate mechanism is that the spot/perpetual price difference measures directional positioning pressure. This is a hypothesis, not an established signal for Rocket. The [empirical cryptocurrency-futures factor study](https://doi.org/10.1002/fut.22425) motivates investigating basis, but its result cannot be transferred directly to a daily perpetual-only directional trade. In particular, perpetual funding, contract type, price alignment, and the sign and duration of any predictive effect require their own frozen test.

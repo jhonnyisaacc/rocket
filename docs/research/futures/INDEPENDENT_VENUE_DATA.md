@@ -1,5 +1,7 @@
 # Independent venue data source scout
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-003 result](experiments/FUT-003-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SAMPLED_COVERAGE_AUDITED`, 2026-09-24. This is a read-only source check, not a strategy outcome or a declared independent validation sample.
 
 The [official Bybit V5 kline endpoint](https://bybit-exchange.github.io/docs/v5/market/kline) returned BTCUSDT linear perpetual daily candles for June 1–2, 2020, and the [official funding-history endpoint](https://bybit-exchange.github.io/docs/v5/market/history-fund-rate) returned four funding timestamps over the same interval. Thus an earlier, independent venue has at least one observed price/funding overlap. API bars and funding are paginated; one successful symbol/day does not establish a complete broad historical tape.

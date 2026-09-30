@@ -2,7 +2,7 @@
 
 Status: `GROSS_OR_FEE_FLOOR_FAILED`, 2026-09-24. The [contract](FUT-011.md)
 was frozen and pushed in commit `8c4aaad` before any HYPE conditioned
-future price return was read. The [scorer](../../../research/futures/fut011_score.py)
+future price return was read. The [scorer](../../../../research/futures/fut011_score.py)
 uses only its two SHA-pinned 2025 source shards and contiguous seven-hour
 windows. The local canonical JSON result has SHA-256
 `c166d93742a3493e6cadd0a2b0d8bdc7f621c3665c54a07dbc25d9bcdb16e179`.

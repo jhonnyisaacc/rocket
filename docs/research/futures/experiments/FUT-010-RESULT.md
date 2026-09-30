@@ -3,7 +3,7 @@
 Status: `GROSS_OR_FEE_FLOOR_FAILED`, 2026-09-24. The
 [FUT-010 contract](FUT-010.md) was frozen at `6be17f1` before any
 loss-close-conditioned future price return was read. The deterministic
-[scorer](../../../research/futures/fut010_score.py) used only the two pinned
+[scorer](../../../../research/futures/fut010_score.py) used only the two pinned
 2025 Parquet shards in the contract. The local JSON report has SHA-256
 `4d9ef1e19ad3fca92ed42c4629571bd14974b5352ae88bb84dd03a1e23c4ec20`.
 

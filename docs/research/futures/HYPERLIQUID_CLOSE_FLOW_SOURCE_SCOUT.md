@@ -1,5 +1,7 @@
 # Hyperliquid close-flow source and economic scout
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-011 result](experiments/FUT-011-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `TWO_FIXED_MIRROR_SAMPLES_AUDITED`, 2026-09-24. Two free 2025 block-fill
 mirror shards were acquired and structurally audited before the FUT-010 rule
 was frozen and scored; its result is linked below.
@@ -97,6 +99,24 @@ separately recorded order stream lacks them. The reason for `unknownOid`
 was not determined. Do not use a live/current order-status lookup to
 backfill a claimed point-in-time cohort without an archival completeness
 and timestamp test.
+
+### Retained preliminary transaction-hash check
+
+A September 25 source-only follow-up resolved four fixed 2025-09-18
+non-TWAP losing HYPE close fill hashes through the public explorer
+`txDetails` interface. The [retained report](source_audits/hyperliquid_tx_details_probe_20250925.json)
+records wallet/hash/block agreement for all four and a single `Ioc` order
+per action. Its SHA-256 is
+`dc7ab305d42ddff807434ead6e2ad21ba8e8133d83bc8e3d8cf6157b0f5673a4`.
+At the September 30 hygiene audit, the temporary raw response files and
+uncommitted probe script were no longer present. This is a retained
+preliminary report with response digests, **not an independently reverified
+source join or a complete order-history dataset**. It weakens any blanket
+claim that no old order action is publicly recoverable, but does not resolve
+unfilled prior orders, TWAP mapping, multi-order mapping or causal wallet
+classification. It supplies no alpha result and no admission. The original
+six `unknownOid` checks remain evidence about that endpoint, not all archive
+access routes. No new explorer request was made during consolidation.
 
 The original archive must still be cross-checked before any promotion, but a
 free mirror now supplies an initial source sample. Decision time must be

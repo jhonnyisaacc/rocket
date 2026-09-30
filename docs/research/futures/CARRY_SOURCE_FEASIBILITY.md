@@ -66,3 +66,15 @@ mark and fill prices, rebalancing, venue-specific fees and spread/impact,
 collateral accounting, venue outage and liquidation rules, calendar split,
 and a cheap *net* falsifier. A positive funding spread alone is not a net
 strategy result. No 2026 holdout or current live position has been inspected.
+
+## Current product decision (2026-09-30)
+
+`STRUCTURAL_BUT_OUT_OF_CURRENT_PRODUCT_SCOPE`. Cross-venue hedged carry does
+not belong as another directional FUT experiment in the current scan pillar.
+Its two simultaneous legs, venue balances/margin, collateral conversion,
+funding reconciliation, outages, liquidation and paired execution require a
+separate operator-approved product pillar and admission. Source feasibility
+is preserved; economic viability remains unscored. The earlier prospective
+paragraph is historical preparation, not permission to score carry. The
+current [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md)
+control future work. No carry result was computed in this hygiene pass.

@@ -1,5 +1,7 @@
 # Funding direction: product fit and ETH source scout
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-007 result](experiments/FUT-007-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SOURCE_READY_NO_CONDITIONED_OUTCOME`, 2026-09-24.
 
 [He et al., *Fundamentals of Perpetual Futures*](https://arxiv.org/html/2212.06888)

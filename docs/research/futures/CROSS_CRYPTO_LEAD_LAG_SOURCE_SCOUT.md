@@ -1,5 +1,7 @@
 # Cross-crypto lead-lag source and economic screen
 
+Current use: `HISTORICAL_SOURCE_EVIDENCE`, reconciled 2026-09-30. The subsequent [FUT-013 result](experiments/FUT-013-RESULT.md) is scored and closed to automatic continuation. Source-only statements and proposed next steps below describe the original audit clock. They do not establish alpha or grant another trial; see the [family audit](FAMILY_AUDIT.md) and [admission gate](EXPERIMENT_ADMISSION.md).
+
 Status: `SOURCE_CLOCKS_AUDITED`, 2026-09-25. Minute bars were read only
 for source integrity and clock coverage. No BTC-conditioned future
 return, strategy outcome, signal threshold or parameter was read or
