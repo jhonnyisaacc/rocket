@@ -21,7 +21,8 @@ def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = 
             row = {"provider_status": "UNAVAILABLE", "market_state": {}, "technical_condition": None,
                    "provider_attempts": [{"name": f"yahoo.quote:{ticker}",
                                           "status": "HEALTHY" if quote.get("status") == "OK" else "UNAVAILABLE",
-                                          "failure_kind": quote.get("failure_kind") or quote.get("classification")} ]}
+                                          "retrieved_at": quote.get("retrieved_at"),
+                                          "failure_kind": None if quote.get("status") == "OK" else quote.get("failure_kind") or quote.get("classification")} ]}
             output[ticker] = row
             if quote.get("status") != "OK":
                 continue

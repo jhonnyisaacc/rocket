@@ -187,7 +187,9 @@ class IsmWorkflow:
                                 seeds.append({**company, "industry": industry["industry"], "report_type": kind,
                                               "direction": direction, "report_reference": f"ism-{kind}-rankings",
                                               "reference_month": report["identity"]["reference_month"]})
-            contexts = (self.context_fetcher or acquire_equity_context)([r["ticker"] for r in seeds if r["direction"] == "long"])
+            contexts = (self.context_fetcher or (lambda tickers: acquire_equity_context(
+                tickers, state_dir=self.store.root if self.store else None)))(
+                    [r["ticker"] for r in seeds if r["direction"] == "long"])
             for context in contexts.values():
                 providers.extend(ProviderHealth.from_dict(attempt)
                                  for attempt in context.get("fundamentals", {}).get("provider_attempts", []))

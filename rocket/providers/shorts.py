@@ -93,11 +93,15 @@ def acquire_short_snapshot(
             row["invalidation"] = max(series[-21:-1])
         row["provider_attempts"] = [{"name": f"yahoo.history:{symbol}",
                                      "status": "HEALTHY" if histories[symbol][3] else "UNAVAILABLE",
-                                     "coverage": str(len(histories[symbol][0] or []))}
+                                     "coverage": str(len(histories[symbol][0] or [])),
+                                     "retrieved_at": (fixed_now or datetime.now(UTC)).isoformat(),
+                                     "failure_kind": None if histories[symbol][3] else "Empty"}
                                     for symbol in dict.fromkeys((ticker, sector, "SPY")) if symbol]
         if fundamentals is not None:
             try:
-                extra = fundamentals(ticker)
+                from rocket.providers.edgar import apply_price_valuation
+
+                extra = apply_price_valuation(fundamentals(ticker), row.get("current_price"))
             except Exception as exc:
                 extra = {"provider_attempts": [{"name": f"fundamentals:{ticker}", "status": "UNAVAILABLE",
                                                 "failure_kind": type(exc).__name__}]}
@@ -133,7 +137,10 @@ def acquire_short_snapshot(
     return rows
 
 
-def live_fundamentals_fetcher() -> Callable[[str], Mapping[str, Any]] | None:
+def live_fundamentals_fetcher(*, state_dir=None) -> Callable[[str], Mapping[str, Any]] | None:
+    from rocket.providers.edgar import SECEDGAR
+    from rocket.providers.fmp import FMPClient
     from rocket.providers.fundamentals import fundamentals_row
 
-    return fundamentals_row
+    fmp, edgar = FMPClient(), SECEDGAR(state_dir=state_dir)
+    return lambda symbol: fundamentals_row(symbol, fmp=fmp, edgar=edgar)
