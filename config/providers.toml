@@ -35,8 +35,8 @@ fallbacks = ["openbb_cftc"]
 env = ["OPENBB_PYTHON"]
 
 [ism]
-primary = "ism_official_roundup"
-fallbacks = ["ism_prnewswire_archive"]
+primary = "ism_prnewswire_archive"
+fallbacks = ["ism_official_roundup"]
 
 [disclosures_official]
 primary = "house_oge"

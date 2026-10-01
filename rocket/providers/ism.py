@@ -47,6 +47,7 @@ class ISMReport:
     contracting: list[ISMIndustryRanking] = field(default_factory=list)
     source_url: str | None = None
     provider_failures: tuple[str, ...] = ()
+    provider_attempts: tuple[dict, ...] = ()
 
 
 def publication_at(reference: datetime, kind: str) -> datetime:
@@ -266,8 +267,8 @@ def _fetch_roundup(kind: ReportKind, *, http: httpx.Client | None = None) -> ISM
 
 
 def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None,
-                     now: datetime | None = None) -> ISMReport:
-    """Official roundup first; issuer's syndicated publisher archive second.
+                     now: datetime | None = None, config: dict | None = None) -> ISMReport:
+    """Issuer's syndicated publisher archive first; official roundup second.
 
     The archive is discovery only. Numbers and industry ranks must come from
     the fetched release body with the exact current reference month and kind.
@@ -305,12 +306,18 @@ def fetch_ism_report(kind: ReportKind, *, http: httpx.Client | None = None,
         response.raise_for_status()
         return capture("ism.publisher", parse_ism_html(response.text, kind=kind, source_url=url))
     try:
-        acquisition = acquire("ism." + kind, [("ism.official", official), ("ism.publisher", publisher)], retries=0)
+        from rocket.config import providers_config
+        settings = config if config is not None else providers_config()["ism"]
+        adapters = {"ism_official_roundup": ("ism.official", official),
+                    "ism_prnewswire_archive": ("ism.publisher", publisher)}
+        names = list(dict.fromkeys([settings["primary"], *settings.get("fallbacks", [])]))
+        acquisition = acquire("ism." + kind, [adapters[name] for name in names], retries=0)
         if acquisition.result is None:
             failures = ", ".join(f"{a.name}:{a.failure_kind}" for a in acquisition.attempts)
             raise ValueError("ISM acquisition exhausted: " + failures)
         report = reports[acquisition.result.source]
         report.provider_failures += tuple(f"{a.name}:{a.failure_kind}" for a in acquisition.attempts if a.failure_kind)
+        report.provider_attempts = tuple(a.to_dict() for a in acquisition.attempts)
         return report
     finally:
         if owns:

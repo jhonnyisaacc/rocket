@@ -198,7 +198,7 @@ def test_ism_publisher_failure_retains_independent_official_roundup():
             return httpx.Response(200, text=f'<h1>August 2026 Services</h1>Services PMI registered 55.4 percent. <a href="{release}">full report</a>')
         return httpx.Response(503)
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
-        report = fetch_ism_report("services", http=client)
+        report = fetch_ism_report("services", http=client, now=datetime(2026, 9, 8, 15, tzinfo=UTC))
     assert report.pmi == 55.4
     assert report.source_url == roundup
     assert not report.expanding

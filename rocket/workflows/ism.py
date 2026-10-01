@@ -118,6 +118,7 @@ class IsmWorkflow:
             row = _report_payload(report, pmi=pmi, pmi_source=source, identity=identity)
             payload_reports[kind] = row
             row["provider_failures"] = list(report.provider_failures)
+            row["provider_attempts"] = list(report.provider_attempts)
             warnings.extend(f"{kind}:{failure}; independently acquired source retained: {report.source_url}" for failure in report.provider_failures)
             headline_ok = row["headline_status"] == "HEADLINE_VALID"
             providers.append(

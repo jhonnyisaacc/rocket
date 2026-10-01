@@ -51,7 +51,7 @@ def test_ism_publisher_archive_recovers_official_failure(kind, pmi):
             return httpx.Response(200, text=f'<a href="{link}">report</a>')
         return httpx.Response(200, text=f'<h1>August 2026 {kind.title()}</h1>{kind.title()} PMI registered {pmi} percent. The industries reporting growth are: Machinery.')
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
-        r = fetch_ism_report(kind, http=client, now=NOW)
+        r = fetch_ism_report(kind, http=client, now=NOW, config={"primary": "ism_official_roundup", "fallbacks": ["ism_prnewswire_archive"]})
     assert r.report_month == 'August 2026'
     assert r.kind == kind
     assert r.pmi == pmi
