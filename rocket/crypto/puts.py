@@ -19,13 +19,17 @@ from rocket.market_check.bs import bs_put
 
 YEAR = 365.0
 # Skew markup: 10-20% OTM BTC puts trade above ATM. Multiplying ATM IV by
-# SKEW understates the insurance edge (overstates cost). APPROXIMATION:
-# no free historical skew surface was found.
+# SKEW understates the insurance edge (overstates cost). Calibrated
+# 2026-10-01: DVOL 36.4 vs live 15-17% OTM put IVs 40.3 (ratio 1.11).
+# APPROXIMATION: no free historical skew surface exists.
 SKEW = 1.10
 # Deribit taker fee for options: 0.03% of underlying per contract.
 FEE_RATE = 0.0003
-# Half-spread proxy on the premium when no spread history exists.
-HALF_SPREAD = 0.10
+# Half-spread proxy on the premium. Observed 2026-10-01 live book:
+# Mar27-70k 0.031/0.032, Dec26-72k 0.017/0.018 (~1.6% half-spread each);
+# 3% used to leave room for thinner strikes. Crash liquidity is worse;
+# stated as a caveat, not modeled.
+HALF_SPREAD = 0.03
 
 
 @dataclass(frozen=True)
@@ -62,7 +66,7 @@ def realized_vol(closes: list[float], window: int = 30) -> float | None:
 
 
 def buy_premium(spot: float, strike: float, tenor_years: float, iv: float) -> float:
-    mid = bs_put(spot, strike, tenor_years, 0.0, iv)
+    mid = bs_put(spot, strike, tenor_years, iv, 0.0)
     fee = FEE_RATE * spot
     return mid * (1 + HALF_SPREAD) + fee
 
@@ -75,7 +79,7 @@ def exit_value(
 ) -> float:
     if remaining_years <= 0:
         return max(strike - spot, 0.0)
-    mid = bs_put(spot, strike, remaining_years, 0.0, iv)
+    mid = bs_put(spot, strike, remaining_years, iv, 0.0)
     fee = FEE_RATE * spot
     return max(mid * (1 - HALF_SPREAD) - fee, 0.0)
 
@@ -96,9 +100,10 @@ def run_insurance(
     dvol_hist = sorted(v for _, v in vols.items())
 
     def vol_at(index: int) -> float:
+        # DVOL prints in percent points; realized vol is already decimal.
         day = bars[index].day
         if day in vols:
-            return vols[day] * SKEW
+            return vols[day] / 100.0 * SKEW
         rv = realized_vol(closes[: index + 1])
         return (rv or 0.5) * SKEW
 
@@ -112,6 +117,7 @@ def run_insurance(
     legs: list[Leg] = []
     open_legs: list[Leg] = []
     spend = 0.0
+    realized_pnl = 0.0  # stays in the combined path after a leg exits
     event_set = set(events or [])
     combined: list[float] = []
 
@@ -127,16 +133,17 @@ def run_insurance(
                 leg.exit_each = exit_value(
                     bar.close, leg.strike, max(remaining, 0) / YEAR, iv / SKEW
                 )
+                realized_pnl += (leg.exit_each - leg.premium_each) * leg.contracts
                 continue
             alive.append(leg)
         open_legs = alive
-        # Combined NAV: spot plus the live value of open protection.
+        # Combined NAV: spot plus live protection plus realized put P&L.
         day_mark = 0.0
         for leg in open_legs:
             remaining = max((leg.expiry_day - bar.day).days, 0) / YEAR
             mark = exit_value(bar.close, leg.strike, remaining, iv / SKEW)
             day_mark += (mark - leg.premium_each) * leg.contracts
-        combined.append(bar.close * notional_btc + day_mark)
+        combined.append(bar.close * notional_btc + day_mark + realized_pnl)
         # Fill the pending purchase (decided on bar i-1) at this bar's open.
         if pending_close is not None:
             tenor = rule.tenor_days / YEAR

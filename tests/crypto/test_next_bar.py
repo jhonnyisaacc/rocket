@@ -44,7 +44,10 @@ def test_put_fill_uses_next_open():
     assert first["entry"] == bars[1].day.isoformat(), "first decision fills next bar"
     moved = puts_mod.run_insurance(_shock_open(bars, 1, 2.0), vols, rule)
     assert moved["legs"][0]["premium"] != first["premium"]
-    assert moved["legs"][0]["premium"] > first["premium"]
+    # Same strike (struck off the unshocked decision close), doubled fill
+    # spot: the put is further OTM, so the fill must be cheaper. Any other
+    # direction means the fill did not use the shocked open.
+    assert moved["legs"][0]["premium"] < first["premium"]
 
 
 def test_long_fill_uses_next_open():
