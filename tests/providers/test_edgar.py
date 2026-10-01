@@ -300,7 +300,7 @@ def test_healthy_yahoo_quote_attempt_has_null_failure(monkeypatch):
         },
     )
     monkeypatch.setattr(
-        "rocket.providers.portfolio._closes", lambda *a: ([400.0] * 22, NOW.isoformat())
+        "rocket.providers.portfolio.equity_history", lambda *a, **kw: ([400.0] * 22, NOW.isoformat(), 4.0, {})
     )
     with httpx.Client() as http:
         row = acquire_position_evidence(["CAT"], now=NOW, http=http)["CAT"]

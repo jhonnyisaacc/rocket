@@ -5,8 +5,8 @@ from datetime import UTC, datetime
 
 import httpx
 
+from rocket.providers.equity_history import equity_history
 from rocket.providers.quotes import acquire_quotes
-from rocket.providers.shorts import _closes
 
 
 def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = None,
@@ -31,7 +31,8 @@ def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = 
                                    "available_at": quote["available_at"], "source": quote["source"],
                                    "daily": False, "citation": quote.get("citation")}
             try:
-                closes, observed = _closes(ticker, client)
+                closes, observed, atr, daily_basis = equity_history(
+                    ticker, client, now=now, include_daily_basis=True)
                 import math
 
                 from rocket.clock import equity_observation_fresh
@@ -44,13 +45,18 @@ def acquire_position_evidence(tickers: Sequence[str], *, now: datetime | None = 
                 row["technical_basis"] = {"source": "Yahoo Finance chart API", "observed_at": observed,
                                            "bars": len(closes), "rule": "20-session low / moving average",
                                            "average_20": sum(closes[-20:]) / 20,
-                                           "low_20": min(closes[-21:-1]), "high_20": max(closes[-21:-1])}
+                                           "low_20": min(closes[-21:-1]), "high_20": max(closes[-21:-1]),
+                                           "latest_close": closes[-1], "atr_14": atr,
+                                           "ism_daily_basis": daily_basis,
+                                           "atr_basis": "simple mean of prior 14 true ranges; latest bar excluded"}
                 row["provider_status"] = "HEALTHY"
                 row["provider_attempts"].append({"name": f"yahoo.history:{ticker}", "status": "HEALTHY",
+                                                "retrieved_at": (now or datetime.now(UTC)).isoformat(),
                                                 "coverage": str(len(closes))})
                 row["market_state"]["available_at"] = (now or datetime.now(UTC)).isoformat()
             except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError) as exc:
                 row["provider_attempts"].append({"name": f"yahoo.history:{ticker}", "status": "UNAVAILABLE",
+                                                "retrieved_at": (now or datetime.now(UTC)).isoformat(),
                                                 "failure_kind": type(exc).__name__})
             if http is None and include_news:
                 from rocket.providers.news import company_news_context

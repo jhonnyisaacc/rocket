@@ -1245,7 +1245,8 @@
           },
           "status": "VALID",
           "source_url": "https://fixture.test/ism",
-          "provider_failures": []
+          "provider_failures": [],
+          "provider_attempts": []
         },
         "services": {
           "headline_status": "UNAVAILABLE",
@@ -1273,7 +1274,7 @@
           "source_reference": "https://fixture.test/company",
           "context": {
             "market_state": {
-              "current_price": 101,
+              "current_price": 91,
               "as_of": "2026-09-04T15:00:00+00:00",
               "available_at": "2026-09-04T15:00:00+00:00",
               "source": "quote"
@@ -1281,7 +1282,9 @@
             "technical_condition": "healthy",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 91,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "fundamentals": {
               "eps_growth": 0.1,
@@ -1293,16 +1296,43 @@
           "classification": "BUY_CANDIDATE",
           "missing": [],
           "watch_proposal": null,
-          "current_price": 101,
-          "invalidation": 90,
+          "current_price": 91,
+          "invalidation": 87.3,
           "research_only": true,
           "entry": {
-            "concept": "near 20-session support with positive reported EPS growth",
+            "concept": "prior 20-session closing support band",
+            "method": "low_20_percent_fallback",
+            "support": 90,
             "zone": [
-              100,
-              102.0
-            ]
-          }
+              90,
+              91.8
+            ],
+            "volatility_unit": 1.8,
+            "atr_14": null,
+            "raw_atr": null,
+            "volatility_clamped": false,
+            "buy_close_threshold": 91.61999999999999,
+            "entry_buffer_atr_fraction": 0.1,
+            "invalidation": 87.3
+          },
+          "low_20_close": 90,
+          "reason": "completed daily close above support and within buffered entry zone; fundamentals pass; as of 2026-09-03 close",
+          "latest_completed_close": 91,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "status_basis_date": "2026-09-03",
+          "distance_pct": 0.0,
+          "zone_position": "in_zone",
+          "intraday_price": 91,
+          "intraday_distance_pct": 0.0,
+          "entry_buffer_atr_fraction": 0.1,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "entry_zone_low": 90,
+          "entry_zone_high": 91.8,
+          "distance_to_zone_pct": 0.0,
+          "breakdown_guard_failed": false
         },
         {
           "ticker": "WY",
@@ -1315,14 +1345,123 @@
           "reference_month": "2026-08",
           "classification": "SHORT_INPUT",
           "thesis": "ISM 2026-08 manufacturing: wood products is contracting. Company exposure: Wood manufacturing.",
+          "invalidation": null,
           "requires_canonical_short_evaluation": true
+        }
+      ],
+      "watchlist_handoff": [
+        {
+          "ticker": "CAT",
+          "industry": "machinery",
+          "status": "BUY_CANDIDATE",
+          "entry_zone_low": 90,
+          "entry_zone_high": 91.8,
+          "invalidation": 87.3,
+          "stop_level": 87.3,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "latest_completed_close": 91,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "status_basis_date": "2026-09-03",
+          "low_20_close": 90,
+          "entry_buffer_atr_fraction": 0.1,
+          "current_price": 91,
+          "distance_to_zone_pct": 0.0,
+          "distance_pct": 0.0,
+          "zone_position": "in_zone",
+          "intraday_price": 91,
+          "intraday_distance_pct": 0.0,
+          "reason": "completed daily close above support and within buffered entry zone; fundamentals pass; as of 2026-09-03 close",
+          "breakdown_guard_failed": false,
+          "data_provenance": {
+            "ism_source_url": "https://fixture.test/ism",
+            "report_type": "manufacturing",
+            "reference_month": "2026-08",
+            "report_reference": "ism-manufacturing-rankings",
+            "company_exposure_source": "https://fixture.test/company",
+            "market_source": "quote",
+            "market_as_of": "2026-09-04T15:00:00+00:00",
+            "market_available_at": "2026-09-04T15:00:00+00:00",
+            "technical_basis": {
+              "average_20": 100,
+              "low_20": 90,
+              "latest_close": 91,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
+            },
+            "technical_condition": "healthy",
+            "market_provider_attempts": [],
+            "fundamentals_source": "reported-provider",
+            "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+            "fundamentals_provider_attempts": [],
+            "entry_method": "low_20_percent_fallback",
+            "volatility_unit": 1.8,
+            "decision_time": "2026-09-04T15:00:00+00:00"
+          },
+          "research_only": true,
+          "execution_enabled": false
         }
       ],
       "unmapped_industries": [],
       "nmfbai_substituted_for_services_composite": false,
       "execution_enabled": false
     },
-    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
+    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+    "watchlist_handoff": [
+      {
+        "ticker": "CAT",
+        "industry": "machinery",
+        "status": "BUY_CANDIDATE",
+        "entry_zone_low": 90,
+        "entry_zone_high": 91.8,
+        "invalidation": 87.3,
+        "stop_level": 87.3,
+        "raw_atr": null,
+        "volatility_clamped": false,
+        "latest_completed_close": 91,
+        "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+        "status_basis": "latest_completed_daily_close",
+        "buy_close_threshold": 91.61999999999999,
+        "status_basis_date": "2026-09-03",
+        "low_20_close": 90,
+        "entry_buffer_atr_fraction": 0.1,
+        "current_price": 91,
+        "distance_to_zone_pct": 0.0,
+        "distance_pct": 0.0,
+        "zone_position": "in_zone",
+        "intraday_price": 91,
+        "intraday_distance_pct": 0.0,
+        "reason": "completed daily close above support and within buffered entry zone; fundamentals pass; as of 2026-09-03 close",
+        "breakdown_guard_failed": false,
+        "data_provenance": {
+          "ism_source_url": "https://fixture.test/ism",
+          "report_type": "manufacturing",
+          "reference_month": "2026-08",
+          "report_reference": "ism-manufacturing-rankings",
+          "company_exposure_source": "https://fixture.test/company",
+          "market_source": "quote",
+          "market_as_of": "2026-09-04T15:00:00+00:00",
+          "market_available_at": "2026-09-04T15:00:00+00:00",
+          "technical_basis": {
+            "average_20": 100,
+            "low_20": 90,
+            "latest_close": 91,
+            "latest_close_at": "2026-09-03T16:00:00-04:00"
+          },
+          "technical_condition": "healthy",
+          "market_provider_attempts": [],
+          "fundamentals_source": "reported-provider",
+          "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+          "fundamentals_provider_attempts": [],
+          "entry_method": "low_20_percent_fallback",
+          "volatility_unit": 1.8,
+          "decision_time": "2026-09-04T15:00:00+00:00"
+        },
+        "research_only": true,
+        "execution_enabled": false
+      }
+    ]
   },
   "ism-watch": {
     "schema_version": 2,
@@ -1465,7 +1604,8 @@
           },
           "status": "VALID",
           "source_url": "https://fixture.test/ism",
-          "provider_failures": []
+          "provider_failures": [],
+          "provider_attempts": []
         },
         "services": {
           "headline_status": "UNAVAILABLE",
@@ -1501,7 +1641,9 @@
             "technical_condition": "healthy",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 105,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "fundamentals": {
               "eps_growth": 0.1,
@@ -1516,17 +1658,51 @@
             "ticker": "CAT",
             "condition": "ZONE",
             "zone": [
-              100,
-              102.0
+              90,
+              91.8
             ],
             "thesis": "ISM 2026-08 manufacturing: machinery is expanding. Company exposure: Equipment manufacturing.",
             "source_reference": "https://fixture.test/company",
-            "requires_caller_approval": true
+            "requires_caller_approval": true,
+            "requires_stabilization": false
           },
           "current_price": 105,
-          "invalidation": 90,
+          "invalidation": 87.3,
           "research_only": true,
-          "entry": null
+          "entry": {
+            "concept": "prior 20-session closing support band",
+            "method": "low_20_percent_fallback",
+            "support": 90,
+            "zone": [
+              90,
+              91.8
+            ],
+            "volatility_unit": 1.8,
+            "atr_14": null,
+            "raw_atr": null,
+            "volatility_clamped": false,
+            "buy_close_threshold": 91.61999999999999,
+            "entry_buffer_atr_fraction": 0.1,
+            "invalidation": 87.3
+          },
+          "low_20_close": 90,
+          "reason": "wait for pullback to 90.00\u201391.80; completed daily close must be at or below 91.62; as of 2026-09-03 close",
+          "latest_completed_close": 105,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "status_basis_date": "2026-09-03",
+          "distance_pct": 14.379084967320255,
+          "zone_position": "above_zone",
+          "intraday_price": 105,
+          "intraday_distance_pct": 14.379084967320255,
+          "entry_buffer_atr_fraction": 0.1,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "entry_zone_low": 90,
+          "entry_zone_high": 91.8,
+          "distance_to_zone_pct": 14.379084967320255,
+          "breakdown_guard_failed": false
         },
         {
           "ticker": "WY",
@@ -1539,14 +1715,123 @@
           "reference_month": "2026-08",
           "classification": "SHORT_INPUT",
           "thesis": "ISM 2026-08 manufacturing: wood products is contracting. Company exposure: Wood manufacturing.",
+          "invalidation": null,
           "requires_canonical_short_evaluation": true
+        }
+      ],
+      "watchlist_handoff": [
+        {
+          "ticker": "CAT",
+          "industry": "machinery",
+          "status": "WATCH",
+          "entry_zone_low": 90,
+          "entry_zone_high": 91.8,
+          "invalidation": 87.3,
+          "stop_level": 87.3,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "latest_completed_close": 105,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "status_basis_date": "2026-09-03",
+          "low_20_close": 90,
+          "entry_buffer_atr_fraction": 0.1,
+          "current_price": 105,
+          "distance_to_zone_pct": 14.379084967320255,
+          "distance_pct": 14.379084967320255,
+          "zone_position": "above_zone",
+          "intraday_price": 105,
+          "intraday_distance_pct": 14.379084967320255,
+          "reason": "wait for pullback to 90.00\u201391.80; completed daily close must be at or below 91.62; as of 2026-09-03 close",
+          "breakdown_guard_failed": false,
+          "data_provenance": {
+            "ism_source_url": "https://fixture.test/ism",
+            "report_type": "manufacturing",
+            "reference_month": "2026-08",
+            "report_reference": "ism-manufacturing-rankings",
+            "company_exposure_source": "https://fixture.test/company",
+            "market_source": "quote",
+            "market_as_of": "2026-09-04T15:00:00+00:00",
+            "market_available_at": "2026-09-04T15:00:00+00:00",
+            "technical_basis": {
+              "average_20": 100,
+              "low_20": 90,
+              "latest_close": 105,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
+            },
+            "technical_condition": "healthy",
+            "market_provider_attempts": [],
+            "fundamentals_source": "reported-provider",
+            "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+            "fundamentals_provider_attempts": [],
+            "entry_method": "low_20_percent_fallback",
+            "volatility_unit": 1.8,
+            "decision_time": "2026-09-04T15:00:00+00:00"
+          },
+          "research_only": true,
+          "execution_enabled": false
         }
       ],
       "unmapped_industries": [],
       "nmfbai_substituted_for_services_composite": false,
       "execution_enabled": false
     },
-    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
+    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+    "watchlist_handoff": [
+      {
+        "ticker": "CAT",
+        "industry": "machinery",
+        "status": "WATCH",
+        "entry_zone_low": 90,
+        "entry_zone_high": 91.8,
+        "invalidation": 87.3,
+        "stop_level": 87.3,
+        "raw_atr": null,
+        "volatility_clamped": false,
+        "latest_completed_close": 105,
+        "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+        "status_basis": "latest_completed_daily_close",
+        "buy_close_threshold": 91.61999999999999,
+        "status_basis_date": "2026-09-03",
+        "low_20_close": 90,
+        "entry_buffer_atr_fraction": 0.1,
+        "current_price": 105,
+        "distance_to_zone_pct": 14.379084967320255,
+        "distance_pct": 14.379084967320255,
+        "zone_position": "above_zone",
+        "intraday_price": 105,
+        "intraday_distance_pct": 14.379084967320255,
+        "reason": "wait for pullback to 90.00\u201391.80; completed daily close must be at or below 91.62; as of 2026-09-03 close",
+        "breakdown_guard_failed": false,
+        "data_provenance": {
+          "ism_source_url": "https://fixture.test/ism",
+          "report_type": "manufacturing",
+          "reference_month": "2026-08",
+          "report_reference": "ism-manufacturing-rankings",
+          "company_exposure_source": "https://fixture.test/company",
+          "market_source": "quote",
+          "market_as_of": "2026-09-04T15:00:00+00:00",
+          "market_available_at": "2026-09-04T15:00:00+00:00",
+          "technical_basis": {
+            "average_20": 100,
+            "low_20": 90,
+            "latest_close": 105,
+            "latest_close_at": "2026-09-03T16:00:00-04:00"
+          },
+          "technical_condition": "healthy",
+          "market_provider_attempts": [],
+          "fundamentals_source": "reported-provider",
+          "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+          "fundamentals_provider_attempts": [],
+          "entry_method": "low_20_percent_fallback",
+          "volatility_unit": 1.8,
+          "decision_time": "2026-09-04T15:00:00+00:00"
+        },
+        "research_only": true,
+        "execution_enabled": false
+      }
+    ]
   },
   "pelosi-opportunity": {
     "schema_version": 2,

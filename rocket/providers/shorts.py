@@ -12,7 +12,7 @@ import httpx
 from rocket.workflows.shorts import UNIVERSE
 
 
-def _closes(symbol: str, http: httpx.Client) -> tuple[list[float], str | None]:
+def _chart_result(symbol: str, http: httpx.Client) -> dict:
     for host in ("query2", "query1"):
         try:
             response = http.get(
@@ -28,7 +28,11 @@ def _closes(symbol: str, http: httpx.Client) -> tuple[list[float], str | None]:
         except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError):
             if host == "query1":
                 raise
-    result = response.json()["chart"]["result"][0]
+    return data
+
+
+def _closes(symbol: str, http: httpx.Client) -> tuple[list[float], str | None]:
+    result = _chart_result(symbol, http)
     closes = [float(value) for value in result["indicators"]["quote"][0]["close"] if value is not None]
     stamp = datetime.fromtimestamp(result["meta"]["regularMarketTime"], UTC).isoformat()
     return closes, stamp

@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 import pytest
 
 from rocket.candidates import bearish_inputs, evaluate_long, persist_candidates
+from rocket.clock import latest_completed_session, session_close
 from rocket.models import ResearchStatus
 from rocket.providers.ism import ISMIndustryRanking, ISMReport
 from rocket.store import ResearchStore
@@ -16,7 +17,7 @@ NOW = datetime(2026, 9, 4, 15, tzinfo=UTC)
 
 def context(price=101, **kwargs):
     return {'market_state': {'current_price': price, 'as_of': NOW.isoformat(), 'available_at': NOW.isoformat(), 'source': 'quote'},
-            'technical_condition': 'healthy', 'technical_basis': {'average_20': 100, 'low_20': 90},
+            'technical_condition': 'healthy', 'technical_basis': {'average_20': 100, 'low_20': 90, 'latest_close': price, 'latest_close_at': session_close(latest_completed_session(NOW)).isoformat()},
             'fundamentals': {'eps_growth': .1, 'pe_ttm': 20, 'available_at': NOW.isoformat(), 'fundamentals_source': 'reported-provider'}, **kwargs}
 
 
@@ -49,7 +50,7 @@ def test_ism_company_pipeline_and_short_handoff(tmp_path):
                [ISMIndustryRanking('machinery', 'expanding', 1)], [ISMIndustryRanking('wood products', 'contracting', 1)], 'https://official.test/report')}
     exposures = {'machinery': [{'ticker': 'CAT', 'exposure': 'Equipment manufacturing', 'source': 'https://issuer.test/cat'}],
                  'wood products': [{'ticker': 'WY', 'exposure': 'Wood products', 'source': 'https://issuer.test/wy'}]}
-    w = IsmWorkflow(store=store, exposures=exposures, context_fetcher=lambda tickers: {t: context() for t in tickers})
+    w = IsmWorkflow(store=store, exposures=exposures, context_fetcher=lambda tickers: {t: context(91) for t in tickers})
     r = w.run(reports=reports, now=NOW, research_companies=True)
     assert_research_result(r)
     assert {c['classification'] for c in r.payload['candidates']} == {'BUY_CANDIDATE', 'SHORT_INPUT'}

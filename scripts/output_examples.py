@@ -56,7 +56,7 @@ def generate(root):
     exposures = {'machinery': [{'ticker': 'CAT', 'exposure': 'Equipment manufacturing', 'source': 'https://fixture.test/company'}],
                  'wood products': [{'ticker': 'WY', 'exposure': 'Wood manufacturing', 'source': 'https://fixture.test/company'}]}
     save('ism-buy', IsmWorkflow(store=ResearchStore(root / 'ism'), exposures=exposures,
-         context_fetcher=lambda ts: {t: context() for t in ts}).run(reports=reports, research_companies=True, now=NOW))
+         context_fetcher=lambda ts: {t: context(91) for t in ts}).run(reports=reports, research_companies=True, now=NOW))
     save('ism-watch', IsmWorkflow(exposures=exposures, context_fetcher=lambda ts: {t: context(105) for t in ts}).run(reports=reports, research_companies=True, now=NOW))
     for name, person, family in [('pelosi', 'Nancy Pelosi', 'congress'), ('trump', 'Donald J. Trump', 'executive')]:
         save(name + '-opportunity', DisclosureWorkflow(store=ResearchStore(root / name)).run(subjects=[person],
