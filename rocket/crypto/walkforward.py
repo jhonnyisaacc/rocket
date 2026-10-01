@@ -11,11 +11,10 @@ from __future__ import annotations
 
 from datetime import date
 
-from rocket.crypto import data as datamod
-from rocket.crypto.carry import CarryRule, run_carry
+from rocket.crypto.carry import run_carry
 from rocket.crypto.data import Bar
-from rocket.crypto.longs import LongRule, run_longs
-from rocket.crypto.puts import PutRule, max_dd, run_insurance
+from rocket.crypto.longs import run_longs
+from rocket.crypto.puts import max_dd, run_insurance
 
 HOLDOUT_START = date(2026, 1, 1)
 YEAR = 365.25
