@@ -1,0 +1,76 @@
+"""ATR history integrity and shared chart transport regression."""
+
+from datetime import UTC, datetime
+
+import httpx
+import pytest
+
+from rocket.providers.equity_history import equity_history, prior_atr_14
+from rocket.providers.portfolio import acquire_position_evidence
+from rocket.providers.shorts import _closes
+
+NOW = datetime(2026, 10, 1, 15, tzinfo=UTC)
+
+
+def bars():
+    return {'high': [101.] * 22, 'low': [99.] * 22, 'close': [100.] * 22}
+
+
+def test_true_ranges_include_gaps_and_exclude_latest_partial_bar():
+    quote = bars()
+    # Prior close=100, next high=111 and low=109 => TR=11, not just 2.
+    quote['high'][-2], quote['low'][-2], quote['close'][-2] = 111, 109, 110
+    quote['high'][-1] = quote['low'][-1] = quote['close'][-1] = None
+    assert prior_atr_14(quote) == pytest.approx((13 * 2 + 11) / 14)
+
+
+@pytest.mark.parametrize('bad', [None, float('nan'), float('inf'), -1, 0])
+def test_missing_invalid_prior_bars_do_not_produce_atr(bad):
+    quote = bars()
+    quote['high'][-3] = bad
+    assert prior_atr_14(quote) is None
+
+
+def test_misaligned_short_and_inverted_bars_are_unavailable():
+    assert prior_atr_14({'high': [101] * 16, 'low': [99] * 15, 'close': [100] * 16}) is None
+    assert prior_atr_14({'high': [101] * 15, 'low': [99] * 15, 'close': [100] * 15}) is None
+    quote = bars()
+    quote['low'][-3] = 102
+    assert prior_atr_14(quote) is None
+
+
+def test_one_chart_response_adds_atr_without_changing_short_closes(monkeypatch):
+    requests = []
+    def handle(request):
+        requests.append(request)
+        return httpx.Response(200, json={'chart': {'result': [{
+            'meta': {'regularMarketTime': int(NOW.timestamp())},
+            'indicators': {'quote': [bars()]},
+        }]}})
+    monkeypatch.setattr('rocket.providers.portfolio.acquire_quotes', lambda *a, **kw: {
+        'CAT': {'status': 'OK', 'price': 100, 'observation_at': NOW.isoformat(),
+                'available_at': NOW.isoformat(), 'source': 'fixture'}})
+    with httpx.Client(transport=httpx.MockTransport(handle)) as client:
+        row = acquire_position_evidence(['CAT'], now=NOW, http=client)['CAT']
+        assert len(requests) == 1  # OHLC/ATR share the closing history request
+        assert row['technical_basis']['atr_14'] == 2
+        assert row['technical_basis']['latest_close'] == 100
+        assert row['technical_basis']['low_20'] == 100
+        assert _closes('CAT', client) == ([100.] * 22, NOW.isoformat())
+        closes, observed, atr = equity_history('CAT', client)
+        assert closes == [100.] * 22 and observed == NOW.isoformat() and atr == 2
+
+
+def test_chart_host_fallback_preserves_closes():
+    hosts = []
+    def handle(request):
+        hosts.append(request.url.host)
+        if request.url.host.startswith('query2'):
+            return httpx.Response(503)
+        return httpx.Response(200, json={'chart': {'result': [{
+            'meta': {'regularMarketTime': int(NOW.timestamp())},
+            'indicators': {'quote': [bars()]},
+        }]}})
+    with httpx.Client(transport=httpx.MockTransport(handle)) as client:
+        assert _closes('CAT', client)[0] == [100.] * 22
+    assert hosts == ['query2.finance.yahoo.com', 'query1.finance.yahoo.com']

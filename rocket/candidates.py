@@ -129,13 +129,28 @@ def _ism_support_entry(row, fundamental, *, price, support):
     if fundamental["eps_growth"] < 0 or not 0 < fundamental["pe_ttm"] <= 40:
         row.update(classification="NOT_INTERESTING", reason="EPS growth or valuation fails the long gate")
         return row
-    zone = [support * 0.99, support * 1.02]
-    invalidation = support * 0.97
+    from rocket.workflows.portfolio import positive_number
+
+    technical = row["context"]["technical_basis"]
+    raw_atr = technical.get("atr_14")
+    atr = float(raw_atr) if positive_number(raw_atr) else None
+    # Bound volatility units to 0.5–3% of support, avoiding near-zero bands
+    # and excessively wide stops. Legacy/missing OHLC uses an explicit fallback.
+    volatility = min(max(atr, support * 0.005), support * 0.03) if atr is not None else support * 0.02
+    method = "low_20_atr_support" if atr is not None else "low_20_percent_fallback"
+    zone = [support - volatility * 0.5, support + volatility]
+    invalidation = support - volatility * 1.5
+    latest_close = technical.get("latest_close")
+    condition = row["context"].get("technical_condition")
+    # The shared provider's breakdown flag means ANY new closing low. ISM
+    # uses the same volatility buffer for the quote and close instead. Preserve
+    # an unquantified explicit breakdown conservatively for legacy contexts.
     breakdown = (price < invalidation
-                 or row["context"].get("technical_condition") == "breakdown")
+                 or (float(latest_close) < invalidation if positive_number(latest_close)
+                     else condition == "breakdown"))
     # A weak quote can dip below the nominal band while still above the stop.
     # Include that tolerated discount rather than handing off a reclaim zone.
-    if row["context"].get("technical_condition") == "weak" and not breakdown:
+    if condition in {"weak", "breakdown"} and not breakdown:
         zone[0] = min(zone[0], price)
     if breakdown:
         status = "WATCH"
@@ -154,7 +169,8 @@ def _ism_support_entry(row, fundamental, *, price, support):
                entry_zone_low=zone[0], entry_zone_high=zone[1],
                distance_to_zone_pct=distance, breakdown_guard_failed=breakdown,
                entry={"concept": "prior 20-session closing support band",
-                      "method": "low_20_support", "support": support, "zone": zone,
+                      "method": method, "support": support, "zone": zone,
+                      "volatility_unit": volatility, "atr_14": atr,
                       "invalidation": invalidation})
     if status == "WATCH":
         row["watch_proposal"] = {"ticker": row["ticker"], "condition": "ZONE", "zone": zone,

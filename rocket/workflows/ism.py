@@ -275,7 +275,8 @@ def _watchlist_handoff(row, reports, now):
             "fundamentals_source": fundamental["fundamentals_source"],
             "fundamentals_available_at": fundamental["available_at"],
             "fundamentals_provider_attempts": fundamental.get("provider_attempts", []),
-            "entry_method": "low_20_support", "decision_time": now.isoformat(),
+            "entry_method": row["entry"]["method"],
+            "volatility_unit": row["entry"]["volatility_unit"], "decision_time": now.isoformat(),
         },
         "research_only": True, "execution_enabled": False,
     }

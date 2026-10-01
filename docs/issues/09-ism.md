@@ -50,22 +50,35 @@ failing fundamentals stay NOT_INTERESTING.
 
 ISM longs use prior 20-session **closing** support `S = low_20` (the history
 provider excludes the latest close), rather than the old moving-average reclaim
-band. The nominal entry zone is `[0.99*S, 1.02*S]`, with research invalidation at
-`0.97*S`. A price strictly below invalidation, or an explicit technical
-`breakdown`, stays WATCH: “falling below support, wait for stabilization”.
+band. From the same Yahoo daily OHLC response, calculate simple 14-session ATR
+as the mean of `max(high-low, abs(high-prev_close), abs(low-prev_close))`,
+excluding the latest potentially partial daily bar. Missing, misaligned or invalid
+prior OHLC bars cannot produce ATR.
+
+Let `V = clamp(ATR14, 0.005*S, 0.03*S)`. The nominal entry zone is
+`[S - 0.5*V, S + V]`, with research invalidation at `S - 1.5*V`. The floor and
+cap avoid near-zero bands and excessively wide stops. If ATR is unavailable,
+use `V = 0.02*S` and explicitly label `entry.method` and handoff provenance
+`low_20_percent_fallback`; otherwise the method is `low_20_atr_support`.
+
+A current quote **or latest close** strictly below invalidation stays WATCH:
+“falling below support, wait for stabilization”. The shared provider's raw
+`breakdown` flag denotes any new closing low; ISM uses the buffered price/close
+threshold so a small new low is not an automatic veto. An explicit breakdown
+without a valid latest close remains a conservative WATCH for legacy contexts.
 Otherwise price <= zone high is BUY_CANDIDATE, including below-zone discounts;
 price > zone high is WATCH: “wait for pullback to <zone>”. Weak technicals alone
-are not a veto. For a weak quote below the nominal lower edge but above or at
-invalidation, extend the lower edge to the current price. This includes a
-tolerated discount without giving the watcher a reclaim band above its price.
-The stop and upper edge remain anchored to prior support. This is a deterministic
-research heuristic, not a validated trading edge or execution instruction.
+are not a veto. For weak or tolerated raw-breakdown quotes below the nominal
+lower edge, extend that edge to the current price. This includes a discount
+without giving the watcher a reclaim band above its price. The stop and upper
+edge remain anchored to prior support. These are deterministic volatility-aware
+research heuristics, not a validated trading edge or execution instruction.
 
 `rocket ism --json` adds a top-level `watchlist_handoff` array, also retained in
 `payload.watchlist_handoff` for stored-result consumers. Every passing long,
 including a guarded WATCH, supplies ticker, industry, status, zone bounds,
 invalidation/stop, current price, reason, breakdown flag, and provenance for the
-ISM release, exposure, quote, technical basis, and fundamentals. Distance is
+ISM release, exposure, quote, technical basis (ATR, latest close and volatility unit), and fundamentals. Distance is
 signed percent to the nearest zone boundary (boundary as denominator): negative
 below, zero inside, positive above. Existing candidate fields remain available.
 No watch is installed automatically; `execution_enabled` remains false.

@@ -1299,12 +1299,14 @@
           "research_only": true,
           "entry": {
             "concept": "prior 20-session closing support band",
-            "method": "low_20_support",
+            "method": "low_20_percent_fallback",
             "support": 90,
             "zone": [
               89.1,
               91.8
             ],
+            "volatility_unit": 1.8,
+            "atr_14": null,
             "invalidation": 87.3
           },
           "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
@@ -1357,7 +1359,8 @@
             "fundamentals_source": "reported-provider",
             "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
             "fundamentals_provider_attempts": [],
-            "entry_method": "low_20_support",
+            "entry_method": "low_20_percent_fallback",
+            "volatility_unit": 1.8,
             "decision_time": "2026-09-04T15:00:00+00:00"
           },
           "research_only": true,
@@ -1399,7 +1402,8 @@
           "fundamentals_source": "reported-provider",
           "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
           "fundamentals_provider_attempts": [],
-          "entry_method": "low_20_support",
+          "entry_method": "low_20_percent_fallback",
+          "volatility_unit": 1.8,
           "decision_time": "2026-09-04T15:00:00+00:00"
         },
         "research_only": true,
@@ -1613,12 +1617,14 @@
           "research_only": true,
           "entry": {
             "concept": "prior 20-session closing support band",
-            "method": "low_20_support",
+            "method": "low_20_percent_fallback",
             "support": 90,
             "zone": [
               89.1,
               91.8
             ],
+            "volatility_unit": 1.8,
+            "atr_14": null,
             "invalidation": 87.3
           },
           "reason": "wait for pullback to 89.10\u201391.80",
@@ -1671,7 +1677,8 @@
             "fundamentals_source": "reported-provider",
             "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
             "fundamentals_provider_attempts": [],
-            "entry_method": "low_20_support",
+            "entry_method": "low_20_percent_fallback",
+            "volatility_unit": 1.8,
             "decision_time": "2026-09-04T15:00:00+00:00"
           },
           "research_only": true,
@@ -1713,7 +1720,8 @@
           "fundamentals_source": "reported-provider",
           "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
           "fundamentals_provider_attempts": [],
-          "entry_method": "low_20_support",
+          "entry_method": "low_20_percent_fallback",
+          "volatility_unit": 1.8,
           "decision_time": "2026-09-04T15:00:00+00:00"
         },
         "research_only": true,

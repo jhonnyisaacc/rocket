@@ -36,6 +36,7 @@ def contexts():
                              'available_at': NOW.isoformat(), 'source': 'fixture quote'},
             'technical_condition': condition,
             'technical_basis': {'average_20': average, 'low_20': support,
+                                'atr_14': support * .02,
                                 'source': 'fixture closing history', 'observed_at': NOW.isoformat()},
             'fundamentals': {'eps_growth': .1, 'pe_ttm': 25,
                              'fundamentals_source': 'SEC EDGAR fixture',
@@ -81,7 +82,7 @@ def test_incident_prices_and_four_entry_cases(contexts):
 def test_weak_never_hands_off_unexplained_reclaim_zone(contexts, price):
     c = contexts['NUE']
     c['market_state']['current_price'] = price
-    c['technical_basis']['low_20'] = 100
+    c['technical_basis'].update(low_20=100, atr_14=2)
     row = evaluate(c)
     if row['entry_zone_low'] > price:
         assert row['breakdown_guard_failed']
@@ -100,7 +101,7 @@ def test_guard_and_zone_boundaries(contexts, price, condition, expected):
     c = contexts['NUE']
     c['market_state']['current_price'] = price
     c['technical_condition'] = condition
-    c['technical_basis']['low_20'] = 100
+    c['technical_basis'].update(low_20=100, atr_14=2)
     assert evaluate(c)['classification'] == expected
 
 
@@ -131,6 +132,7 @@ def test_watchlist_handoff_json_cli_and_roundtrip(contexts, tmp_path, monkeypatc
         assert row['reason']
         assert row['data_provenance']['fundamentals_source'] == 'SEC EDGAR fixture'
         assert row['data_provenance']['reference_month'] == '2026-09'
+        assert row['data_provenance']['entry_method'] == 'low_20_atr_support'
         assert row['research_only'] and row['execution_enabled'] is False
     assert ResearchResult.from_dict(data).to_dict()['watchlist_handoff'] == handoff
     monkeypatch.setattr(IsmWorkflow, 'run', lambda *a, **kw: result)
@@ -145,3 +147,53 @@ def test_watchlist_handoff_json_cli_and_roundtrip(contexts, tmp_path, monkeypatc
 def test_empty_handoff_still_top_level():
     result = IsmWorkflow().run(now=NOW, reports={})
     assert result.to_dict()['watchlist_handoff'] == []
+
+
+@pytest.mark.parametrize('atr,unit', [(0.1, .5), (1, 1), (2, 2), (10, 3)])
+def test_atr_scaled_bands_with_bounded_width(contexts, atr, unit):
+    c = contexts['NUE']
+    c['market_state']['current_price'] = 100
+    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=100)
+    row = evaluate(c)
+    assert row['entry']['method'] == 'low_20_atr_support'
+    assert row['entry']['volatility_unit'] == unit
+    assert row['entry']['zone'] == [100 - .5 * unit, 100 + unit]
+    assert row['invalidation'] == 100 - 1.5 * unit
+
+
+@pytest.mark.parametrize('atr', [None, 0, -1, float('nan'), float('inf'), True])
+def test_missing_atr_fallback_is_explicit(contexts, atr):
+    c = contexts['NUE']
+    c['market_state']['current_price'] = 100
+    c['technical_basis'].update(low_20=100, atr_14=atr)
+    row = evaluate(c)
+    assert row['entry']['method'] == 'low_20_percent_fallback'
+    assert row['entry']['zone'] == [99, 102]
+    assert row['invalidation'] == 97
+
+
+@pytest.mark.parametrize('price,close,expected', [
+    (99.4, 99.4, 'BUY_CANDIDATE'),  # new low within 1.5 ATR buffer
+    (98.5, 98.5, 'BUY_CANDIDATE'),  # exactly at invalidation
+    (98.49, 99.4, 'WATCH'),         # quote breaches buffered support
+    (100, 98.49, 'WATCH'),          # close breached; recovered quote still waits
+])
+def test_quantified_breakdown_uses_same_atr_guard(contexts, price, close, expected):
+    c = contexts['NUE']
+    c['market_state']['current_price'] = price
+    c['technical_condition'] = 'breakdown'
+    c['technical_basis'].update(low_20=100, atr_14=1, latest_close=close)
+    row = evaluate(c)
+    assert row['classification'] == expected
+    assert row['breakdown_guard_failed'] == (expected == 'WATCH')
+    if expected == 'BUY_CANDIDATE':
+        assert row['entry_zone_low'] <= price  # no reclaim requirement on tolerated dip
+
+
+@pytest.mark.parametrize('atr,expected', [(.5, 'WATCH'), (2, 'BUY_CANDIDATE')])
+def test_same_support_discount_depends_on_observed_volatility(contexts, atr, expected):
+    c = contexts['NUE']
+    c['market_state']['current_price'] = 98.8
+    c['technical_condition'] = 'breakdown'
+    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=98.8)
+    assert evaluate(c)['classification'] == expected
