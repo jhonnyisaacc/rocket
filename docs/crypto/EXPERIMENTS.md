@@ -109,6 +109,37 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
   total, +4.5%/yr, max DD -2.55. Small persistent edge, threshold choice
   barely matters. SURVIVES.
 
+## Robustness round (WF-2): sensitivity, best-episode-removed, DSR
+
+Sensitivity (+-20% on champion threshold, full sample):
+- A cheap-vol 20/25/30th pct: cost 11.1/12.0/11.6%/yr, hedged DD -63.3%
+  in all three. Stable, stably bad. (2 new trials: A=18 total.)
+- B drawdown 20/25/30%: avg-leg +7.3/+7.1/+7.1%, n=44/39/32,
+  equity 13.14/8.88/6.01x. Expectancy rock-stable; equity scales with
+  trade count. (2 new trials: B=10 total.)
+- C funding 4/5/6bp hold-7d: total +0.29/+0.31/+0.30, max DD <=-0.02.
+  Flat. (2 new trials: C=6 total.)
+Best-episode-removed:
+- A-13 ex-LUNA (window excised, rerun): cost 11.0%/yr, hedged DD -63.3%
+  vs naked -76.6% (FTX +10.4pp win remains). Verdict unchanged: pays
+  11%/yr for +13pp, needs a second crash to justify.
+- B-8 ex-covid (drop 3 best legs arithmetically): +6.31%/leg over 36 legs
+  vs +7.07% with covid. Edge is not one episode.
+- C-4 ex-2021 (year excised, rerun): +1.03%/yr vs +4%/yr with 2021.
+  Two-thirds of lifetime carry came from the 2021 bull-market funding
+  regime. DOWNGRADED to marginal ex-regime.
+Deflated Sharpe on stitched OOS daily (Sharpe / benchmark / P[skill]):
+- A overlay (combined-minus-naked): SR -0.19 / bench 0.63 / prob 0.00
+  over 18 trials. Negative; no edge, definitively.
+- B leg-equity: SR +0.33 / bench 0.53 / prob 0.00 over 10 trials.
+  Positive but luck-indistinguishable. Thin, not significant.
+- C equity: SR +2.61 / bench 0.44 / prob 1.00 over 6 trials.
+  Statistically real, but regime-concentrated (see ex-2021 above).
+Holdout champions (from WF selection frequency ONLY, never full-sample):
+A=P-cheap25-90 (19/24 windows), B=L-dd40 (plurality 9/24), C=C-f3bp-h1
+(plurality 11/24). Full-sample descriptives above saw holdout data and
+are context only; selection and headlines never touched 2026-01-01+.
+
 ## Family B — capitulation longs (variants B-*)
 - B-1 drawdown-30% (stop 15%, target 30%, 90d time stop, 20% trail):
   32 legs, 17W/15L, +7.1%/leg, equity 6.01x 2019-2026 (vs ~22x buy-hold).
