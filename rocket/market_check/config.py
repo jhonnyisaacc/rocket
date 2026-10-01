@@ -272,6 +272,13 @@ class Model:
     v4_caution: str = "band"
     v4_light_cash: float = 0.275
     v4_puts: bool = False
+    # v6 only (FINAL rule). Version-gated overrides so v1-v4 stay
+    # bit-identical: credit widening for the cash combo, cash target while
+    # holding redeployed shares, and the per-long BTC stop / profit-take.
+    v6_credit_widen: float = 0.50
+    v6_hold_cash: float = 0.30
+    v6_stop: float = 0.15
+    v6_take: float = 0.30
 
 
 @dataclass(frozen=True)
@@ -322,9 +329,17 @@ class Config:
 
 def _stress(raw: dict[str, Any]) -> Stress:
     integers = {
-        "vix_jump_sessions", "vix_cap", "credit_sessions", "yield_sessions",
-        "yield_breakout_sessions", "yield_cap", "oil_sessions", "btc_roc_sessions",
-        "btc_dd_sessions", "btc_cap", "lead_sessions",
+        "vix_jump_sessions",
+        "vix_cap",
+        "credit_sessions",
+        "yield_sessions",
+        "yield_breakout_sessions",
+        "yield_cap",
+        "oil_sessions",
+        "btc_roc_sessions",
+        "btc_dd_sessions",
+        "btc_cap",
+        "lead_sessions",
     }
     values: dict[str, Any] = {}
     for key in Stress.__dataclass_fields__:
@@ -365,48 +380,117 @@ def load_config(path: Path | None = None) -> Config:
     model = _section(raw, "model")
     redeploy = _section(raw, "redeploy")
     trades = tuple(
-        LoggedTrade(_date(item["date"]), str(item["ticker"]), str(item["side"]), str(item.get("note") or ""))
+        LoggedTrade(
+            _date(item["date"]), str(item["ticker"]), str(item["side"]), str(item.get("note") or "")
+        )
         for item in book.get("trades") or []
     )
     cfg = Config(
         window=Window(
-            _date(window["start"]), _date(window["end"]), _date(window["oos_start"]),
-            _date(window["ondo_live"]), _date(window["warmup_start"]),
+            _date(window["start"]),
+            _date(window["end"]),
+            _date(window["oos_start"]),
+            _date(window["ondo_live"]),
+            _date(window["warmup_start"]),
         ),
         windows=Windows(
-            int(windows["trend"]), int(windows["shock"]), int(windows["rv"]),
-            int(windows["sma_fast"]), int(windows["sma_slow"]), int(windows["funding_days"]),
-            int(windows["range_lookback"]), int(windows["soft_patch"]),
+            int(windows["trend"]),
+            int(windows["shock"]),
+            int(windows["rv"]),
+            int(windows["sma_fast"]),
+            int(windows["sma_slow"]),
+            int(windows["funding_days"]),
+            int(windows["range_lookback"]),
+            int(windows["soft_patch"]),
             int(windows["index_bounce_lookback"]),
         ),
         rollup=Rollup(float(rollup["green_min"]), float(rollup["red_max"])),
         regime=Regime(
-            float(regime["risk_on_min"]), int(regime["min_pillars"]),
-            _floats(regime.get("weights")), _stress(_section(regime, "stress")),
+            float(regime["risk_on_min"]),
+            int(regime["min_pillars"]),
+            _floats(regime.get("weights")),
+            _stress(_section(regime, "stress")),
         ),
-        lags={str(key): int(value) for key, value in dict(raw.get("lags_calendar_days") or {}).items()},
-        rates=Rates(**{key: float(rates[key]) for key in (
-            "yield_10y_green_max", "yield_10y_red_min", "yield_30y_green_max", "yield_30y_red_min",
-            "trend_abs", "curve_invert_red", "curve_stress_red", "curve_healthy_max",
-            "hike_spread_red", "cut_spread_green",
-        )}),
-        oil=Oil(**{key: float(oil[key]) for key in (
-            "wti_green_max", "wti_red_min", "brent_green_max", "brent_red_min",
-            "momentum_red", "momentum_green", "shock_return",
-        )}),
-        volatility=Volatility(**{key: float(volatility[key]) for key in (
-            "vix_green_max", "vix_red_min", "tlt_rv_green_max", "tlt_rv_red_min",
-        )}),
-        credit=Credit(**{key: float(credit[key]) for key in (
-            "hy_green_max", "hy_red_min", "hy_widen_red", "hy_tighten_green",
-            "hyg_lqd_red", "hyg_lqd_green",
-        )}),
-        dollar_gold=DollarGold(**{key: float(dollar_gold[key]) for key in (
-            "dxy_trend_red", "dxy_trend_green", "gold_stress",
-        )}),
-        crypto=CryptoThresholds(**{key: float(crypto[key]) for key in (
-            "dvol_cheap_max", "dvol_expensive_min", "funding_hot", "funding_cold", "funding_panic",
-        )}),
+        lags={
+            str(key): int(value) for key, value in dict(raw.get("lags_calendar_days") or {}).items()
+        },
+        rates=Rates(
+            **{
+                key: float(rates[key])
+                for key in (
+                    "yield_10y_green_max",
+                    "yield_10y_red_min",
+                    "yield_30y_green_max",
+                    "yield_30y_red_min",
+                    "trend_abs",
+                    "curve_invert_red",
+                    "curve_stress_red",
+                    "curve_healthy_max",
+                    "hike_spread_red",
+                    "cut_spread_green",
+                )
+            }
+        ),
+        oil=Oil(
+            **{
+                key: float(oil[key])
+                for key in (
+                    "wti_green_max",
+                    "wti_red_min",
+                    "brent_green_max",
+                    "brent_red_min",
+                    "momentum_red",
+                    "momentum_green",
+                    "shock_return",
+                )
+            }
+        ),
+        volatility=Volatility(
+            **{
+                key: float(volatility[key])
+                for key in (
+                    "vix_green_max",
+                    "vix_red_min",
+                    "tlt_rv_green_max",
+                    "tlt_rv_red_min",
+                )
+            }
+        ),
+        credit=Credit(
+            **{
+                key: float(credit[key])
+                for key in (
+                    "hy_green_max",
+                    "hy_red_min",
+                    "hy_widen_red",
+                    "hy_tighten_green",
+                    "hyg_lqd_red",
+                    "hyg_lqd_green",
+                )
+            }
+        ),
+        dollar_gold=DollarGold(
+            **{
+                key: float(dollar_gold[key])
+                for key in (
+                    "dxy_trend_red",
+                    "dxy_trend_green",
+                    "gold_stress",
+                )
+            }
+        ),
+        crypto=CryptoThresholds(
+            **{
+                key: float(crypto[key])
+                for key in (
+                    "dvol_cheap_max",
+                    "dvol_expensive_min",
+                    "funding_hot",
+                    "funding_cold",
+                    "funding_panic",
+                )
+            }
+        ),
         portfolio=Portfolio(
             cash_risk_on=float(portfolio["cash_risk_on"]),
             cash_neutral=float(portfolio["cash_neutral"]),
@@ -434,10 +518,18 @@ def load_config(path: Path | None = None) -> Config:
             add_names=_strings(portfolio["add_names"]),
             buy_zone_fraction=float(portfolio["buy_zone_fraction"]),
         ),
-        costs=Costs(**{key: float(costs[key]) for key in (
-            "equity_slippage_bps", "perp_fee_bps", "perp_slippage_bps",
-            "option_fee_bps_underlying", "option_iv_slippage",
-        )}),
+        costs=Costs(
+            **{
+                key: float(costs[key])
+                for key in (
+                    "equity_slippage_bps",
+                    "perp_fee_bps",
+                    "perp_slippage_bps",
+                    "option_fee_bps_underlying",
+                    "option_iv_slippage",
+                )
+            }
+        ),
         derivatives=Derivatives(
             stop=float(derivatives["stop"]),
             profit_take=float(derivatives.get("profit_take", 0.0)),
@@ -452,15 +544,20 @@ def load_config(path: Path | None = None) -> Config:
             fallback_rate=float(derivatives["fallback_rate"]),
         ),
         phillip=Phillip(
-            _strings(phillip["names"]), float(phillip["zone_fraction"]),
-            float(phillip["raise_risk_on"]), float(phillip["lower_risk_off"]),
+            _strings(phillip["names"]),
+            float(phillip["zone_fraction"]),
+            float(phillip["raise_risk_on"]),
+            float(phillip["lower_risk_off"]),
             int(phillip["closest_count"]),
         ),
         events=Events(int(events["horizon_days"]), _dates(events.get("fomc"))),
         scorecard=ScorecardCfg(int(scorecard["within_days"])),
         current_book=CurrentBook(
-            _date(book["as_of"]), float(book["nav_usd"]), str(book.get("note") or ""),
-            _floats(book.get("weights")), trades,
+            _date(book["as_of"]),
+            float(book["nav_usd"]),
+            str(book.get("note") or ""),
+            _floats(book.get("weights")),
+            trades,
         ),
         model=Model(
             str(model["version"]),
@@ -468,6 +565,10 @@ def load_config(path: Path | None = None) -> Config:
             str(model.get("v4_caution") or "band"),
             float(model.get("v4_light_cash") or 0.275),
             bool(model.get("v4_puts") or False),
+            float(model.get("v6_credit_widen", 0.50)),
+            float(model.get("v6_hold_cash", 0.30)),
+            float(model.get("v6_stop", 0.15)),
+            float(model.get("v6_take", 0.30)),
         ),
         redeploy=Redeploy(
             spy_drawdown=float(redeploy["spy_drawdown"]),
@@ -495,7 +596,12 @@ def _validate(cfg: Config) -> None:
     if not cfg.rollup.red_max < 0 < cfg.rollup.green_min:
         raise ValueError("rollup thresholds must bracket zero")
     stress = cfg.regime.stress
-    if not stress.exit_caution < stress.exit_risk_off <= stress.enter_caution < stress.enter_risk_off:
+    if (
+        not stress.exit_caution
+        < stress.exit_risk_off
+        <= stress.enter_caution
+        < stress.enter_risk_off
+    ):
         raise ValueError("stress hysteresis must rise from exit-caution to enter-risk-off")
     rising = (
         (stress.vix_jump_caution, stress.vix_jump_risk, "vix jump"),
@@ -526,11 +632,15 @@ def _validate(cfg: Config) -> None:
         if low >= high:
             raise ValueError(f"{name} green max must be below its red min")
     band = (
-        cfg.portfolio.cash_risk_on, cfg.portfolio.cash_neutral,
-        cfg.portfolio.cash_caution, cfg.portfolio.cash_risk_off,
+        cfg.portfolio.cash_risk_on,
+        cfg.portfolio.cash_neutral,
+        cfg.portfolio.cash_caution,
+        cfg.portfolio.cash_risk_off,
     )
     if not band[0] <= band[1] <= band[2] <= band[3] <= cfg.portfolio.cash_ceiling:
-        raise ValueError("cash targets must rise from risk-on to risk-off and stay inside the ceiling")
+        raise ValueError(
+            "cash targets must rise from risk-on to risk-off and stay inside the ceiling"
+        )
     if cfg.window.start >= cfg.window.oos_start or cfg.window.oos_start > cfg.window.end:
         raise ValueError("out-of-sample split must sit inside the backtest window")
     if cfg.model.version not in {"v1", "v2", "v3", "v4", "v5", "v6"}:
@@ -539,6 +649,12 @@ def _validate(cfg: Config) -> None:
         raise ValueError("v4 caution must be band or light")
     if not 0.25 <= cfg.model.v4_light_cash <= 0.30:
         raise ValueError("v4 light caution cash must sit between 25% and 30%")
+    if not 0 < cfg.model.v6_credit_widen < 2:
+        raise ValueError("v6 credit widening must sit between 0 and 2pp")
+    if not 0 <= cfg.model.v6_hold_cash <= 0.45:
+        raise ValueError("v6 holding cash must sit between 0 and 45%")
+    if not 0 <= cfg.model.v6_stop <= 1 or not 0 <= cfg.model.v6_take <= 5:
+        raise ValueError("v6 stop and profit-take must sit in range")
     if not 0 < cfg.redeploy.spy_drawdown < 1 or not 0 < cfg.redeploy.name_drawdown < 1:
         raise ValueError("redeploy drawdowns must sit between 0 and 1")
     if cfg.redeploy.tranches < 1:

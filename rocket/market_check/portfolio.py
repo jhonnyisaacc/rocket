@@ -12,6 +12,7 @@ from rocket.market_check.redeploy import redeploy_picks
 from rocket.market_check.rules import (
     add_blockers,
     cash_target,
+    holding_cash_target,
     in_bottom_half,
     plan_trims,
     range_bounds,
@@ -31,7 +32,10 @@ def _nav(cash: float, shares: dict[str, float], prices: dict[str, float]) -> flo
 
 
 def _buy_hold(
-    panel: SeriesPanel, config: Config, names: tuple[str, ...], days: list[date],
+    panel: SeriesPanel,
+    config: Config,
+    names: tuple[str, ...],
+    days: list[date],
 ) -> list[float]:
     slip = config.costs.equity_slippage_bps / 10_000
     start = days[0]
@@ -63,10 +67,7 @@ def _rf(panel: SeriesPanel, config: Config, days: list[date]) -> list[float]:
 
 
 def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
-    days = [
-        day for day in panel.dates("spy")
-        if config.window.start <= day <= config.window.end
-    ]
+    days = [day for day in panel.dates("spy") if config.window.start <= day <= config.window.end]
     if len(days) < 2:
         raise ValueError("portfolio backtest needs a SPY calendar inside the window")
     slip = config.costs.equity_slippage_bps / 10_000
@@ -85,11 +86,18 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         shares[name] = spend / fill
         cash -= spend
         traded += spend
-        trades.append({
-            "date": start.isoformat(), "decided": start.isoformat(),
-            "ticker": name, "side": "buy",
-            "shares": shares[name], "price": fill, "notional": spend, "reason": "initial",
-        })
+        trades.append(
+            {
+                "date": start.isoformat(),
+                "decided": start.isoformat(),
+                "ticker": name,
+                "side": "buy",
+                "shares": shares[name],
+                "price": fill,
+                "notional": spend,
+                "reason": "initial",
+            }
+        )
     last_add: dict[str, date] = {}
     redeploy_count = 0
     last_redeploy: date | None = None
@@ -126,12 +134,18 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                     cash += proceeds
                     shares[order["name"]] = held - qty
                     traded += proceeds
-                    trades.append({
-                        "date": day.isoformat(), "decided": order["decided"],
-                        "ticker": order["name"], "side": "sell",
-                        "shares": qty, "price": fill, "notional": proceeds,
-                        "reason": order["reason"],
-                    })
+                    trades.append(
+                        {
+                            "date": day.isoformat(),
+                            "decided": order["decided"],
+                            "ticker": order["name"],
+                            "side": "sell",
+                            "shares": qty,
+                            "price": fill,
+                            "notional": proceeds,
+                            "reason": order["reason"],
+                        }
+                    )
                 else:
                     spend = min(order["spend"], cash)
                     if spend <= 1e-12:
@@ -141,12 +155,18 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                     cash -= spend
                     shares[order["name"]] = shares.get(order["name"], 0.0) + qty
                     traded += spend
-                    trades.append({
-                        "date": day.isoformat(), "decided": order["decided"],
-                        "ticker": order["name"], "side": "buy",
-                        "shares": qty, "price": fill, "notional": spend,
-                        "reason": order["reason"],
-                    })
+                    trades.append(
+                        {
+                            "date": day.isoformat(),
+                            "decided": order["decided"],
+                            "ticker": order["name"],
+                            "side": "buy",
+                            "shares": qty,
+                            "price": fill,
+                            "notional": spend,
+                            "reason": order["reason"],
+                        }
+                    )
             pending = carry
         nav = _nav(cash, shares, prices)
         score = score_on(path, day) or {"regime": "unknown", "oil_shock": False, "events_today": []}
@@ -173,7 +193,7 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             else:
                 holding = bottom or released or last_bottom is not None
             if holding:
-                target = config.redeploy.cash_target
+                target = holding_cash_target(config)
             elif version in {"v4", "v5", "v6"} and regime == "caution":
                 target = config.model.v4_light_cash
             elif regime != "unknown":
@@ -197,18 +217,28 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         )
                         if ok:
                             allowed.add(name)
-                for name, fraction in plan_trims(shares, prices, cash, nav, target, allowed, config):
+                for name, fraction in plan_trims(
+                    shares, prices, cash, nav, target, allowed, config
+                ):
                     held = shares[name]
                     qty = held * fraction
                     if qty <= 1e-12:
                         continue
-                    pending.append({
-                        "kind": "sell", "name": name, "qty": qty,
-                        "decided": day.isoformat(), "reason": "trim_cash_target",
-                    })
+                    pending.append(
+                        {
+                            "kind": "sell",
+                            "name": name,
+                            "qty": qty,
+                            "decided": day.isoformat(),
+                            "reason": "trim_cash_target",
+                        }
+                    )
                 if bottom and nav > 0:
                     last_bottom = day
-                    gap_ok = last_redeploy is None or (day - last_redeploy).days >= config.redeploy.gap_days
+                    gap_ok = (
+                        last_redeploy is None
+                        or (day - last_redeploy).days >= config.redeploy.gap_days
+                    )
                     room = config.redeploy.tranches - redeploy_count
                     excess = cash - target * nav
                     if gap_ok and room > 0 and excess > config.portfolio.cash_tolerance * nav:
@@ -223,16 +253,23 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                                     continue
                                 reserved += spend
                                 ordered = True
-                                pending.append({
-                                    "kind": "buy", "name": name, "spend": spend,
-                                    "decided": day.isoformat(), "reason": f"redeploy_{sleeve}",
-                                })
+                                pending.append(
+                                    {
+                                        "kind": "buy",
+                                        "name": name,
+                                        "spend": spend,
+                                        "decided": day.isoformat(),
+                                        "reason": f"redeploy_{sleeve}",
+                                    }
+                                )
                             if ordered:
                                 redeploy_count += 1
                                 last_redeploy = day
                 episode_open = last_bottom is not None and redeploy_count < config.redeploy.tranches
                 blockers = add_blockers(
-                    regime=regime, oil_shock=bool(score["oil_shock"]), events_today=list(score["events_today"]),
+                    regime=regime,
+                    oil_shock=bool(score["oil_shock"]),
+                    events_today=list(score["events_today"]),
                 )
                 if (
                     not bottom
@@ -251,7 +288,10 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         if not in_bottom_half(price, low, high, config.portfolio.buy_zone_fraction):
                             continue
                         previous = last_add.get(name)
-                        if previous is not None and (day - previous).days < config.portfolio.min_days_between_adds:
+                        if (
+                            previous is not None
+                            and (day - previous).days < config.portfolio.min_days_between_adds
+                        ):
                             continue
                         midpoint = low + 0.5 * config.portfolio.buy_zone_fraction * (high - low)
                         ranked.append((price / midpoint if midpoint else 999, name, price))
@@ -261,10 +301,15 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         spend = min(config.portfolio.tranche_nav * nav, extra, cash)
                         if spend > 0 and price > 0:
                             last_add[name] = day
-                            pending.append({
-                                "kind": "buy", "name": name, "spend": spend,
-                                "decided": day.isoformat(), "reason": "add_bottom_half",
-                            })
+                            pending.append(
+                                {
+                                    "kind": "buy",
+                                    "name": name,
+                                    "spend": spend,
+                                    "decided": day.isoformat(),
+                                    "reason": "add_bottom_half",
+                                }
+                            )
         nav_path.append(nav)
         regimes.append(regime)
     universe = _buy_hold(panel, config, config.portfolio.universe, days)
@@ -299,8 +344,7 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     for regime in regimes:
         counts[regime] = counts.get(regime, 0) + 1
     terminal_prices = {
-        name: price for name in shares
-        if (price := _price(panel, config, days[-1], name))
+        name: price for name in shares if (price := _price(panel, config, days[-1], name))
     }
     terminal_nav = _nav(cash, shares, terminal_prices)
     return {
@@ -324,7 +368,10 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             "Sessions before the Ondo live date are marked as a 1:1 underlying proxy. "
             "The same slippage is charged the whole way; the split is reported separately."
         ),
-        "nav": [{"date": day.isoformat(), "nav": value, "regime": regime} for day, value, regime in zip(days, nav_path, regimes, strict=True)],
+        "nav": [
+            {"date": day.isoformat(), "nav": value, "regime": regime}
+            for day, value, regime in zip(days, nav_path, regimes, strict=True)
+        ],
     }
 
 
@@ -336,7 +383,9 @@ def _trade_counts(trades: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
     return counts
 
 
-def compare_trade_log(logged: list[dict[str, Any]], simulated: list[dict[str, Any]], *, window_days: int = 5) -> list[dict[str, Any]]:
+def compare_trade_log(
+    logged: list[dict[str, Any]], simulated: list[dict[str, Any]], *, window_days: int = 5
+) -> list[dict[str, Any]]:
     """Match a caller trade log to simulated trades. This does not invent a cost basis.
 
     A same-week fill is `matched`. A sell whose simulated position was already flat
@@ -345,7 +394,11 @@ def compare_trade_log(logged: list[dict[str, Any]], simulated: list[dict[str, An
     ordered = sorted(simulated, key=lambda trade: trade["date"])
     rows = []
     for item in logged:
-        stamp = item["date"] if isinstance(item["date"], date) else date.fromisoformat(str(item["date"])[:10])
+        stamp = (
+            item["date"]
+            if isinstance(item["date"], date)
+            else date.fromisoformat(str(item["date"])[:10])
+        )
         ticker = item["ticker"]
         side = item["side"]
         hits = []
@@ -368,7 +421,9 @@ def compare_trade_log(logged: list[dict[str, Any]], simulated: list[dict[str, An
                 if trade["side"] == side:
                     last_same_side = traded
         status = "unmatched"
-        explanation = "No simulated fill within the window, and the simulated book was not already flat."
+        explanation = (
+            "No simulated fill within the window, and the simulated book was not already flat."
+        )
         if hits:
             status = "matched"
             explanation = "Simulated fill within the match window."
@@ -380,17 +435,23 @@ def compare_trade_log(logged: list[dict[str, Any]], simulated: list[dict[str, An
                 f"{gap} days earlier. The model sells this name on strength before the logged date, "
                 "so the log is the same exit, not a same-week fill."
             )
-        rows.append({
-            "date": stamp.isoformat(),
-            "ticker": ticker,
-            "side": side,
-            "note": item.get("note") or "",
-            "simulated_dates": hits,
-            "matched": status == "matched",
-            "recognized": status in {"matched", "already_exited"},
-            "status": status,
-            "last_simulated": last_same_side.isoformat() if last_same_side and status == "already_exited" else None,
-            "days_apart": (stamp - last_same_side).days if last_same_side and status == "already_exited" else None,
-            "explanation": explanation,
-        })
+        rows.append(
+            {
+                "date": stamp.isoformat(),
+                "ticker": ticker,
+                "side": side,
+                "note": item.get("note") or "",
+                "simulated_dates": hits,
+                "matched": status == "matched",
+                "recognized": status in {"matched", "already_exited"},
+                "status": status,
+                "last_simulated": last_same_side.isoformat()
+                if last_same_side and status == "already_exited"
+                else None,
+                "days_apart": (stamp - last_same_side).days
+                if last_same_side and status == "already_exited"
+                else None,
+                "explanation": explanation,
+            }
+        )
     return rows

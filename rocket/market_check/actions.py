@@ -13,6 +13,7 @@ from rocket.market_check.rules import (
     add_blockers,
     bounce_threshold,
     cash_target,
+    holding_cash_target,
     in_bottom_half,
     range_bounds,
     session_return,
@@ -42,7 +43,11 @@ def _perps(score: dict[str, Any], config: Config) -> dict[str, Any]:
     direction, size = "flat", 0.0
     if price is not None and slow is not None and regime == "risk-on" and price > slow:
         direction = "long"
-        size = config.derivatives.long_size if fast is not None and price >= fast else config.derivatives.long_size_below_fast
+        size = (
+            config.derivatives.long_size
+            if fast is not None and price >= fast
+            else config.derivatives.long_size_below_fast
+        )
     elif price is not None and fast is not None and regime == "risk-off" and price < fast:
         direction = "short"
         size = config.derivatives.short_size
@@ -51,7 +56,9 @@ def _perps(score: dict[str, Any], config: Config) -> dict[str, Any]:
         size = config.derivatives.short_size_below_slow_only
     options = _options_state(crypto.get("dvol"), config)
     event_rows = upcoming(
-        date.fromisoformat(score["date"]), config, config.derivatives.cheap_vol_event_days,
+        date.fromisoformat(score["date"]),
+        config,
+        config.derivatives.cheap_vol_event_days,
     )
     near_event = bool(event_rows)
     hedge_signal = regime == "risk-off" or (options == "cheap" and near_event)
@@ -78,7 +85,9 @@ def _perps(score: dict[str, Any], config: Config) -> dict[str, Any]:
     }
 
 
-def _book_weights(book: dict[str, float] | None, config: Config, asof: date) -> tuple[dict[str, float], str]:
+def _book_weights(
+    book: dict[str, float] | None, config: Config, asof: date
+) -> tuple[dict[str, float], str]:
     if book is not None:
         return dict(book), "caller"
     snap = config.current_book
@@ -121,13 +130,17 @@ def decide(
         version in {"v4", "v5", "v6"} and bool(score.get("redeploy_hold"))
     )
     if holding:
-        target = config.redeploy.cash_target
+        target = holding_cash_target(config)
     elif version in {"v4", "v5", "v6"} and score["regime"] == "caution":
         target = config.model.v4_light_cash
     else:
         target = cash_target(score["regime"], index_return, config)
     weights, book_basis = _book_weights(book, config, day)
-    held = {name for name, weight in weights.items() if name not in {"USDC", "USD", "cash"} and weight > 0}
+    held = {
+        name
+        for name, weight in weights.items()
+        if name not in {"USDC", "USD", "cash"} and weight > 0
+    }
     trims = []
     for name in config.portfolio.sale_order:
         if name not in held and book_basis == "caller":
@@ -148,20 +161,24 @@ def decide(
         if holding:
             allowed = False
             detail = {**detail, "reason": "buy_the_low_release"}
-        trims.append({
-            "ticker": name,
-            "allowed": allowed,
-            "fraction_cap": trim_fraction(name, config),
-            "bounce": bounce,
-            "bounce_threshold": bounce_threshold(name, config),
-            "day_return": name_return,
-            "bounce_gate": detail["bounce"],
-            "index_strength": detail["index_strength"],
-            "regular_hours": detail["regular_hours"],
-            "reason": detail["reason"],
-        })
+        trims.append(
+            {
+                "ticker": name,
+                "allowed": allowed,
+                "fraction_cap": trim_fraction(name, config),
+                "bounce": bounce,
+                "bounce_threshold": bounce_threshold(name, config),
+                "day_return": name_return,
+                "bounce_gate": detail["bounce"],
+                "index_strength": detail["index_strength"],
+                "regular_hours": detail["regular_hours"],
+                "reason": detail["reason"],
+            }
+        )
     blockers = add_blockers(
-        regime=score["regime"], oil_shock=bool(score["oil_shock"]), events_today=list(score["events_today"]),
+        regime=score["regime"],
+        oil_shock=bool(score["oil_shock"]),
+        events_today=list(score["events_today"]),
     )
     adds = []
     for name in config.portfolio.add_names:
@@ -172,14 +189,16 @@ def decide(
             continue
         low, high = bounds
         inside = in_bottom_half(price, low, high, config.portfolio.buy_zone_fraction)
-        adds.append({
-            "ticker": name,
-            "price": price,
-            "in_bottom_half": inside,
-            "permitted": inside and not blockers,
-            "blockers": list(blockers),
-            "status": "bottom_half" if inside else "outside",
-        })
+        adds.append(
+            {
+                "ticker": name,
+                "price": price,
+                "in_bottom_half": inside,
+                "permitted": inside and not blockers,
+                "blockers": list(blockers),
+                "status": "bottom_half" if inside else "outside",
+            }
+        )
     picks = redeploy_picks(view, config) if bottom else []
     cash = _cash_weight(weights)
     trim_hits = [row for row in trims if row["allowed"]]
@@ -339,7 +358,12 @@ def snapshot_book(book: CurrentBook) -> dict[str, Any]:
         "nav_usd": book.nav_usd,
         "weights": book.weights,
         "trades": [
-            {"date": item.date.isoformat(), "ticker": item.ticker, "side": item.side, "note": item.note}
+            {
+                "date": item.date.isoformat(),
+                "ticker": item.ticker,
+                "side": item.side,
+                "note": item.note,
+            }
             for item in book.trades
         ],
         "note": book.note,

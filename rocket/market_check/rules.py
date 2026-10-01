@@ -43,6 +43,14 @@ def in_bottom_half(price: float, low: float, high: float, fraction: float) -> bo
     return price <= midpoint
 
 
+def holding_cash_target(config: Config) -> float:
+    """Cash target while holding redeployed shares. v6 holds less cash
+    (30%) so tranches deploy more fully; older versions keep 35%."""
+    if config.model.version == "v6":
+        return config.model.v6_hold_cash
+    return config.redeploy.cash_target
+
+
 def cash_target(regime: str, index_return: float | None, config: Config) -> float:
     base = {
         "risk-on": config.portfolio.cash_risk_on,

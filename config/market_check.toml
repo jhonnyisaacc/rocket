@@ -3,7 +3,7 @@
 # comparison can be rerun. Buy-the-low cuts were chosen on the in-sample half.
 
 [model]
-version = "v4"
+version = "v6"
 # v1 only: weighted pillar total at or below this is risk-off.
 v1_risk_off_max = -2.0
 # v4 cash policy, chosen on the in-sample half and not moved after out of sample.
@@ -13,6 +13,12 @@ v1_risk_off_max = -2.0
 v4_caution = "band"
 v4_light_cash = 0.275
 v4_puts = false
+# v6 FINAL rule (frozen after 43 walk-forward experiments; see
+# docs/market_check/EXPERIMENTS.md). Version-gated so v1-v4 rerun bit-identical.
+v6_credit_widen = 0.50
+v6_hold_cash = 0.30
+v6_stop = 0.15
+v6_take = 0.30
 
 [window]
 start = 2024-10-01

@@ -48,35 +48,43 @@ def _rates(view: AsOfView, config: Config) -> dict[str, Any]:
     y2 = view.closes("yield_2y")
     funds = view.value("fed_funds")
     if y10:
-        subs.append(_sub(
-            "yield_10y_level",
-            color_high_bad(y10[-1], rules.yield_10y_green_max, rules.yield_10y_red_min),
-            y10[-1],
-            f"green below {rules.yield_10y_green_max}; red above {rules.yield_10y_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "yield_10y_level",
+                color_high_bad(y10[-1], rules.yield_10y_green_max, rules.yield_10y_red_min),
+                y10[-1],
+                f"green below {rules.yield_10y_green_max}; red above {rules.yield_10y_red_min}",
+            )
+        )
         change = level_change(y10, window)
         if change is not None:
-            subs.append(_sub(
-                "yield_10y_trend",
-                color_change(change, green_below=-rules.trend_abs, red_above=rules.trend_abs),
-                change,
-                f"{window}-session change; red at or above +{rules.trend_abs} points",
-            ))
+            subs.append(
+                _sub(
+                    "yield_10y_trend",
+                    color_change(change, green_below=-rules.trend_abs, red_above=rules.trend_abs),
+                    change,
+                    f"{window}-session change; red at or above +{rules.trend_abs} points",
+                )
+            )
     if y30:
-        subs.append(_sub(
-            "yield_30y_level",
-            color_high_bad(y30[-1], rules.yield_30y_green_max, rules.yield_30y_red_min),
-            y30[-1],
-            f"green below {rules.yield_30y_green_max}; red above {rules.yield_30y_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "yield_30y_level",
+                color_high_bad(y30[-1], rules.yield_30y_green_max, rules.yield_30y_red_min),
+                y30[-1],
+                f"green below {rules.yield_30y_green_max}; red above {rules.yield_30y_red_min}",
+            )
+        )
         change = level_change(y30, window)
         if change is not None:
-            subs.append(_sub(
-                "yield_30y_trend",
-                color_change(change, green_below=-rules.trend_abs, red_above=rules.trend_abs),
-                change,
-                f"{window}-session change; red at or above +{rules.trend_abs} points",
-            ))
+            subs.append(
+                _sub(
+                    "yield_30y_trend",
+                    color_change(change, green_below=-rules.trend_abs, red_above=rules.trend_abs),
+                    change,
+                    f"{window}-session change; red at or above +{rules.trend_abs} points",
+                )
+            )
     if y10 and y2:
         spread = y10[-1] - y2[-1]
         high_10y = y10[-1] > rules.yield_10y_red_min
@@ -86,10 +94,14 @@ def _rates(view: AsOfView, config: Config) -> dict[str, Any]:
             color = "green"
         else:
             color = "yellow"
-        subs.append(_sub(
-            "curve_2s10s", color, spread,
-            f"10y-2y; red below {rules.curve_invert_red} or above {rules.curve_stress_red} with a red 10y",
-        ))
+        subs.append(
+            _sub(
+                "curve_2s10s",
+                color,
+                spread,
+                f"10y-2y; red below {rules.curve_invert_red} or above {rules.curve_stress_red} with a red 10y",
+            )
+        )
     if y2 and funds is not None:
         pressure = y2[-1] - funds
         if pressure > rules.hike_spread_red:
@@ -98,10 +110,14 @@ def _rates(view: AsOfView, config: Config) -> dict[str, Any]:
             color = "green"
         else:
             color = "yellow"
-        subs.append(_sub(
-            "fed_pressure", color, pressure,
-            f"2y minus fed funds; red above {rules.hike_spread_red} (hike pressure), green below {rules.cut_spread_green}",
-        ))
+        subs.append(
+            _sub(
+                "fed_pressure",
+                color,
+                pressure,
+                f"2y minus fed funds; red above {rules.hike_spread_red} (hike pressure), green below {rules.cut_spread_green}",
+            )
+        )
     return _rollup(subs, config)
 
 
@@ -112,26 +128,37 @@ def _oil(view: AsOfView, config: Config) -> tuple[dict[str, Any], bool]:
     brent = view.closes("brent")
     shock = False
     if wti:
-        subs.append(_sub(
-            "wti_level", color_high_bad(wti[-1], rules.wti_green_max, rules.wti_red_min), wti[-1],
-            f"green below {rules.wti_green_max}; red above {rules.wti_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "wti_level",
+                color_high_bad(wti[-1], rules.wti_green_max, rules.wti_red_min),
+                wti[-1],
+                f"green below {rules.wti_green_max}; red above {rules.wti_red_min}",
+            )
+        )
         move = pct_change(wti, config.windows.trend)
         if move is not None:
-            subs.append(_sub(
-                "wti_momentum",
-                color_change(move, green_below=rules.momentum_green, red_above=rules.momentum_red),
-                move, f"{config.windows.trend}-session return",
-            ))
+            subs.append(
+                _sub(
+                    "wti_momentum",
+                    color_change(
+                        move, green_below=rules.momentum_green, red_above=rules.momentum_red
+                    ),
+                    move,
+                    f"{config.windows.trend}-session return",
+                )
+            )
         jump = pct_change(wti, config.windows.shock)
         shock = jump is not None and jump >= rules.shock_return
     if brent:
-        subs.append(_sub(
-            "brent_level",
-            color_high_bad(brent[-1], rules.brent_green_max, rules.brent_red_min),
-            brent[-1],
-            f"green below {rules.brent_green_max}; red above {rules.brent_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "brent_level",
+                color_high_bad(brent[-1], rules.brent_green_max, rules.brent_red_min),
+                brent[-1],
+                f"green below {rules.brent_green_max}; red above {rules.brent_red_min}",
+            )
+        )
     return _rollup(subs, config), shock
 
 
@@ -140,18 +167,24 @@ def _volatility(view: AsOfView, config: Config) -> dict[str, Any]:
     subs: list[dict[str, Any]] = []
     vix = view.value("vix")
     if vix is not None:
-        subs.append(_sub(
-            "vix", color_high_bad(vix, rules.vix_green_max, rules.vix_red_min), vix,
-            f"green below {rules.vix_green_max}; red above {rules.vix_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "vix",
+                color_high_bad(vix, rules.vix_green_max, rules.vix_red_min),
+                vix,
+                f"green below {rules.vix_green_max}; red above {rules.vix_red_min}",
+            )
+        )
     rv = realized_vol(view.closes("tlt"), config.windows.rv)
     if rv is not None:
-        subs.append(_sub(
-            "move_proxy_tlt_rv",
-            color_high_bad(rv, rules.tlt_rv_green_max, rules.tlt_rv_red_min),
-            rv,
-            "20-day annualized TLT realized vol; MOVE itself is not on a free historical feed",
-        ))
+        subs.append(
+            _sub(
+                "move_proxy_tlt_rv",
+                color_high_bad(rv, rules.tlt_rv_green_max, rules.tlt_rv_red_min),
+                rv,
+                "20-day annualized TLT realized vol; MOVE itself is not on a free historical feed",
+            )
+        )
     return _rollup(subs, config)
 
 
@@ -160,30 +193,46 @@ def _credit(view: AsOfView, config: Config) -> dict[str, Any]:
     subs: list[dict[str, Any]] = []
     hy = view.closes("hy_oas")
     if hy:
-        subs.append(_sub(
-            "hy_oas", color_high_bad(hy[-1], rules.hy_green_max, rules.hy_red_min), hy[-1],
-            f"FRED BAMLH0A0HYM2 percent; green below {rules.hy_green_max}; red above {rules.hy_red_min}",
-        ))
+        subs.append(
+            _sub(
+                "hy_oas",
+                color_high_bad(hy[-1], rules.hy_green_max, rules.hy_red_min),
+                hy[-1],
+                f"FRED BAMLH0A0HYM2 percent; green below {rules.hy_green_max}; red above {rules.hy_red_min}",
+            )
+        )
         change = level_change(hy, config.windows.trend)
         if change is not None:
-            subs.append(_sub(
-                "hy_oas_trend",
-                color_change(change, green_below=rules.hy_tighten_green, red_above=rules.hy_widen_red),
-                change, f"{config.windows.trend}-session OAS change in percentage points",
-            ))
+            subs.append(
+                _sub(
+                    "hy_oas_trend",
+                    color_change(
+                        change, green_below=rules.hy_tighten_green, red_above=rules.hy_widen_red
+                    ),
+                    change,
+                    f"{config.windows.trend}-session OAS change in percentage points",
+                )
+            )
         return _rollup(subs, config)
     hyg = view.closes("hyg")
     lqd = view.closes("lqd")
-    if len(hyg) > config.windows.trend and len(lqd) > config.windows.trend and lqd[-1] and lqd[-1 - config.windows.trend]:
+    if (
+        len(hyg) > config.windows.trend
+        and len(lqd) > config.windows.trend
+        and lqd[-1]
+        and lqd[-1 - config.windows.trend]
+    ):
         ratio_now = hyg[-1] / lqd[-1]
         ratio_then = hyg[-1 - config.windows.trend] / lqd[-1 - config.windows.trend]
         change = ratio_now / ratio_then - 1
-        subs.append(_sub(
-            "hyg_lqd_fallback",
-            color_change(change, green_below=rules.hyg_lqd_green, red_above=rules.hyg_lqd_red),
-            change,
-            "HY OAS missing; 20-session HYG/LQD return is the credit proxy",
-        ))
+        subs.append(
+            _sub(
+                "hyg_lqd_fallback",
+                color_change(change, green_below=rules.hyg_lqd_green, red_above=rules.hyg_lqd_red),
+                change,
+                "HY OAS missing; 20-session HYG/LQD return is the credit proxy",
+            )
+        )
     return _rollup(subs, config)
 
 
@@ -192,11 +241,16 @@ def _dollar_gold(view: AsOfView, config: Config) -> dict[str, Any]:
     subs: list[dict[str, Any]] = []
     dollar = pct_change(view.closes("dollar"), config.windows.trend)
     if dollar is not None:
-        subs.append(_sub(
-            "dollar_trend",
-            color_change(dollar, green_below=rules.dxy_trend_green, red_above=rules.dxy_trend_red),
-            dollar, f"{config.windows.trend}-session dollar return; a rising dollar is red",
-        ))
+        subs.append(
+            _sub(
+                "dollar_trend",
+                color_change(
+                    dollar, green_below=rules.dxy_trend_green, red_above=rules.dxy_trend_red
+                ),
+                dollar,
+                f"{config.windows.trend}-session dollar return; a rising dollar is red",
+            )
+        )
     gold = pct_change(view.closes("gold"), config.windows.trend)
     if gold is not None:
         if gold >= rules.gold_stress:
@@ -205,10 +259,14 @@ def _dollar_gold(view: AsOfView, config: Config) -> dict[str, Any]:
             color = "yellow"
         else:
             color = "green"
-        subs.append(_sub(
-            "gold_trend", color, gold,
-            f"red when gold is up at least {rules.gold_stress:.0%} over {config.windows.trend} sessions (stress bid)",
-        ))
+        subs.append(
+            _sub(
+                "gold_trend",
+                color,
+                gold,
+                f"red when gold is up at least {rules.gold_stress:.0%} over {config.windows.trend} sessions (stress bid)",
+            )
+        )
     return _rollup(subs, config)
 
 
@@ -239,10 +297,14 @@ def _crypto(view: AsOfView, config: Config) -> dict[str, Any]:
             trend = "yellow"
         else:
             trend = "red"
-        subs.append(_sub(
-            "btc_trend", trend, price,
-            f"green above the {config.windows.sma_fast} and {config.windows.sma_slow} session averages; red below the slow average",
-        ))
+        subs.append(
+            _sub(
+                "btc_trend",
+                trend,
+                price,
+                f"green above the {config.windows.sma_fast} and {config.windows.sma_slow} session averages; red below the slow average",
+            )
+        )
     funding = _funding_sum(view, config.windows.funding_days)
     if funding is not None:
         if funding < rules.funding_panic or (funding > rules.funding_hot and trend == "red"):
@@ -251,10 +313,14 @@ def _crypto(view: AsOfView, config: Config) -> dict[str, Any]:
             color = "yellow"
         else:
             color = "green"
-        subs.append(_sub(
-            "funding", color, funding,
-            f"{config.windows.funding_days}-day sum of hourly perp funding; hot above {rules.funding_hot}",
-        ))
+        subs.append(
+            _sub(
+                "funding",
+                color,
+                funding,
+                f"{config.windows.funding_days}-day sum of hourly perp funding; hot above {rules.funding_hot}",
+            )
+        )
     dvol = view.value("dvol")
     if dvol is None:
         realized = realized_vol(closes, config.windows.rv)
@@ -263,11 +329,14 @@ def _crypto(view: AsOfView, config: Config) -> dict[str, Any]:
     else:
         dvol_rule = f"Deribit DVOL; cheap below {rules.dvol_cheap_max}; expensive above {rules.dvol_expensive_min}"
     if dvol is not None:
-        subs.append(_sub(
-            "options_vol",
-            color_high_bad(dvol, rules.dvol_cheap_max, rules.dvol_expensive_min),
-            dvol, dvol_rule,
-        ))
+        subs.append(
+            _sub(
+                "options_vol",
+                color_high_bad(dvol, rules.dvol_cheap_max, rules.dvol_expensive_min),
+                dvol,
+                dvol_rule,
+            )
+        )
     rolled = _rollup(subs, config)
     rolled["trend"] = trend
     rolled["dvol"] = dvol
@@ -303,34 +372,44 @@ def stress_score(view: AsOfView, config: Config) -> tuple[float, dict[str, int]]
     rules = config.regime.stress
     parts: dict[str, int] = {}
     vix = view.closes("vix")
-    parts["vix_jump"] = _high_points(level_change(vix, rules.vix_jump_sessions), rules.vix_jump_caution, rules.vix_jump_risk)
-    parts["vix_level"] = _high_points(vix[-1] if vix else None, rules.vix_level_caution, rules.vix_level_risk)
+    parts["vix_jump"] = _high_points(
+        level_change(vix, rules.vix_jump_sessions), rules.vix_jump_caution, rules.vix_jump_risk
+    )
+    parts["vix_level"] = _high_points(
+        vix[-1] if vix else None, rules.vix_level_caution, rules.vix_level_risk
+    )
     parts["vix"] = min(rules.vix_cap, parts["vix_jump"] + parts["vix_level"])
     hy = view.closes("hy_oas")
     parts["credit"] = _high_points(
-        level_change(hy, rules.credit_sessions), rules.credit_widen_caution, rules.credit_widen_risk,
+        level_change(hy, rules.credit_sessions),
+        rules.credit_widen_caution,
+        rules.credit_widen_risk,
     )
     yields = view.closes("yield_30y")
     y_change = level_change(yields, rules.yield_sessions)
     y_points = _high_points(y_change, rules.yield_caution, rules.yield_risk)
     breakout = 0
     if len(yields) > rules.yield_breakout_sessions:
-        prior_high = max(yields[-(rules.yield_breakout_sessions + 1):-1])
+        prior_high = max(yields[-(rules.yield_breakout_sessions + 1) : -1])
         moved = y_change is not None and y_change >= rules.yield_breakout_min_change
         if yields[-1] > prior_high and moved:
             breakout = 1
     parts["yield_breakout"] = breakout
     parts["rates"] = min(rules.yield_cap, y_points + breakout)
     parts["oil"] = _high_points(
-        pct_change(view.closes("wti"), rules.oil_sessions), rules.oil_caution, rules.oil_risk,
+        pct_change(view.closes("wti"), rules.oil_sessions),
+        rules.oil_caution,
+        rules.oil_risk,
     )
     btc = view.closes("btc")
     parts["btc_roc"] = _low_points(
-        pct_change(btc, rules.btc_roc_sessions), rules.btc_roc_caution, rules.btc_roc_risk,
+        pct_change(btc, rules.btc_roc_sessions),
+        rules.btc_roc_caution,
+        rules.btc_roc_risk,
     )
     drawdown = None
     if len(btc) >= 20:
-        window = btc[-rules.btc_dd_sessions:]
+        window = btc[-rules.btc_dd_sessions :]
         peak = max(window)
         if peak > 0:
             drawdown = btc[-1] / peak - 1
@@ -344,16 +423,23 @@ def confirmed_combo(view: AsOfView, config: Config) -> bool:
     """VIX at or above 25 and high-yield credit wider by at least 40bp over 20 sessions.
 
     Those two prints led the in-sample equity low. The other stress legs did not.
+    v6 requires 50bp: the 40bp cut was fit to the April observation, and the
+    extra 10bp sheds false alarms without changing in-sample behavior.
     """
     rules = config.regime.stress
     vix = view.closes("vix")
     if not vix or vix[-1] < rules.vix_level_caution:
         return False
     widened = level_change(view.closes("hy_oas"), rules.credit_sessions)
-    return widened is not None and widened >= rules.credit_widen_caution
+    needed = (
+        config.model.v6_credit_widen if config.model.version == "v6" else rules.credit_widen_caution
+    )
+    return widened is not None and widened >= needed
 
 
-def _pillar_total(pillars: dict[str, dict[str, Any]], config: Config) -> tuple[list[str], float | None]:
+def _pillar_total(
+    pillars: dict[str, dict[str, Any]], config: Config
+) -> tuple[list[str], float | None]:
     known = [name for name in PILLAR_ORDER if pillars[name]["color"] != "missing"]
     if pillars["rates"]["color"] == "missing" or len(known) < config.regime.min_pillars:
         return known, None
@@ -499,8 +585,14 @@ def score_asof(
     bottom = is_bottom(view, config)
     combo = confirmed_combo(view, config)
     regime, released = resolve_regime(
-        pillars, total, stress, prior_regime, config,
-        bottom=bottom, prior_released=prior_released, combo=combo,
+        pillars,
+        total,
+        stress,
+        prior_regime,
+        config,
+        bottom=bottom,
+        prior_released=prior_released,
+        combo=combo,
     )
     hold, quiet = _hold_state(config, bottom, regime, prior_hold, prior_quiet)
     today = events_on(day, config)
@@ -549,8 +641,13 @@ def score_path(panel: SeriesPanel, days: list[date], config: Config) -> list[dic
     rows = []
     for day in days:
         row = score_asof(
-            panel, day, config,
-            prior_regime=prior, prior_released=released, prior_hold=hold, prior_quiet=quiet,
+            panel,
+            day,
+            config,
+            prior_regime=prior,
+            prior_released=released,
+            prior_hold=hold,
+            prior_quiet=quiet,
         )
         rows.append(row)
         if row["regime"] != "unknown":

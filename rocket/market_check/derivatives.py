@@ -337,13 +337,22 @@ def _next_session(days: list[date], day: date) -> date | None:
     return days[index + 1]
 
 
+def _exit_levels(config: Config) -> tuple[float, float]:
+    """Per-long stop and profit-take. v6 reads the version-gated model
+    fields so v1-v4 stay bit-identical; v5 reads the derivatives section
+    (set via replace() in experiments)."""
+    if config.model.version == "v6":
+        return config.model.v6_stop, config.model.v6_take
+    return config.derivatives.stop, config.derivatives.profit_take
+
+
 def _apply_v5_exits(
     panel: SeriesPanel,
     config: Config,
     days: list[date],
     longs: list[tuple[date, date, bool]],
 ) -> list[tuple[date, date, bool]]:
-    """v5 only: each bottom long carries its own stop and profit-take.
+    """v5/v6 only: each bottom long carries its own stop and profit-take.
 
     Economic reason: a bottom long is a reflexive-bounce trade, not a secular
     hold. Without exits the April 2025 long rode the later BTC drawdown into a
@@ -351,8 +360,7 @@ def _apply_v5_exits(
     target banks the bounce when it works. Checked on daily closes, filled the
     next session like every other signal.
     """
-    stop = config.derivatives.stop
-    target = config.derivatives.profit_take
+    stop, target = _exit_levels(config)
     if stop <= 0 and target <= 0:
         return longs
     pos = {day: index for index, day in enumerate(days)}
