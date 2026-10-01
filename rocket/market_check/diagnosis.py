@@ -368,9 +368,9 @@ def entry_quality(
             if asset == "BTC":
                 buys = []
                 for crypto in crypto_rows or []:
-                    if crypto.get("position") != "long":
+                    if crypto.get("position") != "long" or crypto.get("opened") is False:
                         continue
-                    entry_day = date.fromisoformat(crypto["date"])
+                    entry_day = date.fromisoformat(crypto.get("entry_date") or crypto["date"])
                     if episode["peak"] <= entry_day <= after:
                         buys.append(crypto)
             elif asset == "SPY":

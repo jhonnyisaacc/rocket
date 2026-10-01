@@ -3,9 +3,16 @@
 # comparison can be rerun. Buy-the-low cuts were chosen on the in-sample half.
 
 [model]
-version = "v3"
+version = "v4"
 # v1 only: weighted pillar total at or below this is risk-off.
 v1_risk_off_max = -2.0
+# v4 cash policy, chosen on the in-sample half and not moved after out of sample.
+# band: 35-45% Porto band unless VIX>=25 and credit has widened 40bp.
+# light: that same combo is the only large raise; other stress is a 27.5% caution
+# with adds paused. Puts follow the same in-sample choice.
+v4_caution = "band"
+v4_light_cash = 0.275
+v4_puts = false
 
 [window]
 start = 2024-10-01

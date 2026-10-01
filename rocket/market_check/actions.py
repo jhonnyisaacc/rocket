@@ -116,8 +116,16 @@ def decide(
     index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
     bottom = bool(score.get("bottom"))
     released = bool(score.get("released"))
-    holding = config.model.version == "v3" and (bottom or released)
-    target = config.redeploy.cash_target if holding else cash_target(score["regime"], index_return, config)
+    version = config.model.version
+    holding = (version == "v3" and (bottom or released)) or (
+        version == "v4" and bool(score.get("redeploy_hold"))
+    )
+    if holding:
+        target = config.redeploy.cash_target
+    elif version == "v4" and score["regime"] == "caution":
+        target = config.model.v4_light_cash
+    else:
+        target = cash_target(score["regime"], index_return, config)
     weights, book_basis = _book_weights(book, config, day)
     held = {name for name, weight in weights.items() if name not in {"USDC", "USD", "cash"} and weight > 0}
     trims = []

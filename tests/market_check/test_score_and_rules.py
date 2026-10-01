@@ -1,5 +1,6 @@
 """Scoring thresholds, Porto gates, and the no-look-ahead slice."""
 
+from dataclasses import replace
 from datetime import date, timedelta
 
 from rocket.market_check.actions import changed_against, decide
@@ -75,10 +76,14 @@ def test_easy_tape_is_risk_on_and_a_stress_tape_is_risk_off():
         "hy_oas": {day.isoformat(): 6.0 for day in days},
         "tlt": {day.isoformat(): (80.0 if index % 2 == 0 else 120.0) for index, day in enumerate(days)},
     })
-    hard = score_asof(stressed, days[-1], CFG)
+    hard = score_asof(stressed, days[-1], replace(CFG, model=replace(CFG.model, version="v2")))
     assert hard["pillars"]["rates"]["color"] == "red"
     assert hard["pillars"]["volatility"]["color"] == "red"
     assert hard["regime"] == "risk-off"
+    # v4 does not treat a high VIX alone as the cash raise. Credit has to widen too.
+    v4 = score_asof(stressed, days[-1], CFG)
+    assert v4["combo"] is False
+    assert v4["regime"] != "risk-off"
 
 
 def test_future_print_and_same_day_lagged_credit_are_invisible():

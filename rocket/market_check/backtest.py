@@ -21,6 +21,49 @@ def _as_version(config: Config, version: str) -> Config:
     return replace(config, model=replace(config.model, version=version))
 
 
+def _v4_config(config: Config, caution: str, puts: bool) -> Config:
+    return replace(
+        config,
+        model=replace(config.model, version="v4", v4_caution=caution, v4_puts=puts),
+    )
+
+
+def _sharpe(book: dict[str, Any]) -> float:
+    value = book["in_sample"]["strategy"].get("sharpe")
+    return float(value) if isinstance(value, (int, float)) else float("-inf")
+
+
+def _v4_race(panel: SeriesPanel, config: Config) -> dict[str, Any]:
+    """Pick the caution level and the put switch on in-sample numbers only.
+
+    Out-of-sample paths are not read here. A tie keeps the normal 35-45% band
+    and drops the puts.
+    """
+    band = simulate_portfolio(panel, _v4_config(config, "band", False))
+    light = simulate_portfolio(panel, _v4_config(config, "light", False))
+    caution = "light" if _sharpe(light) > _sharpe(band) else "band"
+    book = light if caution == "light" else band
+    with_puts = simulate_derivatives(panel, _v4_config(config, caution, True))
+    without = simulate_derivatives(panel, _v4_config(config, caution, False))
+    puts = float(with_puts["in_sample"]["sum_pnl"]) > float(without["in_sample"]["sum_pnl"])
+    return {
+        "caution": caution,
+        "puts": puts,
+        "book": book,
+        "derivs": with_puts if puts else without,
+        "band_sharpe": band["in_sample"]["strategy"].get("sharpe"),
+        "light_sharpe": light["in_sample"]["strategy"].get("sharpe"),
+        "band_cagr": band["in_sample"]["strategy"].get("cagr"),
+        "light_cagr": light["in_sample"]["strategy"].get("cagr"),
+        "band_dd": band["in_sample"]["strategy"].get("max_drawdown"),
+        "light_dd": light["in_sample"]["strategy"].get("max_drawdown"),
+        "puts_pnl": with_puts["in_sample"]["sum_pnl"],
+        "no_puts_pnl": without["in_sample"]["sum_pnl"],
+        "puts_only": with_puts["in_sample"].get("put_pnl"),
+        "long_pnl": without["in_sample"].get("perp_pnl"),
+    }
+
+
 def _headline(portfolio: dict[str, Any], derivatives: dict[str, Any]) -> dict[str, Any]:
     def side(block: dict[str, Any]) -> dict[str, Any]:
         return {
@@ -62,9 +105,22 @@ def run_backtest(
     *,
     trade_log: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
-    portfolio = simulate_portfolio(panel, config)
-    derivatives = simulate_derivatives(panel, config)
-    ran = {config.model.version: (portfolio, derivatives)}
+    race = _v4_race(panel, config)
+    if config.model.v4_caution != race["caution"] or config.model.v4_puts != race["puts"]:
+        raise ValueError(
+            "v4 config is "
+            f"{config.model.v4_caution} with puts {config.model.v4_puts}; "
+            f"the in-sample choice is {race['caution']} with puts {race['puts']}"
+        )
+    if config.model.version == "v4":
+        portfolio, derivatives = race["book"], race["derivs"]
+    else:
+        portfolio = simulate_portfolio(panel, config)
+        derivatives = simulate_derivatives(panel, config)
+    ran = {
+        config.model.version: (portfolio, derivatives),
+        "v4": (race["book"], race["derivs"]),
+    }
     for version in ("v1", "v2", "v3"):
         if version in ran:
             continue
@@ -100,6 +156,9 @@ def run_backtest(
         "execution_enabled": False,
         "model_version": config.model.version,
         "comparison": comparison,
+        "v4_selection": {
+            key: value for key, value in race.items() if key not in {"book", "derivs"}
+        },
         "diagnosis": diagnose(panel, config),
         "stress_record": {
             "episodes": regime_episodes(portfolio["nav"], config.window.oos_start),

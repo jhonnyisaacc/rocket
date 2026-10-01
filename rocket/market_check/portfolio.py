@@ -106,8 +106,10 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         nav = _nav(cash, shares, prices)
         score = score_on(path, day) or {"regime": "unknown", "oil_shock": False, "events_today": []}
         regime = score["regime"]
-        bottom = config.model.version == "v3" and bool(score.get("bottom"))
-        released = config.model.version == "v3" and bool(score.get("released"))
+        version = config.model.version
+        bottom = version in {"v3", "v4"} and bool(score.get("bottom"))
+        released = version == "v3" and bool(score.get("released"))
+        hold_redeploy = version == "v4" and bool(score.get("redeploy_hold"))
         if (
             not bottom
             and last_bottom is not None
@@ -118,11 +120,16 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         if day != start:
             index_return = session_return(view, "spy")
             index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
-            # Hold through the release and for the rest of the open episode, including
-            # a day when a fresh spike has not yet printed a new bottom.
-            holding = bottom or released or last_bottom is not None
+            # v3 holds through the release. v4 holds the redeploy until the next
+            # warning, so a quiet up-day does not refill the cash bucket.
+            if version == "v4":
+                holding = hold_redeploy
+            else:
+                holding = bottom or released or last_bottom is not None
             if holding:
                 target = config.redeploy.cash_target
+            elif version == "v4" and regime == "caution":
+                target = config.model.v4_light_cash
             elif regime != "unknown":
                 target = cash_target(regime, index_return, config)
             else:

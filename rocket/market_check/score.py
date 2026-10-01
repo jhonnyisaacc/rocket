@@ -340,6 +340,19 @@ def stress_score(view: AsOfView, config: Config) -> tuple[float, dict[str, int]]
     return float(total), parts
 
 
+def confirmed_combo(view: AsOfView, config: Config) -> bool:
+    """VIX at or above 25 and high-yield credit wider by at least 40bp over 20 sessions.
+
+    Those two prints led the in-sample equity low. The other stress legs did not.
+    """
+    rules = config.regime.stress
+    vix = view.closes("vix")
+    if not vix or vix[-1] < rules.vix_level_caution:
+        return False
+    widened = level_change(view.closes("hy_oas"), rules.credit_sessions)
+    return widened is not None and widened >= rules.credit_widen_caution
+
+
 def _pillar_total(pillars: dict[str, dict[str, Any]], config: Config) -> tuple[list[str], float | None]:
     known = [name for name in PILLAR_ORDER if pillars[name]["color"] != "missing"]
     if pillars["rates"]["color"] == "missing" or len(known) < config.regime.min_pillars:
@@ -401,19 +414,31 @@ def resolve_regime(
     *,
     bottom: bool = False,
     prior_released: bool = False,
+    combo: bool = False,
 ) -> tuple[str, bool]:
     """Return the regime and whether a buy-the-low release is holding caution off.
 
     v1 is the level rule. v2 is stress hysteresis. v3 leaves caution on the
     bottom signal and holds that release while residual stress is still
-    elevated. Once the score cools below the caution exit, the release ends
-    so the next rise can raise cash again. A fresh acute spike also ends it.
+    elevated. v4 raises cash only when VIX and credit confirm together.
+    A bottom still forces a quiet day so the book can buy.
     """
     if pillar_total is None:
         return "unknown", False
     if config.model.version == "v1":
         if pillar_total <= config.model.v1_risk_off_max or _classic(pillars):
             return "risk-off", False
+        return _quiet_regime(pillars, pillar_total, config), False
+    if config.model.version == "v4":
+        if bottom:
+            return _quiet_regime(pillars, pillar_total, config), False
+        if combo:
+            return "risk-off", False
+        if config.model.v4_caution == "light":
+            raw = _hysteresis(pillars, pillar_total, stress, prior, config)
+            if raw in {"caution", "risk-off"}:
+                return "caution", False
+            return raw, False
         return _quiet_regime(pillars, pillar_total, config), False
     acute = stress >= config.regime.stress.enter_risk_off or _classic(pillars)
     cooled = stress < config.regime.stress.exit_caution
@@ -424,6 +449,30 @@ def resolve_regime(
     return _hysteresis(pillars, pillar_total, stress, prior, config), False
 
 
+def _hold_state(
+    config: Config,
+    bottom: bool,
+    regime: str,
+    prior_hold: bool,
+    prior_quiet: bool,
+) -> tuple[bool, bool]:
+    """Hold redeployed shares until the next warning after a quiet day.
+
+    The warning that is already on at the bottom does not count. Quiet up-days
+    do not release the hold.
+    """
+    if config.model.version != "v4":
+        return False, False
+    if bottom:
+        return True, False
+    warning = regime in {"caution", "risk-off"}
+    if prior_hold and warning and prior_quiet:
+        return False, False
+    if prior_hold and not warning and regime != "unknown":
+        return True, True
+    return prior_hold, prior_quiet
+
+
 def score_asof(
     panel: SeriesPanel,
     day: date,
@@ -431,6 +480,8 @@ def score_asof(
     *,
     prior_regime: str | None = None,
     prior_released: bool = False,
+    prior_hold: bool = False,
+    prior_quiet: bool = False,
 ) -> dict[str, Any]:
     """Score `day` using only data the panel exposes on that day."""
     view = panel.asof(day, config.lags)
@@ -446,9 +497,12 @@ def score_asof(
     _known, total = _pillar_total(pillars, config)
     stress, parts = stress_score(view, config)
     bottom = is_bottom(view, config)
+    combo = confirmed_combo(view, config)
     regime, released = resolve_regime(
-        pillars, total, stress, prior_regime, config, bottom=bottom, prior_released=prior_released,
+        pillars, total, stress, prior_regime, config,
+        bottom=bottom, prior_released=prior_released, combo=combo,
     )
+    hold, quiet = _hold_state(config, bottom, regime, prior_hold, prior_quiet)
     today = events_on(day, config)
     ahead = upcoming(day, config, config.events.horizon_days)
     rules = config.regime.stress
@@ -460,6 +514,9 @@ def score_asof(
         "stress_parts": parts,
         "bottom": bottom,
         "released": released,
+        "combo": combo,
+        "redeploy_hold": hold,
+        "redeploy_quiet": quiet,
         "prior_regime": prior_regime,
         "pillars": pillars,
         "oil_shock": shock,
@@ -474,6 +531,9 @@ def score_asof(
             f"below {rules.exit_caution:g}. Red rates plus red volatility or red credit is still an "
             "entry backstop. In v3 a buy-the-low day leaves caution immediately and holds that "
             "release until the stress score cools below the caution exit or a fresh acute spike hits. "
+            "In v4 the large cash raise is only VIX at or above "
+            f"{rules.vix_level_caution:g} plus credit wider by {rules.credit_widen_caution:.2f}. "
+            "Redeployed shares stay on until the next warning after a quiet day. "
             "Unknown when rates are missing or fewer than "
             f"{config.regime.min_pillars} pillars have data."
         ),
@@ -484,13 +544,20 @@ def score_path(panel: SeriesPanel, days: list[date], config: Config) -> list[dic
     """Walk sessions in order so hysteresis can see yesterday and not tomorrow."""
     prior: str | None = None
     released = False
+    hold = False
+    quiet = False
     rows = []
     for day in days:
-        row = score_asof(panel, day, config, prior_regime=prior, prior_released=released)
+        row = score_asof(
+            panel, day, config,
+            prior_regime=prior, prior_released=released, prior_hold=hold, prior_quiet=quiet,
+        )
         rows.append(row)
         if row["regime"] != "unknown":
             prior = row["regime"]
         released = bool(row["released"])
+        hold = bool(row["redeploy_hold"])
+        quiet = bool(row["redeploy_quiet"])
     return rows
 
 

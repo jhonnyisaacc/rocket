@@ -1,13 +1,15 @@
 """Stress-score hysteresis, and recognition of a sale the simulator already made."""
 
+from dataclasses import replace
 from datetime import date, timedelta
 
 from rocket.market_check.config import load_config
 from rocket.market_check.panel import SeriesPanel
 from rocket.market_check.portfolio import compare_trade_log
-from rocket.market_check.score import score_path
+from rocket.market_check.score import _hold_state, score_path
 
 CFG = load_config()
+V2 = replace(CFG, model=replace(CFG.model, version="v2"))
 
 
 def _days(start: date, count: int) -> list[date]:
@@ -42,7 +44,7 @@ def test_a_spike_enters_risk_off_and_hysteresis_steps_down_through_caution():
         "vix": {shock.isoformat(): 50.0, **{day.isoformat(): 26.0 for day in days[-7:-1]}},
         "wti": {shock.isoformat(): 80.0},
     })
-    path = {row["date"]: row for row in score_path(panel, days, CFG)}
+    path = {row["date"]: row for row in score_path(panel, days, V2)}
     assert path[shock.isoformat()]["regime"] == "risk-off"
     assert path[shock.isoformat()]["stress"] >= CFG.regime.stress.enter_risk_off
     # The spike is still inside the 5-session VIX window here, so the book stays risk-off.
@@ -54,9 +56,9 @@ def test_a_spike_enters_risk_off_and_hysteresis_steps_down_through_caution():
 def test_a_later_shock_does_not_rewrite_an_earlier_regime():
     days = _days(date(2025, 1, 2), 40)
     panel = _panel(days)
-    before = [row["regime"] for row in score_path(panel, days[:20], CFG)]
+    before = [row["regime"] for row in score_path(panel, days[:20], V2)]
     shocked = panel.copy_with({"vix": {days[-1].isoformat(): 80.0}, "wti": {days[-1].isoformat(): 120.0}})
-    after = [row["regime"] for row in score_path(shocked, days[:20], CFG)]
+    after = [row["regime"] for row in score_path(shocked, days[:20], V2)]
     assert before == after
 
 
@@ -72,3 +74,16 @@ def test_logged_sale_is_recognized_when_the_simulator_already_exited():
     assert row["status"] == "already_exited"
     assert row["last_simulated"] == "2025-03-12"
     assert row["days_apart"] > 5
+
+
+def test_v4_hold_survives_the_warning_already_on_and_releases_on_the_next_one():
+    hold, quiet = _hold_state(CFG, True, "neutral", False, False)
+    assert (hold, quiet) == (True, False)
+    hold, quiet = _hold_state(CFG, False, "risk-off", hold, quiet)
+    assert (hold, quiet) == (True, False)
+    hold, quiet = _hold_state(CFG, False, "neutral", hold, quiet)
+    assert (hold, quiet) == (True, True)
+    hold, quiet = _hold_state(CFG, False, "risk-on", hold, quiet)
+    assert hold is True
+    hold, quiet = _hold_state(CFG, False, "risk-off", hold, quiet)
+    assert (hold, quiet) == (False, False)

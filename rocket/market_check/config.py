@@ -264,6 +264,11 @@ class CurrentBook:
 class Model:
     version: str
     v1_risk_off_max: float
+    # v4 only. "band" stays in the 35-45% Porto band unless the VIX-and-credit
+    # combo is on. "light" uses a 25-30% caution and pauses adds instead.
+    v4_caution: str = "band"
+    v4_light_cash: float = 0.275
+    v4_puts: bool = False
 
 
 @dataclass(frozen=True)
@@ -453,7 +458,13 @@ def load_config(path: Path | None = None) -> Config:
             _date(book["as_of"]), float(book["nav_usd"]), str(book.get("note") or ""),
             _floats(book.get("weights")), trades,
         ),
-        model=Model(str(model["version"]), float(model["v1_risk_off_max"])),
+        model=Model(
+            str(model["version"]),
+            float(model["v1_risk_off_max"]),
+            str(model.get("v4_caution") or "band"),
+            float(model.get("v4_light_cash") or 0.275),
+            bool(model.get("v4_puts") or False),
+        ),
         redeploy=Redeploy(
             spy_drawdown=float(redeploy["spy_drawdown"]),
             vix_spike=float(redeploy["vix_spike"]),
@@ -518,8 +529,12 @@ def _validate(cfg: Config) -> None:
         raise ValueError("cash targets must rise from risk-on to risk-off and stay inside the ceiling")
     if cfg.window.start >= cfg.window.oos_start or cfg.window.oos_start > cfg.window.end:
         raise ValueError("out-of-sample split must sit inside the backtest window")
-    if cfg.model.version not in {"v1", "v2", "v3"}:
-        raise ValueError("model version must be v1, v2, or v3")
+    if cfg.model.version not in {"v1", "v2", "v3", "v4"}:
+        raise ValueError("model version must be v1, v2, v3, or v4")
+    if cfg.model.v4_caution not in {"band", "light"}:
+        raise ValueError("v4 caution must be band or light")
+    if not 0.25 <= cfg.model.v4_light_cash <= 0.30:
+        raise ValueError("v4 light caution cash must sit between 25% and 30%")
     if not 0 < cfg.redeploy.spy_drawdown < 1 or not 0 < cfg.redeploy.name_drawdown < 1:
         raise ValueError("redeploy drawdowns must sit between 0 and 1")
     if cfg.redeploy.tranches < 1:

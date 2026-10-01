@@ -6,13 +6,13 @@ This is a research record of one rule set on one history. It is not a forecast a
 
 ## Portfolio
 
-Turnover about 0.57x NAV per year (one-way traded notional / average NAV). 60 fills. Terminal cash weight 46.9%. Regime sessions: {'risk-on': 240, 'caution': 170, 'risk-off': 45, 'neutral': 46}.
+Turnover about 0.62x NAV per year (one-way traded notional / average NAV). 71 fills. Terminal cash weight 46.4%. Regime sessions: {'risk-on': 394, 'neutral': 96, 'risk-off': 11}.
 
-Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQIX 1 buys/1 sells, ETN 1 buys/0 sells, FCX 1 buys/4 sells, META 3 buys/8 sells, MSFT 1 buys/0 sells, TSLA 3 buys/11 sells.
+Fills by name: AMAT 7 buys/0 sells, AMZN 1 buys/1 sells, BAC 2 buys/3 sells, EQIX 1 buys/4 sells, ETN 2 buys/0 sells, FCX 1 buys/8 sells, META 3 buys/15 sells, MSFT 1 buys/3 sells, TSLA 3 buys/16 sells.
 
 ### Full sample
 
-- Strategy: 14.4% CAGR, -15.5% max DD, 14.5% vol, 0.73 Sharpe, 30.8% total
+- Strategy: 21.0% CAGR, -16.9% max DD, 18.6% vol, 0.91 Sharpe, 46.3% total
 - Equal-weight buy-and-hold: 28.3% CAGR, -28.3% max DD, 26.9% vol, 1.07 Sharpe, 64.4% total
 - SPY: 17.2% CAGR, -18.8% max DD, 16.5% vol, 1.05 Sharpe, 37.2% total
 - QQQ (extra): 24.7% CAGR, -22.8% max DD, 21.8% vol, 1.13 Sharpe, 55.3% total
@@ -20,33 +20,33 @@ Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQ
 | Month | Strategy | Equal-weight | SPY |
 |---|---:|---:|---:|
 | 2024-10 | -0.7% | -1.2% | 0.0% |
-| 2024-11 | 5.1% | 9.4% | 6.0% |
-| 2024-12 | -0.4% | -2.5% | -2.4% |
-| 2025-01 | 1.9% | 3.2% | 2.7% |
-| 2025-02 | -3.5% | -8.2% | -1.3% |
-| 2025-03 | -5.3% | -7.5% | -5.6% |
-| 2025-04 | 1.3% | 2.5% | -0.9% |
-| 2025-05 | 7.1% | 12.5% | 6.3% |
-| 2025-06 | 4.3% | 6.7% | 5.1% |
-| 2025-07 | 1.9% | 3.5% | 2.3% |
-| 2025-08 | -1.8% | -0.7% | 2.1% |
-| 2025-09 | 2.1% | 7.9% | 3.6% |
-| 2025-10 | 1.5% | 6.4% | 2.4% |
-| 2025-11 | -0.9% | -1.9% | 0.2% |
-| 2025-12 | 0.3% | 0.9% | 0.1% |
-| 2026-01 | 3.7% | 6.5% | 1.5% |
-| 2026-02 | 0.4% | 2.4% | -0.9% |
-| 2026-03 | -3.1% | -7.1% | -4.9% |
-| 2026-04 | 7.8% | 13.8% | 10.5% |
-| 2026-05 | 3.2% | 3.9% | 5.3% |
-| 2026-06 | 7.8% | 11.1% | -1.0% |
-| 2026-07 | -5.7% | -10.1% | 0.0% |
-| 2026-08 | -1.3% | 1.3% | 2.7% |
-| 2026-09 | 3.2% | 2.2% | -0.3% |
+| 2024-11 | 6.3% | 9.4% | 6.0% |
+| 2024-12 | 0.2% | -2.5% | -2.4% |
+| 2025-01 | 2.0% | 3.2% | 2.7% |
+| 2025-02 | -4.3% | -8.2% | -1.3% |
+| 2025-03 | -5.5% | -7.5% | -5.6% |
+| 2025-04 | 1.8% | 2.5% | -0.9% |
+| 2025-05 | 7.2% | 12.5% | 6.3% |
+| 2025-06 | 5.0% | 6.7% | 5.1% |
+| 2025-07 | 1.5% | 3.5% | 2.3% |
+| 2025-08 | -1.6% | -0.7% | 2.1% |
+| 2025-09 | 5.4% | 7.9% | 3.6% |
+| 2025-10 | 3.4% | 6.4% | 2.4% |
+| 2025-11 | -0.7% | -1.9% | 0.2% |
+| 2025-12 | 0.8% | 0.9% | 0.1% |
+| 2026-01 | 5.2% | 6.5% | 1.5% |
+| 2026-02 | 1.6% | 2.4% | -0.9% |
+| 2026-03 | -4.1% | -7.1% | -4.9% |
+| 2026-04 | 8.7% | 13.8% | 10.5% |
+| 2026-05 | 4.1% | 3.9% | 5.3% |
+| 2026-06 | 15.6% | 11.1% | -1.0% |
+| 2026-07 | -10.6% | -10.1% | 0.0% |
+| 2026-08 | -2.8% | 1.3% | 2.7% |
+| 2026-09 | 3.3% | 2.2% | -0.3% |
 
 ### In sample
 
-- Strategy: 11.7% CAGR, -15.5% max DD, 14.0% vol, 0.55 Sharpe, 11.7% total
+- Strategy: 17.6% CAGR, -16.5% max DD, 15.5% vol, 0.85 Sharpe, 17.6% total
 - Equal-weight buy-and-hold: 26.2% CAGR, -28.3% max DD, 27.3% vol, 1.00 Sharpe, 26.1% total
 - SPY: 18.7% CAGR, -18.8% max DD, 19.5% vol, 0.98 Sharpe, 18.6% total
 - QQQ (extra): 25.5% CAGR, -22.8% max DD, 23.5% vol, 1.09 Sharpe, 25.4% total
@@ -54,21 +54,21 @@ Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQ
 | Month | Strategy | Equal-weight | SPY |
 |---|---:|---:|---:|
 | 2024-10 | -0.7% | -1.2% | 0.0% |
-| 2024-11 | 5.1% | 9.4% | 6.0% |
-| 2024-12 | -0.4% | -2.5% | -2.4% |
-| 2025-01 | 1.9% | 3.2% | 2.7% |
-| 2025-02 | -3.5% | -8.2% | -1.3% |
-| 2025-03 | -5.3% | -7.5% | -5.6% |
-| 2025-04 | 1.3% | 2.5% | -0.9% |
-| 2025-05 | 7.1% | 12.5% | 6.3% |
-| 2025-06 | 4.3% | 6.7% | 5.1% |
-| 2025-07 | 1.9% | 3.5% | 2.3% |
-| 2025-08 | -1.8% | -0.7% | 2.1% |
-| 2025-09 | 2.1% | 7.9% | 3.6% |
+| 2024-11 | 6.3% | 9.4% | 6.0% |
+| 2024-12 | 0.2% | -2.5% | -2.4% |
+| 2025-01 | 2.0% | 3.2% | 2.7% |
+| 2025-02 | -4.3% | -8.2% | -1.3% |
+| 2025-03 | -5.5% | -7.5% | -5.6% |
+| 2025-04 | 1.8% | 2.5% | -0.9% |
+| 2025-05 | 7.2% | 12.5% | 6.3% |
+| 2025-06 | 5.0% | 6.7% | 5.1% |
+| 2025-07 | 1.5% | 3.5% | 2.3% |
+| 2025-08 | -1.6% | -0.7% | 2.1% |
+| 2025-09 | 5.4% | 7.9% | 3.6% |
 
 ### Out of sample
 
-- Strategy: 17.1% CAGR, -11.1% max DD, 14.9% vol, 0.89 Sharpe, 17.1% total
+- Strategy: 24.4% CAGR, -16.9% max DD, 21.2% vol, 0.96 Sharpe, 24.4% total
 - Equal-weight buy-and-hold: 30.4% CAGR, -16.8% max DD, 26.5% vol, 1.14 Sharpe, 30.3% total
 - SPY: 15.7% CAGR, -8.9% max DD, 13.0% vol, 1.19 Sharpe, 15.7% total
 - QQQ (extra): 23.8% CAGR, -12.0% max DD, 20.0% vol, 1.17 Sharpe, 23.8% total
@@ -76,22 +76,22 @@ Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQ
 | Month | Strategy | Equal-weight | SPY |
 |---|---:|---:|---:|
 | 2025-09 | 0.0% | 0.0% | 0.0% |
-| 2025-10 | 1.5% | 6.4% | 2.4% |
-| 2025-11 | -0.9% | -1.9% | 0.2% |
-| 2025-12 | 0.3% | 0.9% | 0.1% |
-| 2026-01 | 3.7% | 6.5% | 1.5% |
-| 2026-02 | 0.4% | 2.4% | -0.9% |
-| 2026-03 | -3.1% | -7.1% | -4.9% |
-| 2026-04 | 7.8% | 13.8% | 10.5% |
-| 2026-05 | 3.2% | 3.9% | 5.3% |
-| 2026-06 | 7.8% | 11.1% | -1.0% |
-| 2026-07 | -5.7% | -10.1% | 0.0% |
-| 2026-08 | -1.3% | 1.3% | 2.7% |
-| 2026-09 | 3.2% | 2.2% | -0.3% |
+| 2025-10 | 3.4% | 6.4% | 2.4% |
+| 2025-11 | -0.7% | -1.9% | 0.2% |
+| 2025-12 | 0.8% | 0.9% | 0.1% |
+| 2026-01 | 5.2% | 6.5% | 1.5% |
+| 2026-02 | 1.6% | 2.4% | -0.9% |
+| 2026-03 | -4.1% | -7.1% | -4.9% |
+| 2026-04 | 8.7% | 13.8% | 10.5% |
+| 2026-05 | 4.1% | 3.9% | 5.3% |
+| 2026-06 | 15.6% | 11.1% | -1.0% |
+| 2026-07 | -10.6% | -10.1% | 0.0% |
+| 2026-08 | -2.8% | 1.3% | 2.7% |
+| 2026-09 | 3.3% | 2.2% | -0.3% |
 
 ### Before Ondo (proxy)
 
-- Strategy: 10.4% CAGR, -15.5% max DD, 14.5% vol, 0.45 Sharpe, 9.4% total
+- Strategy: 12.8% CAGR, -16.5% max DD, 15.9% vol, 0.56 Sharpe, 11.6% total
 - Equal-weight buy-and-hold: 18.8% CAGR, -28.3% max DD, 28.2% vol, 0.75 Sharpe, 16.9% total
 - SPY: 16.1% CAGR, -18.8% max DD, 20.3% vol, 0.84 Sharpe, 14.5% total
 - QQQ (extra): 21.1% CAGR, -22.8% max DD, 24.4% vol, 0.91 Sharpe, 19.0% total
@@ -99,20 +99,20 @@ Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQ
 | Month | Strategy | Equal-weight | SPY |
 |---|---:|---:|---:|
 | 2024-10 | -0.7% | -1.2% | 0.0% |
-| 2024-11 | 5.1% | 9.4% | 6.0% |
-| 2024-12 | -0.4% | -2.5% | -2.4% |
-| 2025-01 | 1.9% | 3.2% | 2.7% |
-| 2025-02 | -3.5% | -8.2% | -1.3% |
-| 2025-03 | -5.3% | -7.5% | -5.6% |
-| 2025-04 | 1.3% | 2.5% | -0.9% |
-| 2025-05 | 7.1% | 12.5% | 6.3% |
-| 2025-06 | 4.3% | 6.7% | 5.1% |
-| 2025-07 | 1.9% | 3.5% | 2.3% |
-| 2025-08 | -1.8% | -0.7% | 2.1% |
+| 2024-11 | 6.3% | 9.4% | 6.0% |
+| 2024-12 | 0.2% | -2.5% | -2.4% |
+| 2025-01 | 2.0% | 3.2% | 2.7% |
+| 2025-02 | -4.3% | -8.2% | -1.3% |
+| 2025-03 | -5.5% | -7.5% | -5.6% |
+| 2025-04 | 1.8% | 2.5% | -0.9% |
+| 2025-05 | 7.2% | 12.5% | 6.3% |
+| 2025-06 | 5.0% | 6.7% | 5.1% |
+| 2025-07 | 1.5% | 3.5% | 2.3% |
+| 2025-08 | -1.6% | -0.7% | 2.1% |
 
 ### From Ondo live date
 
-- Strategy: 17.8% CAGR, -11.1% max DD, 14.4% vol, 0.96 Sharpe, 19.5% total
+- Strategy: 28.3% CAGR, -16.9% max DD, 20.6% vol, 1.14 Sharpe, 31.1% total
 - Equal-weight buy-and-hold: 36.8% CAGR, -16.8% max DD, 25.7% vol, 1.36 Sharpe, 40.6% total
 - SPY: 18.1% CAGR, -8.9% max DD, 12.6% vol, 1.39 Sharpe, 19.8% total
 - QQQ (extra): 27.7% CAGR, -12.0% max DD, 19.3% vol, 1.37 Sharpe, 30.5% total
@@ -120,84 +120,64 @@ Fills by name: AMAT 4 buys/0 sells, AMZN 1 buys/0 sells, BAC 2 buys/19 sells, EQ
 | Month | Strategy | Equal-weight | SPY |
 |---|---:|---:|---:|
 | 2025-08 | 0.0% | 0.0% | 0.0% |
-| 2025-09 | 2.1% | 7.9% | 3.6% |
-| 2025-10 | 1.5% | 6.4% | 2.4% |
-| 2025-11 | -0.9% | -1.9% | 0.2% |
-| 2025-12 | 0.3% | 0.9% | 0.1% |
-| 2026-01 | 3.7% | 6.5% | 1.5% |
-| 2026-02 | 0.4% | 2.4% | -0.9% |
-| 2026-03 | -3.1% | -7.1% | -4.9% |
-| 2026-04 | 7.8% | 13.8% | 10.5% |
-| 2026-05 | 3.2% | 3.9% | 5.3% |
-| 2026-06 | 7.8% | 11.1% | -1.0% |
-| 2026-07 | -5.7% | -10.1% | 0.0% |
-| 2026-08 | -1.3% | 1.3% | 2.7% |
-| 2026-09 | 3.2% | 2.2% | -0.3% |
+| 2025-09 | 5.4% | 7.9% | 3.6% |
+| 2025-10 | 3.4% | 6.4% | 2.4% |
+| 2025-11 | -0.7% | -1.9% | 0.2% |
+| 2025-12 | 0.8% | 0.9% | 0.1% |
+| 2026-01 | 5.2% | 6.5% | 1.5% |
+| 2026-02 | 1.6% | 2.4% | -0.9% |
+| 2026-03 | -4.1% | -7.1% | -4.9% |
+| 2026-04 | 8.7% | 13.8% | 10.5% |
+| 2026-05 | 4.1% | 3.9% | 5.3% |
+| 2026-06 | 15.6% | 11.1% | -1.0% |
+| 2026-07 | -10.6% | -10.1% | 0.0% |
+| 2026-08 | -2.8% | 1.3% | 2.7% |
+| 2026-09 | 3.3% | 2.2% | -0.3% |
 
 ## Risk-off and caution
 
 Stress cuts were checked on the in-sample half only. Out-of-sample episodes are reported with the same cuts.
 
-In-sample sessions: risk-off 6, caution 65, neutral 16, risk-on 163. Out-of-sample sessions: risk-off 39, caution 105, neutral 30, risk-on 77. A day count versus the peak is a lead when the warning is earlier. Days versus the low are how early the warning sat before the trough.
+In-sample sessions: risk-off 9, neutral 22, risk-on 219. Out-of-sample sessions: risk-off 2, neutral 74, risk-on 175. A day count versus the peak is a lead when the warning is earlier. Days versus the low are how early the warning sat before the trough.
 
 | Regime | Start | End | Sessions | Sample |
 |---|---|---|---:|---|
-| caution | 2024-10-03 | 2024-10-15 | 9 | in_sample |
-| caution | 2024-10-23 | 2024-10-23 | 1 | in_sample |
-| caution | 2024-10-28 | 2024-10-30 | 3 | in_sample |
-| caution | 2024-11-01 | 2024-11-06 | 4 | in_sample |
-| caution | 2024-12-18 | 2024-12-19 | 2 | in_sample |
-| caution | 2024-12-27 | 2025-01-16 | 13 | in_sample |
-| caution | 2025-02-26 | 2025-03-04 | 5 | in_sample |
-| caution | 2025-03-10 | 2025-04-02 | 18 | in_sample |
+| risk-off | 2025-03-11 | 2025-03-11 | 1 | in_sample |
 | risk-off | 2025-04-03 | 2025-04-10 | 6 | in_sample |
-| caution | 2025-05-12 | 2025-05-14 | 3 | in_sample |
-| caution | 2025-06-11 | 2025-06-20 | 7 | in_sample |
-| caution | 2025-10-16 | 2025-10-17 | 2 | out_of_sample |
-| caution | 2025-11-17 | 2025-11-19 | 3 | out_of_sample |
-| risk-off | 2025-11-20 | 2025-12-05 | 11 | out_of_sample |
-| caution | 2025-12-08 | 2026-01-02 | 18 | out_of_sample |
-| caution | 2026-01-14 | 2026-01-14 | 1 | out_of_sample |
-| caution | 2026-01-29 | 2026-03-02 | 22 | out_of_sample |
-| risk-off | 2026-03-03 | 2026-03-13 | 9 | out_of_sample |
-| caution | 2026-03-16 | 2026-03-17 | 2 | out_of_sample |
-| risk-off | 2026-03-18 | 2026-03-18 | 1 | out_of_sample |
-| caution | 2026-03-19 | 2026-03-19 | 1 | out_of_sample |
-| risk-off | 2026-03-20 | 2026-04-07 | 12 | out_of_sample |
-| caution | 2026-04-24 | 2026-05-04 | 7 | out_of_sample |
-| caution | 2026-05-15 | 2026-05-19 | 3 | out_of_sample |
-| caution | 2026-06-02 | 2026-06-02 | 1 | out_of_sample |
-| risk-off | 2026-06-03 | 2026-06-10 | 6 | out_of_sample |
-| caution | 2026-06-11 | 2026-07-24 | 30 | out_of_sample |
-| caution | 2026-08-11 | 2026-08-12 | 2 | out_of_sample |
-| caution | 2026-08-20 | 2026-08-20 | 1 | out_of_sample |
-| caution | 2026-09-01 | 2026-09-16 | 11 | out_of_sample |
-| caution | 2026-09-30 | 2026-09-30 | 1 | out_of_sample |
+| risk-off | 2025-04-14 | 2025-04-14 | 1 | in_sample |
+| risk-off | 2025-04-24 | 2025-04-24 | 1 | in_sample |
+| risk-off | 2026-03-20 | 2026-03-20 | 1 | out_of_sample |
+| risk-off | 2026-03-31 | 2026-03-31 | 1 | out_of_sample |
 
 Large drawdowns are a peak-to-trough of at least 8% in SPY or 15% in BTC. The search window starts 10 equity sessions before the peak and ends at the trough.
 
 | Asset | Sample | Peak | Trough | Depth | Caution | Risk-off | Caution vs peak | Risk-off vs peak | Caution vs low | Risk-off vs low |
 |---|---|---|---|---:|---|---|---|---|---|---|
-| SPY | in_sample | 2025-02-19 | 2025-04-08 | -18.8% | 2025-02-26 | 2025-04-03 | 7d after peak | 43d after peak | 41d before the low | 5d before the low |
-| SPY | out_of_sample | 2026-01-27 | 2026-03-30 | -8.9% | 2026-01-14 | 2026-03-03 | 13d before peak | 35d after peak | 75d before the low | 27d before the low |
-| BTC | in_sample | 2025-01-21 | 2025-04-08 | -28.1% | 2025-01-03 | 2025-04-03 | 18d before peak | 72d after peak | 95d before the low | 5d before the low |
-| BTC | out_of_sample | 2025-10-06 | 2026-06-30 | -53.1% | 2025-10-16 | 2025-11-20 | 10d after peak | 45d after peak | 257d before the low | 222d before the low |
+| SPY | in_sample | 2025-02-19 | 2025-04-08 | -18.8% | 2025-03-11 | 2025-03-11 | 20d after peak | 20d after peak | 28d before the low | 28d before the low |
+| SPY | out_of_sample | 2026-01-27 | 2026-03-30 | -8.9% | 2026-03-20 | 2026-03-20 | 52d after peak | 52d after peak | 10d before the low | 10d before the low |
+| BTC | in_sample | 2025-01-21 | 2025-04-08 | -28.1% | 2025-03-11 | 2025-03-11 | 49d after peak | 49d after peak | 28d before the low | 28d before the low |
+| BTC | out_of_sample | 2025-10-06 | 2026-06-30 | -53.1% | 2026-03-20 | 2026-03-20 | 165d after peak | 165d after peak | 102d before the low | 102d before the low |
 
-## Three versions
+## Four versions
 
-v1 is the original level rule (risk-off almost never fired). v2 is the stress score with hysteresis and caution, which raised cash and did not redeploy it. v3 keeps that stress score and adds the buy-the-low release: three tranches into the quality name and the high-beta name that fell most and have started to bounce, and BTC longs only on that signal with puts only on a fresh warning. CAGR / max drawdown / Sharpe. Benchmarks are the same in every version.
+v1 is the original level rule (risk-off almost never fired). v2 is the stress score with hysteresis and caution, which raised cash and did not redeploy it. v3 keeps that stress score and adds the buy-the-low release: three tranches into the quality name and the high-beta name that fell most and have started to bounce, and BTC longs only on that signal with puts only on a fresh warning. v4 holds those shares until the next warning, and raises cash only on VIX at or above 25 plus a 40bp credit widening. CAGR / max drawdown / Sharpe. Benchmarks are the same in every version. Perp P&L and put P&L are separate; the hit rate is the combined month.
 
-| Version | Sample | Strategy | Equal-weight | SPY | Deriv hit | Deriv P&L | Stock entries vs low | BTC entry vs low |
-|---|---|---|---|---|---:|---:|---|---|
-| v1 | full | 27.2% / -24.5% / 0.98 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 38.9% | 14.3% | no buys near the lows | 55.2% above the trough across 2 drawdowns |
-| v1 | in sample | 13.2% / -16.6% / 0.59 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 44.4% | 19.5% | no buys near the lows | 22.4% above the trough across 1 drawdown |
-| v1 | out of sample | 42.9% / -24.5% / 1.26 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 33.3% | -5.2% | no buys near the lows | 88.0% above the trough across 1 drawdown |
-| v2 | full | 13.5% / -15.5% / 0.69 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 29.4% | -30.8% | no buys near the lows | 60.0% above the trough across 2 drawdowns |
-| v2 | in sample | 9.1% / -15.5% / 0.39 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 33.3% | -16.7% | no buys near the lows | 32.0% above the trough across 1 drawdown |
-| v2 | out of sample | 18.0% / -11.2% / 0.95 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 27.3% | -14.2% | no buys near the lows | 88.0% above the trough across 1 drawdown |
-| v3 | full | 14.4% / -15.5% / 0.73 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 29.4% | 1.6% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
-| v3 | in sample | 11.7% / -15.5% / 0.55 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 25.0% | 2.8% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
-| v3 | out of sample | 17.1% / -11.1% / 0.89 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 33.3% | -1.2% | no buys near the lows | no buys near the lows |
+Normal 35-45% band: in-sample CAGR 17.6%, max DD -16.5%, Sharpe 0.85. Lighter 27.5% caution with adds paused: in-sample CAGR 14.5%, max DD -17.7%, Sharpe 0.65. The higher in-sample Sharpe is the normal band; a tie would keep the band. Warning puts, in sample, summed to 28.2% with the long and 31.2% without them (put sleeve -3.0%, long sleeve 31.2%). Puts are dropped. A tie would drop them. Out-of-sample results were not used for either choice.
+
+| Version | Sample | Strategy | Equal-weight | SPY | Hit | Perp P&L | Put P&L | Stock entries vs low | BTC entry vs low |
+|---|---|---|---|---|---:|---:|---:|---|---|
+| v1 | full | 27.2% / -24.5% / 0.98 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 38.9% | 9.2% | 5.1% | no buys near the lows | 55.2% above the trough across 2 drawdowns |
+| v1 | in sample | 13.2% / -16.6% / 0.59 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 44.4% | 23.4% | -3.9% | no buys near the lows | 22.4% above the trough across 1 drawdown |
+| v1 | out of sample | 42.9% / -24.5% / 1.26 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 33.3% | -14.3% | 9.1% | no buys near the lows | 88.0% above the trough across 1 drawdown |
+| v2 | full | 13.5% / -15.5% / 0.69 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 29.4% | -36.0% | 5.1% | no buys near the lows | 60.0% above the trough across 2 drawdowns |
+| v2 | in sample | 9.1% / -15.5% / 0.39 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 33.3% | -12.7% | -3.9% | no buys near the lows | 32.0% above the trough across 1 drawdown |
+| v2 | out of sample | 18.0% / -11.2% / 0.95 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 27.3% | -23.2% | 9.1% | no buys near the lows | 88.0% above the trough across 1 drawdown |
+| v3 | full | 14.4% / -15.5% / 0.73 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 29.4% | 12.8% | -11.2% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
+| v3 | in sample | 11.7% / -15.5% / 0.55 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 25.0% | 12.8% | -10.1% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
+| v3 | out of sample | 17.1% / -11.1% / 0.89 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 33.3% | 0.0% | -1.2% | no buys near the lows | no buys near the lows |
+| v4 | full | 21.0% / -16.9% / 0.91 | 28.3% / -28.3% / 1.07 | 17.2% / -18.8% / 1.05 | 50.0% | -13.1% | 0.0% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
+| v4 | in sample | 17.6% / -16.5% / 0.85 | 26.2% / -28.3% / 1.00 | 18.7% / -18.8% / 0.98 | 83.3% | 31.2% | 0.0% | 10.6% above the trough across 3 drawdowns | 9.4% above the trough across 1 drawdown |
+| v4 | out of sample | 24.4% / -16.9% / 0.96 | 30.4% / -16.8% / 1.14 | 15.7% / -8.9% / 1.19 | 16.7% | -44.2% | 0.0% | no buys near the lows | no buys near the lows |
 
 Entry versus low is the average fill divided by the price on the trough day, minus one. Zero would be buying the low. Stock rows use buys from the peak through three weeks after the trough. BTC uses the long opened by that version, if any.
 
@@ -421,49 +401,47 @@ Reading the in-sample tape: the deep equity low was a VIX and credit event, not 
 
 ## What to improve next
 
-Out of sample, v3 does not beat equal-weight on Sharpe. The April 2025 rebound is not an edge to size up. Out of sample it does not beat v2 on Sharpe either.
+Out of sample, v1 beat equal-weight buy-and-hold on Sharpe (1.14). v1 Sharpe 1.26, v2 Sharpe 0.95, v3 Sharpe 0.89, v4 Sharpe 0.96. That is one path, and a higher Sharpe with a deeper drawdown is still one path.
 
-The in-sample buys filled 11% above the troughs. The 12% gate did not fire out of sample, so there is no out-of-sample redeploy to judge. Once the release cooled, the strength rule sold the high-beta sleeve. The rebound was only partly held. The next test is to keep those shares until the following caution, instead of refilling cash on the first quiet up-days. That test has not been run.
-
-Credit tightening lagged the in-sample low by weeks, so it stays a confirmation rather than an entry. Funding turning negative marked the middle of the BTC decline, not the turn. The panel has no volume, so a capitulation-volume rule is untested. The 12% drawdown gate was set because the shallower March 2025 fade failed in sample. A rule aimed at later, smaller dips would be a new claim, not a tweak of this one. The crypto P&L is one April 2025 long plus warning puts; the puts lose more often than they pay. Puts are still Black-Scholes on a 30-day DVOL, and same-close fills remain.
+Credit tightening lagged the in-sample low by weeks, so it stays a confirmation rather than an entry. Funding turning negative marked the middle of the BTC decline, not the turn. The panel has no volume, so a capitulation-volume rule is untested. The 12% drawdown gate was set because the shallower March 2025 fade failed in sample. A rule aimed at later, smaller dips would be a new claim, not a tweak of this one. Puts are still Black-Scholes on a 30-day DVOL, and same-close fills remain.
 
 
 ## Crypto derivatives
 
-v3 drops the monthly long/short bet. A put is opened only when the regime steps up into caution or risk-off, and it is marked through the buy-the-low day or month-end. A long is opened only on the buy-the-low signal while BTC is still in a drawdown, with the same stop, and held for the configured number of sessions or to month-end. Puts are Black-Scholes on Deribit DVOL when that print exists, otherwise realized vol. Each expression is still scaled as a fraction of one BTC.
+v4 opens a BTC long only on the buy-the-low signal and holds it until the next caution or risk-off after a quiet day. Puts are off in this configuration. Puts are Black-Scholes on Deribit DVOL when that print exists, otherwise realized vol. Each expression is still scaled as a fraction of one BTC.
 
-Full sample: hit rate 29.4% on 17 active months, sum of monthly P&L 1.6%, worst -3.3%, best 12.6%, perp hit rate 100.0%, put hit rate 23.5%, stops 0.
+Full sample: hit rate 50.0% on 12 active months, sum of monthly P&L -13.1%, worst -21.6%, best 12.9%, perp hit rate 50.0%, put hit rate n/a, perp P&L -13.1%, put P&L 0.0%, stops 0.
 
-In sample: hit rate 25.0% on 8 active months, sum of monthly P&L 2.8%, worst -3.3%, best 12.6%, perp hit rate 100.0%, put hit rate 12.5%, stops 0.
+In sample: hit rate 83.3% on 6 active months, sum of monthly P&L 31.2%, worst -6.9%, best 12.9%, perp hit rate 83.3%, put hit rate n/a, perp P&L 31.2%, put P&L 0.0%, stops 0.
 
-Out of sample: hit rate 33.3% on 9 active months, sum of monthly P&L -1.2%, worst -1.8%, best 2.5%, perp hit rate n/a, put hit rate 33.3%, stops 0.
+Out of sample: hit rate 16.7% on 6 active months, sum of monthly P&L -44.2%, worst -21.6%, best 7.0%, perp hit rate 16.7%, put hit rate n/a, perp P&L -44.2%, put P&L 0.0%, stops 0.
 
 | Month | Signal | Position | Entry | Exit | P&L | Success |
 |---|---|---|---:|---:|---:|---|
-| 2024-10 | caution / warning put | flat 0 +put | 60759 | 70215 | -2.76% | no |
-| 2024-11 | caution / warning put | flat 0 +put | 69482 | 97462 | -3.26% | no |
-| 2024-12 | caution / warning put | flat 0 +put | 100042 | 93429 | 0.64% | yes |
-| 2025-01 | caution / flat | flat 0  | 96887 | 102405 | 0.00% | n/a |
-| 2025-02 | caution / warning put | flat 0 +put | 84347 | 84373 | -0.26% | no |
-| 2025-03 | caution / warning put | flat 0 +put | 78532 | 82549 | -2.55% | no |
-| 2025-04 | neutral / warning put + bottom long | long 1 +put | 83405 | 94207 | 12.63% | yes |
-| 2025-05 | caution / warning put | flat 0 +put | 102813 | 103999 | -0.98% | no |
-| 2025-06 | caution / warning put | flat 0 +put | 108687 | 107135 | -0.69% | no |
-| 2025-07 | risk-on / flat | flat 0  | 105698 | 115758 | 0.00% | n/a |
-| 2025-08 | risk-on / flat | flat 0  | 113320 | 108411 | 0.00% | n/a |
-| 2025-09 | risk-on / flat | flat 0  | 111201 | 114056 | 0.00% | n/a |
-| 2025-10 | caution / warning put | flat 0 +put | 108186 | 109556 | -1.16% | no |
-| 2025-11 | caution / warning put | flat 0 +put | 92094 | 90919 | -0.55% | no |
-| 2025-12 | risk-off / flat | flat 0  | 86322 | 87509 | 0.00% | n/a |
-| 2026-01 | caution / warning put | flat 0 +put | 96929 | 84129 | 2.47% | yes |
-| 2026-02 | caution / flat | flat 0  | 78689 | 65882 | 0.00% | n/a |
-| 2026-03 | risk-off / warning put | flat 0 +put | 68294 | 68233 | -1.77% | no |
-| 2026-04 | caution / warning put | flat 0 +put | 77455 | 76304 | -0.18% | no |
-| 2026-05 | caution / warning put | flat 0 +put | 79066 | 73373 | 0.38% | yes |
-| 2026-06 | caution / warning put | flat 0 +put | 66704 | 58559 | 1.62% | yes |
-| 2026-07 | caution / flat | flat 0  | 60004 | 62814 | 0.00% | n/a |
-| 2026-08 | caution / warning put | flat 0 +put | 63552 | 78549 | -0.93% | no |
-| 2026-09 | caution / warning put | flat 0 +put | 77404 | 83554 | -1.05% | no |
+| 2024-10 | risk-on / flat | flat 0  | 60837 | 70215 | 0.00% | n/a |
+| 2024-11 | risk-on / flat | flat 0  | 69482 | 97462 | 0.00% | n/a |
+| 2024-12 | risk-on / flat | flat 0  | 95865 | 93429 | 0.00% | n/a |
+| 2025-01 | risk-on / flat | flat 0  | 96887 | 102405 | 0.00% | n/a |
+| 2025-02 | risk-on / flat | flat 0  | 101405 | 84373 | 0.00% | n/a |
+| 2025-03 | risk-on / flat | flat 0  | 86066 | 82549 | 0.00% | n/a |
+| 2025-04 | neutral / bottom long | long 1  | 83405 | 94207 | 12.90% | yes |
+| 2025-05 | neutral / bottom long | long 1  | 94207 | 103999 | 10.04% | yes |
+| 2025-06 | risk-on / bottom long | long 1  | 103999 | 107135 | 2.91% | yes |
+| 2025-07 | risk-on / bottom long | long 1  | 107135 | 115758 | 7.39% | yes |
+| 2025-08 | risk-on / bottom long | long 1  | 115758 | 108411 | -6.86% | no |
+| 2025-09 | risk-on / bottom long | long 1  | 108411 | 114056 | 4.81% | yes |
+| 2025-10 | risk-on / bottom long | long 1  | 114056 | 109556 | -4.47% | no |
+| 2025-11 | risk-on / bottom long | long 1  | 109556 | 90919 | -17.00% | no |
+| 2025-12 | risk-on / bottom long | long 1  | 90919 | 87509 | -3.98% | no |
+| 2026-01 | risk-on / bottom long | long 1  | 87509 | 84129 | -4.17% | no |
+| 2026-02 | risk-on / bottom long | long 1  | 84129 | 65882 | -21.60% | no |
+| 2026-03 | risk-on / bottom long | long 1  | 65882 | 70523 | 6.98% | yes |
+| 2026-04 | neutral / flat | flat 0  | 68079 | 76304 | 0.00% | n/a |
+| 2026-05 | risk-on / flat | flat 0  | 78179 | 73373 | 0.00% | n/a |
+| 2026-06 | risk-on / flat | flat 0  | 71320 | 58559 | 0.00% | n/a |
+| 2026-07 | risk-on / flat | flat 0  | 60004 | 62814 | 0.00% | n/a |
+| 2026-08 | neutral / flat | flat 0  | 63461 | 78549 | 0.00% | n/a |
+| 2026-09 | neutral / flat | flat 0  | 77404 | 83554 | 0.00% | n/a |
 
 ## Current book snapshot
 
@@ -471,7 +449,7 @@ As of 2026-09-30, about $798.0: MSFT 15.6%, META 15.5%, FCX 14.4%, BAC 13.1%, AM
 
 Snapshot only. No cost basis exists before 2026-09-15, so the backtest does not replay this book.
 
-Trade-log comparison (plus or minus 5 days): 2026-09-23 sell TSLA recognized as already exited on 2025-05-12 (499 days earlier). Simulated position was already flat. Last simulated sell was 2025-05-12, 499 days earlier. The model sells this name on strength before the logged date, so the log is the same exit, not a same-week fill.
+Trade-log comparison (plus or minus 5 days): 2026-09-23 sell TSLA recognized as already exited on 2026-03-23 (184 days earlier). Simulated position was already flat. Last simulated sell was 2026-03-23, 184 days earlier. The model sells this name on strength before the logged date, so the log is the same exit, not a same-week fill.
 
 ## Assumptions and limits
 
@@ -487,6 +465,7 @@ Trade-log comparison (plus or minus 5 days): 2026-09-23 sell TSLA recognized as 
 - Porto rules. Cash target is 35, 40, 42 or 45 percent in risk-on, neutral, caution and risk-off. An up day in the index raises the target by one step, capped at 45 percent. Adds are only ETN, CAT, APH and AMAT, only in the bottom half of the trailing buy zone, and never in caution or risk-off, on an FOMC decision date, or on an oil-shock day. Trims follow TSLA, FCX, BAC, then half of META, EQIX and MSFT, then a light AMZN trim. A name that is down on the day is not sold. Nothing is sold on a hard-down index day. Two of the three trim gates must pass; on daily bars the regular-hours gate always passes. There is no daily rebalance back to equal weight.
 - The regime can block adds and move the cash target. Caution is the middle tier: higher cash, no new adds, a flat perp. It does not authorize selling into a red name or a hard-down day, and it does not by itself short BTC.
 - Risk-off is a stress score with hysteresis, not a pillar-level rule. Points come from a VIX jump, credit-spread widening, a 30-year yield breakout, an oil shock, and a BTC drawdown. Enter risk-off at 4, leave it below 2; enter caution at 2, leave it below 1. Red rates plus red volatility or red credit is only an entry backstop. v3 leaves that caution when VIX falls off a spike of 25 or more while SPY is still 12% under its 60-session high, then buys up to three tranches and does not trim while the release is on. The release ends once the stress score cools below the caution exit, so the next rise can raise cash again. The 12% gate is the in-sample distinction between the failed March 2025 fade and the April low. It was not lowered to catch a later, smaller dip.
+- v4 raises cash to the risk-off target only when VIX is at or above 25 and high-yield credit has widened by at least 40bp over 20 sessions. Other stress either stays in the 35-45% band or, if that lost in sample, uses a 27.5% caution with adds paused. Redeployed shares are held until the next caution or risk-off after a quiet day, so quiet up-days do not refill cash. BTC longs use the same hold. Puts are included only when they raised in-sample P&L. The choice uses the in-sample half and is not refit out of sample.
 - Parameters otherwise live in config/market_check.toml. The out-of-sample split is the second half of the window, same parameters.
 - Phillip's private numeric bands are not in the repo. The daily check uses the bottom quartile of the trailing range and shifts it with the regime. That is a stand-in.
 - The September 2026 book snapshot is printed for context. There is no cost basis before 15 September 2026, so the backtest does not replay that book. An optional trade-log CSV is only a comparison.
