@@ -51,6 +51,22 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
 - A-2 quarterly roll, 100-day 15% OTM: 92 legs (monthly decisions!),
   ~82%/yr — mis-specified (overlapping 100-day cover). Redo with
   quarterly decisions before judging longer tenors.
+- A-2r quarterly decisions (spacing 90, tenor 100, 15% OTM): 32 legs,
+  ~25%/yr, hedged DD -77.2% vs naked -76.6%. Helps LUNA (+24.5pp) and
+  2021-05 (+14.7pp), hurts or flat in 5 of 7 crashes.
+- A-3/A-4 (FAILURES, mis-specified): monthly decisions with 100/180-day
+  tenors stack 3-6x concurrent cover (56%/121%/yr). Spacing must match
+  tenor; added spacing_days, applies to every trigger.
+- A-5 quarterly 100-day 20% OTM: 32 legs, ~18%/yr, hedged -75.7% vs
+  -76.6%. Cheaper, pays only in mega-crashes (LUNA +22.7pp).
+- A-6 semi-annual 180-day 15% OTM: 16 legs, ~20%/yr, hedged -80.7%.
+  Helps 2020-03 (+22.5pp) and LUNA (+21.1pp), hurts 2021-05/FTX/2026.
+- A-7 cheap-vol (DVOL <=25th pct, 90-day 15% OTM): 11 legs, 6.5%/yr,
+  zero reduction in every big crash. Adverse selection confirmed: vol is
+  cheap exactly when no crash comes.
+- A-8 pre-event (7d before FOMC/election, 30-day 15% OTM): 46 legs,
+  14.1%/yr, best windows +2.4pp (2021-05) and +2.0pp (LUNA), worse
+  elsewhere. Crashes are not scheduled.
 
 ## Family B — capitulation longs (variants B-*)
 (none yet)

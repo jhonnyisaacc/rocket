@@ -39,6 +39,7 @@ class PutRule:
     tenor_days: int = 90  # fixed time to expiry at purchase
     otm: float = 0.15  # strike = (1 - otm) * spot
     trigger: str = "monthly"  # monthly | cheap_vol | pre_event | stress
+    spacing_days: int = 30  # minimum days between purchases (match to tenor)
     cheap_vol_pct: float = 25.0  # DVOL percentile at or below which vol is cheap
     pre_event_days: int = 7  # buy N days before FOMC/election
     exit_dte: int = 0  # days to expiry at exit (0 = hold to expiry)
@@ -156,17 +157,20 @@ def run_insurance(
             legs.append(open_legs[-1])
             pending_close = None
             continue
-        # Decide a new purchase on bar i (fills bar i+1).
+        # Decide a new purchase on bar i (fills bar i+1). Spacing applies
+        # to every trigger: without it, a persistent signal stacks
+        # overlapping cover and the bleed multiplies.
+        spaced = not legs or (bar.day - legs[-1].entry_day).days >= rule.spacing_days
         trigger = False
         if rule.trigger == "monthly":
-            trigger = not legs or (bar.day - legs[-1].entry_day).days >= 30
+            trigger = True
         elif rule.trigger == "cheap_vol":
             trigger = percentile(vols.get(bar.day, 1e9)) <= rule.cheap_vol_pct
         elif rule.trigger == "pre_event":
             trigger = any(0 < (event - bar.day).days <= rule.pre_event_days for event in event_set)
         elif rule.trigger == "stress":
             trigger = bar.day in (stress_days or set())
-        if trigger:
+        if trigger and spaced:
             pending_close = bar.close
 
     for leg in open_legs:
@@ -221,6 +225,15 @@ def crash_payoffs(result: dict, bars: list[Bar]) -> list[dict]:
         base_naked = result["naked"][idx[0]] or 1.0
         base_hedged = result["combined"][idx[0]] or 1.0
         naked_dd = min(result["naked"][i] / base_naked - 1 for i in idx)
+        if base_hedged <= 0:
+            # Cumulative bleed already bankrupted the overlay before the
+            # window: ratios are meaningless; say so instead of printing
+            # a -1000% artifact.
+            out.append(
+                {"crash": name, "naked_dd": round(naked_dd * 100, 1),
+                 "hedged_dd": None, "dd_reduction_pp": None}
+            )
+            continue
         hedged_dd = min(result["combined"][i] / base_hedged - 1 for i in idx)
         out.append(
             {
