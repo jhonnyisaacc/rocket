@@ -8,7 +8,7 @@ import httpx
 from rocket.config import env
 from rocket.models import OperationalStatus
 from rocket.providers.dispatch import failure_kind
-from rocket.providers.fmp import ProviderPayloadError, _finite, endpoint_attempt, payload_error_kind
+from rocket.providers.fmp import _finite
 from rocket.providers.http import get_read
 from rocket.providers.protocols import ProviderResult
 
@@ -75,7 +75,7 @@ class MassiveFundamentals:
 
     def fetch(self, symbol: str, *, now=None) -> ProviderResult:
         if not self.api_key:
-            return ProviderResult(OperationalStatus.UNAVAILABLE, source="massive", failure_kind="NotConfigured", extras={"provider_attempts": [endpoint_attempt("massive", symbol, ENDPOINT, "income_statements", now or datetime.now(UTC), failure="NotConfigured")]})
+            return ProviderResult(OperationalStatus.UNAVAILABLE, source="massive", failure_kind="NotConfigured")
         owns = self.http is None
         client = self.http or httpx.Client(timeout=20)
         try:
@@ -84,26 +84,15 @@ class MassiveFundamentals:
                                                          "limit": 6, "sort": "period_end.desc"},
                                 headers={"Authorization": f"Bearer {self.api_key}"})
             raw = response.json()
-            if kind := payload_error_kind(raw):
-                raise ProviderPayloadError(kind)
-            if not isinstance(raw, dict) or raw.get("status") != "OK" or not isinstance(raw.get("results"), list):
+            if raw.get("status") != "OK" or not isinstance(raw.get("results"), list):
                 raise ValueError("invalid income statement response")
             retrieved = now or datetime.now(UTC)
-            if not raw["results"]:
-                raise ProviderPayloadError("EmptyData")
-            if any(not isinstance(item, dict) for item in raw["results"]):
-                raise ValueError("invalid income statement record")
-            try:
-                row = reported_factors(raw["results"], symbol, retrieved)
-            except ValueError:
-                raise ProviderPayloadError("InsufficientCoverage") from None
-            row["provider_attempts"] = [endpoint_attempt("massive", symbol, ENDPOINT, "income_statements", retrieved, count=len(raw["results"]))]
+            row = reported_factors(raw["results"], symbol, retrieved)
             return ProviderResult(OperationalStatus.HEALTHY, (row,), retrieved, source="massive",
                                   extras={"request_id": raw.get("request_id"), "endpoint": ENDPOINT})
         except Exception as exc:
             return ProviderResult(OperationalStatus.UNAVAILABLE, retrieved_at=now or datetime.now(UTC),
-                                  source="massive", failure_kind=failure_kind(exc),
-                                  extras={"provider_attempts": [endpoint_attempt("massive", symbol, ENDPOINT, "income_statements", now or datetime.now(UTC), failure=failure_kind(exc))]})
+                                  source="massive", failure_kind=failure_kind(exc))
         finally:
             if owns:
                 client.close()

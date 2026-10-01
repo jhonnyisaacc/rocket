@@ -98,7 +98,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
         "current_price": row.get("current_price"),
         "technical_setup": row.get("technical_setup"),
-        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source", "field_provenance")},
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
         "entry": row.get("entry"),
         "invalidation": row.get("invalidation"),
     }
@@ -164,7 +164,7 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
         "current_price": row.get("current_price"),
         "technical_setup": row.get("technical_setup"),
-        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source", "field_provenance")},
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
         "entry": row.get("entry"),
         "invalidation": row.get("invalidation"),
     }

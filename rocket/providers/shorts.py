@@ -111,7 +111,6 @@ def acquire_short_snapshot(
                     "eps_growth",
                     "fundamentals_source",
                     "eps_growth_basis",
-                    "field_provenance",
                 ):
                     if key in extra:
                         row[key] = extra[key]
