@@ -251,10 +251,13 @@ def test_real_adapters_recover_empty_eps_and_keep_fmp_valuation():
         )
 
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
+        adapter = MassiveFundamentals(api_key="SECRET", http=client)
+        massive = Mock()
+        massive.fetch.side_effect = lambda symbol: adapter.fetch(symbol, now=NOW)
         row = fundamentals_row(
             "CAT",
             fmp=FMPClient(api_key="SECRET", http=client),
-            massive=MassiveFundamentals(api_key="SECRET", http=client),
+            massive=massive,
         )
     assert row["eps_growth"] == -0.5
     assert row["pe_ttm"] == 12

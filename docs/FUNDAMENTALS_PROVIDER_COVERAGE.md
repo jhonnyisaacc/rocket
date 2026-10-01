@@ -26,6 +26,10 @@ FMP provided EPS/P-E for F. CAT's profile worked, while ratios, estimates and in
 growth returned Entitlement. CAT, NUE, TXN, UPS and DOW attempted Massive and returned
 Entitlement; VLO encountered a Massive rate limit after FMP entitlement failure.
 These are observed plan restrictions, not proof that the symbols lack filings.
+A later isolated smoke run encountered FMP/Massive RateLimit as well: both ISM
+reports were CURRENT with PARTIAL overall health; shorts was PARTIAL with
+INSUFFICIENT_EVIDENCE. Successful EPS recovery is fixture-tested, not claimed
+for entitlement-blocked live symbols.
 
 Massive's current adapter supplies reported annual diluted EPS growth from fresh,
 identified consecutive fiscal years. It does not supply P/E or forecast revisions.
