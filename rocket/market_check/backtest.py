@@ -9,6 +9,7 @@ from typing import Any
 
 from rocket.market_check.config import Config
 from rocket.market_check.derivatives import simulate_derivatives
+from rocket.market_check.episodes import drawdown_warnings, regime_episodes, session_counts
 from rocket.market_check.panel import SeriesPanel
 from rocket.market_check.portfolio import compare_trade_log, simulate_portfolio
 from rocket.market_check.report import ASSUMPTIONS, render_report
@@ -61,6 +62,15 @@ def run_backtest(
             "sources": panel.meta.get("sources") or {},
         },
         "execution_enabled": False,
+        "stress_record": {
+            "episodes": regime_episodes(portfolio["nav"], config.window.oos_start),
+            "sessions": session_counts(portfolio["nav"], config.window.oos_start),
+            "drawdowns": drawdown_warnings(panel, config, portfolio["nav"]),
+            "note": (
+                "Stress cuts were checked on the in-sample half only. "
+                "Out-of-sample episodes are reported with the same cuts."
+            ),
+        },
     }
     result["markdown"] = render_report(result)
     return result

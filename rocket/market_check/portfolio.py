@@ -18,7 +18,7 @@ from rocket.market_check.rules import (
     trailing_bounce,
     trim_allowed,
 )
-from rocket.market_check.score import score_asof
+from rocket.market_check.score import score_on, score_path, scoring_days
 
 
 def _price(panel: SeriesPanel, config: Config, day: date, name: str) -> float | None:
@@ -91,6 +91,7 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     last_add: dict[str, date] = {}
     nav_path = []
     regimes: list[str] = []
+    path = score_path(panel, scoring_days(panel, config), config)
     for day in days:
         view = panel.asof(day, config.lags)
         prices = {}
@@ -99,11 +100,11 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             if price:
                 prices[name] = price
         nav = _nav(cash, shares, prices)
+        score = score_on(path, day) or {"regime": "unknown", "oil_shock": False, "events_today": []}
+        regime = score["regime"]
         if day != start:
-            score = score_asof(panel, day, config)
             index_return = session_return(view, "spy")
             index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
-            regime = score["regime"]
             target = cash_target(regime, index_return, config) if regime != "unknown" else cash / nav if nav else 0
             if regime != "unknown" and nav > 0:
                 allowed: set[str] = set()
@@ -168,8 +169,6 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                                 "shares": qty, "price": fill, "notional": spend, "reason": "add_bottom_half",
                             })
                             nav = _nav(cash, shares, prices)
-        else:
-            regime = score_asof(panel, day, config)["regime"]
         nav_path.append(nav)
         regimes.append(regime)
     universe = _buy_hold(panel, config, config.portfolio.universe, days)
@@ -242,23 +241,60 @@ def _trade_counts(trades: list[dict[str, Any]]) -> dict[str, dict[str, int]]:
 
 
 def compare_trade_log(logged: list[dict[str, Any]], simulated: list[dict[str, Any]], *, window_days: int = 5) -> list[dict[str, Any]]:
-    """Match a caller trade log to simulated trades. This does not invent a cost basis."""
+    """Match a caller trade log to simulated trades. This does not invent a cost basis.
+
+    A same-week fill is `matched`. A sell whose simulated position was already flat
+    is `already_exited`: the model agrees with the exit and records when it happened.
+    """
+    ordered = sorted(simulated, key=lambda trade: trade["date"])
     rows = []
     for item in logged:
         stamp = item["date"] if isinstance(item["date"], date) else date.fromisoformat(str(item["date"])[:10])
+        ticker = item["ticker"]
+        side = item["side"]
         hits = []
-        for trade in simulated:
-            if trade["ticker"] != item["ticker"] or trade["side"] != item["side"]:
+        for trade in ordered:
+            if trade["ticker"] != ticker or trade["side"] != side:
                 continue
             traded = date.fromisoformat(trade["date"])
             if abs((traded - stamp).days) <= window_days:
                 hits.append(trade["date"])
+        balance = 0.0
+        last_same_side = None
+        for trade in ordered:
+            traded = date.fromisoformat(trade["date"])
+            if traded > stamp or trade["ticker"] != ticker:
+                continue
+            if trade["side"] == "buy":
+                balance += float(trade["shares"])
+            elif trade["side"] == "sell":
+                balance -= float(trade["shares"])
+                if trade["side"] == side:
+                    last_same_side = traded
+        status = "unmatched"
+        explanation = "No simulated fill within the window, and the simulated book was not already flat."
+        if hits:
+            status = "matched"
+            explanation = "Simulated fill within the match window."
+        elif side == "sell" and last_same_side is not None and balance <= 1e-8:
+            status = "already_exited"
+            gap = (stamp - last_same_side).days
+            explanation = (
+                f"Simulated position was already flat. Last simulated sell was {last_same_side.isoformat()}, "
+                f"{gap} days earlier. The model sells this name on strength before the logged date, "
+                "so the log is the same exit, not a same-week fill."
+            )
         rows.append({
             "date": stamp.isoformat(),
-            "ticker": item["ticker"],
-            "side": item["side"],
+            "ticker": ticker,
+            "side": side,
             "note": item.get("note") or "",
             "simulated_dates": hits,
-            "matched": bool(hits),
+            "matched": status == "matched",
+            "recognized": status in {"matched", "already_exited"},
+            "status": status,
+            "last_simulated": last_same_side.isoformat() if last_same_side and status == "already_exited" else None,
+            "days_apart": (stamp - last_same_side).days if last_same_side and status == "already_exited" else None,
+            "explanation": explanation,
         })
     return rows

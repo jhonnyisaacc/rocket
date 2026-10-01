@@ -56,7 +56,7 @@ def _perps(score: dict[str, Any], config: Config) -> dict[str, Any]:
     hedge_signal = regime == "risk-off" or (options == "cheap" and near_event)
     suppressed = direction == "short" and not config.derivatives.put_with_short
     hedge = "btc_puts" if hedge_signal and not suppressed else "none"
-    note = "BTC perp sized by regime and the 50/200-session trend."
+    note = "BTC perp sized by regime and the 50/200-session trend. Caution is flat."
     if hedge == "btc_puts":
         note += (
             f" Put overlay: about {config.derivatives.put_tenor_days} days, "
@@ -105,8 +105,10 @@ def decide(
     *,
     book: dict[str, float] | None = None,
     regular_hours: bool | None = None,
+    score: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    score = score_asof(panel, day, config)
+    if score is None:
+        score = score_asof(panel, day, config)
     view = panel.asof(day, config.lags)
     hours = config.portfolio.assume_regular_hours if regular_hours is None else regular_hours
     index_return = session_return(view, "spy")
@@ -207,6 +209,8 @@ def decide(
         "date": day.isoformat(),
         "regime": score["regime"],
         "score": score["score"],
+        "stress": score.get("stress"),
+        "stress_parts": score.get("stress_parts") or {},
         "pillars": score["pillars"],
         "oil_shock": score["oil_shock"],
         "events_today": score["events_today"],
@@ -225,9 +229,10 @@ def decide(
             "add_candidates": adds,
             "trim_candidates": trims,
             "rules": (
-                "Long-only USDC book. Cash target is 35/40/45 percent by regime and steps up on an up index day, "
-                "capped at 45. Adds are only the watch names in the bottom half of the trailing buy zone, "
-                "and never on a risk-off day, an FOMC decision day, or an oil shock. "
+                "Long-only USDC book. Cash target is 35/40/42/45 percent for risk-on, neutral, caution and "
+                "risk-off, and steps up on an up index day, capped at 45. Adds are only the watch names in "
+                "the bottom half of the trailing buy zone, and never in caution or risk-off, on an FOMC "
+                "decision day, or on an oil shock. "
                 "Trims follow the sale order and need two of three gates, and never sell a name that is down "
                 "or any name on a hard-down index day."
             ),
@@ -240,7 +245,7 @@ def decide(
             "note": (
                 "Phillip's private buy bands are not in this repo. Bands are the bottom "
                 f"{config.phillip.zone_fraction:.0%} of the trailing {config.windows.range_lookback}-session range, "
-                "raised in risk-on and lowered in risk-off."
+                "raised in risk-on and lowered in risk-off. Caution keeps the band."
             ),
         },
     }

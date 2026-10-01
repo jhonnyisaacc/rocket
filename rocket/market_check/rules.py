@@ -47,6 +47,7 @@ def cash_target(regime: str, index_return: float | None, config: Config) -> floa
     base = {
         "risk-on": config.portfolio.cash_risk_on,
         "neutral": config.portfolio.cash_neutral,
+        "caution": config.portfolio.cash_caution,
         "risk-off": config.portfolio.cash_risk_off,
     }.get(regime, config.portfolio.cash_neutral)
     if index_return is not None and index_return > 0:
@@ -118,6 +119,8 @@ def add_blockers(*, regime: str, oil_shock: bool, events_today: list[str]) -> li
     blockers = []
     if regime == "risk-off":
         blockers.append("risk_off")
+    if regime == "caution":
+        blockers.append("caution")
     if regime == "unknown":
         blockers.append("regime_unknown")
     if oil_shock:

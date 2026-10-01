@@ -14,9 +14,10 @@ ASSUMPTIONS = (
     "BTC options are Black-Scholes. Implied vol is Deribit DVOL when that day's print exists, otherwise trailing realized vol. These are not historical Deribit trade prices. DVOL is a 30-day index applied to a 60-day, 15 percent out-of-the-money put. Entry IV is worsened by the configured slippage.",
     "Perp funding is the sum of Deribit BTC-PERPETUAL hourly interest_1h, in fraction of notional. Positive funding is paid by longs. A short does not also buy puts unless put_with_short is turned on.",
     "The equity book is long-only and unlevered. USDC earns nothing in the simulation. Prices are split- and dividend-adjusted closes, so dividends are in the path rather than paid as cash. Ondo tokenized stocks are the underlying one-for-one. Sessions before the configured Ondo date are a proxy and are reported as their own window. Equity slippage is charged on every fill, including the opening buys of the strategy and the benchmarks.",
-    "Porto rules. Cash target is 35, 40 or 45 percent in risk-on, neutral and risk-off. An up day in the index raises the target by one step, capped at 45 percent. Adds are only ETN, CAT, APH and AMAT, only in the bottom half of the trailing buy zone, and never in risk-off, on an FOMC decision date, or on an oil-shock day. Trims follow TSLA, FCX, BAC, then half of META, EQIX and MSFT, then a light AMZN trim. A name that is down on the day is not sold. Nothing is sold on a hard-down index day. Two of the three trim gates must pass; on daily bars the regular-hours gate always passes. There is no daily rebalance back to equal weight.",
-    "The regime can block adds and move the cash target. It does not authorize selling into a red name or a hard-down day.",
-    "Parameters live in config/market_check.toml. They were set from the stated rules and from round level thresholds, and they were not searched against this result. The out-of-sample split is the second half of the window, same parameters.",
+    "Porto rules. Cash target is 35, 40, 42 or 45 percent in risk-on, neutral, caution and risk-off. An up day in the index raises the target by one step, capped at 45 percent. Adds are only ETN, CAT, APH and AMAT, only in the bottom half of the trailing buy zone, and never in caution or risk-off, on an FOMC decision date, or on an oil-shock day. Trims follow TSLA, FCX, BAC, then half of META, EQIX and MSFT, then a light AMZN trim. A name that is down on the day is not sold. Nothing is sold on a hard-down index day. Two of the three trim gates must pass; on daily bars the regular-hours gate always passes. There is no daily rebalance back to equal weight.",
+    "The regime can block adds and move the cash target. Caution is the middle tier: higher cash, no new adds, a flat perp. It does not authorize selling into a red name or a hard-down day, and it does not by itself short BTC.",
+    "Risk-off is a stress score with hysteresis, not a pillar-level rule. Points come from a VIX jump, credit-spread widening, a 30-year yield breakout, an oil shock, and a BTC drawdown. Enter risk-off at 4, leave it below 2; enter caution at 2, leave it below 1. Red rates plus red volatility or red credit is only an entry backstop. The cuts are round economic thresholds. They were checked against in-sample episodes and were not moved after seeing out-of-sample P&L.",
+    "Parameters otherwise live in config/market_check.toml. The out-of-sample split is the second half of the window, same parameters.",
     "Phillip's private numeric bands are not in the repo. The daily check uses the bottom quartile of the trailing range and shifts it with the regime. That is a stand-in.",
     "The September 2026 book snapshot is printed for context. There is no cost basis before 15 September 2026, so the backtest does not replay that book. An optional trade-log CSV is only a comparison.",
     "One path, one parameter set, and real approximation error on options, funding and same-close fills. A better in-sample number would not, by itself, be evidence to size up.",
@@ -102,6 +103,99 @@ def _summary_line(stats: dict[str, Any]) -> str:
     )
 
 
+def _trade_status(row: dict[str, Any]) -> str:
+    label = f"{row['date']} {row['side']} {row['ticker']}"
+    if row.get("status") == "matched" or row.get("matched"):
+        return f"{label} matched {','.join(row.get('simulated_dates') or [])}"
+    if row.get("status") == "already_exited":
+        return (
+            f"{label} recognized as already exited on {row.get('last_simulated')} "
+            f"({row.get('days_apart')} days earlier). {row.get('explanation') or ''}"
+        )
+    return f"{label} not matched. {row.get('explanation') or ''}"
+
+
+def _when(value: int | None, *, versus: str) -> str:
+    if value is None:
+        return "none"
+    if versus == "peak":
+        if value < 0:
+            return f"{-value}d before peak"
+        if value > 0:
+            return f"{value}d after peak"
+        return "on the peak"
+    if value > 0:
+        return f"{value}d before the low"
+    if value < 0:
+        return f"{-value}d after the low"
+    return "on the low"
+
+
+def _count_line(counts: dict[str, int] | None) -> str:
+    if not counts:
+        return "none"
+    order = ("risk-off", "caution", "neutral", "risk-on", "unknown")
+    parts = [f"{name} {counts[name]}" for name in order if counts.get(name)]
+    extra = [f"{name} {value}" for name, value in sorted(counts.items()) if name not in order and value]
+    return ", ".join([*parts, *extra]) or "none"
+
+
+def _stress_section(record: dict[str, Any]) -> str:
+    sessions = record.get("sessions") or {}
+    lines = [
+        "## Risk-off and caution",
+        "",
+        str(record.get("note") or ""),
+        "",
+        (
+            f"In-sample sessions: {_count_line(sessions.get('in_sample'))}. "
+            f"Out-of-sample sessions: {_count_line(sessions.get('out_of_sample'))}. "
+            "A day count versus the peak is a lead when the warning is earlier. "
+            "Days versus the low are how early the warning sat before the trough."
+        ),
+        "",
+        "| Regime | Start | End | Sessions | Sample |",
+        "|---|---|---|---:|---|",
+    ]
+    episodes = record.get("episodes") or []
+    if not episodes:
+        lines.append("| none | | | | |")
+    for row in episodes:
+        lines.append(
+            f"| {row['regime']} | {row['start']} | {row['end']} | {row['sessions']} | {row['sample']} |"
+        )
+    lines.extend([
+        "",
+        (
+            "Large drawdowns are a peak-to-trough of at least 8% in SPY or 15% in BTC. "
+            "The search window starts 10 equity sessions before the peak and ends at the trough."
+        ),
+        "",
+        "| Asset | Sample | Peak | Trough | Depth | Caution | Risk-off | Caution vs peak | Risk-off vs peak | Caution vs low | Risk-off vs low |",
+        "|---|---|---|---|---:|---|---|---|---|---|---|",
+    ])
+    drawdowns = record.get("drawdowns") or []
+    if not drawdowns:
+        lines.append("| none | | | | | | | | | | |")
+    for row in drawdowns:
+        lines.append(
+            "| {asset} | {sample} | {peak} | {trough} | {depth} | {caution} | {risk} | {cpeak} | {rpeak} | {clow} | {rlow} |".format(
+                asset=row["asset"],
+                sample=row["sample"],
+                peak=row["peak"],
+                trough=row["trough"],
+                depth=_pct(row["depth"]),
+                caution=row.get("first_caution") or "none",
+                risk=row.get("first_risk_off") or "none",
+                cpeak=_when(row.get("caution_vs_peak_days"), versus="peak"),
+                rpeak=_when(row.get("risk_off_vs_peak_days"), versus="peak"),
+                clow=_when(row.get("caution_vs_trough_days"), versus="low"),
+                rlow=_when(row.get("risk_off_vs_trough_days"), versus="low"),
+            )
+        )
+    return "\n".join(lines)
+
+
 def render_report(result: dict[str, Any]) -> str:
     portfolio = result["portfolio"]
     derivatives = result["derivatives"]
@@ -113,10 +207,7 @@ def render_report(result: dict[str, Any]) -> str:
     ) or "none"
     comparison = result.get("trade_log") or []
     if comparison:
-        compared = "; ".join(
-            f"{row['date']} {row['side']} {row['ticker']} {'matched ' + ','.join(row['simulated_dates']) if row['matched'] else 'not matched'}"
-            for row in comparison
-        )
+        compared = "; ".join(_trade_status(row) for row in comparison)
     else:
         compared = "No trade log was supplied beyond the snapshot note."
     book = result.get("current_book") or {}
@@ -153,6 +244,8 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         _window_block("From Ondo live date", portfolio["post_ondo"]),
         "",
+        _stress_section(result.get("stress_record") or {}),
+        "",
         "## Crypto derivatives",
         "",
         derivatives["pricing_note"],
@@ -171,7 +264,7 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         str(book.get("note") or ""),
         "",
-        f"Trade-log comparison (plus or minus 5 days): {compared}.",
+        f"Trade-log comparison (plus or minus 5 days): {compared}",
         "",
         "## Assumptions and limits",
         "",

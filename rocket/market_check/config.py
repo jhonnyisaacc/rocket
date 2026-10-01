@@ -59,11 +59,49 @@ class Rollup:
 
 
 @dataclass(frozen=True)
+class Stress:
+    """Rate-of-change stress points and the hysteresis bands around them."""
+
+    vix_jump_sessions: int
+    vix_jump_caution: float
+    vix_jump_risk: float
+    vix_level_caution: float
+    vix_level_risk: float
+    vix_cap: int
+    credit_sessions: int
+    credit_widen_caution: float
+    credit_widen_risk: float
+    yield_sessions: int
+    yield_caution: float
+    yield_risk: float
+    yield_breakout_sessions: int
+    yield_breakout_min_change: float
+    yield_cap: int
+    oil_sessions: int
+    oil_caution: float
+    oil_risk: float
+    btc_roc_sessions: int
+    btc_roc_caution: float
+    btc_roc_risk: float
+    btc_dd_sessions: int
+    btc_dd_caution: float
+    btc_dd_risk: float
+    btc_cap: int
+    enter_risk_off: float
+    exit_risk_off: float
+    enter_caution: float
+    exit_caution: float
+    spy_drawdown: float
+    btc_drawdown: float
+    lead_sessions: int
+
+
+@dataclass(frozen=True)
 class Regime:
     risk_on_min: float
-    risk_off_max: float
     min_pillars: int
     weights: dict[str, float]
+    stress: Stress
 
 
 @dataclass(frozen=True)
@@ -129,6 +167,7 @@ class CryptoThresholds:
 class Portfolio:
     cash_risk_on: float
     cash_neutral: float
+    cash_caution: float
     cash_risk_off: float
     cash_strength_bump: float
     cash_ceiling: float
@@ -246,6 +285,20 @@ class Config:
         return int(self.lags.get(series, 0))
 
 
+def _stress(raw: dict[str, Any]) -> Stress:
+    integers = {
+        "vix_jump_sessions", "vix_cap", "credit_sessions", "yield_sessions",
+        "yield_breakout_sessions", "yield_cap", "oil_sessions", "btc_roc_sessions",
+        "btc_dd_sessions", "btc_cap", "lead_sessions",
+    }
+    values: dict[str, Any] = {}
+    for key in Stress.__dataclass_fields__:
+        if key not in raw:
+            raise ValueError(f"regime.stress is missing {key}")
+        values[key] = int(raw[key]) if key in integers else float(raw[key])
+    return Stress(**values)
+
+
 def _section(raw: dict[str, Any], name: str) -> dict[str, Any]:
     value = raw.get(name) or {}
     if not isinstance(value, dict):
@@ -291,8 +344,8 @@ def load_config(path: Path | None = None) -> Config:
         ),
         rollup=Rollup(float(rollup["green_min"]), float(rollup["red_max"])),
         regime=Regime(
-            float(regime["risk_on_min"]), float(regime["risk_off_max"]), int(regime["min_pillars"]),
-            _floats(regime.get("weights")),
+            float(regime["risk_on_min"]), int(regime["min_pillars"]),
+            _floats(regime.get("weights")), _stress(_section(regime, "stress")),
         ),
         lags={str(key): int(value) for key, value in dict(raw.get("lags_calendar_days") or {}).items()},
         rates=Rates(**{key: float(rates[key]) for key in (
@@ -320,6 +373,7 @@ def load_config(path: Path | None = None) -> Config:
         portfolio=Portfolio(
             cash_risk_on=float(portfolio["cash_risk_on"]),
             cash_neutral=float(portfolio["cash_neutral"]),
+            cash_caution=float(portfolio["cash_caution"]),
             cash_risk_off=float(portfolio["cash_risk_off"]),
             cash_strength_bump=float(portfolio["cash_strength_bump"]),
             cash_ceiling=float(portfolio["cash_ceiling"]),
@@ -378,8 +432,26 @@ def load_config(path: Path | None = None) -> Config:
 def _validate(cfg: Config) -> None:
     if not cfg.rollup.red_max < 0 < cfg.rollup.green_min:
         raise ValueError("rollup thresholds must bracket zero")
-    if cfg.regime.risk_off_max >= cfg.regime.risk_on_min:
-        raise ValueError("risk-off max must sit below the risk-on minimum")
+    stress = cfg.regime.stress
+    if not stress.exit_caution < stress.exit_risk_off <= stress.enter_caution < stress.enter_risk_off:
+        raise ValueError("stress hysteresis must rise from exit-caution to enter-risk-off")
+    rising = (
+        (stress.vix_jump_caution, stress.vix_jump_risk, "vix jump"),
+        (stress.vix_level_caution, stress.vix_level_risk, "vix level"),
+        (stress.credit_widen_caution, stress.credit_widen_risk, "credit widening"),
+        (stress.yield_caution, stress.yield_risk, "30y change"),
+        (stress.oil_caution, stress.oil_risk, "oil shock"),
+    )
+    for mild, severe, name in rising:
+        if mild >= severe:
+            raise ValueError(f"{name} caution cut must sit below its risk-off cut")
+    falling = (
+        (stress.btc_roc_caution, stress.btc_roc_risk, "btc return"),
+        (stress.btc_dd_caution, stress.btc_dd_risk, "btc drawdown"),
+    )
+    for mild, severe, name in falling:
+        if mild <= severe:
+            raise ValueError(f"{name} caution cut must sit above its risk-off cut")
     pairs = (
         (cfg.rates.yield_10y_green_max, cfg.rates.yield_10y_red_min, "10y"),
         (cfg.rates.yield_30y_green_max, cfg.rates.yield_30y_red_min, "30y"),
@@ -391,8 +463,11 @@ def _validate(cfg: Config) -> None:
     for low, high, name in pairs:
         if low >= high:
             raise ValueError(f"{name} green max must be below its red min")
-    band = (cfg.portfolio.cash_risk_on, cfg.portfolio.cash_neutral, cfg.portfolio.cash_risk_off)
-    if not band[0] <= band[1] <= band[2] <= cfg.portfolio.cash_ceiling:
+    band = (
+        cfg.portfolio.cash_risk_on, cfg.portfolio.cash_neutral,
+        cfg.portfolio.cash_caution, cfg.portfolio.cash_risk_off,
+    )
+    if not band[0] <= band[1] <= band[2] <= band[3] <= cfg.portfolio.cash_ceiling:
         raise ValueError("cash targets must rise from risk-on to risk-off and stay inside the ceiling")
     if cfg.window.start >= cfg.window.oos_start or cfg.window.oos_start > cfg.window.end:
         raise ValueError("out-of-sample split must sit inside the backtest window")

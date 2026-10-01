@@ -26,8 +26,9 @@ green_min = 0.34
 red_max = -0.34
 
 [regime]
+# Pillar total (green positive). Risk-on still uses this. Risk-off does not:
+# a level rule fired once in two years and missed the April 2025 selloff.
 risk_on_min = 2.0
-risk_off_max = -2.0
 min_pillars = 4
 
 [regime.weights]
@@ -37,6 +38,47 @@ volatility = 1.25
 crypto = 1.0
 oil = 0.75
 dollar_gold = 0.75
+
+# Stress score, higher means worse. Points are 0, 1, or 2 from round economic cuts
+# (a 6-point VIX jump, 40bp of credit widening, a 35bp 30y backup, an 8% oil
+# shock, a 15% BTC drawdown). Families are capped so one market cannot fill the
+# whole score. Hysteresis: enter risk-off at 4, leave it below 2; enter caution
+# at 2, leave it below 1. These cuts were checked against in-sample episodes
+# only (through the out-of-sample split). They were not moved to improve P&L.
+[regime.stress]
+vix_jump_sessions = 5
+vix_jump_caution = 6.0
+vix_jump_risk = 10.0
+vix_level_caution = 25.0
+vix_level_risk = 35.0
+vix_cap = 3
+credit_sessions = 20
+credit_widen_caution = 0.40
+credit_widen_risk = 0.80
+yield_sessions = 20
+yield_caution = 0.35
+yield_risk = 0.50
+yield_breakout_sessions = 60
+yield_breakout_min_change = 0.20
+yield_cap = 2
+oil_sessions = 5
+oil_caution = 0.05
+oil_risk = 0.08
+btc_roc_sessions = 10
+btc_roc_caution = -0.12
+btc_roc_risk = -0.18
+btc_dd_sessions = 60
+btc_dd_caution = -0.15
+btc_dd_risk = -0.25
+btc_cap = 2
+enter_risk_off = 4.0
+exit_risk_off = 2.0
+enter_caution = 2.0
+exit_caution = 1.0
+# Reporting only. Not used to choose the score.
+spy_drawdown = 0.08
+btc_drawdown = 0.15
+lead_sessions = 10
 
 # Calendar-day publication lag. A print dated D is visible only on dates >= D+lag.
 # Equity, crypto, VIX, oil, dollar, gold, yields, DVOL and funding stay at 0
@@ -107,6 +149,8 @@ funding_panic = -0.003
 [portfolio]
 cash_risk_on = 0.35
 cash_neutral = 0.40
+# Between neutral and risk-off. Caution raises dry powder without the full sleeve.
+cash_caution = 0.42
 cash_risk_off = 0.45
 cash_strength_bump = 0.05
 cash_ceiling = 0.45

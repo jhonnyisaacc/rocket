@@ -17,7 +17,7 @@ Parameters, thresholds, costs and the event list live in `config/market_check.to
 
 ## What the check scores
 
-Each pillar is green, yellow or red from the sub-scores in that file. The regime is risk-on, neutral or risk-off.
+Each pillar is green, yellow or red from the sub-scores in that file. Risk-on still uses that weighted total. Caution and risk-off come from a rate-of-change stress score (VIX jump, credit widening, 30-year yield breakout, oil shock, BTC drawdown) with hysteresis. A quiet tape is risk-on or neutral.
 
 | Pillar | Series | Notes |
 |---|---|---|
@@ -32,8 +32,8 @@ FOMC dates are the static decision dates in the config. CPI is the second Wednes
 
 ## Consumers
 
-- **Perps.** `long`, `flat` or `short` BTC, a size, whether implied vol is cheap or expensive, and whether a BTC put overlay is on. Puts are suppressed when the book is already short.
-- **Porto.** Cash target inside 35–45 percent, modulated by the regime and raised one step on an up index day. Adds only ETN, CAT, APH and AMAT in the bottom half of the trailing buy zone, and never on a risk-off day, an FOMC decision day, or an oil shock. Trims follow TSLA, FCX, BAC, then half of META/EQIX/MSFT, then a light AMZN trim. A red name is not sold. A hard-down index day blocks every trim.
+- **Perps.** `long`, `flat` or `short` BTC, a size, whether implied vol is cheap or expensive, and whether a BTC put overlay is on. Caution is flat. Puts are suppressed when the book is already short.
+- **Porto.** Cash target is 35 / 40 / 42 / 45 percent for risk-on, neutral, caution and risk-off, and it steps up on an up index day. Adds only ETN, CAT, APH and AMAT in the bottom half of the trailing buy zone, and never in caution or risk-off, on an FOMC day, or on an oil shock. Trims follow TSLA, FCX, BAC, then half of META/EQIX/MSFT, then a light AMZN trim. A red name is not sold. A hard-down index day blocks every trim.
 - **Phillip.** Keep, raise or lower the computed bands, and the names closest to the buy zone. The numeric bands are a trailing-range stand-in until Phillip's own bands are supplied. The watchlist is SPCX, BE, EQIX, ETN, CAT, VST, APH, CRWD, AMAT, MRVL, DDOG.
 
 The September 2026 snapshot (about $798, and the 23 Sep TSLA sale) is context. The backtest does not replay it. There is no cost basis before 15 Sep 2026.

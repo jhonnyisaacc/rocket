@@ -44,7 +44,7 @@ def test_run_is_a_research_result_and_replay_has_no_live_flag(tmp_path):
     result = MarketCheckWorkflow(CFG, store=None).run(panel, asof=day)
     assert_research_result(result)
     assert result.payload["execution_enabled"] is False
-    assert result.payload["regime"] in {"risk-on", "neutral", "risk-off"}
+    assert result.payload["regime"] in {"risk-on", "neutral", "caution", "risk-off"}
     assert result.payload["perps"]["direction"] in {"long", "flat", "short"}
     assert result.payload["porto"]["action"] in {"add", "hold", "trim"}
     assert result.payload["phillip"]["band_stance"] in {"keep", "raise", "lower"}

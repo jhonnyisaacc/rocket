@@ -12,4 +12,7 @@ def test_committed_report_matches_the_panel():
     panel = SeriesPanel.load(panel_path)
     result = run_backtest(panel, load_config())
     assert result["execution_enabled"] is False
+    logged = next(row for row in result["trade_log"] if row["ticker"] == "TSLA")
+    assert logged["recognized"] is True
+    assert logged["status"] == "already_exited"
     assert result["markdown"] == report_path.read_text(encoding="utf-8")

@@ -276,22 +276,128 @@ def _crypto(view: AsOfView, config: Config) -> dict[str, Any]:
     return rolled
 
 
-def combine_regime(pillars: dict[str, dict[str, Any]], config: Config) -> tuple[str, float | None]:
+def _high_points(value: float | None, caution: float, risk: float) -> int:
+    if value is None:
+        return 0
+    if value >= risk:
+        return 2
+    if value >= caution:
+        return 1
+    return 0
+
+
+def _low_points(value: float | None, caution: float, risk: float) -> int:
+    """caution is the milder (less negative) cut. risk is the deeper one."""
+    if value is None:
+        return 0
+    if value <= risk:
+        return 2
+    if value <= caution:
+        return 1
+    return 0
+
+
+def stress_score(view: AsOfView, config: Config) -> tuple[float, dict[str, int]]:
+    """Composite of rate-of-change stresses. Higher is worse. Levels are the backstop, not the driver."""
+    rules = config.regime.stress
+    parts: dict[str, int] = {}
+    vix = view.closes("vix")
+    parts["vix_jump"] = _high_points(level_change(vix, rules.vix_jump_sessions), rules.vix_jump_caution, rules.vix_jump_risk)
+    parts["vix_level"] = _high_points(vix[-1] if vix else None, rules.vix_level_caution, rules.vix_level_risk)
+    parts["vix"] = min(rules.vix_cap, parts["vix_jump"] + parts["vix_level"])
+    hy = view.closes("hy_oas")
+    parts["credit"] = _high_points(
+        level_change(hy, rules.credit_sessions), rules.credit_widen_caution, rules.credit_widen_risk,
+    )
+    yields = view.closes("yield_30y")
+    y_change = level_change(yields, rules.yield_sessions)
+    y_points = _high_points(y_change, rules.yield_caution, rules.yield_risk)
+    breakout = 0
+    if len(yields) > rules.yield_breakout_sessions:
+        prior_high = max(yields[-(rules.yield_breakout_sessions + 1):-1])
+        moved = y_change is not None and y_change >= rules.yield_breakout_min_change
+        if yields[-1] > prior_high and moved:
+            breakout = 1
+    parts["yield_breakout"] = breakout
+    parts["rates"] = min(rules.yield_cap, y_points + breakout)
+    parts["oil"] = _high_points(
+        pct_change(view.closes("wti"), rules.oil_sessions), rules.oil_caution, rules.oil_risk,
+    )
+    btc = view.closes("btc")
+    parts["btc_roc"] = _low_points(
+        pct_change(btc, rules.btc_roc_sessions), rules.btc_roc_caution, rules.btc_roc_risk,
+    )
+    drawdown = None
+    if len(btc) >= 20:
+        window = btc[-rules.btc_dd_sessions:]
+        peak = max(window)
+        if peak > 0:
+            drawdown = btc[-1] / peak - 1
+    parts["btc_drawdown"] = _low_points(drawdown, rules.btc_dd_caution, rules.btc_dd_risk)
+    parts["btc"] = min(rules.btc_cap, parts["btc_roc"] + parts["btc_drawdown"])
+    total = parts["vix"] + parts["credit"] + parts["rates"] + parts["oil"] + parts["btc"]
+    return float(total), parts
+
+
+def _pillar_total(pillars: dict[str, dict[str, Any]], config: Config) -> tuple[list[str], float | None]:
     known = [name for name in PILLAR_ORDER if pillars[name]["color"] != "missing"]
     if pillars["rates"]["color"] == "missing" or len(known) < config.regime.min_pillars:
-        return "unknown", None
+        return known, None
     total = sum(config.regime.weights[name] * COLOR_VALUE[pillars[name]["color"]] for name in known)
+    return known, total
+
+
+def _quiet_regime(pillars: dict[str, dict[str, Any]], total: float, config: Config) -> str:
+    rates = pillars["rates"]["color"]
+    vol = pillars["volatility"]["color"]
+    if total >= config.regime.risk_on_min and rates != "red" and vol != "red":
+        return "risk-on"
+    return "neutral"
+
+
+def resolve_regime(
+    pillars: dict[str, dict[str, Any]],
+    pillar_total: float | None,
+    stress: float,
+    prior: str | None,
+    config: Config,
+) -> str:
+    """Hysteresis on the stress score. A quiet tape falls back to the pillar total."""
+    if pillar_total is None:
+        return "unknown"
+    rules = config.regime.stress
     rates = pillars["rates"]["color"]
     vol = pillars["volatility"]["color"]
     credit = pillars["credit"]["color"]
-    if total <= config.regime.risk_off_max or (rates == "red" and (vol == "red" or credit == "red")):
-        return "risk-off", total
-    if total >= config.regime.risk_on_min and rates != "red" and vol != "red":
-        return "risk-on", total
-    return "neutral", total
+    # Level backstop: red rates together with red vol or red credit still counts as an entry.
+    classic = rates == "red" and (vol == "red" or credit == "red")
+    enter_off = stress >= rules.enter_risk_off or classic
+    if prior == "risk-off":
+        if stress >= rules.exit_risk_off or classic:
+            return "risk-off"
+        if stress >= rules.exit_caution:
+            return "caution"
+        return _quiet_regime(pillars, pillar_total, config)
+    if prior == "caution":
+        if enter_off:
+            return "risk-off"
+        if stress >= rules.exit_caution:
+            return "caution"
+        return _quiet_regime(pillars, pillar_total, config)
+    if enter_off:
+        return "risk-off"
+    if stress >= rules.enter_caution:
+        return "caution"
+    return _quiet_regime(pillars, pillar_total, config)
 
 
-def score_asof(panel: SeriesPanel, day: date, config: Config) -> dict[str, Any]:
+def score_asof(
+    panel: SeriesPanel,
+    day: date,
+    config: Config,
+    *,
+    prior_regime: str | None = None,
+) -> dict[str, Any]:
     """Score `day` using only data the panel exposes on that day."""
     view = panel.asof(day, config.lags)
     oil, shock = _oil(view, config)
@@ -303,22 +409,59 @@ def score_asof(panel: SeriesPanel, day: date, config: Config) -> dict[str, Any]:
         "dollar_gold": _dollar_gold(view, config),
         "crypto": _crypto(view, config),
     }
-    regime, total = combine_regime(pillars, config)
+    _known, total = _pillar_total(pillars, config)
+    stress, parts = stress_score(view, config)
+    regime = resolve_regime(pillars, total, stress, prior_regime, config)
     today = events_on(day, config)
     ahead = upcoming(day, config, config.events.horizon_days)
+    rules = config.regime.stress
     return {
         "date": day.isoformat(),
         "regime": regime,
         "score": total,
+        "stress": stress,
+        "stress_parts": parts,
+        "prior_regime": prior_regime,
         "pillars": pillars,
         "oil_shock": shock,
         "events_today": today,
         "events_upcoming": ahead,
         "regime_rule": (
-            "Weighted pillar scores. Risk-off when the total is at or below "
-            f"{config.regime.risk_off_max} or when rates are red and volatility or credit is also red. "
-            f"Risk-on when the total is at least {config.regime.risk_on_min} and neither rates nor "
-            "volatility is red. Otherwise neutral. Unknown when rates are missing or fewer than "
+            "Risk-on when the weighted pillar total is at least "
+            f"{config.regime.risk_on_min} and neither rates nor volatility is red. "
+            f"A stress score of rate-of-change points (VIX jump, credit widening, 30y breakout, "
+            f"oil shock, BTC drawdown) enters caution at {rules.enter_caution:g} and risk-off at "
+            f"{rules.enter_risk_off:g}. It leaves risk-off below {rules.exit_risk_off:g} and caution "
+            f"below {rules.exit_caution:g}. Red rates plus red volatility or red credit is still an "
+            "entry backstop. Unknown when rates are missing or fewer than "
             f"{config.regime.min_pillars} pillars have data."
         ),
     }
+
+
+def score_path(panel: SeriesPanel, days: list[date], config: Config) -> list[dict[str, Any]]:
+    """Walk sessions in order so hysteresis can see yesterday and not tomorrow."""
+    prior: str | None = None
+    rows = []
+    for day in days:
+        row = score_asof(panel, day, config, prior_regime=prior)
+        rows.append(row)
+        if row["regime"] != "unknown":
+            prior = row["regime"]
+    return rows
+
+
+def scoring_days(panel: SeriesPanel, config: Config) -> list[date]:
+    start = min(config.window.warmup_start, config.window.start)
+    return [day for day in panel.dates("spy") if start <= day <= config.window.end]
+
+
+def score_on(path: list[dict[str, Any]], day: date) -> dict[str, Any] | None:
+    """Latest scored session on or before `day`."""
+    chosen = None
+    for row in path:
+        if date.fromisoformat(row["date"]) <= day:
+            chosen = row
+        else:
+            break
+    return chosen

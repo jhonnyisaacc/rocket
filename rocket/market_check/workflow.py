@@ -11,6 +11,7 @@ from rocket.market_check.actions import _book_weights, changed_against, decide, 
 from rocket.market_check.backtest import run_backtest
 from rocket.market_check.config import Config, load_config
 from rocket.market_check.panel import SeriesPanel
+from rocket.market_check.score import score_asof, score_on, score_path, scoring_days
 from rocket.market_check.scorecard import load_scorecard, pending_due
 from rocket.models import (
     Evidence,
@@ -83,12 +84,22 @@ class MarketCheckWorkflow:
     ) -> ResearchResult:
         decided = close_timestamp(asof)
         weights, basis = _book_weights(book, self.config, asof)
-        decision = decide(panel, asof, self.config, book=weights, regular_hours=regular_hours)
+        path = score_path(panel, scoring_days(panel, self.config), self.config)
+        scored = score_on(path, asof)
+        if scored is None or scored["date"] != asof.isoformat():
+            prior = scored["regime"] if scored and scored["regime"] != "unknown" else None
+            scored = score_asof(panel, asof, self.config, prior_regime=prior)
+        decision = decide(
+            panel, asof, self.config, book=weights, regular_hours=regular_hours, score=scored,
+        )
         decision["porto"]["book_basis"] = basis
         prior_day = previous_session(panel, asof)
         yesterday = None
         if prior_day is not None:
-            yesterday = decide(panel, prior_day, self.config, book=weights, regular_hours=regular_hours)
+            prior_score = score_on(path, prior_day)
+            yesterday = decide(
+                panel, prior_day, self.config, book=weights, regular_hours=regular_hours, score=prior_score,
+            )
             yesterday["porto"]["book_basis"] = basis
         changed = changed_against(decision, yesterday)
         warnings: list[str] = []
@@ -116,6 +127,8 @@ class MarketCheckWorkflow:
             "as_of": asof.isoformat(),
             "regime": decision["regime"],
             "score": decision["score"],
+            "stress": decision.get("stress"),
+            "stress_parts": decision.get("stress_parts") or {},
             "regime_rule": decision["regime_rule"],
             "pillars": decision["pillars"],
             "oil_shock": decision["oil_shock"],

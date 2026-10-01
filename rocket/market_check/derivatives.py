@@ -10,7 +10,7 @@ from rocket.market_check.bs import bs_put
 from rocket.market_check.config import Config
 from rocket.market_check.mathutil import realized_vol
 from rocket.market_check.panel import SeriesPanel
-from rocket.market_check.score import score_asof
+from rocket.market_check.score import score_on, score_path, scoring_days
 
 
 def _iv(panel: SeriesPanel, config: Config, day: date) -> tuple[float | None, str]:
@@ -87,13 +87,15 @@ def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     ]
     slip = config.costs.perp_slippage_bps / 10_000
     fee = config.costs.perp_fee_bps / 10_000
+    path = score_path(panel, scoring_days(panel, config), config)
     rows = []
     for members in _months(days):
         entry_day = members[0]
         entry = panel.asof(entry_day, config.lags).value("btc")
         if entry is None or entry <= 0:
             continue
-        perps = _perps(score_asof(panel, entry_day, config), config)
+        scored = score_on(path, entry_day) or score_path(panel, [entry_day], config)[0]
+        perps = _perps(scored, config)
         direction = perps["direction"]
         size = float(perps["size"])
         exit_day = members[-1]
@@ -162,7 +164,7 @@ def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             "month": entry_day.strftime("%Y-%m"),
             "date": entry_day.isoformat(),
             "signal": perps["direction"] if direction == "flat" else f"{direction} {size:g}",
-            "regime": score_asof(panel, entry_day, config)["regime"],
+            "regime": scored["regime"],
             "position": direction,
             "size": size,
             "entry": entry,
@@ -182,7 +184,6 @@ def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             "success": (total > 0) if active else None,
             "options": perps["options"],
         })
-    # The loop priced the regime twice. Recompute is deterministic; leave the row as stored.
     oos = config.window.oos_start
     in_rows = [row for row in rows if date.fromisoformat(row["date"]) < oos]
     out_rows = [row for row in rows if date.fromisoformat(row["date"]) >= oos]
