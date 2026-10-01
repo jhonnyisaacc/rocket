@@ -104,6 +104,6 @@ def test_fetch_ism_report_follows_roundup(monkeypatch):
         def close(self):
             raise AssertionError("injected client must not be closed")
 
-    report = fetch_ism_report("manufacturing", http=_Client())
+    report = fetch_ism_report("manufacturing", http=_Client(), now=NOW, config={"primary": "ism_official_roundup"})
     assert report.pmi == 54.6
     assert report.source_url == release
