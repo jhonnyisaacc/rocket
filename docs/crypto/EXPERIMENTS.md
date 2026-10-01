@@ -81,6 +81,17 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
   vs naked -76.6% (no win). Waiting for deeper stress mistimes cover.
 - A-12 stress 10% DD (60-day 15% OTM): 38 legs, 27.8%/yr, hedged DD -86.7%
   (WORSE than naked). Shorter tenor under stress buys realized-vol peak.
+- LOOKAHEAD FIX: cheap-vol ranked DVOL against the full sample. Replaced
+  with a trailing-252-print percentile (min 63 prints), pinned by two new
+  no-lookahead tests. All A-7 numbers are superseded by A-13..A-15.
+- A-13 cheap-vol trailing <=25th pct (90-day 15% OTM): 17 legs, 12.0%/yr,
+  hedged DD -63.3% vs naked -76.6% (+13.3pp), 5/7 crash wins. Causal timing
+  costs more and protects more; still a 12%/yr bleed for +13pp.
+- A-14 cheap-vol trailing <=15th pct (90-day): 15 legs, 9.8%/yr, hedged DD
+  -79.0% (no win). Stricter cheapness mistimes cover.
+- A-15 cheap-vol trailing <=25th pct (60-day): 25 legs, 12.0%/yr, hedged DD
+  -76.3% (no win). Shorter tenor wastes the signal.
+
 ## Family B — capitulation longs (variants B-*)
 - B-1 drawdown-30% (stop 15%, target 30%, 90d time stop, 20% trail):
   32 legs, 17W/15L, +7.1%/leg, equity 6.01x 2019-2026 (vs ~22x buy-hold).

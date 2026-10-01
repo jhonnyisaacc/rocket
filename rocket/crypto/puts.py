@@ -98,7 +98,17 @@ def run_insurance(
     Returns spend, yearly cost, combined vs naked drawdowns, and legs.
     """
     closes = [b.close for b in bars]
-    dvol_hist = sorted(v for _, v in vols.items())
+    # Trailing 252-print percentile per day: causal by construction. A day
+    # with fewer than 63 prior prints maps to 100 (never cheap) so early
+    # history cannot trigger on ranks it could not have known.
+    ordered = sorted(vols.items())
+    trailing_pct: dict[date, float] = {}
+    hist: list[float] = []
+    for day, value in ordered:
+        if len(hist) >= 63:
+            below = sum(1 for v in hist[-252:] if v <= value)
+            trailing_pct[day] = 100.0 * below / len(hist[-252:])
+        hist.append(value)
 
     def vol_at(index: int) -> float:
         # DVOL prints in percent points; realized vol is already decimal.
@@ -108,11 +118,6 @@ def run_insurance(
         rv = realized_vol(closes[: index + 1])
         return (rv or 0.5) * SKEW
 
-    def percentile(value: float) -> float:
-        if not dvol_hist:
-            return 100.0
-        below = sum(1 for v in dvol_hist if v <= value)
-        return 100.0 * below / len(dvol_hist)
 
     pending_close: float | None = None  # decided bar T, fills bar T+1 open
     legs: list[Leg] = []
@@ -165,7 +170,7 @@ def run_insurance(
         if rule.trigger == "monthly":
             trigger = True
         elif rule.trigger == "cheap_vol":
-            trigger = percentile(vols.get(bar.day, 1e9)) <= rule.cheap_vol_pct
+            trigger = trailing_pct.get(bar.day, 100.0) <= rule.cheap_vol_pct
         elif rule.trigger == "pre_event":
             trigger = any(0 < (event - bar.day).days <= rule.pre_event_days for event in event_set)
         elif rule.trigger == "stress":

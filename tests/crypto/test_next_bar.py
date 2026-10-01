@@ -77,3 +77,41 @@ def test_carry_reacts_next_bar_not_same_bar():
     plain = carry_mod.run_carry(bars, calm, rule)
     assert base["flips"] > plain["flips"], "extreme print must open carry"
     assert base["equity"] != plain["equity"]
+
+
+def _flat_bars(start: date, days: int, price: float = 100.0) -> list[Bar]:
+    return [
+        Bar(day=start + timedelta(days=i), open=price, high=price,
+            low=price, close=price, volume=1.0)
+        for i in range(days)
+    ]
+
+
+def test_cheap_vol_ignores_short_history():
+    # Only 10 prior prints: even the lowest print ever must not trigger,
+    # because a trailing percentile cannot be computed yet.
+    start = date(2021, 1, 1)
+    bars = _flat_bars(start, 12)
+    vols = {start + timedelta(days=i): 90.0 for i in range(10)}
+    vols[start + timedelta(days=10)] = 50.0
+    rule = puts_mod.PutRule(tenor_days=30, otm=0.15, trigger="cheap_vol",
+                            cheap_vol_pct=25.0, spacing_days=30)
+    result = puts_mod.run_insurance(bars, vols, rule)
+    assert result["legs"] == []
+
+
+def test_cheap_vol_uses_trailing_rank_not_future():
+    # 100 high prints then a low one: trailing rank is ~0, so it triggers,
+    # regardless of lower prints arriving later (which a full-sample rank
+    # would already know about).
+    start = date(2021, 1, 1)
+    bars = _flat_bars(start, 130)
+    vols = {start + timedelta(days=i): 90.0 for i in range(100)}
+    vols[start + timedelta(days=100)] = 50.0
+    for i in range(101, 130):
+        vols[start + timedelta(days=i)] = 40.0  # future lows must not matter
+    rule = puts_mod.PutRule(tenor_days=30, otm=0.15, trigger="cheap_vol",
+                            cheap_vol_pct=25.0, spacing_days=200)
+    result = puts_mod.run_insurance(bars, vols, rule)
+    assert len(result["legs"]) == 1
+    assert result["legs"][0]["entry"] == (start + timedelta(days=101)).isoformat()
