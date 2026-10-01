@@ -300,8 +300,21 @@ def _long_slice(
     return gross + funding - fees
 
 
+def _next_session(days: list[date], day: date) -> date | None:
+    """Fill session after a decision day. None when no later session exists."""
+    index = {item: position for position, item in enumerate(days)}.get(day)
+    if index is None or index + 1 >= len(days):
+        return None
+    return days[index + 1]
+
+
 def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
-    """Longs at the bottom, held until the next warning. Puts are optional and reported apart."""
+    """Longs at the bottom, held until the next warning. Puts are optional and reported apart.
+
+    Signals decided on day T fill at the next session: entries, exits and put
+    legs are all shifted one session forward. A signal on the final session
+    cannot fill and is dropped.
+    """
     days = [
         day for day in panel.dates("spy")
         if config.window.start <= day <= config.window.end
@@ -341,6 +354,27 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                 put_entry = None
     if long_entry is not None:
         longs.append((long_entry, days[-1], False))
+    # Shift decision days to fill sessions. Entries that cannot fill are dropped;
+    # an exit still open at the window end is marked at the last close.
+    filled_longs: list[tuple[date, date, bool]] = []
+    for entry, exit_day, stopped in longs:
+        entry_fill = _next_session(days, entry)
+        if entry_fill is None:
+            continue
+        if exit_day == days[-1] and entry != exit_day:
+            filled_longs.append((entry_fill, exit_day, stopped))
+        else:
+            exit_fill = _next_session(days, exit_day)
+            filled_longs.append((entry_fill, exit_fill or exit_day, stopped))
+    longs = filled_longs
+    filled_puts: list[tuple[date, date]] = []
+    for entry, exit_day in puts:
+        entry_fill = _next_session(days, entry)
+        if entry_fill is None:
+            continue
+        exit_fill = _next_session(days, exit_day)
+        filled_puts.append((entry_fill, exit_fill or exit_day))
+    puts = filled_puts
     rows = []
     for members in _months(days):
         long_hits = [
