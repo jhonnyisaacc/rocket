@@ -91,7 +91,28 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
   equity 2.30x. Rare signal; episode-dependence check pending.
 - B-4 DVOL spike-then-fade (80+, 5d): 10 legs, 3W/7L, -1.0%/leg, equity
   0.81x. Fading vol spikes loses; dropped unless WF disagrees.
+- B-5 dd30 no-trailing: 29 legs, +8.1%/leg, equity 6.33x. Trailing adds
+  little; plain stop+target is enough.
+- B-6 dd30 wide stop 25% / target 50%: 26 legs, +9.2%/leg, equity 6.10x.
+  Wider exits do not change the story.
+- B-7 dd30 180d time stop: 31 legs, +7.1%/leg, equity 5.62x. Patience does
+  not help; dead legs stay dead.
+- B-8 dd25: 39 legs, 22W/17L, +7.1%/leg, equity 8.88x. Best so far; shallower
+  trigger trades more without diluting expectancy.
+- B-1 per-crash attribution (entry inside window): covid +38.8pp (3 legs),
+  2021-05 +19.0pp (4), LUNA -33.7pp (3, falling knife), FTX +29.0pp (1),
+  2024-08/2025-04 zero legs (never reached -30%), 2026 +9.3pp (6),
+  outside-crashes +164.6pp (15 legs). Edge is broad dip-buying, NOT one
+  episode; LUNA is the counterexample that the stop contains.
 
 
 ## Family C — funding/basis carry (variants C-*)
-(none yet)
+
+- C-1 extreme funding >=3bp/day flip, hold>=1d: 239 flips, funding earned
+  +66pp, net total +29pp (~+3%/yr), max DD -0.12. Fees/slippage eat ~half
+  the gross carry.
+- C-2 threshold 5bp: 128 flips, net +23pp (~+3%/yr), max DD -0.04.
+- C-3 threshold 10bp: 102 flips, net +13pp (~+2%/yr), max DD -0.03.
+  Higher threshold, less carry harvested.
+- C-4 threshold 5bp hold>=7d: 74 flips, net +31pp (~+4%/yr), max DD -0.01.
+  Patience keeps the carry without the churn. Best so far.
