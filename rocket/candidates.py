@@ -158,7 +158,7 @@ def _ism_support_entry(row, fundamental, *, price, support):
     # and excessively wide stops. Legacy/missing OHLC uses an explicit fallback.
     volatility = min(max(atr, support * 0.005), support * 0.03) if atr is not None else support * 0.02
     method = "low_20_atr_support" if atr is not None else "low_20_percent_fallback"
-    zone = [support - volatility * 0.5, support + volatility]
+    zone = [support, support + volatility]
     invalidation = support - volatility * 1.5
     latest_close = technical.get("latest_close")
     buffer = volatility * 0.1
@@ -185,10 +185,13 @@ def _ism_support_entry(row, fundamental, *, price, support):
             (value / zone[1] - 1) * 100 if value > zone[1] else 0.0)
 
     distance = zone_distance(latest_close)
+    zone_position = "below_support" if latest_close < support else (
+        "above_zone" if latest_close > zone[1] else "in_zone")
     row.update(classification=status, reason=reason, invalidation=invalidation,
                latest_completed_close=latest_close, latest_completed_close_at=technical["latest_close_at"],
                status_basis="latest_completed_daily_close", buy_close_threshold=buy_threshold,
                status_basis_date=basis_date, distance_pct=distance,
+               zone_position=zone_position,
                intraday_price=price, intraday_distance_pct=zone_distance(price),
                entry_buffer_atr_fraction=0.1, raw_atr=atr,
                volatility_clamped=atr is not None and volatility != atr,

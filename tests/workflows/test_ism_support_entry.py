@@ -160,7 +160,7 @@ def test_atr_scaled_bands_with_bounded_width(contexts, atr, unit):
     row = evaluate(c)
     assert row['entry']['method'] == 'low_20_atr_support'
     assert row['entry']['volatility_unit'] == unit
-    assert row['entry']['zone'] == [100 - .5 * unit, 100 + unit]
+    assert row['entry']['zone'] == [100, 100 + unit]
     assert row['invalidation'] == 100 - 1.5 * unit
 
 
@@ -171,7 +171,7 @@ def test_missing_atr_fallback_is_explicit(contexts, atr):
     c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=100)
     row = evaluate(c)
     assert row['entry']['method'] == 'low_20_percent_fallback'
-    assert row['entry']['zone'] == [99, 102]
+    assert row['entry']['zone'] == [100, 102]
     assert row['invalidation'] == 97
 
 
@@ -211,7 +211,7 @@ def test_pep_close_veto_and_recovery(contexts):
     assert row['classification'] == 'WATCH'
     assert row['reason'] == ('closed below support 126.72, wait for close back above support'
                              '; as of 2026-09-30 close')
-    assert row['entry_zone_low'] == 125.72  # nominal band is never stretched
+    assert row['entry_zone_low'] == 126.72  # band begins at closing support
     assert row['invalidation'] == 123.72
     c['technical_basis']['latest_close'] = 126.72
     assert evaluate(c)['classification'] == 'BUY_CANDIDATE'
@@ -229,10 +229,10 @@ def test_buffered_completed_close_decision(contexts, close, expected):
         assert row['buy_close_threshold'] == 101.8
         assert row['status_basis'] == 'latest_completed_daily_close'
         assert row['current_price'] == quote
-        assert row['entry']['zone'] == [99, 102]
+        assert row['entry']['zone'] == [100, 102]
         assert row['distance_to_zone_pct'] == 0  # all assessed closes inside nominal zone
         assert row['intraday_distance_pct'] == pytest.approx(
-            (quote / 99 - 1) * 100 if quote < 99 else ((quote / 102 - 1) * 100 if quote > 102 else 0))
+            (quote / 100 - 1) * 100 if quote < 100 else ((quote / 102 - 1) * 100 if quote > 102 else 0))
 
 
 @pytest.mark.parametrize('atr,clamped', [(.1, True), (.5, False), (2, False), (3, False), (4, True)])
@@ -278,13 +278,15 @@ def test_primary_distance_uses_status_close_and_intraday_is_separate(contexts, c
     candidate = result.payload['candidates'][0]
     handoff = result.to_dict()['watchlist_handoff'][0]
     def distance(value):
-        return ((value / 99 - 1) * 100 if value < 99 else
+        return ((value / 100 - 1) * 100 if value < 100 else
                 ((value / 102 - 1) * 100 if value > 102 else 0))
     for row in (candidate, handoff):
         assert row['distance_to_zone_pct'] == pytest.approx(distance(close))
         assert row['distance_pct'] == row['distance_to_zone_pct']
         assert row['intraday_distance_pct'] == pytest.approx(distance(quote))
         assert row['intraday_price'] == row['current_price'] == quote
+        assert row['zone_position'] == ('below_support' if close < 100 else
+                                        ('above_zone' if close > 102 else 'in_zone'))
         assert row['status_basis_date'] == '2026-09-30'
         assert 'as of 2026-09-30 close' in row['reason']
     assert handoff['status'] == ('BUY_CANDIDATE' if close == 100 else 'WATCH')
@@ -304,3 +306,39 @@ def test_legacy_support_preserved_separately_from_completed_support(contexts):
     assert row['entry']['support'] == 100
     assert row['invalidation'] == 97
     assert row['low_20_close'] == 99.5
+
+
+def test_nue_live_below_support_has_negative_distance(contexts):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=236.24, atr_14=10, latest_close=233.75)
+    c['market_state']['current_price'] = 234.35
+    w, report = workflow({'NUE': c})
+    result = w.run(now=NOW, reports={'manufacturing': report}, research_companies=True)
+    for row in (result.payload['candidates'][0], result.to_dict()['watchlist_handoff'][0]):
+        assert row['entry_zone_low'] == 236.24
+        assert row['entry_zone_high'] == pytest.approx(243.3272)
+        assert row['invalidation'] == pytest.approx(225.6092)
+        assert row['buy_close_threshold'] == pytest.approx(242.61848)
+        assert row['distance_pct'] == pytest.approx((233.75 / 236.24 - 1) * 100)
+        assert row['distance_pct'] < 0
+        assert row['zone_position'] == 'below_support'
+        assert 'closed below support 236.24' in row['reason']
+        assert row['status_basis_date'] == '2026-09-30'
+    assert result.payload['candidates'][0]['classification'] == 'WATCH'
+    assert result.to_dict()['watchlist_handoff'][0]['status'] == 'WATCH'
+
+
+@pytest.mark.parametrize('close,position', [(99.99, 'below_support'), (100, 'in_zone'),
+                                         (101.8, 'in_zone'), (102, 'in_zone'),
+                                         (102.01, 'above_zone')])
+def test_zone_position_boundaries(contexts, close, position):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=close)
+    row = evaluate(c)
+    assert row['zone_position'] == position
+    if position == 'below_support':
+        assert row['distance_pct'] < 0 and row['classification'] == 'WATCH'
+    elif position == 'above_zone':
+        assert row['distance_pct'] > 0 and row['classification'] == 'WATCH'
+    else:
+        assert row['distance_pct'] == 0

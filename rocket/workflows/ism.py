@@ -271,6 +271,7 @@ def _watchlist_handoff(row, reports, now):
         "entry_buffer_atr_fraction": row["entry_buffer_atr_fraction"],
         "current_price": row["current_price"], "distance_to_zone_pct": row["distance_to_zone_pct"],
         "distance_pct": row["distance_pct"],
+        "zone_position": row["zone_position"],
         "intraday_price": row["intraday_price"], "intraday_distance_pct": row["intraday_distance_pct"],
         "reason": row["reason"], "breakdown_guard_failed": row["breakdown_guard_failed"],
         "data_provenance": {

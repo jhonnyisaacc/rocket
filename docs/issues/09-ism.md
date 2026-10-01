@@ -61,7 +61,7 @@ Calculate simple 14-session ATR from the same completed OHLC snapshot as the
 mean of `max(high-low, abs(high-prev_close), abs(low-prev_close))`, excluding the
 assessed bar. Invalid/misaligned prior OHLC cannot produce ATR. Let
 `V = clamp(ATR14, 0.005*S, 0.03*S)`. The fixed nominal zone is
-`[S - 0.5*V, S + V]`, and research invalidation is `S - 1.5*V`. Missing ATR uses
+`[S, S + V]`, and research invalidation is `S - 1.5*V`. Missing ATR uses
 `V = 0.02*S`, explicitly labelled `low_20_percent_fallback`; valid ATR uses
 `low_20_atr_support`. Output includes `raw_atr`, `volatility_clamped` (true only
 when valid ATR hits the floor/cap), and the effective volatility unit.
@@ -93,8 +93,11 @@ close/buffer inputs, volatility labels, reason and data provenance.
 close, matching status. `intraday_price` is an explicit alias of the retained
 `current_price` quote, and `intraday_distance_pct` reports its separate distance.
 Both signed distances use the nearest nominal zone boundary as denominator:
-negative below, zero inside, positive above. Zero means inside the nominal band;
-it does not imply the close passed the support veto or buffered buy threshold.
+negative below support, zero inside, positive above. `zone_position` uses the
+completed close and is `below_support`, `in_zone`, or `above_zone` (zone
+boundaries inclusive). A close below support therefore always has negative
+distance and WATCH status. Zero inside still does not imply the buffered buy
+threshold passed; the upper 0.1V margin remains WATCH.
 `stop_level` is retained solely as a backward compatible **exact alias of invalidation**, not another stop calculation.
 Candidate invalidation is `S - 1.5V` whenever a zone exists, and null otherwise
 (NEEDS_REVIEW, NOT_INTERESTING and SHORT_INPUT). This is a semantic change from
