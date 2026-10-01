@@ -19,11 +19,13 @@ portfolio_app = typer.Typer(help="Caller-owned portfolio review")
 crypto_app = typer.Typer(help="Crypto futures top-100 research")
 options_app = typer.Typer(help="Options research primitives; never auto-validated")
 memecoin_app = typer.Typer(help="Memecoin primitives; no validated edge")
+market_app = typer.Typer(help="Daily macro market check and backtest. Read-only.")
 app.add_typer(watch_app, name="watch")
 app.add_typer(portfolio_app, name="portfolio")
 app.add_typer(crypto_app, name="crypto")
 app.add_typer(options_app, name="options")
 app.add_typer(memecoin_app, name="memecoin")
+app.add_typer(market_app, name="market-check")
 
 
 def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -> None:
@@ -78,6 +80,113 @@ def status(
     }
     _emit(payload, human=human)
     raise typer.Exit(0)
+
+
+def _market_panel(path: Path | None) -> Path:
+    from rocket.config import PACKAGE_ROOT
+
+    return path or (PACKAGE_ROOT / "data" / "market_check" / "panel.json")
+
+
+@market_app.command("fetch")
+def market_check_fetch(
+    cache_dir: Path = typer.Option(Path("data/market_check/raw"), "--cache-dir"),
+    output: Path | None = typer.Option(None, "--output"),
+) -> None:
+    """Download the public panel (FRED, Treasury, Yahoo, Deribit) into a JSON file."""
+    from rocket.market_check.config import load_config
+    from rocket.market_check.fetch import fetch_panel
+
+    destination = _market_panel(output)
+    panel = fetch_panel(load_config(), cache_dir)
+    panel.write(destination)
+    payload = {
+        "schema": "rocket.market_check_fetch.v1",
+        "path": str(destination),
+        "series": panel.names(),
+        "sources": panel.meta.get("sources") or {},
+        "execution_enabled": False,
+    }
+    _emit(payload, human=False)
+    raise typer.Exit(0)
+
+
+@market_app.command("run")
+def market_check_run(
+    panel_path: Path | None = typer.Option(None, "--panel"),
+    as_of: str | None = typer.Option(None, "--as-of", help="YYYY-MM-DD session. Default: last SPY date in the panel."),
+    scorecard: Path | None = typer.Option(None, "--scorecard"),
+    book: Path | None = typer.Option(None, "--book"),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Score the day and write Perps, Porto and Phillip actions. No orders."""
+    del json_out
+    from datetime import date
+
+    from rocket.market_check.config import load_config
+    from rocket.market_check.panel import SeriesPanel
+    from rocket.market_check.workflow import MarketCheckWorkflow
+
+    path = _market_panel(panel_path)
+    store = ResearchStore(state_dir or rocket_home())
+    if not path.exists():
+        configuration_failure("market_check", store, human=human)
+    try:
+        panel = SeriesPanel.load(path)
+        config = load_config()
+        if as_of:
+            day = date.fromisoformat(as_of)
+        else:
+            sessions = panel.dates("spy") or panel.dates("btc")
+            if not sessions:
+                raise ValueError("panel has no sessions")
+            day = sessions[-1]
+        weights = None
+        if book is not None:
+            raw = json.loads(book.read_text(encoding="utf-8"))
+            weights = raw.get("weights", raw) if isinstance(raw, dict) else None
+            if not isinstance(weights, dict):
+                raise ValueError("book must be a weight mapping")
+            weights = {str(key): float(value) for key, value in weights.items()}
+    except (ValueError, TypeError, OSError, KeyError):
+        configuration_failure("market_check", store, human=human)
+    emit_result(
+        MarketCheckWorkflow(config, store=store).run(panel, asof=day, scorecard=scorecard, book=weights),
+        human=human,
+    )
+
+
+@market_app.command("backtest")
+def market_check_backtest(
+    panel_path: Path | None = typer.Option(None, "--panel"),
+    report: Path = typer.Option(Path("docs/market_check/BACKTEST.md"), "--report"),
+    trade_log: Path | None = typer.Option(None, "--trade-log"),
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Backtest the Porto book and the BTC perp/put overlay. Writes a markdown report."""
+    del json_out
+    from rocket.market_check.backtest import load_trade_log
+    from rocket.market_check.config import load_config
+    from rocket.market_check.panel import SeriesPanel
+    from rocket.market_check.workflow import MarketCheckWorkflow
+
+    path = _market_panel(panel_path)
+    store = ResearchStore(state_dir or rocket_home())
+    if not path.exists():
+        configuration_failure("market_check.backtest", store, human=human)
+    try:
+        panel = SeriesPanel.load(path)
+        logged = load_trade_log(trade_log) if trade_log else None
+    except (ValueError, TypeError, OSError, KeyError):
+        configuration_failure("market_check.backtest", store, human=human)
+    emit_result(
+        MarketCheckWorkflow(load_config(), store=store).backtest(panel, trade_log=logged, report_path=report),
+        human=human,
+    )
 
 
 @app.command("macro")
