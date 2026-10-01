@@ -22,7 +22,17 @@ Variant count: 0.
   Pre-2021 vol = realized vol from spot. Options priced Black-Scholes on
   DVOL/realized with a skew haircut, labeled APPROXIMATION everywhere.
 - Macro context: the existing panel (VIX, HY spreads, 30y, DXY).
-- Events: FOMC, CPI, payrolls, US elections/midterms (calendar file).
+- Events: FOMC decision dates 2021+ (45, scraped from federalreserve.gov
+  minutes filenames; 2019-2020 not on the page) plus US general elections
+  2020/2022/2024. CPI and payrolls have no free machine-readable calendar
+  found; pre-event tests use FOMC plus elections, documented gap.
+
+Coverage gaps (documented, not silently filled): Binance funding starts
+2019-09-10 (perps did not exist before); DVOL starts 2021-04 (pre-2021 vol
+is realized vol from spot); Bybit's API ignores date params and returns
+only the newest ~200 prints, so it is a recent cross-check, not history;
+FOMC 2019-2020 absent (page shows 2021+). Spot runs to 2026-10-01; engines
+clip analysis at 2026-09-30.
 
 ## Family A — puts as insurance (variants A-*)
 (none yet)
