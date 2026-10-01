@@ -188,6 +188,9 @@ class IsmWorkflow:
                                               "direction": direction, "report_reference": f"ism-{kind}-rankings",
                                               "reference_month": report["identity"]["reference_month"]})
             contexts = (self.context_fetcher or acquire_equity_context)([r["ticker"] for r in seeds if r["direction"] == "long"])
+            for context in contexts.values():
+                providers.extend(ProviderHealth.from_dict(attempt)
+                                 for attempt in context.get("fundamentals", {}).get("provider_attempts", []))
             started = now or datetime.now(UTC)
             for seed in seeds:
                 thesis = f"ISM {seed['reference_month']} {seed['report_type']}: {seed['industry']} is {'expanding' if seed['direction'] == 'long' else 'contracting'}. Company exposure: {seed['exposure']}."

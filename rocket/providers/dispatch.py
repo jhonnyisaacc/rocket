@@ -12,6 +12,8 @@ from rocket.providers.protocols import ProviderResult
 
 def failure_kind(exc: Exception) -> str:
     """Never return exception text or request URLs (which can contain credentials)."""
+    if getattr(exc, "failure_kind", None) in {"Entitlement", "Authentication", "RateLimit", "InvalidProviderData", "EmptyData", "InsufficientCoverage"}:
+        return exc.failure_kind
     if isinstance(exc, httpx.HTTPStatusError):
         code = exc.response.status_code
         return {401: "Authentication", 402: "Entitlement", 403: "Entitlement", 429: "RateLimit"}.get(
