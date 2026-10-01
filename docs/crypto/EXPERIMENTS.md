@@ -92,6 +92,23 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
 - A-15 cheap-vol trailing <=25th pct (60-day): 25 legs, 12.0%/yr, hedged DD
   -76.3% (no win). Shorter tenor wastes the signal.
 
+## Walk-forward round 1 (WF-1): 12m train / 3m test, 24 windows
+2020-01-01 to 2026-01-01, argmax train score per window, stitched OOS.
+
+- Family A candidates P-monthly35/P-quarterly100/P-semi180/P-stress10-90/
+  P-cheap25-90/P-preevent. Selected P-cheap25-90 in 19/24 windows.
+  Stitched OOS: combined 9.73x vs naked 9.99x, cost 18.0%/yr, avg test
+  DD-win +3.8pp. Insurance loses to naked out of sample: 18%/yr buys
+  3.8pp of drawdown reduction. NO EDGE as protection.
+- Family B candidates L-dd30/L-dd40/L-dd25/L-fund/L-dvolfade. No dominant
+  pick (dd40 9, fund 6, dd30 4, dd25 4, dvolfade 1). Stitched OOS: 15 legs
+  (only 3/24 windows had >=2 legs), 53% win, +3.76%/leg, equity 1.51x.
+  Positive expectancy survives OOS at half the full-sample size. THIN.
+- Family C candidates C-f3bp-h1/C-f5bp-h1/C-f10bp-h1/C-f5bp-h7. Selected
+  f3bp 11, f5bp-h7 8, f10bp 5 times (f5bp-h1 never). Stitched OOS: +30.2pp
+  total, +4.5%/yr, max DD -2.55. Small persistent edge, threshold choice
+  barely matters. SURVIVES.
+
 ## Family B — capitulation longs (variants B-*)
 - B-1 drawdown-30% (stop 15%, target 30%, 90d time stop, 20% trail):
   32 legs, 17W/15L, +7.1%/leg, equity 6.01x 2019-2026 (vs ~22x buy-hold).

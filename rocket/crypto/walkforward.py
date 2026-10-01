@@ -187,7 +187,7 @@ def _window_metric(family: str, cand: dict, result: dict, bars: list[Bar],
                                    result["legs"], byday, start, end)
     if family == "longs":
         return longs_window_metrics(result["legs"], start, end)
-    return carry_window_metrics(result["equity"], frame, start, end)
+    return carry_window_metrics(result["path"], frame, start, end)
 
 
 def _strip_result(family: str, result: dict) -> dict:
@@ -196,13 +196,14 @@ def _strip_result(family: str, result: dict) -> dict:
                 "legs": result["legs"], "n_bars": len(result["combined"])}
     if family == "longs":
         return {"legs": result["legs"]}
-    return {"equity": result["equity"]}
+    return {"equity": result["path"]}
 
 
 def _stitch(family: str, picks: list[dict], bars: list[Bar]) -> dict:
     if family == "puts":
+        byday = {b.day: b for b in bars}
         combined_ret, naked_ret = 1.0, 1.0
-        spend_pp, test_years = 0.0, 0.0
+        spend_ratio, test_years = 0.0, 0.0
         for pick in picks:
             res = pick["_result"]
             i = _index(bars, date.fromisoformat(pick["test_start"]))
@@ -210,17 +211,18 @@ def _stitch(family: str, picks: list[dict], bars: list[Bar]) -> dict:
             legs = res["legs"]
             # attribute spend by entry day inside the test window
             t0, t1 = date.fromisoformat(pick["test_start"]), date.fromisoformat(pick["test_end"])
-            spend_pp += sum(leg["premium"] for leg in legs if t0 <= date.fromisoformat(leg["entry"]) < t1)
+            spend_ratio += sum(
+                leg["premium"] / byday[date.fromisoformat(leg["entry"])].close
+                for leg in legs
+                if t0 <= date.fromisoformat(leg["entry"]) < t1)
             test_years += _window_years(t0, t1)
             c, n = res["combined"], res["naked"]
             if j > i + 1 and c[i] > 0 and n[i] > 0:
                 combined_ret *= c[j - 1] / c[i]
                 naked_ret *= n[j - 1] / n[i]
-        # cost in pp of starting capital: normalize spend by first naked level
-        first_spot = bars[0].close
         return {"stitched_combined_x": round(combined_ret, 3),
                 "stitched_naked_x": round(naked_ret, 3),
-                "oos_cost_pct_per_year": round(spend_pp / first_spot / test_years * 100, 2)}
+                "oos_cost_pct_per_year": round(spend_ratio / test_years * 100, 2)}
     if family == "longs":
         rets: list[float] = []
         for pick in picks:

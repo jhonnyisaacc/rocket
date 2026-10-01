@@ -91,6 +91,7 @@ def run_carry(
     years = max((days[-1] - days[0]).days / 365.0, 1 / 365)
     return {
         "equity": round(equity, 4),
+        "path": [round(level, 6) for level in path],
         "total_return": round(equity - 1, 4),
         "max_drawdown": round(dd, 4),
         "annualized": round((equity) ** (1 / years) - 1, 4),
