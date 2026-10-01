@@ -1,0 +1,657 @@
+{
+  "schema": "rocket.memecoin.mc012-pool-selection.v1",
+  "universe_sha256": "07c699fb04ca1c8ec9665ff63b9bd04cb71dd4aa850b91cc41397a405d41cd82",
+  "method": "all curve-unavailable; equal quoted controls by sha256('mc012:' + mint)",
+  "unavailable_population": 54,
+  "quoted_population": 129,
+  "selected": [
+    {
+      "mint": "6WxtUM4TNWe9Mse3tenYKjmS6k6YhNsyLFfcg3ySYUMh",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:32:48.660000+00:00",
+      "frozen_exit_at": "2026-09-24T16:33:55.660000+00:00"
+    },
+    {
+      "mint": "8BDVkdofEt3R6sRftgW9d4rsW2dcxBEtbGRB4Tdnpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:33:11.183000+00:00",
+      "frozen_exit_at": "2026-09-24T16:34:18.183000+00:00"
+    },
+    {
+      "mint": "7EqGf72pLey5YSRKC8S6DWxKiSSsSrSoD14RjmBrpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:33:19.749000+00:00",
+      "frozen_exit_at": "2026-09-24T16:34:26.749000+00:00"
+    },
+    {
+      "mint": "82jGYwqdj2UDwHm3XnpfrqbaAo3QLdb5pXgCz9Sxefcw",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:33:26.257000+00:00",
+      "frozen_exit_at": "2026-09-24T16:34:33.257000+00:00"
+    },
+    {
+      "mint": "4SBHeUbQYRpoH7MnaP53svnZpiudLcn8WVUKBxecpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:34:07.881000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:14.881000+00:00"
+    },
+    {
+      "mint": "3j2KLFQ28oN8H2njmmAqjodMsNVnmPu5fpQz2HJLniYz",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:34:21.427000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:28.427000+00:00"
+    },
+    {
+      "mint": "2vV3MkQVgH2R8MBqmd6tiJBozUxFNfup7CXok6UTuyun",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:34:27.237000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:34.237000+00:00"
+    },
+    {
+      "mint": "2Wwi5pceoySeBkN3NU4jfbamdDchvVyCqxXznoeeGjb3",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:34:39.749000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:46.749000+00:00"
+    },
+    {
+      "mint": "2aNNgHEPKQozy9DoFXHEwLtLQsnwngbhxgAKK1zaFPsd",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:05.151000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:12.151000+00:00"
+    },
+    {
+      "mint": "5GSNf7XcZN28xeeheBtN9PSkRo4wDQvqRJRZE9z7pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:13.715000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:20.715000+00:00"
+    },
+    {
+      "mint": "BmYPozEXsgvBLsW9D7b8jUkgZNj2c3JJ7vauebUR96eE",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:14.932000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:21.932000+00:00"
+    },
+    {
+      "mint": "Vgqpn3JRg4RAxACXdFfQzDihnveDGNpeFpzYWUWpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:35.564000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:42.564000+00:00"
+    },
+    {
+      "mint": "EibwxmF8eaWHoAReQ1AEGc9mnf8xVQwVdnx1dSYumGqP",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:36.464000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:43.464000+00:00"
+    },
+    {
+      "mint": "2P41rd8vKc6NgBoNDsmqoRBc8miBqBiTzhqzjpuypump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:43.266000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:50.266000+00:00"
+    },
+    {
+      "mint": "9RiniQd2KYN6ePQ8ys5PKqHCNnTxa6GYmiNYnhnrpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:46.315000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:53.315000+00:00"
+    },
+    {
+      "mint": "26FnauP9hkhFeNvKHL8vG5bFFpgV6s8eCbUHewWSpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:35:47.880000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:54.880000+00:00"
+    },
+    {
+      "mint": "GhWrs58DYuBr7gRuM7mf6dPYwRBr2FoR81vomVjgaEvP",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:03.335000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:10.335000+00:00"
+    },
+    {
+      "mint": "Boj8WzN17PPajoaC3JVVScKMLPM55Pbg4fJVhAAcJddk",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:11.978000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:18.978000+00:00"
+    },
+    {
+      "mint": "2CVMxyQvEP7cpAowZ2kKHqzMtT8LHvouYqtx7HUnrn7c",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:30.685000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:37.685000+00:00"
+    },
+    {
+      "mint": "54VeEJ4qe6tQNaFgKLiyEydwjqsd5WqjghP8GxyPpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:34.564000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:41.564000+00:00"
+    },
+    {
+      "mint": "2gjBReWM65q75c7aBVYdGVeWxavYKBJ6Fteyk93rpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:37.484000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:44.484000+00:00"
+    },
+    {
+      "mint": "CrLevq3Hb7GoTk9aUcx363iFhXrHXUfJBGYog4Crpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:48.103000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:55.103000+00:00"
+    },
+    {
+      "mint": "3wkttEWbb8W6aY1sEWo47YhPXPYn9q8LJPvXPjzW2oqo",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:48.778000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:55.778000+00:00"
+    },
+    {
+      "mint": "F3kaZ4dNvHvngFpR78Gn4kyv4BETTeSw2V1617xTpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:50.914000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:57.914000+00:00"
+    },
+    {
+      "mint": "CZMkZuoizpSwQPSgL8xdt7YRdDU4ACSNLpK4fhsupump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:56.680000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:03.680000+00:00"
+    },
+    {
+      "mint": "7xvaoAgmKTAGq68tTuo7Wtd2vfiiu8B7D4foCbapump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:36:58.397000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:05.397000+00:00"
+    },
+    {
+      "mint": "3a8iS2sXkUQfNepnJDSsuasTK11utXjGfsKjNGpnAoaV",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:37:05.421000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:12.421000+00:00"
+    },
+    {
+      "mint": "BC9eFEQY7eeA4txWtV1s1fEBCbsSBhYsi6haLAGkpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:37:10.612000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:17.612000+00:00"
+    },
+    {
+      "mint": "AVeqYm9G7pDxoDuw1j6WpxhpHpZpbNgiKE2tAAs2pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:37:37.344000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:44.344000+00:00"
+    },
+    {
+      "mint": "26Fo3r6X2PrFttqSA8CLffSFfqiukMZGPSfr6ji6pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:11.565000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:18.565000+00:00"
+    },
+    {
+      "mint": "AVUJDgSCVnokQ8aeD4ym3thSPes63LpVKUyPuiQzpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:24.945000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:31.945000+00:00"
+    },
+    {
+      "mint": "BJz2DEjhYTi4iyE1CzY9A1a4gyR8H99UT4gGFwadpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:29.806000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:36.806000+00:00"
+    },
+    {
+      "mint": "D9GseorhLH28YdPFMHaAmcb8Nf2RmCa3tk3V9Hv2pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:33.840000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:40.840000+00:00"
+    },
+    {
+      "mint": "2Ye9HmPJwJkYiccnwAHfY5RSLqqoMYHJCozWz9Gtpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:33.841000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:40.841000+00:00"
+    },
+    {
+      "mint": "HCaBX2Sywtc9S4byHhs3muwH1dugRUWZHRtN2HZApump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:33.844000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:40.844000+00:00"
+    },
+    {
+      "mint": "AK6qNi2suAkWs6fFGCd28K4b8dE1ThqA9DNxV13spump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:33.958000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:40.958000+00:00"
+    },
+    {
+      "mint": "Gz82rC5JjdffcDie1XdVv5KgJcakziXjokgJPoH7pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:33.968000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:40.968000+00:00"
+    },
+    {
+      "mint": "9GC6eEgYyNnX2gi4ua1iF9rZt17P4w1eu74bf4Spump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:36.918000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:43.918000+00:00"
+    },
+    {
+      "mint": "BF6rHzpvT4YWYct5A2cVT1MXL4ajsZmJoMkMh5cQinXn",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:53.471000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:00.471000+00:00"
+    },
+    {
+      "mint": "ERud1SJM8eWv8eNHgHKjPaC2djPbHh44xQcLVbo2pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:38:53.751000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:00.751000+00:00"
+    },
+    {
+      "mint": "5yUyJSSZxJ81KfhhYKfp7dab3mbYWhb29RV9FM6Xpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:00.760000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:07.760000+00:00"
+    },
+    {
+      "mint": "8q4EfmQbEo9ycyi5oULnPCanhxJkVEG2sEMZtpSTpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:04.048000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:11.048000+00:00"
+    },
+    {
+      "mint": "EBEPu3hoT7mTdmEPLcNKpKfkm58fAce3eHDThnjapump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:17.531000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:24.531000+00:00"
+    },
+    {
+      "mint": "DarFdQqs8gcYaL9LTBocwktmxJxyWwyWNptDdHDupump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:27.450000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:34.450000+00:00"
+    },
+    {
+      "mint": "EMkTbTzozPzoNSmsscJbpsaBDRfVaGxHPamSXismj9WJ",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:35.651000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:42.651000+00:00"
+    },
+    {
+      "mint": "8QcNkmrJxMLgxnDJkqBCrntkAe5BSwW8o3yj3MTrpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:39:37.735000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:44.735000+00:00"
+    },
+    {
+      "mint": "E1L6Ss5e7sds7pW5ULkkXLqUbFYKNusSZqfKhnRnUJ3s",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:09.274000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:16.274000+00:00"
+    },
+    {
+      "mint": "GnK5FXA6jtgnZ2PHgMRFEkyz3mKHPCFCFAPwyzDrpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:13.075000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:20.075000+00:00"
+    },
+    {
+      "mint": "72P1LbLG8QTFMPBRuuzLVGGDT5UXRXtinsBnd9n3KWXU",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:13.648000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:20.648000+00:00"
+    },
+    {
+      "mint": "A81PzDXyPiy1ApJB8aioRWcBZz5Wx7wTxEm49SREpump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:18.684000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:25.684000+00:00"
+    },
+    {
+      "mint": "F3Xwq4xABShXqwKYoBruDzAWEPLjkUroSyxA9k9U7PM7",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:38.819000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:45.819000+00:00"
+    },
+    {
+      "mint": "3SEuqivRqN5inzzgiEhE2JG5rBFuXd4FfrU82Uw8pump",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:40:46.251000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:53.251000+00:00"
+    },
+    {
+      "mint": "5BdWZ77YPZXWWtW7WVqETs34CKLvvzNY1Bz7US4UDPuP",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:41:06.397000+00:00",
+      "frozen_exit_at": "2026-09-24T16:42:13.397000+00:00"
+    },
+    {
+      "mint": "8ugsGep9L6LNQoRsjRiEfjx2twwpZnq9bha3aVLMRoWz",
+      "group": "curve_unavailable",
+      "create_received_at": "2026-09-24T16:41:07.209000+00:00",
+      "frozen_exit_at": "2026-09-24T16:42:14.209000+00:00"
+    },
+    {
+      "mint": "CgEPptJETWstBKcCZSnYskBoJywgVYi4UXj2E72Bpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:32.684000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:39.684000+00:00"
+    },
+    {
+      "mint": "FVPK61KM5Aq69hgc8v7dPMR1quhS3xXPHoSiTzAipump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:37.867000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:44.867000+00:00"
+    },
+    {
+      "mint": "GPyDe85RMD2DSyEK7TRJf3mfm2DDaaKCLA3gxrEnkXTJ",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:50.325000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:57.325000+00:00"
+    },
+    {
+      "mint": "5a4C1XYMwSYbA5zTqwDpscq2YETdrwc7Fi7ouVPqpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:23.625000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:30.625000+00:00"
+    },
+    {
+      "mint": "7KqkJYhJCLJeqSFkSQsxrYwH4ZmTXevJgT9MCYgTpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:32:48.940000+00:00",
+      "frozen_exit_at": "2026-09-24T16:33:55.940000+00:00"
+    },
+    {
+      "mint": "44i8mCK2czySGqHX63FTqH9XffRwAHfekve6tmoFgydT",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:30.006000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:37.006000+00:00"
+    },
+    {
+      "mint": "5VSnpgMjxoRiJHgaAHfHKHLXVxD6Q3UcXiTLNzmC5aXe",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:46.494000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:53.494000+00:00"
+    },
+    {
+      "mint": "AB8RGW58Rj3eyaaUoDn96BPQ49q3nUqHscokz171pump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:50.807000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:57.807000+00:00"
+    },
+    {
+      "mint": "DJhAWE4tuVFNw57JLBEw6sJbtF6xntFPFkbmXTMJpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:50.493000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:57.493000+00:00"
+    },
+    {
+      "mint": "9tvtGY2YGhxRDQmxgFeEGCgoGFXkxWtSb1xExtZcpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:32.728000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:39.728000+00:00"
+    },
+    {
+      "mint": "BaiSsKCf1pZhj9rPb8zhcAooq5oV1BgGJXnsLCVapump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:26.302000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:33.302000+00:00"
+    },
+    {
+      "mint": "FAwoc9QSZQwQhsfXEdbMWWYduAteGHQJ1YujXTHmpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:38:19.281000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:26.281000+00:00"
+    },
+    {
+      "mint": "GutEfogDjngMj6f5vUFUKVpUAWkrtuxwWEmk4yfv214o",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:03.364000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:10.364000+00:00"
+    },
+    {
+      "mint": "HbtePFR24q1Gw7dv47sY2fKRbsuaBEuHYAWggemLrrjt",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:38:02.315000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:09.315000+00:00"
+    },
+    {
+      "mint": "6rCPXmPvAnEXcgN3T8baUYG5SzsAjC3WZk13n16Spump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:51.556000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:58.556000+00:00"
+    },
+    {
+      "mint": "2EesEt6ghWbHJYi3Cn3DR8yzQSZFeT8CsxniYzDg13wr",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:53.689000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:00.689000+00:00"
+    },
+    {
+      "mint": "C22k2n4HCdjrcz7F7yib6XnjMUE4sMv2KE7EzzpaUK92",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:38:55.150000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:02.150000+00:00"
+    },
+    {
+      "mint": "26FoGh7eDo7wH1DivoYcVRk3YGVQta8CL69V7hW5pump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:57.958000+00:00",
+      "frozen_exit_at": "2026-09-24T16:42:04.958000+00:00"
+    },
+    {
+      "mint": "Zx61DmC5ULveNGK7kUaZksjZamnpfUgGqKo9FBDpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:05.498000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:12.498000+00:00"
+    },
+    {
+      "mint": "6e36vnrPngsnqzfvpwJk65QnrKs3gzri45qDHtE9QH7g",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:41:05.620000+00:00",
+      "frozen_exit_at": "2026-09-24T16:42:12.620000+00:00"
+    },
+    {
+      "mint": "3DYjMFzwqzfX9wfhDdwhD9TQvDu8xsvoemWmVPG2pump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:42.992000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:49.992000+00:00"
+    },
+    {
+      "mint": "ABAKLubuvHSCSk4B5J2XwrBvkHJZi9drXPSgRumyPeaA",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:53.733000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:00.733000+00:00"
+    },
+    {
+      "mint": "duRTDXqFn41k4eqmgZkPB6C21fEDy23uNmxTnuGpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:32:40.636000+00:00",
+      "frozen_exit_at": "2026-09-24T16:33:47.636000+00:00"
+    },
+    {
+      "mint": "idGoNW2yGzhZNxBB7JSaRC7Bd6XgeNrtK5fWGLvrk4h",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:09.060000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:16.060000+00:00"
+    },
+    {
+      "mint": "D1kDKKkCSKRkJJqXdqxkjBYQuyQybL5DGn5WNsxVb4jY",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:19.639000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:26.639000+00:00"
+    },
+    {
+      "mint": "BFTsQtyirs7o8UtegWAk5HMrJEfJs16EyTTGBbcBpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:38.540000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:45.540000+00:00"
+    },
+    {
+      "mint": "GXqNx7odP2uXg4FotqGrF6FhtAidT8GaSYXmDJQmNUSt",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:34:25.491000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:32.491000+00:00"
+    },
+    {
+      "mint": "Ha31VqHp7SttibuRwY6Q4k6C18Cvc4TnofTgDrLFDgXT",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:05.183000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:12.183000+00:00"
+    },
+    {
+      "mint": "BSczWAyDrPiSSdxQ4vk2Nz36YYzHb6EeoQZjHytN1tWo",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:00.506000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:07.506000+00:00"
+    },
+    {
+      "mint": "8Pbn513v9ZH51wmMRnMYUK6bx4VAnXeusYgTASrtpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:10.955000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:17.955000+00:00"
+    },
+    {
+      "mint": "BYPEh6JGdvXvsdxzZi7m861147QYvfLk6vuRbUJpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:38.358000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:45.358000+00:00"
+    },
+    {
+      "mint": "CvqE8qy7y9ZzLcJXeK9mWr8DE2Nz97ruoYo5t9QxuZvp",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:14.110000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:21.110000+00:00"
+    },
+    {
+      "mint": "3jyFVcnz5YTeBni1rnCbrAeTVn69qaKr4aU3vMhxpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:51.491000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:58.491000+00:00"
+    },
+    {
+      "mint": "AJaXXo2UR2xsZyugJPFHCrz7bV1hBjPSLDHCLwU7pump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:34:40.227000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:47.227000+00:00"
+    },
+    {
+      "mint": "F72VX6fDhGwZCNYf66SEwsByK5agr2w72JJvcvho7uYs",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:33:00.343000+00:00",
+      "frozen_exit_at": "2026-09-24T16:34:07.343000+00:00"
+    },
+    {
+      "mint": "9WeiwwAV8Ya2onToRCkd24VV5P6LCS49JUc5BCFZ1yr5",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:32:38.577000+00:00",
+      "frozen_exit_at": "2026-09-24T16:33:45.577000+00:00"
+    },
+    {
+      "mint": "CHzsi3c7AqLbtfAGDEqa6ScTvUTzewxhTbrD3Z98pump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:30.433000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:37.433000+00:00"
+    },
+    {
+      "mint": "BNLEMzvTX7xzSTMR1KGJw4ZxfwD8Z21uuisgJaRkBdZ5",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:50.840000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:57.840000+00:00"
+    },
+    {
+      "mint": "BpSweL1PTv6PUbyoXFhKCNcJyhCtKF6LbTfXErxppump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:33:38.766000+00:00",
+      "frozen_exit_at": "2026-09-24T16:34:45.766000+00:00"
+    },
+    {
+      "mint": "DuJeWeS6wLZsWSHjBQowNwo24iP7kXcvbDJnKT6zpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:37:38.392000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:45.392000+00:00"
+    },
+    {
+      "mint": "G8mYZ7FwCSPuD1Vk2cpMNQAvdSarDwq5pHvmsGZpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:38:59.752000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:06.752000+00:00"
+    },
+    {
+      "mint": "FKUov7sfEwFHYzoiDeZQxfZLcGLDmgpBx8uXfd3Bpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:19.357000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:26.357000+00:00"
+    },
+    {
+      "mint": "DE4whiaXop5JgzndGSXkUFCsmndMxpV6CEji2BSRzLCz",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:24.609000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:31.609000+00:00"
+    },
+    {
+      "mint": "CKPgKtKRCqFCSR1RL298w5encxdzza6Tx63ZKpMHpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:40:52.743000+00:00",
+      "frozen_exit_at": "2026-09-24T16:41:59.743000+00:00"
+    },
+    {
+      "mint": "Gt2nHMy2XFYxTfyTrteEtTYPtGYwB3LXqzotQqj3CGNx",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:03.209000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:10.209000+00:00"
+    },
+    {
+      "mint": "5RkYshKzbtfiqKY4KtBaerwZSMFLFNvdQ8b16nnbpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:36.878000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:43.878000+00:00"
+    },
+    {
+      "mint": "2cTDtgbgbkw6jfYtUyo4hD6kFqyTDFtEVVRuGHvXWC2y",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:35:48.680000+00:00",
+      "frozen_exit_at": "2026-09-24T16:36:55.680000+00:00"
+    },
+    {
+      "mint": "HoxDqx3hgCDWabD2WLioZUwzhAdEBbrTj4aGdthDpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:34:43.306000+00:00",
+      "frozen_exit_at": "2026-09-24T16:35:50.306000+00:00"
+    },
+    {
+      "mint": "ANEV5YZse8JCxMxckiQH5hLqqj8ggdTRzdjbyVULpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:54.920000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:01.920000+00:00"
+    },
+    {
+      "mint": "ARdkDppApKt63BQuqXr6Pbs3xA17k8J4P7Jw9woVpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:22.555000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:29.555000+00:00"
+    },
+    {
+      "mint": "BZ9SCe6QNG1y1bLLbrojdBtVCzVT2fBc5SKmAzizpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:23.314000+00:00",
+      "frozen_exit_at": "2026-09-24T16:37:30.314000+00:00"
+    },
+    {
+      "mint": "7hzh8doXGhwyg8gxtuwFePGcH4UbzwYVAkMXRNGC31Rf",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:36:54.992000+00:00",
+      "frozen_exit_at": "2026-09-24T16:38:01.992000+00:00"
+    },
+    {
+      "mint": "39TbmvycwX2AvhiBywHMauqSsBH58sftsmnGAJ51inR5",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:39:02.275000+00:00",
+      "frozen_exit_at": "2026-09-24T16:40:09.275000+00:00"
+    },
+    {
+      "mint": "665VTdAWXMvMq8tdiQcf7WvUeY3fcMAVsgcN1Rcdpump",
+      "group": "quoted_control",
+      "create_received_at": "2026-09-24T16:38:23.894000+00:00",
+      "frozen_exit_at": "2026-09-24T16:39:30.894000+00:00"
+    }
+  ]
+}

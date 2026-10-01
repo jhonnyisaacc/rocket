@@ -1,0 +1,172 @@
+from __future__ import annotations
+
+import argparse
+import logging
+import sqlite3
+import sys
+import time
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+import gmgn_client as gmgn
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logger = logging.getLogger("collect")
+
+SCHEMA = """
+CREATE TABLE IF NOT EXISTS tokens (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    token_address TEXT NOT NULL,
+    symbol TEXT,
+    captured_at INTEGER NOT NULL,
+    source TEXT,
+    holder_count INTEGER, top10_holder_pct REAL, dev_remaining_pct REAL,
+    rat_position_pct REAL, new_wallet_count INTEGER,
+    smart_money_count INTEGER, sniper_count INTEGER,
+    mint_disabled INTEGER, freeze_disabled INTEGER, lp_burned_pct REAL, is_honeypot REAL,
+    has_twitter INTEGER, has_website INTEGER, has_telegram INTEGER, rug_vote_ratio REAL,
+    unique_buyers INTEGER, unique_sellers INTEGER,
+    buy_usd_1h REAL, sell_usd_1h REAL, net_flow_usd REAL,
+    smart_buy_1h INTEGER, bundler_ratio REAL, top_holder_ratio REAL,
+    flipper_ratio REAL, seller_loss_ratio REAL,
+    max_return_1h REAL, max_return_6h REAL, max_return_24h REAL, max_return_3d REAL,
+    reaches_2x INTEGER, labeled INTEGER DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_tokens_addr ON tokens(token_address);
+CREATE INDEX IF NOT EXISTS idx_tokens_unlabeled ON tokens(labeled) WHERE labeled = 0;
+
+CREATE TABLE IF NOT EXISTS trades (
+    wallet TEXT NOT NULL,
+    token_address TEXT NOT NULL,
+    side TEXT NOT NULL,
+    amount_usd REAL,
+    ts INTEGER,
+    tags TEXT,
+    token_tags TEXT,
+    realized_profit REAL,
+    UNIQUE(wallet, token_address, side, ts)
+);
+CREATE INDEX IF NOT EXISTS idx_trades_token ON trades(token_address);
+"""
+
+# minimum gap between two snapshots of the same token, avoids re-inserting trending coins every cycle
+RESNAPSHOT_SEC = 6 * 3600
+
+
+def behavior_features(trades: list[dict]) -> dict:
+    if not trades:
+        return {}
+    now = time.time()
+    buyers, sellers = set(), set()
+    buy_1h = sell_1h = 0.0
+    smart_buy_1h = 0
+    bundlers, top_holders, wallets = set(), set(), set()
+    seller_profits = []
+    for t in trades:
+        w = t["wallet"]
+        wallets.add(w)
+        age = now - t["ts"] if t["ts"] else 1e9
+        ttags = set(t.get("token_tags") or [])
+        if ttags & gmgn.BUNDLER_TOKEN_TAGS:
+            bundlers.add(w)
+        if "top_holder" in ttags:
+            top_holders.add(w)
+        if t["side"] == "buy":
+            buyers.add(w)
+            if age < 3600:
+                buy_1h += t["amount_usd"]
+                if set(t.get("tags") or []) & gmgn.SMART_TAGS:
+                    smart_buy_1h += 1
+        else:
+            sellers.add(w)
+            seller_profits.append(t.get("realized_profit") or 0.0)
+            if age < 3600:
+                sell_1h += t["amount_usd"]
+    n = len(wallets) or 1
+    return {
+        "unique_buyers": len(buyers),
+        "unique_sellers": len(sellers),
+        "buy_usd_1h": round(buy_1h, 2),
+        "sell_usd_1h": round(sell_1h, 2),
+        "net_flow_usd": round(buy_1h - sell_1h, 2),
+        "smart_buy_1h": smart_buy_1h,
+        "bundler_ratio": round(len(bundlers) / n, 4),
+        "top_holder_ratio": round(len(top_holders) / n, 4),
+        "flipper_ratio": round(len(buyers & sellers) / n, 4),
+        "seller_loss_ratio": round(
+            sum(1 for p in seller_profits if p < 0) / len(seller_profits), 4
+        ) if seller_profits else None,
+    }
+
+
+def snapshot(db: sqlite3.Connection, cand: dict) -> bool:
+    addr = cand["address"]
+    row: dict = {"token_address": addr, "symbol": cand.get("symbol", ""),
+                 "captured_at": int(time.time()), "source": cand.get("source", "")}
+    row.update(gmgn.token_stat(addr))
+    row.update(gmgn.wallet_tags(addr))
+    row.update(gmgn.security(addr))
+    row.update(gmgn.links(addr))
+    trades = gmgn.token_trades(addr, 200)
+    row.update(behavior_features(trades))
+
+    if len(row) <= 4:
+        return False
+    # liquidity_usd only exists on the CLI fallback path, drop if not in schema
+    row.pop("liquidity_usd", None)
+
+    cols = ", ".join(row)
+    ph = ", ".join("?" * len(row))
+    db.execute(f"INSERT INTO tokens ({cols}) VALUES ({ph})", list(row.values()))
+    db.executemany(
+        """INSERT OR IGNORE INTO trades
+           (wallet, token_address, side, amount_usd, ts, tags, token_tags, realized_profit)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        [(t["wallet"], addr, t["side"], t["amount_usd"], t["ts"],
+          "|".join(t.get("tags") or []), "|".join(t.get("token_tags") or []),
+          t.get("realized_profit")) for t in trades],
+    )
+    db.commit()
+    return True
+
+
+def run_once(db: sqlite3.Connection) -> None:
+    cands = gmgn.discover_tokens()
+    logger.info("discovered %d candidates", len(cands))
+    cutoff = int(time.time()) - RESNAPSHOT_SEC
+    done = skip = 0
+    for cand in cands:
+        recent = db.execute(
+            "SELECT 1 FROM tokens WHERE token_address=? AND captured_at>? LIMIT 1",
+            (cand["address"], cutoff)).fetchone()
+        if recent:
+            skip += 1
+            continue
+        if snapshot(db, cand):
+            done += 1
+        if done and done % 10 == 0:
+            logger.info("progress %d/%d", done, len(cands) - skip)
+    logger.info("snapshotted %d, skipped (recently seen) %d", done, skip)
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--db", default="collected.sqlite")
+    ap.add_argument("--loop", action="store_true")
+    ap.add_argument("--interval", type=int, default=600, help="seconds between rounds with --loop")
+    args = ap.parse_args()
+
+    db = sqlite3.connect(args.db)
+    db.executescript(SCHEMA)
+    while True:
+        run_once(db)
+        if not args.loop:
+            break
+        time.sleep(args.interval)
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nstopped")
