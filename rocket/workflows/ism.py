@@ -198,6 +198,7 @@ class IsmWorkflow:
                 thesis = f"ISM {seed['reference_month']} {seed['report_type']}: {seed['industry']} is {'expanding' if seed['direction'] == 'long' else 'contracting'}. Company exposure: {seed['exposure']}."
                 if seed["direction"] == "short":
                     candidate = {**seed, "classification": "SHORT_INPUT", "thesis": thesis,
+                                 "invalidation": None,
                                  "requires_canonical_short_evaluation": True}
                 else:
                     candidate = {**seed, **evaluate_long(seed["ticker"], contexts.get(seed["ticker"], {}),
@@ -262,6 +263,11 @@ def _watchlist_handoff(row, reports, now):
         "status": row["classification"],
         "entry_zone_low": row["entry_zone_low"], "entry_zone_high": row["entry_zone_high"],
         "invalidation": row["invalidation"], "stop_level": row["invalidation"],
+        "raw_atr": row["raw_atr"], "volatility_clamped": row["volatility_clamped"],
+        "latest_completed_close": row["latest_completed_close"],
+        "latest_completed_close_at": row["latest_completed_close_at"],
+        "status_basis": row["status_basis"], "buy_close_threshold": row["buy_close_threshold"],
+        "entry_buffer_atr_fraction": row["entry_buffer_atr_fraction"],
         "current_price": row["current_price"], "distance_to_zone_pct": row["distance_to_zone_pct"],
         "reason": row["reason"], "breakdown_guard_failed": row["breakdown_guard_failed"],
         "data_provenance": {
@@ -272,6 +278,7 @@ def _watchlist_handoff(row, reports, now):
             "market_available_at": market["available_at"],
             "technical_basis": dict(context["technical_basis"]),
             "technical_condition": context.get("technical_condition"),
+            "market_provider_attempts": context.get("provider_attempts", []),
             "fundamentals_source": fundamental["fundamentals_source"],
             "fundamentals_available_at": fundamental["available_at"],
             "fundamentals_provider_attempts": fundamental.get("provider_attempts", []),

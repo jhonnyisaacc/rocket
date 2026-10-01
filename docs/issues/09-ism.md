@@ -48,39 +48,52 @@ screen. Existing evidence/freshness checks and fundamentals gates remain:
 EPS growth >= 0 and 0 < trailing P/E <= 40. Missing evidence stays NEEDS_REVIEW;
 failing fundamentals stay NOT_INTERESTING.
 
-ISM longs use prior 20-session **closing** support `S = low_20` (the history
-provider excludes the latest close), rather than the old moving-average reclaim
-band. From the same Yahoo daily OHLC response, calculate simple 14-session ATR
-as the mean of `max(high-low, abs(high-prev_close), abs(low-prev_close))`,
-excluding the latest potentially partial daily bar. Missing, misaligned or invalid
-prior OHLC bars cannot produce ATR.
+ISM decisions use a separate `technical_basis.ism_daily_basis` snapshot from
+Yahoo daily-bar timestamps. Only completed NY sessions are eligible (using the
+exchange calendar and its existing 20-minute post-close finalization delay).
+The assessed close `C` is the latest completed daily close; support `S` is the
+minimum of the **20 completed closes preceding C**, excluding C. Partial bars
+cannot lower support or change the decision. Shared live technical fields and
+short/disclosures gates retain their existing behavior. Missing/stale completed
+close evidence yields NEEDS_REVIEW, with no quote substitution.
 
-Let `V = clamp(ATR14, 0.005*S, 0.03*S)`. The nominal entry zone is
-`[S - 0.5*V, S + V]`, with research invalidation at `S - 1.5*V`. The floor and
-cap avoid near-zero bands and excessively wide stops. If ATR is unavailable,
-use `V = 0.02*S` and explicitly label `entry.method` and handoff provenance
-`low_20_percent_fallback`; otherwise the method is `low_20_atr_support`.
+Calculate simple 14-session ATR from the same completed OHLC snapshot as the
+mean of `max(high-low, abs(high-prev_close), abs(low-prev_close))`, excluding the
+assessed bar. Invalid/misaligned prior OHLC cannot produce ATR. Let
+`V = clamp(ATR14, 0.005*S, 0.03*S)`. The fixed nominal zone is
+`[S - 0.5*V, S + V]`, and research invalidation is `S - 1.5*V`. Missing ATR uses
+`V = 0.02*S`, explicitly labelled `low_20_percent_fallback`; valid ATR uses
+`low_20_atr_support`. Output includes `raw_atr`, `volatility_clamped` (true only
+when valid ATR hits the floor/cap), and the effective volatility unit.
 
-A current quote **or latest close** strictly below invalidation stays WATCH:
-“falling below support, wait for stabilization”. The shared provider's raw
-`breakdown` flag denotes any new closing low; ISM uses the buffered price/close
-threshold so a small new low is not an automatic veto. An explicit breakdown
-without a valid latest close remains a conservative WATCH for legacy contexts.
-Otherwise price <= zone high is BUY_CANDIDATE, including below-zone discounts;
-price > zone high is WATCH: “wait for pullback to <zone>”. Weak technicals alone
-are not a veto. For weak or tolerated raw-breakdown quotes below the nominal
-lower edge, extend that edge to the current price. This includes a discount
-without giving the watcher a reclaim band above its price. The stop and upper
-edge remain anchored to prior support. These are deterministic volatility-aware
-research heuristics, not a validated trading edge or execution instruction.
+Status is close-based:
 
-`rocket ism --json` adds a top-level `watchlist_handoff` array, also retained in
-`payload.watchlist_handoff` for stored-result consumers. Every passing long,
-including a guarded WATCH, supplies ticker, industry, status, zone bounds,
-invalidation/stop, current price, reason, breakdown flag, and provenance for the
-ISM release, exposure, quote, technical basis (ATR, latest close and volatility unit), and fundamentals. Distance is
-signed percent to the nearest zone boundary (boundary as denominator): negative
-below, zero inside, positive above. Existing candidate fields remain available.
-No watch is installed automatically; `execution_enabled` remains false.
-Disclosures' entry policy, `ism_simple` short gates, and `valuation_support` veto
-are unchanged.
+- `C < S`: WATCH, “closed below support <S>, wait for close back above support”.
+  The ATR invalidation is a separate risk level and never overrides this veto.
+- `S <= C <= zone_high - 0.1*V`: BUY_CANDIDATE, if fundamentals pass.
+- Otherwise: WATCH, “wait for pullback to <zone>”, including the buffered close
+  threshold in the reason.
+
+The default entry buffer is **0.1V** (10% of the effective, bounded volatility
+unit). It provides an entry margin at the zone top; it is not a stateful
+latching rule. Equality at support and the buffered threshold is eligible.
+Zones never stretch to intraday prices, including for broken names. Quote and
+signed distance are informational; a quote recovery cannot clear a closing
+support veto, and a quote crossing the top cannot flip an eligible close.
+`latest_completed_close`, its timestamp, `status_basis`, `buy_close_threshold`,
+and the buffer fraction make the decision auditable. These remain research
+heuristics, not a validated trading edge or execution instruction.
+
+`rocket ism --json` adds top-level `watchlist_handoff`, also retained in
+`payload.watchlist_handoff`. Every passing long, including a vetoed WATCH,
+supplies ticker, industry, status, zone bounds, invalidation, quote/distance,
+close/buffer inputs, volatility labels, reason and data provenance. Signed
+quote distance uses the nearest zone boundary as denominator: negative below,
+zero inside, positive above. `stop_level` is retained solely as a backward
+compatible **exact alias of invalidation**, not another stop calculation.
+Candidate invalidation is `S - 1.5V` whenever a zone exists, and null otherwise
+(NEEDS_REVIEW, NOT_INTERESTING and SHORT_INPUT). Legacy live `low_20` is support
+context, not the ISM risk level. Yahoo history provider attempts include
+`retrieved_at` on success and failure. No watch is installed automatically;
+`execution_enabled` remains false. Short `ism_simple` gates and the
+`valuation_support` veto are unchanged.

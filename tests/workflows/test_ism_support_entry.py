@@ -37,6 +37,8 @@ def contexts():
             'technical_condition': condition,
             'technical_basis': {'average_20': average, 'low_20': support,
                                 'atr_14': support * .02,
+                                'latest_close': max(price, support) if ticker == 'DISCOUNT' else price,
+                                'latest_close_at': '2026-09-30T20:00:00+00:00',
                                 'source': 'fixture closing history', 'observed_at': NOW.isoformat()},
             'fundamentals': {'eps_growth': .1, 'pe_ttm': 25,
                              'fundamentals_source': 'SEC EDGAR fixture',
@@ -75,33 +77,33 @@ def test_incident_prices_and_four_entry_cases(contexts):
     assert 'wait for pullback to' in results['CAT']['reason']
     assert results['BROKEN']['classification'] == 'WATCH'
     assert results['BROKEN']['breakdown_guard_failed']
-    assert 'wait for stabilization' in results['BROKEN']['reason']
+    assert 'wait for close back above support' in results['BROKEN']['reason']
 
 
 @pytest.mark.parametrize('price', [96, 97, 98, 99, 100, 102])
 def test_weak_never_hands_off_unexplained_reclaim_zone(contexts, price):
     c = contexts['NUE']
     c['market_state']['current_price'] = price
-    c['technical_basis'].update(low_20=100, atr_14=2)
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=price)
     row = evaluate(c)
     if row['entry_zone_low'] > price:
         assert row['breakdown_guard_failed']
         assert row['classification'] == 'WATCH'
         assert 'below support' in row['reason']
     else:
-        assert row['classification'] == 'BUY_CANDIDATE'
+        assert row['classification'] == ('BUY_CANDIDATE' if 100 <= price <= 101.8 else 'WATCH')
 
 
 @pytest.mark.parametrize('price,condition,expected', [
-    (96.99, 'healthy', 'WATCH'), (97, 'healthy', 'BUY_CANDIDATE'),
-    (99, 'weak', 'BUY_CANDIDATE'), (102, 'healthy', 'BUY_CANDIDATE'),
-    (102.01, 'healthy', 'WATCH'), (100, 'breakdown', 'WATCH'),
+    (96.99, 'healthy', 'WATCH'), (97, 'healthy', 'WATCH'),
+    (99, 'weak', 'WATCH'), (102, 'healthy', 'WATCH'),
+    (102.01, 'healthy', 'WATCH'), (100, 'breakdown', 'BUY_CANDIDATE'),
 ])
 def test_guard_and_zone_boundaries(contexts, price, condition, expected):
     c = contexts['NUE']
     c['market_state']['current_price'] = price
     c['technical_condition'] = condition
-    c['technical_basis'].update(low_20=100, atr_14=2)
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=price)
     assert evaluate(c)['classification'] == expected
 
 
@@ -165,7 +167,7 @@ def test_atr_scaled_bands_with_bounded_width(contexts, atr, unit):
 def test_missing_atr_fallback_is_explicit(contexts, atr):
     c = contexts['NUE']
     c['market_state']['current_price'] = 100
-    c['technical_basis'].update(low_20=100, atr_14=atr)
+    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=100)
     row = evaluate(c)
     assert row['entry']['method'] == 'low_20_percent_fallback'
     assert row['entry']['zone'] == [99, 102]
@@ -173,9 +175,9 @@ def test_missing_atr_fallback_is_explicit(contexts, atr):
 
 
 @pytest.mark.parametrize('price,close,expected', [
-    (99.4, 99.4, 'BUY_CANDIDATE'),  # new low within 1.5 ATR buffer
-    (98.5, 98.5, 'BUY_CANDIDATE'),  # exactly at invalidation
-    (98.49, 99.4, 'WATCH'),         # quote breaches buffered support
+    (99.4, 99.4, 'WATCH'),  # even a small completed closing low vetoes entry
+    (98.5, 98.5, 'WATCH'),  # invalidation differs from closing support veto
+    (98.49, 100, 'BUY_CANDIDATE'),  # intraday quote is information only
     (100, 98.49, 'WATCH'),          # close breached; recovered quote still waits
 ])
 def test_quantified_breakdown_uses_same_atr_guard(contexts, price, close, expected):
@@ -187,7 +189,7 @@ def test_quantified_breakdown_uses_same_atr_guard(contexts, price, close, expect
     assert row['classification'] == expected
     assert row['breakdown_guard_failed'] == (expected == 'WATCH')
     if expected == 'BUY_CANDIDATE':
-        assert row['entry_zone_low'] <= price  # no reclaim requirement on tolerated dip
+        assert row['latest_completed_close'] >= 100
 
 
 @pytest.mark.parametrize('atr,expected', [(.5, 'WATCH'), (2, 'BUY_CANDIDATE')])
@@ -195,5 +197,68 @@ def test_same_support_discount_depends_on_observed_volatility(contexts, atr, exp
     c = contexts['NUE']
     c['market_state']['current_price'] = 98.8
     c['technical_condition'] = 'breakdown'
-    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=98.8)
+    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=101)
     assert evaluate(c)['classification'] == expected
+
+
+def test_pep_close_veto_and_recovery(contexts):
+    c = contexts['NUE']
+    c['technical_condition'] = 'breakdown'
+    c['market_state']['current_price'] = 127  # intraday recovery must not clear veto
+    c['technical_basis'].update(low_20=126.72, atr_14=2, latest_close=125.89)
+    row = evaluate(c)
+    assert row['classification'] == 'WATCH'
+    assert row['reason'] == 'closed below support 126.72, wait for close back above support'
+    assert row['entry_zone_low'] == 125.72  # nominal band is never stretched
+    assert row['invalidation'] == 123.72
+    c['technical_basis']['latest_close'] = 126.72
+    assert evaluate(c)['classification'] == 'BUY_CANDIDATE'
+
+
+@pytest.mark.parametrize('close,expected', [(102, 'WATCH'), (101.81, 'WATCH'),
+                                         (101.8, 'BUY_CANDIDATE'), (100, 'BUY_CANDIDATE')])
+def test_buffered_completed_close_decision(contexts, close, expected):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=close)
+    for quote in (98, 100, 102, 105):
+        c['market_state']['current_price'] = quote
+        row = evaluate(c)
+        assert row['classification'] == expected
+        assert row['buy_close_threshold'] == 101.8
+        assert row['status_basis'] == 'latest_completed_daily_close'
+        assert row['current_price'] == quote
+        assert row['entry']['zone'] == [99, 102]
+        assert row['distance_to_zone_pct'] == pytest.approx(
+            (quote / 99 - 1) * 100 if quote < 99 else ((quote / 102 - 1) * 100 if quote > 102 else 0))
+
+
+@pytest.mark.parametrize('atr,clamped', [(.1, True), (.5, False), (2, False), (3, False), (4, True)])
+def test_raw_atr_and_clamp_label(contexts, atr, clamped):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=100, atr_14=atr, latest_close=100)
+    row = evaluate(c)
+    assert row['raw_atr'] == atr
+    assert row['volatility_clamped'] is clamped
+    assert row['entry']['volatility_clamped'] is clamped
+
+
+@pytest.mark.parametrize('status', ['BUY_CANDIDATE', 'WATCH', 'NOT_INTERESTING', 'NEEDS_REVIEW'])
+def test_invalidation_is_zone_risk_level_or_null(contexts, status):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=100)
+    if status == 'WATCH':
+        c['technical_basis']['latest_close'] = 99.9
+    elif status == 'NOT_INTERESTING':
+        c['fundamentals']['eps_growth'] = -.1
+    elif status == 'NEEDS_REVIEW':
+        del c['technical_basis']['latest_close']
+    row = evaluate(c)
+    assert row['classification'] == status
+    assert row['invalidation'] == (97 if row['entry'] is not None else None)
+
+
+@pytest.mark.parametrize('stamp', [None, '2026-09-29T20:00:00+00:00', '2026-10-01T20:00:00+00:00'])
+def test_missing_stale_future_completed_close_cannot_buy(contexts, stamp):
+    c = contexts['NUE']
+    c['technical_basis']['latest_close_at'] = stamp
+    assert evaluate(c)['classification'] == 'NEEDS_REVIEW'

@@ -1282,7 +1282,9 @@
             "technical_condition": "healthy",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 91,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "fundamentals": {
               "eps_growth": 0.1,
@@ -1307,9 +1309,20 @@
             ],
             "volatility_unit": 1.8,
             "atr_14": null,
+            "raw_atr": null,
+            "volatility_clamped": false,
+            "buy_close_threshold": 91.61999999999999,
+            "entry_buffer_atr_fraction": 0.1,
             "invalidation": 87.3
           },
-          "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+          "reason": "completed daily close above support and within buffered entry zone; fundamentals pass",
+          "latest_completed_close": 91,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "entry_buffer_atr_fraction": 0.1,
+          "raw_atr": null,
+          "volatility_clamped": false,
           "entry_zone_low": 89.1,
           "entry_zone_high": 91.8,
           "distance_to_zone_pct": 0.0,
@@ -1326,6 +1339,7 @@
           "reference_month": "2026-08",
           "classification": "SHORT_INPUT",
           "thesis": "ISM 2026-08 manufacturing: wood products is contracting. Company exposure: Wood manufacturing.",
+          "invalidation": null,
           "requires_canonical_short_evaluation": true
         }
       ],
@@ -1338,9 +1352,16 @@
           "entry_zone_high": 91.8,
           "invalidation": 87.3,
           "stop_level": 87.3,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "latest_completed_close": 91,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "entry_buffer_atr_fraction": 0.1,
           "current_price": 91,
           "distance_to_zone_pct": 0.0,
-          "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+          "reason": "completed daily close above support and within buffered entry zone; fundamentals pass",
           "breakdown_guard_failed": false,
           "data_provenance": {
             "ism_source_url": "https://fixture.test/ism",
@@ -1353,9 +1374,12 @@
             "market_available_at": "2026-09-04T15:00:00+00:00",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 91,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "technical_condition": "healthy",
+            "market_provider_attempts": [],
             "fundamentals_source": "reported-provider",
             "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
             "fundamentals_provider_attempts": [],
@@ -1381,9 +1405,16 @@
         "entry_zone_high": 91.8,
         "invalidation": 87.3,
         "stop_level": 87.3,
+        "raw_atr": null,
+        "volatility_clamped": false,
+        "latest_completed_close": 91,
+        "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+        "status_basis": "latest_completed_daily_close",
+        "buy_close_threshold": 91.61999999999999,
+        "entry_buffer_atr_fraction": 0.1,
         "current_price": 91,
         "distance_to_zone_pct": 0.0,
-        "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+        "reason": "completed daily close above support and within buffered entry zone; fundamentals pass",
         "breakdown_guard_failed": false,
         "data_provenance": {
           "ism_source_url": "https://fixture.test/ism",
@@ -1396,9 +1427,12 @@
           "market_available_at": "2026-09-04T15:00:00+00:00",
           "technical_basis": {
             "average_20": 100,
-            "low_20": 90
+            "low_20": 90,
+            "latest_close": 91,
+            "latest_close_at": "2026-09-03T16:00:00-04:00"
           },
           "technical_condition": "healthy",
+          "market_provider_attempts": [],
           "fundamentals_source": "reported-provider",
           "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
           "fundamentals_provider_attempts": [],
@@ -1589,7 +1623,9 @@
             "technical_condition": "healthy",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 105,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "fundamentals": {
               "eps_growth": 0.1,
@@ -1625,9 +1661,20 @@
             ],
             "volatility_unit": 1.8,
             "atr_14": null,
+            "raw_atr": null,
+            "volatility_clamped": false,
+            "buy_close_threshold": 91.61999999999999,
+            "entry_buffer_atr_fraction": 0.1,
             "invalidation": 87.3
           },
-          "reason": "wait for pullback to 89.10\u201391.80",
+          "reason": "wait for pullback to 89.10\u201391.80; completed daily close must be at or below 91.62",
+          "latest_completed_close": 105,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "entry_buffer_atr_fraction": 0.1,
+          "raw_atr": null,
+          "volatility_clamped": false,
           "entry_zone_low": 89.1,
           "entry_zone_high": 91.8,
           "distance_to_zone_pct": 14.379084967320255,
@@ -1644,6 +1691,7 @@
           "reference_month": "2026-08",
           "classification": "SHORT_INPUT",
           "thesis": "ISM 2026-08 manufacturing: wood products is contracting. Company exposure: Wood manufacturing.",
+          "invalidation": null,
           "requires_canonical_short_evaluation": true
         }
       ],
@@ -1656,9 +1704,16 @@
           "entry_zone_high": 91.8,
           "invalidation": 87.3,
           "stop_level": 87.3,
+          "raw_atr": null,
+          "volatility_clamped": false,
+          "latest_completed_close": 105,
+          "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+          "status_basis": "latest_completed_daily_close",
+          "buy_close_threshold": 91.61999999999999,
+          "entry_buffer_atr_fraction": 0.1,
           "current_price": 105,
           "distance_to_zone_pct": 14.379084967320255,
-          "reason": "wait for pullback to 89.10\u201391.80",
+          "reason": "wait for pullback to 89.10\u201391.80; completed daily close must be at or below 91.62",
           "breakdown_guard_failed": false,
           "data_provenance": {
             "ism_source_url": "https://fixture.test/ism",
@@ -1671,9 +1726,12 @@
             "market_available_at": "2026-09-04T15:00:00+00:00",
             "technical_basis": {
               "average_20": 100,
-              "low_20": 90
+              "low_20": 90,
+              "latest_close": 105,
+              "latest_close_at": "2026-09-03T16:00:00-04:00"
             },
             "technical_condition": "healthy",
+            "market_provider_attempts": [],
             "fundamentals_source": "reported-provider",
             "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
             "fundamentals_provider_attempts": [],
@@ -1699,9 +1757,16 @@
         "entry_zone_high": 91.8,
         "invalidation": 87.3,
         "stop_level": 87.3,
+        "raw_atr": null,
+        "volatility_clamped": false,
+        "latest_completed_close": 105,
+        "latest_completed_close_at": "2026-09-03T16:00:00-04:00",
+        "status_basis": "latest_completed_daily_close",
+        "buy_close_threshold": 91.61999999999999,
+        "entry_buffer_atr_fraction": 0.1,
         "current_price": 105,
         "distance_to_zone_pct": 14.379084967320255,
-        "reason": "wait for pullback to 89.10\u201391.80",
+        "reason": "wait for pullback to 89.10\u201391.80; completed daily close must be at or below 91.62",
         "breakdown_guard_failed": false,
         "data_provenance": {
           "ism_source_url": "https://fixture.test/ism",
@@ -1714,9 +1779,12 @@
           "market_available_at": "2026-09-04T15:00:00+00:00",
           "technical_basis": {
             "average_20": 100,
-            "low_20": 90
+            "low_20": 90,
+            "latest_close": 105,
+            "latest_close_at": "2026-09-03T16:00:00-04:00"
           },
           "technical_condition": "healthy",
+          "market_provider_attempts": [],
           "fundamentals_source": "reported-provider",
           "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
           "fundamentals_provider_attempts": [],
