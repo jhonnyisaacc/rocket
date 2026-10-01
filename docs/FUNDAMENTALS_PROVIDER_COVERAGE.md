@@ -100,7 +100,7 @@ tickers remains a verification step, not a claimed observed result.
 ## VPS verification
 
 ```bash
-cd /home/david/rocket && git fetch && git checkout codex/edgar-fundamentals
+cd /home/david/rocket && git fetch && git checkout feat/edgar-fundamentals
 set -a && source /home/david/nave/.env && set +a
 # Configure ROCKET_SEC_USER_AGENT with your descriptive name and contact email.
 /home/david/rocket/.venv/bin/rocket ism --json
