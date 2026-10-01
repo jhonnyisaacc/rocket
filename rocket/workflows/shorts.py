@@ -98,7 +98,7 @@ def score_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
         "current_price": row.get("current_price"),
         "technical_setup": row.get("technical_setup"),
-        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source", "field_provenance")},
         "entry": row.get("entry"),
         "invalidation": row.get("invalidation"),
     }
@@ -125,8 +125,8 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     """Small, explainable ISM short gate using the canonical live inputs.
 
     ISM supplies the contracting-industry signal, Yahoo supplies the price
-    breakdown, and FMP supplies the bearish company-fundamentals flag (currently
-    derived from its EPS-growth field). Optional valuation support remains a
+    breakdown, and shared fundamentals supplies bearish EPS growth (FMP primary,
+    validated Massive fallback). Optional valuation support remains a
     safety veto when the provider has it.
     """
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
@@ -164,7 +164,7 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
         "why_here": [s.get("thesis") or s.get("reason") for s in row.get("candidate_sources", [])],
         "current_price": row.get("current_price"),
         "technical_setup": row.get("technical_setup"),
-        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source")},
+        "fundamentals": {k: row.get(k) for k in ("pe_ttm", "eps_growth", "eps_growth_basis", "fundamentals_source", "field_provenance")},
         "entry": row.get("entry"),
         "invalidation": row.get("invalidation"),
     }

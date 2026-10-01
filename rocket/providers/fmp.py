@@ -88,6 +88,40 @@ def map_short_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+class ProviderPayloadError(RuntimeError):
+    """Safe error classification; never retain provider text or request URLs."""
+
+    def __init__(self, kind):
+        self.failure_kind = kind
+        super().__init__(kind)
+
+
+def payload_error_kind(payload):
+    if not isinstance(payload, Mapping):
+        return None
+    message = payload.get("Error Message") or payload.get("Error") or payload.get("error")
+    status = str(payload.get("status", "")).upper()
+    if status in {"ERROR", "NOT_AUTHORIZED"}:
+        message = message or payload.get("message")
+    if not message and status not in {"ERROR", "NOT_AUTHORIZED"}:
+        return None
+    text = str(message or "").lower()
+    if status == "NOT_AUTHORIZED" or any(x in text for x in ("subscription", "plan", "premium", "upgrade", "not authorized", "entitlement")):
+        return "Entitlement"
+    if any(x in text for x in ("api key", "apikey", "unauthorized", "authentication")):
+        return "Authentication"
+    if any(x in text for x in ("rate limit", "too many requests")):
+        return "RateLimit"
+    return "InvalidProviderData"
+
+
+def endpoint_attempt(provider, symbol, endpoint, name, retrieved, *, count=0, failure=None):
+    return {"name": f"{provider}:{name}", "ticker": symbol.upper(), "provider": provider,
+            "endpoint": endpoint, "retrieved_at": retrieved.isoformat(),
+            "status": "UNAVAILABLE" if failure else "HEALTHY", "coverage": str(count),
+            "failure_kind": failure}
+
+
 def parse_politician_row(chamber: str, row: Mapping[str, Any]) -> dict[str, Any]:
     first = str(row.get("firstName") or "").strip()
     last = str(row.get("lastName") or "").strip()
@@ -135,8 +169,8 @@ class FMPClient:
         finally:
             if owns:
                 client.close()
-        if isinstance(payload, Mapping) and (payload.get("Error Message") or payload.get("Error")):
-            raise RuntimeError(str(payload.get("Error Message") or payload.get("Error")))
+        if kind := payload_error_kind(payload):
+            raise ProviderPayloadError(kind)
         return payload
 
     def fundamentals(self, symbol: str) -> ProviderResult:
@@ -146,7 +180,7 @@ class FMPClient:
                 status=OperationalStatus.UNAVAILABLE,
                 failure_kind="NO_SETUP",
                 source="fmp",
-                extras={"symbol": symbol, "reason": "FMP_API_KEY unset"},
+                extras={"symbol": symbol, "reason": "FMP_API_KEY unset", "provider_attempts": [endpoint_attempt("fmp", symbol, "fundamentals", "configuration", retrieved, failure="NotConfigured")]},
             )
         payload = {}
         attempts = []
@@ -157,30 +191,39 @@ class FMPClient:
         ):
             try:
                 payload[name] = self._get(endpoint, params=params)
-                if any(row.get("symbol", symbol).upper() != symbol.upper() for row in _rows(payload[name])):
+                if any(str(row.get("symbol", symbol)).upper() != symbol.upper() for row in _rows(payload[name])):
                     payload[name] = []
                     raise ValueError("provider symbol mismatch")
-                attempts.append({"name": f"fmp:{name}", "status": "HEALTHY", "coverage": str(len(_rows(payload[name])))})
+                rows = _rows(payload[name])
+                if not isinstance(payload[name], list) or any(not isinstance(row, Mapping) for row in payload[name]):
+                    raise ValueError("invalid fundamentals response")
+                attempts.append(endpoint_attempt("fmp", symbol, endpoint, name, retrieved,
+                                                 count=len(rows), failure=None if rows else "EmptyData"))
             except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
-                attempts.append({"name": f"fmp:{name}", "status": "UNAVAILABLE", "failure_kind": failure_kind(exc)})
+                payload[name] = []
+                attempts.append(endpoint_attempt("fmp", symbol, endpoint, name, retrieved, failure=failure_kind(exc)))
         # Live current/forward EPS have incompatible windows unless explicitly aligned.
         # Use the provider's reported annual growth; estimates remain raw context only.
         payload["analyst_estimates"] = []
         if map_short_factors(payload)["company_fundamentals"] is None:
             try:
-                growth = _rows(self._get("/income-statement-growth", params={"symbol": symbol, "period": "annual", "limit": 2}))
+                raw_growth = self._get("/income-statement-growth", params={"symbol": symbol, "period": "annual", "limit": 2})
+                if not isinstance(raw_growth, list) or any(not isinstance(row, Mapping) for row in raw_growth):
+                    raise ValueError("invalid income growth response")
+                growth = _rows(raw_growth)
                 eligible = []
                 for row in growth:
                     try:
                         day = datetime.fromisoformat(str(row.get("date"))).replace(tzinfo=UTC)
-                        if row.get("symbol", symbol).upper() == symbol.upper() and 0 <= (retrieved - day).days <= 550:
+                        if str(row.get("symbol", symbol)).upper() == symbol.upper() and 0 <= (retrieved - day).days <= 550:
                             eligible.append(row)
                     except (ValueError, TypeError):
                         continue
                 payload["income_growth"] = sorted(eligible, key=lambda row: row["date"], reverse=True)
-                attempts.append({"name": "fmp:income_growth", "status": "HEALTHY", "coverage": str(len(eligible))})
+                attempts.append(endpoint_attempt("fmp", symbol, "/income-statement-growth", "income_growth", retrieved,
+                                                 count=len(eligible), failure="EmptyData" if not growth else "InsufficientCoverage" if not eligible or map_short_factors(payload)["company_fundamentals"] is None else None))
             except (httpx.HTTPError, TypeError, ValueError, RuntimeError) as exc:
-                attempts.append({"name": "fmp:income_growth", "status": "UNAVAILABLE", "failure_kind": failure_kind(exc)})
+                attempts.append(endpoint_attempt("fmp", symbol, "/income-statement-growth", "income_growth", retrieved, failure=failure_kind(exc)))
         factors = map_short_factors(payload)
         factors["provider_attempts"] = attempts
         factors["available_at"] = datetime.now(UTC).isoformat()
@@ -195,7 +238,7 @@ class FMPClient:
             status=OperationalStatus.PARTIAL if any(a["status"] == "UNAVAILABLE" for a in attempts) else OperationalStatus.HEALTHY if observed else OperationalStatus.PARTIAL,
             records=(factors,),
             retrieved_at=datetime.fromisoformat(factors["retrieved_at"]),
-            failure_kind=next((a["failure_kind"] for a in attempts if a.get("failure_kind") in {"Entitlement", "Authentication", "NotConfigured"}), None) if factors["company_fundamentals"] is None else None,
+            failure_kind=next((a["failure_kind"] for a in attempts if a.get("failure_kind") not in {None, "EmptyData", "InsufficientCoverage"}), "EmptyData" if all(a.get("failure_kind") == "EmptyData" for a in attempts) else "InsufficientCoverage") if factors["company_fundamentals"] is None else None,
             source="fmp",
             extras={"symbol": symbol.upper()},
         )
