@@ -49,7 +49,7 @@ def test_ism_company_pipeline_and_short_handoff(tmp_path):
                [ISMIndustryRanking('machinery', 'expanding', 1)], [ISMIndustryRanking('wood products', 'contracting', 1)], 'https://official.test/report')}
     exposures = {'machinery': [{'ticker': 'CAT', 'exposure': 'Equipment manufacturing', 'source': 'https://issuer.test/cat'}],
                  'wood products': [{'ticker': 'WY', 'exposure': 'Wood products', 'source': 'https://issuer.test/wy'}]}
-    w = IsmWorkflow(store=store, exposures=exposures, context_fetcher=lambda tickers: {t: context() for t in tickers})
+    w = IsmWorkflow(store=store, exposures=exposures, context_fetcher=lambda tickers: {t: context(91) for t in tickers})
     r = w.run(reports=reports, now=NOW, research_companies=True)
     assert_research_result(r)
     assert {c['classification'] for c in r.payload['candidates']} == {'BUY_CANDIDATE', 'SHORT_INPUT'}

@@ -201,7 +201,8 @@ class IsmWorkflow:
                                  "requires_canonical_short_evaluation": True}
                 else:
                     candidate = {**seed, **evaluate_long(seed["ticker"], contexts.get(seed["ticker"], {}),
-                                                        thesis=thesis, source_reference=seed["source"], now=started)}
+                                                        thesis=thesis, source_reference=seed["source"], now=started,
+                                                        entry_policy="ism_support")}
                 candidates.append(candidate)
             if research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
                 persist_candidates(self.store, "ism", candidates, now=started)
@@ -226,6 +227,9 @@ class IsmWorkflow:
             payload={
                 "reports": payload_reports,
                 "candidates": candidates,
+                "watchlist_handoff": [_watchlist_handoff(row, payload_reports, started)
+                                      for row in candidates
+                                      if row["classification"] in {"BUY_CANDIDATE", "WATCH"}],
                 "unmapped_industries": unmapped,
                 "nmfbai_substituted_for_services_composite": False,
                 "execution_enabled": False,
@@ -246,3 +250,32 @@ class IsmWorkflow:
         if self.store:
             self.store.save_result(result)
         return result
+
+
+def _watchlist_handoff(row, reports, now):
+    """Explicit research handoff for every passing long, including guarded watches."""
+    context = row["context"]
+    market, fundamental = context["market_state"], context["fundamentals"]
+    report = reports[row["report_type"]]
+    return {
+        "ticker": row["ticker"], "industry": row["industry"],
+        "status": row["classification"],
+        "entry_zone_low": row["entry_zone_low"], "entry_zone_high": row["entry_zone_high"],
+        "invalidation": row["invalidation"], "stop_level": row["invalidation"],
+        "current_price": row["current_price"], "distance_to_zone_pct": row["distance_to_zone_pct"],
+        "reason": row["reason"], "breakdown_guard_failed": row["breakdown_guard_failed"],
+        "data_provenance": {
+            "ism_source_url": report["source_url"], "report_type": row["report_type"],
+            "reference_month": row["reference_month"], "report_reference": row["report_reference"],
+            "company_exposure_source": row["source_reference"],
+            "market_source": market["source"], "market_as_of": market["as_of"],
+            "market_available_at": market["available_at"],
+            "technical_basis": dict(context["technical_basis"]),
+            "technical_condition": context.get("technical_condition"),
+            "fundamentals_source": fundamental["fundamentals_source"],
+            "fundamentals_available_at": fundamental["available_at"],
+            "fundamentals_provider_attempts": fundamental.get("provider_attempts", []),
+            "entry_method": "low_20_support", "decision_time": now.isoformat(),
+        },
+        "research_only": True, "execution_enabled": False,
+    }

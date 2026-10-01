@@ -67,7 +67,7 @@ def overlap(store, ticker, *, portfolio=(), watches=()):
     return sorted(set(sources))
 
 
-def evaluate_long(ticker, context, *, thesis, source_reference, now):
+def evaluate_long(ticker, context, *, thesis, source_reference, now, entry_policy="reclaim"):
     """Conservative research entry using existing 20-session technical context."""
     market = context.get("market_state", {})
     fundamental = context.get("fundamentals", {})
@@ -105,6 +105,8 @@ def evaluate_long(ticker, context, *, thesis, source_reference, now):
     if missing:
         return row
     price, average, low = market["current_price"], technical["average_20"], technical["low_20"]
+    if entry_policy == "ism_support":
+        return _ism_support_entry(row, fundamental, price=price, support=low)
     if fundamental["eps_growth"] < 0 or not 0 < fundamental["pe_ttm"] <= 40 or price <= low:
         row["classification"] = "NOT_INTERESTING"
     elif context.get("technical_condition") == "healthy" and average <= price <= average * 1.02 and low < price:
@@ -114,6 +116,51 @@ def evaluate_long(ticker, context, *, thesis, source_reference, now):
         row["watch_proposal"] = {"ticker": ticker, "condition": "ZONE", "zone": [average, average * 1.02],
                                  "thesis": thesis, "source_reference": source_reference,
                                  "requires_caller_approval": True}
+    return row
+
+
+def _ism_support_entry(row, fundamental, *, price, support):
+    """ISM-only deterministic value band around prior 20-session closing support.
+
+    Keep disclosures' reclaim policy and the canonical short gates independent.
+    The provider excludes the current close from low_20, so a new low cannot
+    silently move support down and erase the breakdown guard.
+    """
+    if fundamental["eps_growth"] < 0 or not 0 < fundamental["pe_ttm"] <= 40:
+        row.update(classification="NOT_INTERESTING", reason="EPS growth or valuation fails the long gate")
+        return row
+    zone = [support * 0.99, support * 1.02]
+    invalidation = support * 0.97
+    breakdown = (price < invalidation
+                 or row["context"].get("technical_condition") == "breakdown")
+    # A weak quote can dip below the nominal band while still above the stop.
+    # Include that tolerated discount rather than handing off a reclaim zone.
+    if row["context"].get("technical_condition") == "weak" and not breakdown:
+        zone[0] = min(zone[0], price)
+    if breakdown:
+        status = "WATCH"
+        reason = "falling below support, wait for stabilization"
+    elif price <= zone[1]:
+        status = "BUY_CANDIDATE"
+        reason = "inside or below support entry zone; fundamentals pass and no breakdown guard fails"
+    else:
+        status = "WATCH"
+        reason = f"wait for pullback to {zone[0]:.2f}–{zone[1]:.2f}"
+    # Signed distance to the nearest boundary: negative below, zero inside,
+    # positive above. Denominator is the corresponding zone boundary.
+    distance = (price / zone[0] - 1) * 100 if price < zone[0] else (
+        (price / zone[1] - 1) * 100 if price > zone[1] else 0.0)
+    row.update(classification=status, reason=reason, invalidation=invalidation,
+               entry_zone_low=zone[0], entry_zone_high=zone[1],
+               distance_to_zone_pct=distance, breakdown_guard_failed=breakdown,
+               entry={"concept": "prior 20-session closing support band",
+                      "method": "low_20_support", "support": support, "zone": zone,
+                      "invalidation": invalidation})
+    if status == "WATCH":
+        row["watch_proposal"] = {"ticker": row["ticker"], "condition": "ZONE", "zone": zone,
+                                 "thesis": row["thesis"], "source_reference": row["source_reference"],
+                                 "requires_caller_approval": True,
+                                 "requires_stabilization": breakdown}
     return row
 
 

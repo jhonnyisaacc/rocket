@@ -266,7 +266,7 @@ class ResearchResult:
 
     def to_dict(self) -> dict[str, Any]:
         self.validate()
-        return {
+        result = {
             "schema_version": 2,
             "run_id": self.run_id,
             "workflow": self.workflow,
@@ -283,6 +283,9 @@ class ResearchResult:
             "payload": dict(self.payload),
             "safety_boundary": self.safety_boundary.value,
         }
+        if self.workflow == "ism":
+            result["watchlist_handoff"] = list(self.payload.get("watchlist_handoff", []))
+        return result
 
     def presentation_metadata(self) -> dict[str, bool]:
         diagnostic = self.status in {ResearchStatus.INSUFFICIENT_EVIDENCE, ResearchStatus.ERROR}

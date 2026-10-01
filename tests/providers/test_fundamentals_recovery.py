@@ -142,7 +142,7 @@ def test_mixed_ism_ranking_and_shorts(monkeypatch, failure_kind):
                     "available_at": NOW.isoformat(),
                     "source": "fixture",
                 },
-                "technical_basis": {"average_20": 100, "low_20": 90},
+                "technical_basis": {"average_20": 100, "low_20": 100},
             }
             for s in symbols
         }

@@ -1245,7 +1245,8 @@
           },
           "status": "VALID",
           "source_url": "https://fixture.test/ism",
-          "provider_failures": []
+          "provider_failures": [],
+          "provider_attempts": []
         },
         "services": {
           "headline_status": "UNAVAILABLE",
@@ -1273,7 +1274,7 @@
           "source_reference": "https://fixture.test/company",
           "context": {
             "market_state": {
-              "current_price": 101,
+              "current_price": 91,
               "as_of": "2026-09-04T15:00:00+00:00",
               "available_at": "2026-09-04T15:00:00+00:00",
               "source": "quote"
@@ -1293,16 +1294,24 @@
           "classification": "BUY_CANDIDATE",
           "missing": [],
           "watch_proposal": null,
-          "current_price": 101,
-          "invalidation": 90,
+          "current_price": 91,
+          "invalidation": 87.3,
           "research_only": true,
           "entry": {
-            "concept": "near 20-session support with positive reported EPS growth",
+            "concept": "prior 20-session closing support band",
+            "method": "low_20_support",
+            "support": 90,
             "zone": [
-              100,
-              102.0
-            ]
-          }
+              89.1,
+              91.8
+            ],
+            "invalidation": 87.3
+          },
+          "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+          "entry_zone_low": 89.1,
+          "entry_zone_high": 91.8,
+          "distance_to_zone_pct": 0.0,
+          "breakdown_guard_failed": false
         },
         {
           "ticker": "WY",
@@ -1318,11 +1327,85 @@
           "requires_canonical_short_evaluation": true
         }
       ],
+      "watchlist_handoff": [
+        {
+          "ticker": "CAT",
+          "industry": "machinery",
+          "status": "BUY_CANDIDATE",
+          "entry_zone_low": 89.1,
+          "entry_zone_high": 91.8,
+          "invalidation": 87.3,
+          "stop_level": 87.3,
+          "current_price": 91,
+          "distance_to_zone_pct": 0.0,
+          "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+          "breakdown_guard_failed": false,
+          "data_provenance": {
+            "ism_source_url": "https://fixture.test/ism",
+            "report_type": "manufacturing",
+            "reference_month": "2026-08",
+            "report_reference": "ism-manufacturing-rankings",
+            "company_exposure_source": "https://fixture.test/company",
+            "market_source": "quote",
+            "market_as_of": "2026-09-04T15:00:00+00:00",
+            "market_available_at": "2026-09-04T15:00:00+00:00",
+            "technical_basis": {
+              "average_20": 100,
+              "low_20": 90
+            },
+            "technical_condition": "healthy",
+            "fundamentals_source": "reported-provider",
+            "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+            "fundamentals_provider_attempts": [],
+            "entry_method": "low_20_support",
+            "decision_time": "2026-09-04T15:00:00+00:00"
+          },
+          "research_only": true,
+          "execution_enabled": false
+        }
+      ],
       "unmapped_industries": [],
       "nmfbai_substituted_for_services_composite": false,
       "execution_enabled": false
     },
-    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
+    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+    "watchlist_handoff": [
+      {
+        "ticker": "CAT",
+        "industry": "machinery",
+        "status": "BUY_CANDIDATE",
+        "entry_zone_low": 89.1,
+        "entry_zone_high": 91.8,
+        "invalidation": 87.3,
+        "stop_level": 87.3,
+        "current_price": 91,
+        "distance_to_zone_pct": 0.0,
+        "reason": "inside or below support entry zone; fundamentals pass and no breakdown guard fails",
+        "breakdown_guard_failed": false,
+        "data_provenance": {
+          "ism_source_url": "https://fixture.test/ism",
+          "report_type": "manufacturing",
+          "reference_month": "2026-08",
+          "report_reference": "ism-manufacturing-rankings",
+          "company_exposure_source": "https://fixture.test/company",
+          "market_source": "quote",
+          "market_as_of": "2026-09-04T15:00:00+00:00",
+          "market_available_at": "2026-09-04T15:00:00+00:00",
+          "technical_basis": {
+            "average_20": 100,
+            "low_20": 90
+          },
+          "technical_condition": "healthy",
+          "fundamentals_source": "reported-provider",
+          "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+          "fundamentals_provider_attempts": [],
+          "entry_method": "low_20_support",
+          "decision_time": "2026-09-04T15:00:00+00:00"
+        },
+        "research_only": true,
+        "execution_enabled": false
+      }
+    ]
   },
   "ism-watch": {
     "schema_version": 2,
@@ -1465,7 +1548,8 @@
           },
           "status": "VALID",
           "source_url": "https://fixture.test/ism",
-          "provider_failures": []
+          "provider_failures": [],
+          "provider_attempts": []
         },
         "services": {
           "headline_status": "UNAVAILABLE",
@@ -1516,17 +1600,32 @@
             "ticker": "CAT",
             "condition": "ZONE",
             "zone": [
-              100,
-              102.0
+              89.1,
+              91.8
             ],
             "thesis": "ISM 2026-08 manufacturing: machinery is expanding. Company exposure: Equipment manufacturing.",
             "source_reference": "https://fixture.test/company",
-            "requires_caller_approval": true
+            "requires_caller_approval": true,
+            "requires_stabilization": false
           },
           "current_price": 105,
-          "invalidation": 90,
+          "invalidation": 87.3,
           "research_only": true,
-          "entry": null
+          "entry": {
+            "concept": "prior 20-session closing support band",
+            "method": "low_20_support",
+            "support": 90,
+            "zone": [
+              89.1,
+              91.8
+            ],
+            "invalidation": 87.3
+          },
+          "reason": "wait for pullback to 89.10\u201391.80",
+          "entry_zone_low": 89.1,
+          "entry_zone_high": 91.8,
+          "distance_to_zone_pct": 14.379084967320255,
+          "breakdown_guard_failed": false
         },
         {
           "ticker": "WY",
@@ -1542,11 +1641,85 @@
           "requires_canonical_short_evaluation": true
         }
       ],
+      "watchlist_handoff": [
+        {
+          "ticker": "CAT",
+          "industry": "machinery",
+          "status": "WATCH",
+          "entry_zone_low": 89.1,
+          "entry_zone_high": 91.8,
+          "invalidation": 87.3,
+          "stop_level": 87.3,
+          "current_price": 105,
+          "distance_to_zone_pct": 14.379084967320255,
+          "reason": "wait for pullback to 89.10\u201391.80",
+          "breakdown_guard_failed": false,
+          "data_provenance": {
+            "ism_source_url": "https://fixture.test/ism",
+            "report_type": "manufacturing",
+            "reference_month": "2026-08",
+            "report_reference": "ism-manufacturing-rankings",
+            "company_exposure_source": "https://fixture.test/company",
+            "market_source": "quote",
+            "market_as_of": "2026-09-04T15:00:00+00:00",
+            "market_available_at": "2026-09-04T15:00:00+00:00",
+            "technical_basis": {
+              "average_20": 100,
+              "low_20": 90
+            },
+            "technical_condition": "healthy",
+            "fundamentals_source": "reported-provider",
+            "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+            "fundamentals_provider_attempts": [],
+            "entry_method": "low_20_support",
+            "decision_time": "2026-09-04T15:00:00+00:00"
+          },
+          "research_only": true,
+          "execution_enabled": false
+        }
+      ],
       "unmapped_industries": [],
       "nmfbai_substituted_for_services_composite": false,
       "execution_enabled": false
     },
-    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED"
+    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+    "watchlist_handoff": [
+      {
+        "ticker": "CAT",
+        "industry": "machinery",
+        "status": "WATCH",
+        "entry_zone_low": 89.1,
+        "entry_zone_high": 91.8,
+        "invalidation": 87.3,
+        "stop_level": 87.3,
+        "current_price": 105,
+        "distance_to_zone_pct": 14.379084967320255,
+        "reason": "wait for pullback to 89.10\u201391.80",
+        "breakdown_guard_failed": false,
+        "data_provenance": {
+          "ism_source_url": "https://fixture.test/ism",
+          "report_type": "manufacturing",
+          "reference_month": "2026-08",
+          "report_reference": "ism-manufacturing-rankings",
+          "company_exposure_source": "https://fixture.test/company",
+          "market_source": "quote",
+          "market_as_of": "2026-09-04T15:00:00+00:00",
+          "market_available_at": "2026-09-04T15:00:00+00:00",
+          "technical_basis": {
+            "average_20": 100,
+            "low_20": 90
+          },
+          "technical_condition": "healthy",
+          "fundamentals_source": "reported-provider",
+          "fundamentals_available_at": "2026-09-04T15:00:00+00:00",
+          "fundamentals_provider_attempts": [],
+          "entry_method": "low_20_support",
+          "decision_time": "2026-09-04T15:00:00+00:00"
+        },
+        "research_only": true,
+        "execution_enabled": false
+      }
+    ]
   },
   "pelosi-opportunity": {
     "schema_version": 2,
