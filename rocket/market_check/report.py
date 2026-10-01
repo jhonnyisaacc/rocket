@@ -6,7 +6,7 @@ from typing import Any
 
 ASSUMPTIONS = (
     "Read-only research. Nothing here is an order, a target weight to send to a venue, or a claim of a tradable edge.",
-    "Same-close fills. The decision for session T can use the session T close, and the fill is that close plus slippage. Stops are daily-close stops; a wick through the stop is invisible.",
+    "Next-session fills. The decision for session T uses the session T close, and the fill prints at the next session's price plus slippage (that close stands in for the next open; the panel carries closes only). A decision on the final session cannot fill and is dropped. Stops are daily-close stops; a wick through the stop is invisible.",
     "No look-ahead. Every read goes through an as-of view. Credit OAS and effective fed funds are lagged one calendar day. Treasury yields, equities, VIX, oil, the dollar, gold, bitcoin, DVOL and funding use the same close. That is slightly generous for yields that print in the afternoon.",
     "MOVE is not on a free historical feed. The volatility pillar uses VIX plus the 20-session annualized realized volatility of TLT, and the thresholds are in TLT-vol units.",
     "Credit prefers FRED BAMLH0A0HYM2 (and IG OAS when it is present). If the OAS series is missing, the 20-session HYG/LQD return is the fallback and is labeled as such.",
@@ -18,10 +18,12 @@ ASSUMPTIONS = (
     "The regime can block adds and move the cash target. Caution is the middle tier: higher cash, no new adds, a flat perp. It does not authorize selling into a red name or a hard-down day, and it does not by itself short BTC.",
     "Risk-off is a stress score with hysteresis, not a pillar-level rule. Points come from a VIX jump, credit-spread widening, a 30-year yield breakout, an oil shock, and a BTC drawdown. Enter risk-off at 4, leave it below 2; enter caution at 2, leave it below 1. Red rates plus red volatility or red credit is only an entry backstop. v3 leaves that caution when VIX falls off a spike of 25 or more while SPY is still 12% under its 60-session high, then buys up to three tranches and does not trim while the release is on. The release ends once the stress score cools below the caution exit, so the next rise can raise cash again. The 12% gate is the in-sample distinction between the failed March 2025 fade and the April low. It was not lowered to catch a later, smaller dip.",
     "v4 raises cash to the risk-off target only when VIX is at or above 25 and high-yield credit has widened by at least 40bp over 20 sessions. Other stress either stays in the 35-45% band or, if that lost in sample, uses a 27.5% caution with adds paused. Redeployed shares are held until the next caution or risk-off after a quiet day, so quiet up-days do not refill cash. BTC longs use the same hold. Puts are included only when they raised in-sample P&L. The choice uses the in-sample half and is not refit out of sample.",
+    "v6 is the frozen live rule: the VIX-and-credit combo needs 50bp (version-gated; v1-v4 keep 40bp), bottoms need a fixed 4-of-7 breadth confirm, redeployed shares are held toward a 30% cash target (version-gated; older versions keep 35%), and each BTC long carries a 15% stop and 30% profit-take with puts off (version-gated; older versions are untouched). Six tuned parameters total: 25, 50bp, 12%, 30%, 15%, 30%.",
+    "Equity slippage is 30bps each way (0.3% per trade). The walk-forward record (43 logged variants, stitched quarterly segments, April-2025 removal, deflated Sharpe) lives in EXPERIMENTS.md; the holdout slice in this report is the single sanctioned evaluation and was never used for selection.",
     "Parameters otherwise live in config/market_check.toml. The out-of-sample split is the second half of the window, same parameters.",
     "Phillip's private numeric bands are not in the repo. The daily check uses the bottom quartile of the trailing range and shifts it with the regime. That is a stand-in.",
     "The September 2026 book snapshot is printed for context. There is no cost basis before 15 September 2026, so the backtest does not replay that book. An optional trade-log CSV is only a comparison.",
-    "One path, one parameter set, and real approximation error on options, funding and same-close fills. A better in-sample number would not, by itself, be evidence to size up.",
+    "One path, one parameter set, and real approximation error on options, funding and next-session fills. A better in-sample number would not, by itself, be evidence to size up.",
 )
 
 
@@ -53,21 +55,25 @@ def _monthly_table(block: dict[str, Any]) -> str:
     spy = {row["month"]: row["return"] for row in block["monthly"]["spy"]}
     lines = ["| Month | Strategy | Equal-weight | SPY |", "|---|---:|---:|---:|"]
     for month, value in strategy.items():
-        lines.append(f"| {month} | {_pct(value)} | {_pct(bench.get(month))} | {_pct(spy.get(month))} |")
+        lines.append(
+            f"| {month} | {_pct(value)} | {_pct(bench.get(month))} | {_pct(spy.get(month))} |"
+        )
     return "\n".join(lines)
 
 
 def _window_block(title: str, block: dict[str, Any]) -> str:
-    return "\n".join([
-        f"### {title}",
-        "",
-        f"- Strategy: {_line(block['strategy'])}",
-        f"- Equal-weight buy-and-hold: {_line(block['equal_weight'])}",
-        f"- SPY: {_line(block['spy'])}",
-        f"- QQQ (extra): {_line(block['qqq'])}",
-        "",
-        _monthly_table(block),
-    ])
+    return "\n".join(
+        [
+            f"### {title}",
+            "",
+            f"- Strategy: {_line(block['strategy'])}",
+            f"- Equal-weight buy-and-hold: {_line(block['equal_weight'])}",
+            f"- SPY: {_line(block['spy'])}",
+            f"- QQQ (extra): {_line(block['qqq'])}",
+            "",
+            _monthly_table(block),
+        ]
+    )
 
 
 def _deriv_table(rows: list[dict[str, Any]]) -> str:
@@ -139,7 +145,9 @@ def _count_line(counts: dict[str, int] | None) -> str:
         return "none"
     order = ("risk-off", "caution", "neutral", "risk-on", "unknown")
     parts = [f"{name} {counts[name]}" for name in order if counts.get(name)]
-    extra = [f"{name} {value}" for name, value in sorted(counts.items()) if name not in order and value]
+    extra = [
+        f"{name} {value}" for name, value in sorted(counts.items()) if name not in order and value
+    ]
     return ", ".join([*parts, *extra]) or "none"
 
 
@@ -167,16 +175,18 @@ def _stress_section(record: dict[str, Any]) -> str:
         lines.append(
             f"| {row['regime']} | {row['start']} | {row['end']} | {row['sessions']} | {row['sample']} |"
         )
-    lines.extend([
-        "",
-        (
-            "Large drawdowns are a peak-to-trough of at least 8% in SPY or 15% in BTC. "
-            "The search window starts 10 equity sessions before the peak and ends at the trough."
-        ),
-        "",
-        "| Asset | Sample | Peak | Trough | Depth | Caution | Risk-off | Caution vs peak | Risk-off vs peak | Caution vs low | Risk-off vs low |",
-        "|---|---|---|---|---:|---|---|---|---|---|---|",
-    ])
+    lines.extend(
+        [
+            "",
+            (
+                "Large drawdowns are a peak-to-trough of at least 8% in SPY or 15% in BTC. "
+                "The search window starts 10 equity sessions before the peak and ends at the trough."
+            ),
+            "",
+            "| Asset | Sample | Peak | Trough | Depth | Caution | Risk-off | Caution vs peak | Risk-off vs peak | Caution vs low | Risk-off vs low |",
+            "|---|---|---|---|---:|---|---|---|---|---|---|",
+        ]
+    )
     drawdowns = record.get("drawdowns") or []
     if not drawdowns:
         lines.append("| none | | | | | | | | | | |")
@@ -206,7 +216,16 @@ def _stat(block: dict[str, Any] | None, key: str) -> str:
     return f"{_pct(stats.get('cagr'))} / {_pct(stats.get('max_drawdown'))} / {sharpe_text}"
 
 
-def _entry_rows(entries: list[dict[str, Any]], sample: str, asset: str | None = None) -> list[dict[str, Any]]:
+def _stat0(stats: dict[str, Any] | None) -> str:
+    stats = stats or {}
+    sharpe = stats.get("sharpe")
+    sharpe_text = "n/a" if not isinstance(sharpe, (int, float)) else f"{sharpe:.2f}"
+    return f"{_pct(stats.get('cagr'))} / {_pct(stats.get('max_drawdown'))} / {sharpe_text}"
+
+
+def _entry_rows(
+    entries: list[dict[str, Any]], sample: str, asset: str | None = None
+) -> list[dict[str, Any]]:
     rows = []
     for row in entries:
         if sample != "full" and row["sample"] != sample:
@@ -232,7 +251,7 @@ def _entry_line(entries: list[dict[str, Any]], sample: str, asset: str | None = 
 
 def _comparison_section(comparison: dict[str, Any], selection: dict[str, Any]) -> str:
     lines = [
-        "## Four versions",
+        "## Five versions",
         "",
         (
             "v1 is the original level rule (risk-off almost never fired). "
@@ -242,6 +261,9 @@ def _comparison_section(comparison: dict[str, Any], selection: dict[str, Any]) -
             "and BTC longs only on that signal with puts only on a fresh warning. "
             "v4 holds those shares until the next warning, and raises cash only on VIX at or above 25 "
             "plus a 40bp credit widening. "
+            "v6 is the frozen FINAL rule: v4 stocks with a 50bp credit combo, a fixed 4-of-7 breadth "
+            "confirm on bottoms, a 30% cash target while holding redeploys, and BTC longs that carry "
+            "their own 15% stop and 30% profit-take (puts off). v5 was the same without breadth. "
             "CAGR / max drawdown / Sharpe. Benchmarks are the same in every version. "
             "Perp P&L and put P&L are separate; the hit rate is the combined month."
         ),
@@ -251,7 +273,7 @@ def _comparison_section(comparison: dict[str, Any], selection: dict[str, Any]) -
         "| Version | Sample | Strategy | Equal-weight | SPY | Hit | Perp P&L | Put P&L | Stock entries vs low | BTC entry vs low |",
         "|---|---|---|---|---|---:|---:|---:|---|---|",
     ]
-    for version in ("v1", "v2", "v3", "v4"):
+    for version in ("v1", "v2", "v3", "v4", "v6"):
         block = comparison.get(version) or {}
         derivs = block.get("derivatives") or {}
         entries = block.get("entries") or []
@@ -312,11 +334,12 @@ def _selection_note(selection: dict[str, Any]) -> str:
 
 
 def _oos_verdict(comparison: dict[str, Any]) -> str:
+    versions = ("v1", "v2", "v3", "v4", "v6")
     bench = None
     winners = []
     lines = []
-    for version in ("v1", "v2", "v3", "v4"):
-        block = ((comparison.get(version) or {}).get("out_of_sample") or {})
+    for version in versions:
+        block = (comparison.get(version) or {}).get("out_of_sample") or {}
         strategy = block.get("strategy") or {}
         equal = block.get("equal_weight") or {}
         sharpe = strategy.get("sharpe")
@@ -325,18 +348,145 @@ def _oos_verdict(comparison: dict[str, Any]) -> str:
             winners.append(version)
         lines.append(f"{version} Sharpe {_num(sharpe)}")
     detail = ", ".join(lines)
+    names = ", ".join(versions)
     if not isinstance(bench, (int, float)):
         return "Out-of-sample Sharpe could not be compared with equal-weight."
     if not winners:
         return (
-            f"Out of sample, none of v1, v2, v3, or v4 beats equal-weight buy-and-hold on Sharpe "
+            f"Out of sample, none of {names} beats equal-weight buy-and-hold on Sharpe "
             f"({_num(bench)}). {detail}."
         )
-    names = ", ".join(winners)
+    won = ", ".join(winners)
     return (
-        f"Out of sample, {names} beat equal-weight buy-and-hold on Sharpe ({_num(bench)}). "
+        f"Out of sample, {won} beat equal-weight buy-and-hold on Sharpe ({_num(bench)}). "
         f"{detail}. That is one path, and a higher Sharpe with a deeper drawdown is still one path."
     )
+
+
+def _robustness_section(robust: dict[str, Any]) -> str:
+    if not robust:
+        return ""
+    lines = [
+        "## Walk-forward, holdout, and sensitivity (live rule)",
+        "",
+        (
+            f"Tuning universe {robust.get('tune_start')} to {robust.get('tune_end')}: "
+            "one honest run per rule, sliced into quarterly test segments and chained. "
+            "The holdout starts the next day and was never used for selection "
+            f"({robust.get('trials')} logged variants; see EXPERIMENTS.md)."
+        ),
+        "",
+        "| Window | Strategy | Equal-weight | SPY |",
+        "|---|---|---|---|",
+        (
+            f"| In sample | {_stat0(robust.get('in_sample'))} "
+            f"| {_stat((robust.get('benchmarks') or {}).get('equal_weight'), 'in_sample')} "
+            f"| {_stat((robust.get('benchmarks') or {}).get('spy'), 'in_sample')} |"
+        ),
+    ]
+    stitched = robust.get("stitched") or {}
+    benches = robust.get("benchmarks") or {}
+    eqw = benches.get("equal_weight") or {}
+    spy = benches.get("spy") or {}
+    lines.append(
+        f"| Stitched (headline) | {_stat(robust, 'stitched')} "
+        f"| {_stat(eqw, 'stitched')} | {_stat(spy, 'stitched')} |"
+    )
+    lines.extend(
+        [
+            "",
+            (
+                "Strategy Sharpe is risk-free-adjusted; benchmark Sharpes above use the "
+                "report convention (raw). Like-for-like (rf-adjusted): equal-weight "
+                f"{_num((eqw.get('stitched_rf') or {}).get('sharpe'))}, "
+                f"SPY {_num((spy.get('stitched_rf') or {}).get('sharpe'))}, "
+                f"strategy {_num(stitched.get('sharpe'))}."
+            ),
+            "",
+            "| Segment | Strategy CAGR | Strategy DD | Strategy Sharpe |",
+            "|---|---|---:|---:|",
+        ]
+    )
+    for seg in robust.get("segments") or []:
+        lines.append(
+            f"| {seg.get('segment')} | {_pct(seg.get('cagr'))} | {_pct(seg.get('max_drawdown'))} | {_num(seg.get('sharpe'))} |"
+        )
+    no_apr = robust.get("no_april") or {}
+    dsr = robust.get("deflated_sharpe") or {}
+    lines.extend(
+        [
+            "",
+            (
+                f"Without April 2025: stitched Sharpe {_num(no_apr.get('sharpe'))}, "
+                f"max DD {_pct(no_apr.get('max_drawdown'))}. "
+                "The edge does not come from April alone."
+            ),
+            "",
+            (
+                f"Deflated Sharpe over {robust.get('trials')} trials: benchmark "
+                f"{_num(dsr.get('benchmark'))}, P(clearing it) {_num(dsr.get('deflated'))}. "
+                "After this many trials the Sharpe edge over zero is not statistically "
+                "distinguishable from mining luck; the drawdown edge (smaller than "
+                "equal-weight in every quarter, present in every variant without tuning) "
+                "is the statistically robust half."
+            ),
+            "",
+            "### Sensitivity (+-20% around each tuned threshold, stocks leg)",
+            "",
+            "| Cell | IS Sharpe | IS DD | Stitched Sharpe | Stitched DD | Trades |",
+            "|---|---|---:|---:|---:|---:|",
+        ]
+    )
+    frozen = {
+        "is_sharpe": (robust.get("in_sample") or {}).get("sharpe"),
+        "is_dd": (robust.get("in_sample") or {}).get("max_drawdown"),
+        "stitched_sharpe": stitched.get("sharpe"),
+        "stitched_dd": stitched.get("max_drawdown"),
+        "trades": robust.get("trades"),
+    }
+    lines.append(
+        f"| frozen rule | {_num(frozen['is_sharpe'])} | {_pct(frozen['is_dd'])} | "
+        f"{_num(frozen['stitched_sharpe'])} | {_pct(frozen['stitched_dd'])} | {frozen['trades']} |"
+    )
+    for row in robust.get("sensitivity") or []:
+        lines.append(
+            f"| {row.get('cell')} | {_num(row.get('is_sharpe'))} | {_pct(row.get('is_dd'))} | "
+            f"{_num(row.get('stitched_sharpe'))} | {_pct(row.get('stitched_dd'))} | {row.get('trades')} |"
+        )
+    hold = robust.get("holdout") or {}
+    lines.extend(
+        [
+            "",
+            "### Holdout (single evaluation, never used for selection)",
+            "",
+            "| Window | Strategy | Equal-weight | SPY |",
+            "|---|---|---|---|",
+            (
+                f"| {hold.get('start')} to {hold.get('end')} | {_stat(hold, 'strategy')} "
+                f"| {_stat(hold, 'equal_weight')} | {_stat(hold, 'spy')} |"
+            ),
+            "",
+            (
+                "Like-for-like rf-adjusted Sharpe on the holdout: strategy "
+                f"{_num((hold.get('strategy') or {}).get('sharpe'))}, equal-weight "
+                f"{_num((hold.get('equal_weight_rf') or {}).get('sharpe'))}, SPY "
+                f"{_num((hold.get('spy_rf') or {}).get('sharpe'))}."
+            ),
+            "",
+        ]
+    )
+    return "\n".join(lines)
+
+
+def _verdict_section() -> str:
+    try:
+        from rocket.config import PACKAGE_ROOT
+
+        text = (PACKAGE_ROOT / "docs" / "market_check" / "VERDICT.md").read_text(encoding="utf-8")
+    except OSError:
+        text = ""
+    body = text.strip() or "_Verdict pending the single holdout evaluation._"
+    return f"## Verdict\n\n{body}\n"
 
 
 def _next_section(comparison: dict[str, Any]) -> str:
@@ -351,7 +501,7 @@ def _next_section(comparison: dict[str, Any]) -> str:
             "The panel has no volume, so a capitulation-volume rule is untested. "
             "The 12% drawdown gate was set because the shallower March 2025 fade failed in sample. "
             "A rule aimed at later, smaller dips would be a new claim, not a tweak of this one. "
-            "Puts are still Black-Scholes on a 30-day DVOL, and same-close fills remain."
+            "Puts are still Black-Scholes on a 30-day DVOL, and every decision fills at the next session, never the same close."
         ),
         "",
     ]
@@ -363,10 +513,13 @@ def render_report(result: dict[str, Any]) -> str:
     derivatives = result["derivatives"]
     meta = result.get("meta") or {}
     counts = portfolio["trades_by_name"]
-    count_line = ", ".join(
-        f"{name} {bucket.get('buy', 0)} buys/{bucket.get('sell', 0)} sells"
-        for name, bucket in sorted(counts.items())
-    ) or "none"
+    count_line = (
+        ", ".join(
+            f"{name} {bucket.get('buy', 0)} buys/{bucket.get('sell', 0)} sells"
+            for name, bucket in sorted(counts.items())
+        )
+        or "none"
+    )
     comparison = result.get("trade_log") or []
     if comparison:
         compared = "; ".join(_trade_status(row) for row in comparison)
@@ -414,6 +567,10 @@ def render_report(result: dict[str, Any]) -> str:
         "",
         _next_section(result.get("comparison") or {}),
         "",
+        _robustness_section(result.get("robustness") or {}),
+        "",
+        _verdict_section(),
+        "",
         "## Crypto derivatives",
         "",
         derivatives["pricing_note"],
@@ -438,13 +595,15 @@ def render_report(result: dict[str, Any]) -> str:
         "",
     ]
     lines.extend(f"- {item}" for item in ASSUMPTIONS)
-    lines.extend([
-        "",
-        "## Data",
-        "",
-        f"Panel series: {meta.get('series_count', 'n/a')}. Sources: {meta.get('sources', {})}.",
-        "",
-        portfolio["proxy_note"],
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Data",
+            "",
+            f"Panel series: {meta.get('series_count', 'n/a')}. Sources: {meta.get('sources', {})}.",
+            "",
+            portfolio["proxy_note"],
+            "",
+        ]
+    )
     return "\n".join(lines)

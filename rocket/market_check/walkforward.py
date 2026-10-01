@@ -26,6 +26,9 @@ TUNE_END = date(2026, 5, 31)
 HOLDOUT_START = date(2026, 6, 1)
 IN_SAMPLE_END = date(2025, 9, 30)
 
+# Logged walk-forward runs behind the frozen rule. Feeds the deflated Sharpe.
+N_TRIALS = 43
+
 Variant = Callable[[Config], Config]
 
 
@@ -190,14 +193,120 @@ def benchmark_curves(
         in_days = [day for day, _ in in_rows]
         in_nav = [value for _, value in in_rows]
         out[label] = {
+            # Report convention is raw Sharpe for benchmarks; stitched_rf is
+            # the like-for-like comparator for the (rf-adjusted) strategy.
             "in_sample": performance(
                 in_days,
                 in_nav,
                 rf_daily=_rf_daily(panel, config, in_days),
             ),
             "stitched": performance(chained_days, chained_nav),
+            "stitched_rf": performance(
+                chained_days,
+                chained_nav,
+                rf_daily=_rf_daily(panel, config, chained_days),
+            ),
         }
     return out
+
+
+def holdout_summary(
+    panel: SeriesPanel,
+    base: Config,
+    full_book: dict[str, Any],
+) -> dict[str, Any]:
+    """The single holdout evaluation: strategy vs benchmarks sliced from one
+    full-window run of the frozen rule. No selection may use these numbers."""
+    end = base.window.end
+    rows = _slice_nav(full_book["nav"], HOLDOUT_START, end)
+    days = [day for day, _ in rows]
+    nav = [value for _, value in rows]
+    strategy = performance(
+        days,
+        nav,
+        rf_daily=_rf_daily(panel, base, days),
+    )
+    out = {"strategy": strategy}
+    curves = _buy_hold_many(panel, base, days)
+    rf = _rf_daily(panel, base, days)
+    for label, path in curves.items():
+        out[label] = performance(days, path)
+        out[f"{label}_rf"] = performance(days, path, rf_daily=rf)
+    return {"start": HOLDOUT_START.isoformat(), "end": end.isoformat(), **out}
+
+
+def _buy_hold_many(
+    panel: SeriesPanel,
+    base: Config,
+    days: list[date],
+) -> dict[str, list[float]]:
+    config = replace(
+        base,
+        window=replace(base.window, start=days[0], end=days[-1]),
+    )
+    return {
+        "equal_weight": _buy_hold(panel, config, config.portfolio.universe, days),
+        "spy": _buy_hold(panel, config, ("spy",), days),
+        "qqq": _buy_hold(panel, config, ("qqq",), days),
+    }
+
+
+def sensitivity_cells() -> list[tuple[str, str, float]]:
+    """(label, field, value): +-20% around each of the six tuned v6 params."""
+    return [
+        ("gate 10%", "gate", 0.10),
+        ("gate 14%", "gate", 0.14),
+        ("credit 40bp", "cred", 0.40),
+        ("credit 60bp", "cred", 0.60),
+        ("hold 25%", "hold", 0.25),
+        ("hold 35%", "hold", 0.35),
+        ("VIX combo 20", "vixc", 20.0),
+        ("VIX combo 30", "vixc", 30.0),
+        ("stop 12%", "stop", 0.12),
+        ("stop 18%", "stop", 0.18),
+        ("take 24%", "take", 0.24),
+        ("take 36%", "take", 0.36),
+    ]
+
+
+def apply_cell(base: Config, field: str, value: float) -> Config:
+    """One sensitivity perturbation of the frozen v6 rule."""
+    if field == "gate":
+        return replace(base, redeploy=replace(base.redeploy, spy_drawdown=value))
+    if field == "cred":
+        return replace(base, model=replace(base.model, v6_credit_widen=value))
+    if field == "hold":
+        return replace(base, model=replace(base.model, v6_hold_cash=value))
+    if field == "vixc":
+        stress = replace(base.regime.stress, vix_level_caution=value)
+        return replace(base, regime=replace(base.regime, stress=stress))
+    if field == "stop":
+        return replace(base, model=replace(base.model, v6_stop=value))
+    if field == "take":
+        return replace(base, model=replace(base.model, v6_take=value))
+    raise ValueError(f"unknown sensitivity field {field}")
+
+
+def run_sensitivity(
+    panel: SeriesPanel,
+    base: Config,
+) -> list[dict[str, Any]]:
+    """IS and stitched Sharpe/DD for each sensitivity cell (stocks leg)."""
+    rows = []
+    for label, field, value in sensitivity_cells():
+        result = run_variant(panel, base, lambda cfg, f=field, v=value: apply_cell(cfg, f, v))
+        summary = summarize(panel, base, result)
+        rows.append(
+            {
+                "cell": label,
+                "is_sharpe": summary["in_sample"]["sharpe"],
+                "is_dd": summary["in_sample"]["max_drawdown"],
+                "stitched_sharpe": summary["stitched"]["sharpe"],
+                "stitched_dd": summary["stitched"]["max_drawdown"],
+                "trades": summary["trades"],
+            }
+        )
+    return rows
 
 
 def summarize_no_april(

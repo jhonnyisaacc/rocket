@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from dataclasses import replace
 from datetime import date
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -71,6 +72,7 @@ def _headline(portfolio: dict[str, Any], derivatives: dict[str, Any]) -> dict[st
             "equal_weight": block["equal_weight"],
             "spy": block["spy"],
         }
+
     return {
         "regime_sessions": portfolio["regime_sessions"],
         "full": side(portfolio["full"]),
@@ -85,7 +87,9 @@ def _headline(portfolio: dict[str, Any], derivatives: dict[str, Any]) -> dict[st
 
 
 def _robustness_record(
-    panel: SeriesPanel, config: Config, portfolio: dict[str, Any],
+    panel: SeriesPanel,
+    config: Config,
+    portfolio: dict[str, Any],
 ) -> dict[str, Any]:
     """Walk-forward summary, holdout slice, sensitivity grid, and deflated
     Sharpe for the live rule. Deterministic from (panel, config): the
@@ -99,7 +103,7 @@ def _robustness_record(
     no_april = wf.summarize_no_april(panel, config, tuned)
     benchmarks = wf.benchmark_curves(panel, config)
     nav = [(row["date"], row["nav"]) for row in tuned["book"]["nav"]]
-    stitched_rets = [b[1] / a[1] - 1 for a, b in zip(nav[:-1], nav[1:]) if a[1]]
+    stitched_rets = [b[1] / a[1] - 1 for a, b in pairwise(nav) if a[1]]
     dsr = deflated_sharpe(summary["stitched"]["sharpe"] or 0.0, stitched_rets, wf.N_TRIALS)
     return {
         "tune_start": wf.TUNE_START.isoformat(),
@@ -124,12 +128,14 @@ def load_trade_log(path: Path) -> list[dict[str, Any]]:
         for raw in csv.DictReader(handle):
             if not raw.get("date") or not raw.get("ticker") or not raw.get("side"):
                 raise ValueError("trade log needs date, ticker and side columns")
-            rows.append({
-                "date": date.fromisoformat(str(raw["date"])[:10]),
-                "ticker": str(raw["ticker"]).upper(),
-                "side": str(raw["side"]).lower(),
-                "note": raw.get("note") or "",
-            })
+            rows.append(
+                {
+                    "date": date.fromisoformat(str(raw["date"])[:10]),
+                    "ticker": str(raw["ticker"]).upper(),
+                    "side": str(raw["side"]).lower(),
+                    "note": raw.get("note") or "",
+                }
+            )
     return rows
 
 
@@ -163,7 +169,9 @@ def run_backtest(
     comparison = {}
     for version, (book, derivs) in ran.items():
         comparison[version] = _headline(book, derivs)
-        comparison[version]["entries"] = entry_quality(panel, config, book["trades"], derivs["rows"])
+        comparison[version]["entries"] = entry_quality(
+            panel, config, book["trades"], derivs["rows"]
+        )
     logged = [
         {"date": item.date, "ticker": item.ticker, "side": item.side, "note": item.note}
         for item in config.current_book.trades

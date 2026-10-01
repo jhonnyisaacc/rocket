@@ -13,6 +13,15 @@ def test_committed_report_matches_the_panel():
     result = run_backtest(panel, load_config())
     assert result["execution_enabled"] is False
     logged = next(row for row in result["trade_log"] if row["ticker"] == "TSLA")
-    assert logged["recognized"] is True
-    assert logged["status"] == "already_exited"
+    # v6 trims TSLA into early-2025 strength, rebuys it in the April
+    # redeploy (high-beta sleeve), and then never trims it again: the
+    # strength gates never pass during its grinding 2025-2026 decline, so
+    # the simulated book still holds TSLA when the real book sells. The
+    # logged sale is honestly unmatched — pin that, not a false agreement.
+    assert logged["recognized"] is False
+    assert logged["status"] == "unmatched"
+    tsla = [t for t in result["portfolio"]["trades"] if t["ticker"] == "TSLA"]
+    buys = [t for t in tsla if t["side"] == "buy" and t["date"] >= "2025-04-01"]
+    sells = [t for t in tsla if t["side"] == "sell" and t["date"] >= "2025-04-01"]
+    assert buys and not sells
     assert result["markdown"] == report_path.read_text(encoding="utf-8")

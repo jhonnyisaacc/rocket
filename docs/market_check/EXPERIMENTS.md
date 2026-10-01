@@ -212,6 +212,19 @@ smaller DD in all 7 quarters) is the decision basis, taken with eyes
 open. The statistically robust claim is the drawdown edge, present in
 every variant without tuning.
 
+## Holdout result (single evaluation, 2026-06-01 to 2026-09-30)
+
+Strategy 13.5% CAGR / -18.2% DD / 0.44 Sharpe (rf-adjusted); equal-weight
+14.4% / -13.1% / 0.49; SPY 3.2% / -4.5% / 0.02. The strategy loses the
+holdout on both axes. June rallied the redeployed book (+15.6%), then July
+(-10.6%) and August (-2.8%) rode it down past equal-weight's trough:
+holding redeploys until the next warning means riding the next leg down.
+Full-window out-of-sample (2025-10-01 to 2026-09-30) therefore also favors
+equal-weight. Verdict: no robust edge demonstrated; see VERDICT.md. Note:
+the sensitivity table in BACKTEST.md is recomputed live on the frozen v6
+rule, so its cells can differ from the mixed-chassis exploration above
+(e.g. v5-based Exp 7 vs v6-based gate-10% row).
+
 ## Frozen rule (FINAL = v6)
 
 v6 + VIX >= 25 and HY widening >= 50bp/20d to raise cash; VIX fade off a
