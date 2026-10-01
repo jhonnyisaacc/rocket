@@ -68,7 +68,8 @@ def test_incident_prices_and_four_entry_cases(contexts):
         assert results[ticker]['classification'] == 'BUY_CANDIDATE'
         assert results[ticker]['entry']['zone'][0] != contexts[ticker]['technical_basis']['average_20']
     assert results['DISCOUNT']['classification'] == 'BUY_CANDIDATE'
-    assert results['DISCOUNT']['distance_to_zone_pct'] < 0  # below nominal zone
+    assert results['DISCOUNT']['distance_to_zone_pct'] == 0  # completed close inside
+    assert results['DISCOUNT']['intraday_distance_pct'] < 0  # quote below nominal zone
     assert results['GOOGL']['distance_to_zone_pct'] == 0
     assert results['NUE']['distance_to_zone_pct'] == 0  # inside zone
     assert results['WMT']['distance_to_zone_pct'] == 0
@@ -208,7 +209,8 @@ def test_pep_close_veto_and_recovery(contexts):
     c['technical_basis'].update(low_20=126.72, atr_14=2, latest_close=125.89)
     row = evaluate(c)
     assert row['classification'] == 'WATCH'
-    assert row['reason'] == 'closed below support 126.72, wait for close back above support'
+    assert row['reason'] == ('closed below support 126.72, wait for close back above support'
+                             '; as of 2026-09-30 close')
     assert row['entry_zone_low'] == 125.72  # nominal band is never stretched
     assert row['invalidation'] == 123.72
     c['technical_basis']['latest_close'] = 126.72
@@ -228,7 +230,8 @@ def test_buffered_completed_close_decision(contexts, close, expected):
         assert row['status_basis'] == 'latest_completed_daily_close'
         assert row['current_price'] == quote
         assert row['entry']['zone'] == [99, 102]
-        assert row['distance_to_zone_pct'] == pytest.approx(
+        assert row['distance_to_zone_pct'] == 0  # all assessed closes inside nominal zone
+        assert row['intraday_distance_pct'] == pytest.approx(
             (quote / 99 - 1) * 100 if quote < 99 else ((quote / 102 - 1) * 100 if quote > 102 else 0))
 
 
@@ -255,6 +258,7 @@ def test_invalidation_is_zone_risk_level_or_null(contexts, status):
     row = evaluate(c)
     assert row['classification'] == status
     assert row['invalidation'] == (97 if row['entry'] is not None else None)
+    assert row['low_20_close'] == 100
 
 
 @pytest.mark.parametrize('stamp', [None, '2026-09-29T20:00:00+00:00', '2026-10-01T20:00:00+00:00'])
@@ -262,3 +266,41 @@ def test_missing_stale_future_completed_close_cannot_buy(contexts, stamp):
     c = contexts['NUE']
     c['technical_basis']['latest_close_at'] = stamp
     assert evaluate(c)['classification'] == 'NEEDS_REVIEW'
+
+
+@pytest.mark.parametrize('close,quote', [(98, 100), (100, 98), (105, 100), (100, 105)])
+def test_primary_distance_uses_status_close_and_intraday_is_separate(contexts, close, quote):
+    c = contexts['NUE']
+    c['technical_basis'].update(low_20=100, atr_14=2, latest_close=close)
+    c['market_state']['current_price'] = quote
+    w, report = workflow({'NUE': c})
+    result = w.run(now=NOW, reports={'manufacturing': report}, research_companies=True)
+    candidate = result.payload['candidates'][0]
+    handoff = result.to_dict()['watchlist_handoff'][0]
+    def distance(value):
+        return ((value / 99 - 1) * 100 if value < 99 else
+                ((value / 102 - 1) * 100 if value > 102 else 0))
+    for row in (candidate, handoff):
+        assert row['distance_to_zone_pct'] == pytest.approx(distance(close))
+        assert row['distance_pct'] == row['distance_to_zone_pct']
+        assert row['intraday_distance_pct'] == pytest.approx(distance(quote))
+        assert row['intraday_price'] == row['current_price'] == quote
+        assert row['status_basis_date'] == '2026-09-30'
+        assert 'as of 2026-09-30 close' in row['reason']
+    assert handoff['status'] == ('BUY_CANDIDATE' if close == 100 else 'WATCH')
+
+
+def test_legacy_support_preserved_separately_from_completed_support(contexts):
+    c = contexts['NUE']
+    daily = {**c['technical_basis'], 'low_20': 100, 'latest_close': 100, 'atr_14': 2}
+    c['technical_basis'].update(low_20=99.5, ism_daily_basis=daily)
+    c['fundamentals']['eps_growth'] = -.1
+    row = evaluate(c)
+    assert row['classification'] == 'NOT_INTERESTING'
+    assert row['invalidation'] is None
+    assert row['low_20_close'] == 99.5  # exact original input is retained
+    c['fundamentals']['eps_growth'] = .1
+    row = evaluate(c)
+    assert row['entry']['support'] == 100
+    assert row['invalidation'] == 97
+    assert row['low_20_close'] == 99.5

@@ -267,8 +267,11 @@ def _watchlist_handoff(row, reports, now):
         "latest_completed_close": row["latest_completed_close"],
         "latest_completed_close_at": row["latest_completed_close_at"],
         "status_basis": row["status_basis"], "buy_close_threshold": row["buy_close_threshold"],
+        "status_basis_date": row["status_basis_date"], "low_20_close": row["low_20_close"],
         "entry_buffer_atr_fraction": row["entry_buffer_atr_fraction"],
         "current_price": row["current_price"], "distance_to_zone_pct": row["distance_to_zone_pct"],
+        "distance_pct": row["distance_pct"],
+        "intraday_price": row["intraday_price"], "intraday_distance_pct": row["intraday_distance_pct"],
         "reason": row["reason"], "breakdown_guard_failed": row["breakdown_guard_failed"],
         "data_provenance": {
             "ism_source_url": report["source_url"], "report_type": row["report_type"],

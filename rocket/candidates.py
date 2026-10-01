@@ -117,6 +117,10 @@ def evaluate_long(ticker, context, *, thesis, source_reference, now, entry_polic
            "current_price": market.get("current_price"),
            "invalidation": None if entry_policy == "ism_support" else technical.get("low_20"),
            "research_only": True, "entry": None}
+    if entry_policy == "ism_support":
+        # Preserve the pre-PR invalidation input under its actual meaning,
+        # including non-passing rows; it is not the ATR research risk level.
+        row["low_20_close"] = context.get("technical_basis", {}).get("low_20")
     if missing:
         return row
     price, average, low = market["current_price"], technical["average_20"], technical["low_20"]
@@ -170,13 +174,22 @@ def _ism_support_entry(row, fundamental, *, price, support):
         status = "WATCH"
         reason = (f"wait for pullback to {zone[0]:.2f}–{zone[1]:.2f}; "
                   f"completed daily close must be at or below {buy_threshold:.2f}")
+    from rocket.clock import NY
+
+    basis_date = parse_datetime(technical["latest_close_at"]).astimezone(NY).date().isoformat()
+    reason += f"; as of {basis_date} close"
     # Signed distance to the nearest boundary: negative below, zero inside,
     # positive above. Denominator is the corresponding zone boundary.
-    distance = (price / zone[0] - 1) * 100 if price < zone[0] else (
-        (price / zone[1] - 1) * 100 if price > zone[1] else 0.0)
+    def zone_distance(value):
+        return (value / zone[0] - 1) * 100 if value < zone[0] else (
+            (value / zone[1] - 1) * 100 if value > zone[1] else 0.0)
+
+    distance = zone_distance(latest_close)
     row.update(classification=status, reason=reason, invalidation=invalidation,
                latest_completed_close=latest_close, latest_completed_close_at=technical["latest_close_at"],
                status_basis="latest_completed_daily_close", buy_close_threshold=buy_threshold,
+               status_basis_date=basis_date, distance_pct=distance,
+               intraday_price=price, intraday_distance_pct=zone_distance(price),
                entry_buffer_atr_fraction=0.1, raw_atr=atr,
                volatility_clamped=atr is not None and volatility != atr,
                entry_zone_low=zone[0], entry_zone_high=zone[1],

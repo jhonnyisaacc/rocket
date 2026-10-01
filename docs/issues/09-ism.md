@@ -77,23 +77,30 @@ Status is close-based:
 The default entry buffer is **0.1V** (10% of the effective, bounded volatility
 unit). It provides an entry margin at the zone top; it is not a stateful
 latching rule. Equality at support and the buffered threshold is eligible.
-Zones never stretch to intraday prices, including for broken names. Quote and
-signed distance are informational; a quote recovery cannot clear a closing
-support veto, and a quote crossing the top cannot flip an eligible close.
-`latest_completed_close`, its timestamp, `status_basis`, `buy_close_threshold`,
-and the buffer fraction make the decision auditable. These remain research
-heuristics, not a validated trading edge or execution instruction.
+Zones never stretch to intraday prices, including for broken names. Intraday
+quote and its separate signed distance are informational; a quote recovery
+cannot clear a closing support veto, and a quote crossing the top cannot flip an eligible close.
+`latest_completed_close`, its timestamp, `status_basis`, `status_basis_date`,
+`buy_close_threshold`, and the buffer fraction make the decision auditable.
+Every passing-name reason includes “as of YYYY-MM-DD close”, using the NY
+session date the status is graded on. These remain research heuristics, not a validated trading edge or execution instruction.
 
 `rocket ism --json` adds top-level `watchlist_handoff`, also retained in
 `payload.watchlist_handoff`. Every passing long, including a vetoed WATCH,
 supplies ticker, industry, status, zone bounds, invalidation, quote/distance,
-close/buffer inputs, volatility labels, reason and data provenance. Signed
-quote distance uses the nearest zone boundary as denominator: negative below,
-zero inside, positive above. `stop_level` is retained solely as a backward
-compatible **exact alias of invalidation**, not another stop calculation.
+close/buffer inputs, volatility labels, reason and data provenance.
+`distance_to_zone_pct` (also exposed as `distance_pct`) now uses the completed
+close, matching status. `intraday_price` is an explicit alias of the retained
+`current_price` quote, and `intraday_distance_pct` reports its separate distance.
+Both signed distances use the nearest nominal zone boundary as denominator:
+negative below, zero inside, positive above. Zero means inside the nominal band;
+it does not imply the close passed the support veto or buffered buy threshold.
+`stop_level` is retained solely as a backward compatible **exact alias of invalidation**, not another stop calculation.
 Candidate invalidation is `S - 1.5V` whenever a zone exists, and null otherwise
-(NEEDS_REVIEW, NOT_INTERESTING and SHORT_INPUT). Legacy live `low_20` is support
-context, not the ISM risk level. Yahoo history provider attempts include
-`retrieved_at` on success and failure. No watch is installed automatically;
+(NEEDS_REVIEW, NOT_INTERESTING and SHORT_INPUT). This is a semantic change from
+the old `invalidation = low_20` field. The original live technical low is preserved as `low_20_close` on ISM long rows,
+including non-passing rows; it is support context, not the ATR risk level. It may
+differ from `entry.support`, which uses the completed-session snapshot. Yahoo
+history provider attempts include `retrieved_at` on success and failure. No watch is installed automatically;
 `execution_enabled` remains false. Short `ism_simple` gates and the
 `valuation_support` veto are unchanged.
