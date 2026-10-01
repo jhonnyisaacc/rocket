@@ -140,6 +140,16 @@ A=P-cheap25-90 (19/24 windows), B=L-dd40 (plurality 9/24), C=C-f3bp-h1
 (plurality 11/24). Full-sample descriptives above saw holdout data and
 are context only; selection and headlines never touched 2026-01-01+.
 
+## Holdout (run ONCE, 2026-01-01 to 2026-09-30; BTC buy-hold -5.9%)
+
+- A P-cheap25-90: 3 entries, cost 10.5%/yr, hedged DD -44.2% vs naked
+  -39.5%. The insurance made the drawdown worse. NO EDGE confirmed.
+- B L-dd40: 3 legs: +10.6 (time), -14.2 (stop), +29.8 (target); avg
+  +8.7%/leg in a down market. Consistent with expectancy; n=3 proves
+  nothing. NOT SIGNIFICANT stands.
+- C C-f3bp-h1: -0.55% over the holdout. The thin post-2023 regime pays
+  nothing. MARGINAL confirmed.
+
 ## Family B — capitulation longs (variants B-*)
 - B-1 drawdown-30% (stop 15%, target 30%, 90d time stop, 20% trail):
   32 legs, 17W/15L, +7.1%/leg, equity 6.01x 2019-2026 (vs ~22x buy-hold).
