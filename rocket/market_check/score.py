@@ -16,6 +16,7 @@ from rocket.market_check.mathutil import (
     sma,
 )
 from rocket.market_check.panel import AsOfView, SeriesPanel
+from rocket.market_check.redeploy import is_bottom
 
 COLOR_VALUE = {"green": 1.0, "yellow": 0.0, "red": -1.0}
 PILLAR_ORDER = ("rates", "oil", "volatility", "credit", "dollar_gold", "crypto")
@@ -355,22 +356,22 @@ def _quiet_regime(pillars: dict[str, dict[str, Any]], total: float, config: Conf
     return "neutral"
 
 
-def resolve_regime(
+def _classic(pillars: dict[str, dict[str, Any]]) -> bool:
+    rates = pillars["rates"]["color"]
+    vol = pillars["volatility"]["color"]
+    credit = pillars["credit"]["color"]
+    return rates == "red" and (vol == "red" or credit == "red")
+
+
+def _hysteresis(
     pillars: dict[str, dict[str, Any]],
-    pillar_total: float | None,
+    pillar_total: float,
     stress: float,
     prior: str | None,
     config: Config,
 ) -> str:
-    """Hysteresis on the stress score. A quiet tape falls back to the pillar total."""
-    if pillar_total is None:
-        return "unknown"
     rules = config.regime.stress
-    rates = pillars["rates"]["color"]
-    vol = pillars["volatility"]["color"]
-    credit = pillars["credit"]["color"]
-    # Level backstop: red rates together with red vol or red credit still counts as an entry.
-    classic = rates == "red" and (vol == "red" or credit == "red")
+    classic = _classic(pillars)
     enter_off = stress >= rules.enter_risk_off or classic
     if prior == "risk-off":
         if stress >= rules.exit_risk_off or classic:
@@ -391,12 +392,45 @@ def resolve_regime(
     return _quiet_regime(pillars, pillar_total, config)
 
 
+def resolve_regime(
+    pillars: dict[str, dict[str, Any]],
+    pillar_total: float | None,
+    stress: float,
+    prior: str | None,
+    config: Config,
+    *,
+    bottom: bool = False,
+    prior_released: bool = False,
+) -> tuple[str, bool]:
+    """Return the regime and whether a buy-the-low release is holding caution off.
+
+    v1 is the level rule. v2 is stress hysteresis. v3 leaves caution on the
+    bottom signal and holds that release while residual stress is still
+    elevated. Once the score cools below the caution exit, the release ends
+    so the next rise can raise cash again. A fresh acute spike also ends it.
+    """
+    if pillar_total is None:
+        return "unknown", False
+    if config.model.version == "v1":
+        if pillar_total <= config.model.v1_risk_off_max or _classic(pillars):
+            return "risk-off", False
+        return _quiet_regime(pillars, pillar_total, config), False
+    acute = stress >= config.regime.stress.enter_risk_off or _classic(pillars)
+    cooled = stress < config.regime.stress.exit_caution
+    if config.model.version == "v3" and bottom:
+        return _quiet_regime(pillars, pillar_total, config), True
+    if config.model.version == "v3" and prior_released and not acute and not cooled:
+        return _quiet_regime(pillars, pillar_total, config), True
+    return _hysteresis(pillars, pillar_total, stress, prior, config), False
+
+
 def score_asof(
     panel: SeriesPanel,
     day: date,
     config: Config,
     *,
     prior_regime: str | None = None,
+    prior_released: bool = False,
 ) -> dict[str, Any]:
     """Score `day` using only data the panel exposes on that day."""
     view = panel.asof(day, config.lags)
@@ -411,7 +445,10 @@ def score_asof(
     }
     _known, total = _pillar_total(pillars, config)
     stress, parts = stress_score(view, config)
-    regime = resolve_regime(pillars, total, stress, prior_regime, config)
+    bottom = is_bottom(view, config)
+    regime, released = resolve_regime(
+        pillars, total, stress, prior_regime, config, bottom=bottom, prior_released=prior_released,
+    )
     today = events_on(day, config)
     ahead = upcoming(day, config, config.events.horizon_days)
     rules = config.regime.stress
@@ -421,6 +458,8 @@ def score_asof(
         "score": total,
         "stress": stress,
         "stress_parts": parts,
+        "bottom": bottom,
+        "released": released,
         "prior_regime": prior_regime,
         "pillars": pillars,
         "oil_shock": shock,
@@ -433,7 +472,9 @@ def score_asof(
             f"oil shock, BTC drawdown) enters caution at {rules.enter_caution:g} and risk-off at "
             f"{rules.enter_risk_off:g}. It leaves risk-off below {rules.exit_risk_off:g} and caution "
             f"below {rules.exit_caution:g}. Red rates plus red volatility or red credit is still an "
-            "entry backstop. Unknown when rates are missing or fewer than "
+            "entry backstop. In v3 a buy-the-low day leaves caution immediately and holds that "
+            "release until the stress score cools below the caution exit or a fresh acute spike hits. "
+            "Unknown when rates are missing or fewer than "
             f"{config.regime.min_pillars} pillars have data."
         ),
     }
@@ -442,12 +483,14 @@ def score_asof(
 def score_path(panel: SeriesPanel, days: list[date], config: Config) -> list[dict[str, Any]]:
     """Walk sessions in order so hysteresis can see yesterday and not tomorrow."""
     prior: str | None = None
+    released = False
     rows = []
     for day in days:
-        row = score_asof(panel, day, config, prior_regime=prior)
+        row = score_asof(panel, day, config, prior_regime=prior, prior_released=released)
         rows.append(row)
         if row["regime"] != "unknown":
             prior = row["regime"]
+        released = bool(row["released"])
     return rows
 
 

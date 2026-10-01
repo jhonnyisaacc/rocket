@@ -126,7 +126,8 @@ def test_short_perp_stops_out_and_does_not_use_the_next_month():
         "vix": vix, "hy_oas": hy,
         "tlt": {day.isoformat(): (70.0 if index % 2 == 0 else 110.0) for index, day in enumerate(days)},
     })
-    config = _window(entry, date(2025, 3, 31), entry)
+    # v3 does not short. This guard covers the monthly engine, which v1 and v2 still use.
+    config = replace(_window(entry, date(2025, 3, 31), entry), model=replace(CFG.model, version="v2"))
     result = simulate_derivatives(panel, config)
     assert len(result["rows"]) == 1
     row = result["rows"][0]

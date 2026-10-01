@@ -80,7 +80,188 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _put_pnl(
+    panel: SeriesPanel, config: Config, entry_day: date, exit_day: date, entry_spot: float,
+) -> tuple[float, str, float | None, float | None]:
+    iv, pricing = _iv(panel, config, entry_day)
+    if iv is None or entry_spot <= 0:
+        return 0.0, "missing", None, None
+    strike = entry_spot * (1 - config.derivatives.put_otm)
+    years = config.derivatives.put_tenor_days / 365.25
+    premium = bs_put(
+        entry_spot, strike, years, iv + config.costs.option_iv_slippage, _rate(panel, config, entry_day),
+    )
+    exit_spot = panel.asof(exit_day, config.lags).value("btc") or entry_spot
+    remaining = (entry_day + timedelta(days=config.derivatives.put_tenor_days) - exit_day).days
+    exit_iv, _source = _iv(panel, config, exit_day)
+    mark = bs_put(
+        exit_spot, strike, max(remaining, 0) / 365.25,
+        exit_iv if exit_iv is not None else iv, _rate(panel, config, exit_day),
+    )
+    option_fees = entry_spot * (config.costs.option_fee_bps_underlying / 10_000) * 2
+    return (mark - premium - option_fees) / entry_spot, pricing, strike, premium
+
+
+def _warning(previous: dict[str, Any] | None, today: dict[str, Any] | None) -> bool:
+    if today is None:
+        return False
+    now = today["regime"]
+    before = previous["regime"] if previous else "neutral"
+    if now == "risk-off" and before != "risk-off":
+        return True
+    return now == "caution" and before not in {"caution", "risk-off"}
+
+
+def _btc_drawdown(panel: SeriesPanel, config: Config, day: date) -> float | None:
+    closes = panel.asof(day, config.lags).closes("btc", config.redeploy.peak_lookback)
+    if len(closes) < 20:
+        return None
+    peak = max(closes)
+    if peak <= 0:
+        return None
+    return closes[-1] / peak - 1
+
+
+def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
+    """v3: puts on a fresh warning, longs only on the buy-the-low signal. No monthly drift bet."""
+    days = [
+        day for day in panel.dates("spy")
+        if config.window.start <= day <= config.window.end
+    ]
+    slip = config.costs.perp_slippage_bps / 10_000
+    fee = config.costs.perp_fee_bps / 10_000
+    path = score_path(panel, scoring_days(panel, config), config)
+    rows = []
+    for members in _months(days):
+        put_entry: date | None = None
+        put_exit: date | None = None
+        long_entry: date | None = None
+        long_exit: date | None = None
+        stopped = False
+        for index, day in enumerate(members):
+            scored = score_on(path, day)
+            previous = score_on(path, members[index - 1]) if index else score_on(
+                path, day - timedelta(days=1),
+            )
+            if put_entry is None and _warning(previous, scored):
+                put_entry = day
+                put_exit = members[-1]
+            if (
+                put_entry is not None
+                and put_exit == members[-1]
+                and scored
+                and scored.get("bottom")
+                and day >= put_entry
+            ):
+                put_exit = day
+            if long_entry is None and scored and scored.get("bottom"):
+                drawdown = _btc_drawdown(panel, config, day)
+                if drawdown is not None and drawdown <= -config.redeploy.btc_drawdown:
+                    long_entry = day
+                    long_exit = day
+            elif long_entry is not None and long_exit == long_entry and day > long_entry:
+                held = [item for item in members if long_entry <= item <= day]
+                price = panel.asof(day, config.lags).value("btc")
+                entry_spot = panel.asof(long_entry, config.lags).value("btc") or price
+                if price is not None and entry_spot and price <= entry_spot * (1 - config.derivatives.stop):
+                    long_exit = day
+                    stopped = True
+                elif len(held) > config.redeploy.hold_sessions:
+                    long_exit = day
+        if long_entry is not None and long_exit == long_entry:
+            long_exit = members[-1]
+        if put_entry is not None and put_exit is not None and put_exit < put_entry:
+            put_exit = put_entry
+        direction = "long" if long_entry else "flat"
+        size = config.derivatives.long_size if long_entry else 0.0
+        hedge = "btc_puts" if put_entry else "none"
+        perp_pnl = 0.0
+        funding = 0.0
+        fees = 0.0
+        entry_price = panel.asof(members[0], config.lags).value("btc") or 0.0
+        exit_price = panel.asof(members[-1], config.lags).value("btc") or entry_price
+        if long_entry and long_exit:
+            entry_price = panel.asof(long_entry, config.lags).value("btc") or entry_price
+            exit_price = panel.asof(long_exit, config.lags).value("btc") or exit_price
+            hold = [day for day in members if long_entry <= day <= long_exit]
+            for day in hold:
+                rate = panel.asof(day, config.lags).value("funding_daily") or 0.0
+                funding -= size * rate
+            gross = size * ((exit_price * (1 - slip)) / (entry_price * (1 + slip)) - 1) if entry_price else 0.0
+            fees = size * fee * 2
+            perp_pnl = gross + funding - fees
+        hedge_pnl = None
+        pricing = "none"
+        strike = None
+        premium = None
+        if put_entry and put_exit:
+            spot = panel.asof(put_entry, config.lags).value("btc") or entry_price
+            hedge_pnl, pricing, strike, premium = _put_pnl(panel, config, put_entry, put_exit, spot)
+            if pricing == "missing":
+                hedge = "none"
+                hedge_pnl = None
+            if direction == "flat":
+                entry_price = spot
+                exit_price = panel.asof(put_exit, config.lags).value("btc") or spot
+        parts = []
+        if put_entry and hedge == "btc_puts":
+            parts.append("warning put")
+        if long_entry:
+            parts.append("bottom long")
+        signal = " + ".join(parts) if parts else "flat"
+        total = perp_pnl + (hedge_pnl or 0.0)
+        active = long_entry is not None or hedge == "btc_puts"
+        regime = "neutral"
+        anchor = long_entry or put_entry or members[0]
+        scored = score_on(path, anchor)
+        if scored:
+            regime = scored["regime"]
+        rows.append({
+            "month": members[0].strftime("%Y-%m"),
+            "date": (long_entry or put_entry or members[0]).isoformat(),
+            "signal": signal,
+            "regime": regime,
+            "position": direction,
+            "size": size,
+            "entry": entry_price,
+            "exit": exit_price,
+            "exit_date": (long_exit or put_exit or members[-1]).isoformat(),
+            "stopped": stopped,
+            "funding_pnl": funding,
+            "fees": fees,
+            "perp_pnl": perp_pnl,
+            "hedge": hedge,
+            "hedge_signal": hedge == "btc_puts",
+            "strike": strike,
+            "premium": premium,
+            "hedge_pnl": hedge_pnl,
+            "pricing": pricing,
+            "pnl": total,
+            "success": (total > 0) if active else None,
+            "options": "n/a",
+        })
+    oos = config.window.oos_start
+    in_rows = [row for row in rows if date.fromisoformat(row["date"]) < oos]
+    out_rows = [row for row in rows if date.fromisoformat(row["date"]) >= oos]
+    return {
+        "rows": rows,
+        "full": _summarize(rows),
+        "in_sample": _summarize(in_rows),
+        "out_of_sample": _summarize(out_rows),
+        "pricing_note": (
+            "v3 drops the monthly long/short bet. A put is opened only when the regime steps up "
+            "into caution or risk-off, and it is marked through the buy-the-low day or month-end. "
+            "A long is opened only on the buy-the-low signal while BTC is still in a drawdown, "
+            "with the same stop, and held for the configured number of sessions or to month-end. "
+            "Puts are Black-Scholes on Deribit DVOL when that print exists, otherwise realized vol. "
+            "Each expression is still scaled as a fraction of one BTC."
+        ),
+    }
+
+
 def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
+    if config.model.version == "v3":
+        return _simulate_timed(panel, config)
     days = [
         day for day in panel.dates("btc")
         if config.window.start <= day <= config.window.end

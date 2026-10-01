@@ -261,6 +261,31 @@ class CurrentBook:
 
 
 @dataclass(frozen=True)
+class Model:
+    version: str
+    v1_risk_off_max: float
+
+
+@dataclass(frozen=True)
+class Redeploy:
+    spy_drawdown: float
+    vix_spike: float
+    vix_fade_sessions: int
+    spike_lookback: int
+    peak_lookback: int
+    name_drawdown: float
+    rebound_sessions: int
+    tranches: int
+    gap_days: int
+    episode_gap_days: int
+    cash_target: float
+    btc_drawdown: float
+    hold_sessions: int
+    quality: tuple[str, ...]
+    high_beta: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class Config:
     window: Window
     windows: Windows
@@ -280,6 +305,8 @@ class Config:
     events: Events
     scorecard: ScorecardCfg
     current_book: CurrentBook
+    model: Model
+    redeploy: Redeploy
 
     def lag(self, series: str) -> int:
         return int(self.lags.get(series, 0))
@@ -327,6 +354,8 @@ def load_config(path: Path | None = None) -> Config:
     events = _section(raw, "events")
     scorecard = _section(raw, "scorecard")
     book = _section(raw, "current_book")
+    model = _section(raw, "model")
+    redeploy = _section(raw, "redeploy")
     trades = tuple(
         LoggedTrade(_date(item["date"]), str(item["ticker"]), str(item["side"]), str(item.get("note") or ""))
         for item in book.get("trades") or []
@@ -424,6 +453,24 @@ def load_config(path: Path | None = None) -> Config:
             _date(book["as_of"]), float(book["nav_usd"]), str(book.get("note") or ""),
             _floats(book.get("weights")), trades,
         ),
+        model=Model(str(model["version"]), float(model["v1_risk_off_max"])),
+        redeploy=Redeploy(
+            spy_drawdown=float(redeploy["spy_drawdown"]),
+            vix_spike=float(redeploy["vix_spike"]),
+            vix_fade_sessions=int(redeploy["vix_fade_sessions"]),
+            spike_lookback=int(redeploy["spike_lookback"]),
+            peak_lookback=int(redeploy["peak_lookback"]),
+            name_drawdown=float(redeploy["name_drawdown"]),
+            rebound_sessions=int(redeploy["rebound_sessions"]),
+            tranches=int(redeploy["tranches"]),
+            gap_days=int(redeploy["gap_days"]),
+            episode_gap_days=int(redeploy["episode_gap_days"]),
+            cash_target=float(redeploy["cash_target"]),
+            btc_drawdown=float(redeploy["btc_drawdown"]),
+            hold_sessions=int(redeploy["hold_sessions"]),
+            quality=_strings(redeploy["quality"]),
+            high_beta=_strings(redeploy["high_beta"]),
+        ),
     )
     _validate(cfg)
     return cfg
@@ -471,3 +518,9 @@ def _validate(cfg: Config) -> None:
         raise ValueError("cash targets must rise from risk-on to risk-off and stay inside the ceiling")
     if cfg.window.start >= cfg.window.oos_start or cfg.window.oos_start > cfg.window.end:
         raise ValueError("out-of-sample split must sit inside the backtest window")
+    if cfg.model.version not in {"v1", "v2", "v3"}:
+        raise ValueError("model version must be v1, v2, or v3")
+    if not 0 < cfg.redeploy.spy_drawdown < 1 or not 0 < cfg.redeploy.name_drawdown < 1:
+        raise ValueError("redeploy drawdowns must sit between 0 and 1")
+    if cfg.redeploy.tranches < 1:
+        raise ValueError("redeploy needs at least one tranche")

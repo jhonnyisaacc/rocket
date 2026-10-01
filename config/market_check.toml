@@ -1,5 +1,11 @@
 # Daily macro market check and backtest parameters.
-# One file on purpose: change knobs here. They are not fit to the backtest result.
+# One file on purpose. v3 is the live rule. v1 and v2 stay here so the
+# comparison can be rerun. Buy-the-low cuts were chosen on the in-sample half.
+
+[model]
+version = "v3"
+# v1 only: weighted pillar total at or below this is risk-off.
+v1_risk_off_max = -2.0
 
 [window]
 start = 2024-10-01
@@ -79,6 +85,28 @@ exit_caution = 1.0
 spy_drawdown = 0.08
 btc_drawdown = 0.15
 lead_sessions = 10
+
+# Buy-the-low. In sample, a VIX fade while SPY was only 8-10% off its high
+# (March 2025) failed, and the real low was still about 12% down when VIX
+# first fell off a spike of 25 or more. Credit did not tighten until weeks
+# after that low, so it is not an entry. These cuts were not moved to catch
+# the later, shallower dip.
+[redeploy]
+spy_drawdown = 0.12
+vix_spike = 25.0
+vix_fade_sessions = 5
+spike_lookback = 10
+peak_lookback = 60
+name_drawdown = 0.10
+rebound_sessions = 5
+tranches = 3
+gap_days = 3
+episode_gap_days = 15
+cash_target = 0.35
+btc_drawdown = 0.10
+hold_sessions = 15
+quality = ["MSFT", "META", "AMZN", "EQIX"]
+high_beta = ["TSLA", "FCX", "BAC", "ETN", "CAT", "APH", "AMAT"]
 
 # Calendar-day publication lag. A print dated D is visible only on dates >= D+lag.
 # Equity, crypto, VIX, oil, dollar, gold, yields, DVOL and funding stay at 0

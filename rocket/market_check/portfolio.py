@@ -8,6 +8,7 @@ from typing import Any
 from rocket.market_check.config import Config
 from rocket.market_check.metrics import monthly_returns, performance, slice_path
 from rocket.market_check.panel import SeriesPanel
+from rocket.market_check.redeploy import redeploy_picks
 from rocket.market_check.rules import (
     add_blockers,
     cash_target,
@@ -89,6 +90,9 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             "shares": shares[name], "price": fill, "notional": spend, "reason": "initial",
         })
     last_add: dict[str, date] = {}
+    redeploy_count = 0
+    last_redeploy: date | None = None
+    last_bottom: date | None = None
     nav_path = []
     regimes: list[str] = []
     path = score_path(panel, scoring_days(panel, config), config)
@@ -102,26 +106,44 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         nav = _nav(cash, shares, prices)
         score = score_on(path, day) or {"regime": "unknown", "oil_shock": False, "events_today": []}
         regime = score["regime"]
+        bottom = config.model.version == "v3" and bool(score.get("bottom"))
+        released = config.model.version == "v3" and bool(score.get("released"))
+        if (
+            not bottom
+            and last_bottom is not None
+            and (day - last_bottom).days > config.redeploy.episode_gap_days
+        ):
+            redeploy_count = 0
+            last_bottom = None
         if day != start:
             index_return = session_return(view, "spy")
             index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
-            target = cash_target(regime, index_return, config) if regime != "unknown" else cash / nav if nav else 0
+            # Hold through the release and for the rest of the open episode, including
+            # a day when a fresh spike has not yet printed a new bottom.
+            holding = bottom or released or last_bottom is not None
+            if holding:
+                target = config.redeploy.cash_target
+            elif regime != "unknown":
+                target = cash_target(regime, index_return, config)
+            else:
+                target = cash / nav if nav else 0
             if regime != "unknown" and nav > 0:
                 allowed: set[str] = set()
-                for name in config.portfolio.sale_order:
-                    if shares.get(name, 0) <= 0 or name not in prices:
-                        continue
-                    ok, _detail = trim_allowed(
-                        name=name,
-                        name_return=session_return(view, name),
-                        bounce=trailing_bounce(view, name, config.windows.soft_patch),
-                        index_return=index_return,
-                        index_bounce=index_bounce,
-                        regular_hours=config.portfolio.assume_regular_hours,
-                        config=config,
-                    )
-                    if ok:
-                        allowed.add(name)
+                if not holding:
+                    for name in config.portfolio.sale_order:
+                        if shares.get(name, 0) <= 0 or name not in prices:
+                            continue
+                        ok, _detail = trim_allowed(
+                            name=name,
+                            name_return=session_return(view, name),
+                            bounce=trailing_bounce(view, name, config.windows.soft_patch),
+                            index_return=index_return,
+                            index_bounce=index_bounce,
+                            regular_hours=config.portfolio.assume_regular_hours,
+                            config=config,
+                        )
+                        if ok:
+                            allowed.add(name)
                 for name, fraction in plan_trims(shares, prices, cash, nav, target, allowed, config):
                     held = shares[name]
                     qty = held * fraction
@@ -135,10 +157,45 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         "shares": qty, "price": fill, "notional": proceeds, "reason": "trim_cash_target",
                     })
                 nav = _nav(cash, shares, prices)
+                if bottom and nav > 0:
+                    last_bottom = day
+                    gap_ok = last_redeploy is None or (day - last_redeploy).days >= config.redeploy.gap_days
+                    room = config.redeploy.tranches - redeploy_count
+                    excess = cash - target * nav
+                    if gap_ok and room > 0 and excess > config.portfolio.cash_tolerance * nav:
+                        picks = redeploy_picks(view, config)
+                        if picks:
+                            each = (excess / room) / len(picks)
+                            bought = False
+                            for sleeve, name, price in picks:
+                                if each <= 0 or price <= 0 or each > cash:
+                                    continue
+                                fill = price * (1 + slip)
+                                qty = each / fill
+                                cash -= each
+                                shares[name] = shares.get(name, 0.0) + qty
+                                traded += each
+                                bought = True
+                                trades.append({
+                                    "date": day.isoformat(), "ticker": name, "side": "buy",
+                                    "shares": qty, "price": fill, "notional": each,
+                                    "reason": f"redeploy_{sleeve}",
+                                })
+                            if bought:
+                                redeploy_count += 1
+                                last_redeploy = day
+                                nav = _nav(cash, shares, prices)
+                episode_open = last_bottom is not None and redeploy_count < config.redeploy.tranches
                 blockers = add_blockers(
                     regime=regime, oil_shock=bool(score["oil_shock"]), events_today=list(score["events_today"]),
                 )
-                if not blockers and nav > 0 and cash > target * nav + config.portfolio.cash_tolerance * nav:
+                if (
+                    not bottom
+                    and not episode_open
+                    and not blockers
+                    and nav > 0
+                    and cash > target * nav + config.portfolio.cash_tolerance * nav
+                ):
                     ranked = []
                     for name in config.portfolio.add_names:
                         bounds = range_bounds(view, name, config.windows.range_lookback)

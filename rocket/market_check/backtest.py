@@ -3,16 +3,42 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 from rocket.market_check.config import Config
 from rocket.market_check.derivatives import simulate_derivatives
+from rocket.market_check.diagnosis import diagnose, entry_quality
 from rocket.market_check.episodes import drawdown_warnings, regime_episodes, session_counts
 from rocket.market_check.panel import SeriesPanel
 from rocket.market_check.portfolio import compare_trade_log, simulate_portfolio
 from rocket.market_check.report import ASSUMPTIONS, render_report
+
+
+def _as_version(config: Config, version: str) -> Config:
+    return replace(config, model=replace(config.model, version=version))
+
+
+def _headline(portfolio: dict[str, Any], derivatives: dict[str, Any]) -> dict[str, Any]:
+    def side(block: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "strategy": block["strategy"],
+            "equal_weight": block["equal_weight"],
+            "spy": block["spy"],
+        }
+    return {
+        "regime_sessions": portfolio["regime_sessions"],
+        "full": side(portfolio["full"]),
+        "in_sample": side(portfolio["in_sample"]),
+        "out_of_sample": side(portfolio["out_of_sample"]),
+        "derivatives": {
+            "full": derivatives["full"],
+            "in_sample": derivatives["in_sample"],
+            "out_of_sample": derivatives["out_of_sample"],
+        },
+    }
 
 
 def load_trade_log(path: Path) -> list[dict[str, Any]]:
@@ -38,6 +64,16 @@ def run_backtest(
 ) -> dict[str, Any]:
     portfolio = simulate_portfolio(panel, config)
     derivatives = simulate_derivatives(panel, config)
+    ran = {config.model.version: (portfolio, derivatives)}
+    for version in ("v1", "v2", "v3"):
+        if version in ran:
+            continue
+        alt = _as_version(config, version)
+        ran[version] = (simulate_portfolio(panel, alt), simulate_derivatives(panel, alt))
+    comparison = {}
+    for version, (book, derivs) in ran.items():
+        comparison[version] = _headline(book, derivs)
+        comparison[version]["entries"] = entry_quality(panel, config, book["trades"], derivs["rows"])
     logged = [
         {"date": item.date, "ticker": item.ticker, "side": item.side, "note": item.note}
         for item in config.current_book.trades
@@ -62,6 +98,9 @@ def run_backtest(
             "sources": panel.meta.get("sources") or {},
         },
         "execution_enabled": False,
+        "model_version": config.model.version,
+        "comparison": comparison,
+        "diagnosis": diagnose(panel, config),
         "stress_record": {
             "episodes": regime_episodes(portfolio["nav"], config.window.oos_start),
             "sessions": session_counts(portfolio["nav"], config.window.oos_start),

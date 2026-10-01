@@ -8,6 +8,7 @@ from typing import Any
 from rocket.market_check.calendar import upcoming
 from rocket.market_check.config import Config, CurrentBook
 from rocket.market_check.panel import SeriesPanel
+from rocket.market_check.redeploy import redeploy_picks
 from rocket.market_check.rules import (
     add_blockers,
     bounce_threshold,
@@ -113,7 +114,10 @@ def decide(
     hours = config.portfolio.assume_regular_hours if regular_hours is None else regular_hours
     index_return = session_return(view, "spy")
     index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
-    target = cash_target(score["regime"], index_return, config)
+    bottom = bool(score.get("bottom"))
+    released = bool(score.get("released"))
+    holding = config.model.version == "v3" and (bottom or released)
+    target = config.redeploy.cash_target if holding else cash_target(score["regime"], index_return, config)
     weights, book_basis = _book_weights(book, config, day)
     held = {name for name, weight in weights.items() if name not in {"USDC", "USD", "cash"} and weight > 0}
     trims = []
@@ -133,6 +137,9 @@ def decide(
             regular_hours=hours,
             config=config,
         )
+        if holding:
+            allowed = False
+            detail = {**detail, "reason": "buy_the_low_release"}
         trims.append({
             "ticker": name,
             "allowed": allowed,
@@ -165,6 +172,7 @@ def decide(
             "blockers": list(blockers),
             "status": "bottom_half" if inside else "outside",
         })
+    picks = redeploy_picks(view, config) if bottom else []
     cash = _cash_weight(weights)
     trim_hits = [row for row in trims if row["allowed"]]
     add_hits = [row for row in adds if row.get("permitted")]
@@ -228,6 +236,9 @@ def decide(
             "add_blockers": blockers,
             "add_candidates": adds,
             "trim_candidates": trims,
+            "redeploy": [
+                {"sleeve": sleeve, "ticker": name, "price": price} for sleeve, name, price in picks
+            ],
             "rules": (
                 "Long-only USDC book. Cash target is 35/40/42/45 percent for risk-on, neutral, caution and "
                 "risk-off, and steps up on an up index day, capped at 45. Adds are only the watch names in "

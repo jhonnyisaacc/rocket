@@ -16,7 +16,7 @@ ASSUMPTIONS = (
     "The equity book is long-only and unlevered. USDC earns nothing in the simulation. Prices are split- and dividend-adjusted closes, so dividends are in the path rather than paid as cash. Ondo tokenized stocks are the underlying one-for-one. Sessions before the configured Ondo date are a proxy and are reported as their own window. Equity slippage is charged on every fill, including the opening buys of the strategy and the benchmarks.",
     "Porto rules. Cash target is 35, 40, 42 or 45 percent in risk-on, neutral, caution and risk-off. An up day in the index raises the target by one step, capped at 45 percent. Adds are only ETN, CAT, APH and AMAT, only in the bottom half of the trailing buy zone, and never in caution or risk-off, on an FOMC decision date, or on an oil-shock day. Trims follow TSLA, FCX, BAC, then half of META, EQIX and MSFT, then a light AMZN trim. A name that is down on the day is not sold. Nothing is sold on a hard-down index day. Two of the three trim gates must pass; on daily bars the regular-hours gate always passes. There is no daily rebalance back to equal weight.",
     "The regime can block adds and move the cash target. Caution is the middle tier: higher cash, no new adds, a flat perp. It does not authorize selling into a red name or a hard-down day, and it does not by itself short BTC.",
-    "Risk-off is a stress score with hysteresis, not a pillar-level rule. Points come from a VIX jump, credit-spread widening, a 30-year yield breakout, an oil shock, and a BTC drawdown. Enter risk-off at 4, leave it below 2; enter caution at 2, leave it below 1. Red rates plus red volatility or red credit is only an entry backstop. The cuts are round economic thresholds. They were checked against in-sample episodes and were not moved after seeing out-of-sample P&L.",
+    "Risk-off is a stress score with hysteresis, not a pillar-level rule. Points come from a VIX jump, credit-spread widening, a 30-year yield breakout, an oil shock, and a BTC drawdown. Enter risk-off at 4, leave it below 2; enter caution at 2, leave it below 1. Red rates plus red volatility or red credit is only an entry backstop. v3 leaves that caution when VIX falls off a spike of 25 or more while SPY is still 12% under its 60-session high, then buys up to three tranches and does not trim while the release is on. The release ends once the stress score cools below the caution exit, so the next rise can raise cash again. The 12% gate is the in-sample distinction between the failed March 2025 fade and the April low. It was not lowered to catch a later, smaller dip.",
     "Parameters otherwise live in config/market_check.toml. The out-of-sample split is the second half of the window, same parameters.",
     "Phillip's private numeric bands are not in the repo. The daily check uses the bottom quartile of the trailing range and shifts it with the regime. That is a stand-in.",
     "The September 2026 book snapshot is printed for context. There is no cost basis before 15 September 2026, so the backtest does not replay that book. An optional trade-log CSV is only a comparison.",
@@ -196,6 +196,149 @@ def _stress_section(record: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _stat(block: dict[str, Any] | None, key: str) -> str:
+    stats = (block or {}).get(key) or {}
+    sharpe = stats.get("sharpe")
+    sharpe_text = "n/a" if not isinstance(sharpe, (int, float)) else f"{sharpe:.2f}"
+    return f"{_pct(stats.get('cagr'))} / {_pct(stats.get('max_drawdown'))} / {sharpe_text}"
+
+
+def _entry_rows(entries: list[dict[str, Any]], sample: str, asset: str | None = None) -> list[dict[str, Any]]:
+    rows = []
+    for row in entries:
+        if sample != "full" and row["sample"] != sample:
+            continue
+        if row.get("avg_entry_vs_low") is None:
+            continue
+        if asset is None and row["asset"] in {"SPY", "BTC"}:
+            continue
+        if asset is not None and row["asset"] != asset:
+            continue
+        rows.append(row)
+    return rows
+
+
+def _entry_line(entries: list[dict[str, Any]], sample: str, asset: str | None = None) -> str:
+    rows = _entry_rows(entries, sample, asset)
+    if not rows:
+        return "no buys near the lows"
+    average = sum(float(row["avg_entry_vs_low"]) for row in rows) / len(rows)
+    noun = "drawdown" if len(rows) == 1 else "drawdowns"
+    return f"{average:.1%} above the trough across {len(rows)} {noun}"
+
+
+def _comparison_section(comparison: dict[str, Any]) -> str:
+    lines = [
+        "## Three versions",
+        "",
+        (
+            "v1 is the original level rule (risk-off almost never fired). "
+            "v2 is the stress score with hysteresis and caution, which raised cash and did not redeploy it. "
+            "v3 keeps that stress score and adds the buy-the-low release: three tranches into the "
+            "quality name and the high-beta name that fell most and have started to bounce, "
+            "and BTC longs only on that signal with puts only on a fresh warning. "
+            "CAGR / max drawdown / Sharpe. Benchmarks are the same in every version."
+        ),
+        "",
+        "| Version | Sample | Strategy | Equal-weight | SPY | Deriv hit | Deriv P&L | Stock entries vs low | BTC entry vs low |",
+        "|---|---|---|---|---|---:|---:|---|---|",
+    ]
+    for version in ("v1", "v2", "v3"):
+        block = comparison.get(version) or {}
+        derivs = block.get("derivatives") or {}
+        entries = block.get("entries") or []
+        for sample, label in (
+            ("full", "full"),
+            ("in_sample", "in sample"),
+            ("out_of_sample", "out of sample"),
+        ):
+            stats = derivs.get("full" if sample == "full" else sample) or {}
+            lines.append(
+                "| {version} | {label} | {strategy} | {bench} | {spy} | {hit} | {pnl} | {stocks} | {btc} |".format(
+                    version=version,
+                    label=label,
+                    strategy=_stat(block.get(sample), "strategy"),
+                    bench=_stat(block.get(sample), "equal_weight"),
+                    spy=_stat(block.get(sample), "spy"),
+                    hit=_pct(stats.get("hit_rate")),
+                    pnl=_pct(stats.get("sum_pnl")),
+                    stocks=_entry_line(entries, sample),
+                    btc=_entry_line(entries, sample, "BTC"),
+                )
+            )
+    lines.append("")
+    lines.append(
+        "Entry versus low is the average fill divided by the price on the trough day, minus one. "
+        "Zero would be buying the low. Stock rows use buys from the peak through three weeks after "
+        "the trough. BTC uses the long opened by that version, if any."
+    )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _redeploy_note(comparison: dict[str, Any]) -> str:
+    entries = (comparison.get("v3") or {}).get("entries") or []
+    bought = _entry_rows(entries, "in_sample")
+    later = _entry_rows(entries, "out_of_sample")
+    if bought:
+        gap = sum(float(row["avg_entry_vs_low"]) for row in bought) / len(bought)
+        fill = f"The in-sample buys filled {gap:.0%} above the troughs."
+    else:
+        fill = "In sample, the buy-the-low rule did not buy near a measured low."
+    oos = (
+        "It also bought out of sample."
+        if later
+        else "The 12% gate did not fire out of sample, so there is no out-of-sample redeploy to judge."
+    )
+    return (
+        f"{fill} {oos} Once the release cooled, the strength rule sold the high-beta sleeve. "
+        "The rebound was only partly held. The next test is to keep those shares until the following "
+        "caution, instead of refilling cash on the first quiet up-days. That test has not been run."
+    )
+
+
+def _next_section(comparison: dict[str, Any]) -> str:
+    v3 = (comparison.get("v3") or {}).get("out_of_sample") or {}
+    strategy = (v3.get("strategy") or {})
+    bench = (v3.get("equal_weight") or {})
+    beat = (
+        isinstance(strategy.get("sharpe"), (int, float))
+        and isinstance(bench.get("sharpe"), (int, float))
+        and strategy["sharpe"] > bench["sharpe"]
+    )
+    v2 = ((comparison.get("v2") or {}).get("out_of_sample") or {}).get("strategy") or {}
+    versus_v2 = ""
+    if isinstance(strategy.get("sharpe"), (int, float)) and isinstance(v2.get("sharpe"), (int, float)):
+        if strategy["sharpe"] > v2["sharpe"]:
+            versus_v2 = " Out of sample it also beats v2 on Sharpe, on this one split."
+        else:
+            versus_v2 = " Out of sample it does not beat v2 on Sharpe either."
+    verdict = (
+        "Out of sample, v3 Sharpe is above equal-weight on this one split. That is still one path."
+        if beat
+        else "Out of sample, v3 does not beat equal-weight on Sharpe. The April 2025 rebound is not an edge to size up."
+    )
+    lines = [
+        "## What to improve next",
+        "",
+        verdict + versus_v2,
+        "",
+        _redeploy_note(comparison),
+        "",
+        (
+            "Credit tightening lagged the in-sample low by weeks, so it stays a confirmation rather than an entry. "
+            "Funding turning negative marked the middle of the BTC decline, not the turn. "
+            "The panel has no volume, so a capitulation-volume rule is untested. "
+            "The 12% drawdown gate was set because the shallower March 2025 fade failed in sample. "
+            "A rule aimed at later, smaller dips would be a new claim, not a tweak of this one. "
+            "The crypto P&L is one April 2025 long plus warning puts; the puts lose more often than they pay. "
+            "Puts are still Black-Scholes on a 30-day DVOL, and same-close fills remain."
+        ),
+        "",
+    ]
+    return "\n".join(lines)
+
+
 def render_report(result: dict[str, Any]) -> str:
     portfolio = result["portfolio"]
     derivatives = result["derivatives"]
@@ -245,6 +388,12 @@ def render_report(result: dict[str, Any]) -> str:
         _window_block("From Ondo live date", portfolio["post_ondo"]),
         "",
         _stress_section(result.get("stress_record") or {}),
+        "",
+        _comparison_section(result.get("comparison") or {}),
+        "",
+        (result.get("diagnosis") or {}).get("markdown") or "",
+        "",
+        _next_section(result.get("comparison") or {}),
         "",
         "## Crypto derivatives",
         "",
