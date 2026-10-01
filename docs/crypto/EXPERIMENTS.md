@@ -68,8 +68,30 @@ Mar27-70k mid 0.0316 ($2,676), Dec26-72k mid 0.0178 ($1,507).
   14.1%/yr, best windows +2.4pp (2021-05) and +2.0pp (LUNA), worse
   elsewhere. Crashes are not scheduled.
 
+- A-9 single-leg analogues (one 180d 15% OTM put bought 90d before each
+  crash trough, WITH lookahead): only 3/7 paid at trough (covid 2.4x,
+  2021-05 1.9x, LUNA 2.9x); FTX 0.7x, yen 0.9x, tariffs 0.5x, 2026 0x.
+  Held to expiry only LUNA paid (2.7x). Even perfectly timed, premium in
+  vs trough value out is ~1.2x gross, ~0.4x if held to expiry. Timing plus
+  fast recoveries defeat the strike.
+- A-10 stress 10% DD from 90d high (90-day 15% OTM): 27 legs, 22.4%/yr,
+  hedged DD -63.5% vs naked -76.6% (+13.1pp), 5/7 crash wins. Real
+  protection, ruinous price.
+- A-11 stress 15% DD (90-day 15% OTM): 23 legs, 24.6%/yr, hedged DD -77.4%
+  vs naked -76.6% (no win). Waiting for deeper stress mistimes cover.
+- A-12 stress 10% DD (60-day 15% OTM): 38 legs, 27.8%/yr, hedged DD -86.7%
+  (WORSE than naked). Shorter tenor under stress buys realized-vol peak.
 ## Family B — capitulation longs (variants B-*)
-(none yet)
+- B-1 drawdown-30% (stop 15%, target 30%, 90d time stop, 20% trail):
+  32 legs, 17W/15L, +7.1%/leg, equity 6.01x 2019-2026 (vs ~22x buy-hold).
+  Exits: 12 target, 12 stop, 5 trailing, 2 time, 1 truncated.
+- B-2 drawdown-40%: 21 legs, 13W/8L, +10.4%/leg, equity 6.10x. Deeper
+  capitulation selects better, still far below buy-hold on idle capital.
+- B-3 funding <= -0.05%/day: only 5 legs since 2019-09, 4W/1L, +19.1%/leg,
+  equity 2.30x. Rare signal; episode-dependence check pending.
+- B-4 DVOL spike-then-fade (80+, 5d): 10 legs, 3W/7L, -1.0%/leg, equity
+  0.81x. Fading vol spikes loses; dropped unless WF disagrees.
+
 
 ## Family C — funding/basis carry (variants C-*)
 (none yet)
