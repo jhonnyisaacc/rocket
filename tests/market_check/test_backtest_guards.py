@@ -60,6 +60,24 @@ def test_put_price_matches_the_zero_rate_reference():
     assert abs(price - 7.965567) < 1e-3
 
 
+def test_holdout_slice_uses_live_positions_and_holdout_dates_only():
+    from rocket.config import PACKAGE_ROOT
+    from rocket.market_check import walkforward as wf
+
+    panel = SeriesPanel.load(PACKAGE_ROOT / "data" / "market_check" / "panel.json")
+    book = simulate_portfolio(panel, CFG)
+    summary = wf.holdout_summary(panel, CFG, book)
+    assert summary["start"] == wf.HOLDOUT_START.isoformat()
+    assert summary["end"] == CFG.window.end.isoformat()
+    assert summary["strategy"]["cagr"] is not None
+    assert summary["equal_weight"]["cagr"] is not None
+    full = {row["date"]: row["nav"] for row in book["nav"]}
+    hold_days = [day for day in panel.dates("spy") if wf.HOLDOUT_START <= day <= CFG.window.end]
+    assert hold_days
+    ratio = summary["strategy"]["total_return"]
+    assert ratio == pytest.approx(full[hold_days[-1].isoformat()] / full[hold_days[0].isoformat()] - 1)
+
+
 def test_deflated_sharpe_rejects_heavy_mining():
     from rocket.market_check.metrics import deflated_sharpe
 

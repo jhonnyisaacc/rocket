@@ -84,6 +84,40 @@ def _headline(portfolio: dict[str, Any], derivatives: dict[str, Any]) -> dict[st
     }
 
 
+def _robustness_record(
+    panel: SeriesPanel, config: Config, portfolio: dict[str, Any],
+) -> dict[str, Any]:
+    """Walk-forward summary, holdout slice, sensitivity grid, and deflated
+    Sharpe for the live rule. Deterministic from (panel, config): the
+    holdout slice is the single sanctioned evaluation of frozen rules —
+    no variant was selected on it (see EXPERIMENTS.md)."""
+    from rocket.market_check import walkforward as wf
+    from rocket.market_check.metrics import deflated_sharpe
+
+    tuned = wf.run_variant(panel, config, None)
+    summary = wf.summarize(panel, config, tuned)
+    no_april = wf.summarize_no_april(panel, config, tuned)
+    benchmarks = wf.benchmark_curves(panel, config)
+    nav = [(row["date"], row["nav"]) for row in tuned["book"]["nav"]]
+    stitched_rets = [b[1] / a[1] - 1 for a, b in zip(nav[:-1], nav[1:]) if a[1]]
+    dsr = deflated_sharpe(summary["stitched"]["sharpe"] or 0.0, stitched_rets, wf.N_TRIALS)
+    return {
+        "tune_start": wf.TUNE_START.isoformat(),
+        "tune_end": wf.TUNE_END.isoformat(),
+        "holdout": wf.holdout_summary(panel, config, portfolio),
+        "in_sample": summary["in_sample"],
+        "stitched": summary["stitched"],
+        "segments": summary["segments"],
+        "no_april": no_april["stitched_no_april_2025"],
+        "benchmarks": benchmarks,
+        "sensitivity": wf.run_sensitivity(panel, config),
+        "deflated_sharpe": dsr,
+        "trials": wf.N_TRIALS,
+        "trades": summary["trades"],
+        "turnover": summary["turnover"],
+    }
+
+
 def load_trade_log(path: Path) -> list[dict[str, Any]]:
     rows = []
     with path.open(newline="", encoding="utf-8") as handle:
@@ -141,6 +175,7 @@ def run_backtest(
         "portfolio": portfolio,
         "derivatives": derivatives,
         "assumptions": list(ASSUMPTIONS),
+        "robustness": _robustness_record(panel, config, portfolio),
         "oos_start": config.window.oos_start.isoformat(),
         "trade_log": compare_trade_log(logged, portfolio["trades"]),
         "current_book": {
