@@ -6,11 +6,12 @@ One issue for this job only. Adapter: weekdays. Research only.
 
 ISM-specific live Shorts research is intentionally small and explainable. The
 canonical live path starts with an ISM contracting industry, then checks one
-Yahoo price condition and one FMP company-fundamentals condition. Missing data
+Yahoo price condition and one company-fundamentals condition (FMP primary,
+validated Massive reported EPS fallback). Missing data
 stays UNKNOWN, never false.
 
 ```
-ISM contracting → Yahoo technical breakdown + FMP bearish fundamentals → selected or rejected with reason
+ISM contracting → Yahoo technical breakdown + bearish EPS fundamentals → selected or rejected with reason
 ```
 
 ## Filters
@@ -19,7 +20,8 @@ Canonical ISM live path requires exactly three observed conditions:
 
 - `ism_contracting`: the stored ISM candidate source has `direction=short`.
 - `technical_breakdown`: Yahoo close is below the prior 20-session low.
-- `company_fundamentals`: FMP's current bearish EPS-growth flag is true.
+- `company_fundamentals`: the observed bearish EPS-growth flag is true, using FMP
+  first and validated Massive reported annual EPS when FMP is missing.
 
 `valuation_support=True` remains a safety veto when FMP provides it. Sector
 weakness, catalyst, earnings revisions and positioning are retained as context

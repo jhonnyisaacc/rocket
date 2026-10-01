@@ -125,8 +125,8 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
     """Small, explainable ISM short gate using the canonical live inputs.
 
     ISM supplies the contracting-industry signal, Yahoo supplies the price
-    breakdown, and FMP supplies the bearish company-fundamentals flag (currently
-    derived from its EPS-growth field). Optional valuation support remains a
+    breakdown, and shared fundamentals supplies bearish EPS growth (FMP primary,
+    validated Massive fallback). Optional valuation support remains a
     safety veto when the provider has it.
     """
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
