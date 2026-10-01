@@ -355,6 +355,34 @@ def crypto_missed(
     emit_result(CryptoWorkflow(store=store).missed(scan, rows), human=human)
 
 
+@crypto_app.command("perps")
+def crypto_perps(
+    state_dir: Path | None = typer.Option(None, "--state-dir"),
+    human: bool = typer.Option(False, "--human"),
+    json_out: bool = typer.Option(True, "--json/--no-json"),
+) -> None:
+    """Read-only Perps readout: puts vol/hedge, dip state, carry state."""
+    del json_out
+    from rocket.crypto import data as crypto_data
+    from rocket.crypto.perps import perps_snapshot
+
+    store = ResearchStore(state_dir or rocket_home())
+    try:
+        bars = crypto_data.load_btc_daily()
+        vols = crypto_data.load_dvol()
+        funding = crypto_data.load_funding_daily()
+    except FileNotFoundError as exc:
+        _emit({"status": "no-data", "warning": str(exc),
+               "lines": {}, "changed": {}}, human=human)
+        return
+    previous = store.load_state("crypto.perps")
+    snapshot = perps_snapshot(bars, vols, funding, previous=previous)
+    store.save_state("crypto.perps", snapshot)
+    _emit({"status": snapshot["status"], "as_of": snapshot.get("as_of"),
+           "lines": snapshot["lines"], "changed": snapshot["changed"],
+           "changed_any": snapshot.get("changed_any", True)}, human=human)
+
+
 @app.command("ism")
 def ism(
     manufacturing_html: Path | None = typer.Option(None, "--manufacturing-html", exists=True, readable=True),

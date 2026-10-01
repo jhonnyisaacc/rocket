@@ -1,0 +1,251 @@
+"""Family A: BTC puts as insurance, judged as insurance, not a profit trade.
+
+A variant buys 10-20% OTM puts on a trigger (cheap vol, pre-event, stress
+warning, or a fixed monthly roll baseline), prices them Black-Scholes on
+DVOL (realized vol before 2021-04) with a skew markup, and holds them to a
+fixed exit. Decisions on bar T fill at bar T+1's OPEN (next-bar fills).
+Reports: cost per year, BTC+puts drawdown vs BTC-alone drawdown, and the
+payoff in each crash window.
+"""
+
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass
+from datetime import date
+
+from rocket.crypto.data import CRASHES, Bar
+from rocket.market_check.bs import bs_put
+
+YEAR = 365.0
+# Skew markup: 10-20% OTM BTC puts trade above ATM. Multiplying ATM IV by
+# SKEW understates the insurance edge (overstates cost). Calibrated
+# 2026-10-01: DVOL 36.4 vs live 15-17% OTM put IVs 40.3 (ratio 1.11).
+# APPROXIMATION: no free historical skew surface exists.
+SKEW = 1.10
+# Deribit taker fee for options: 0.03% of underlying per contract.
+FEE_RATE = 0.0003
+# Half-spread proxy on the premium. Observed 2026-10-01 live book:
+# Mar27-70k 0.031/0.032, Dec26-72k 0.017/0.018 (~1.6% half-spread each);
+# 3% used to leave room for thinner strikes. Crash liquidity is worse;
+# stated as a caveat, not modeled.
+HALF_SPREAD = 0.03
+
+
+@dataclass(frozen=True)
+class PutRule:
+    """One insurance variant. At most 5 free params per family protocol."""
+
+    tenor_days: int = 90  # fixed time to expiry at purchase
+    otm: float = 0.15  # strike = (1 - otm) * spot
+    trigger: str = "monthly"  # monthly | cheap_vol | pre_event | stress
+    spacing_days: int = 30  # minimum days between purchases (match to tenor)
+    cheap_vol_pct: float = 25.0  # DVOL percentile at or below which vol is cheap
+    pre_event_days: int = 7  # buy N days before FOMC/election
+    exit_dte: int = 0  # days to expiry at exit (0 = hold to expiry)
+
+
+@dataclass
+class Leg:
+    entry_day: date
+    expiry_day: date
+    strike: float
+    contracts: float  # in BTC notional units of 1 BTC
+    premium_each: float
+    exit_day: date | None = None
+    exit_each: float = 0.0
+
+
+def realized_vol(closes: list[float], window: int = 30) -> float | None:
+    if len(closes) < window + 1:
+        return None
+    rets = [math.log(closes[i] / closes[i - 1]) for i in range(1, len(closes))]
+    tail = rets[-window:]
+    mean = sum(tail) / window
+    var = sum((r - mean) ** 2 for r in tail) / (window - 1)
+    return math.sqrt(var * YEAR)
+
+
+def buy_premium(spot: float, strike: float, tenor_years: float, iv: float) -> float:
+    mid = bs_put(spot, strike, tenor_years, iv, 0.0)
+    fee = FEE_RATE * spot
+    return mid * (1 + HALF_SPREAD) + fee
+
+
+def exit_value(
+    spot: float,
+    strike: float,
+    remaining_years: float,
+    iv: float,
+) -> float:
+    if remaining_years <= 0:
+        return max(strike - spot, 0.0)
+    mid = bs_put(spot, strike, remaining_years, iv, 0.0)
+    fee = FEE_RATE * spot
+    return max(mid * (1 - HALF_SPREAD) - fee, 0.0)
+
+
+def run_insurance(
+    bars: list[Bar],
+    vols: dict[date, float],
+    rule: PutRule,
+    events: list[date] | None = None,
+    stress_days: set[date] | None = None,
+    notional_btc: float = 1.0,
+) -> dict:
+    """Simulate one BTC unit protected by puts bought per rule.
+
+    Returns spend, yearly cost, combined vs naked drawdowns, and legs.
+    """
+    closes = [b.close for b in bars]
+    # Trailing 252-print percentile per day: causal by construction. A day
+    # with fewer than 63 prior prints maps to 100 (never cheap) so early
+    # history cannot trigger on ranks it could not have known.
+    ordered = sorted(vols.items())
+    trailing_pct: dict[date, float] = {}
+    hist: list[float] = []
+    for day, value in ordered:
+        if len(hist) >= 63:
+            below = sum(1 for v in hist[-252:] if v <= value)
+            trailing_pct[day] = 100.0 * below / len(hist[-252:])
+        hist.append(value)
+
+    def vol_at(index: int) -> float:
+        # DVOL prints in percent points; realized vol is already decimal.
+        day = bars[index].day
+        if day in vols:
+            return vols[day] / 100.0 * SKEW
+        rv = realized_vol(closes[: index + 1])
+        return (rv or 0.5) * SKEW
+
+
+    pending_close: float | None = None  # decided bar T, fills bar T+1 open
+    legs: list[Leg] = []
+    open_legs: list[Leg] = []
+    spend = 0.0
+    realized_pnl = 0.0  # stays in the combined path after a leg exits
+    event_set = set(events or [])
+    combined: list[float] = []
+
+    for i in range(len(bars)):
+        bar = bars[i]
+        iv = vol_at(i)
+        # Mark open legs at today's close, exiting at exit_dte.
+        alive: list[Leg] = []
+        for leg in open_legs:
+            remaining = (leg.expiry_day - bar.day).days
+            if remaining <= rule.exit_dte:
+                leg.exit_day = bar.day
+                leg.exit_each = exit_value(
+                    bar.close, leg.strike, max(remaining, 0) / YEAR, iv / SKEW
+                )
+                realized_pnl += (leg.exit_each - leg.premium_each) * leg.contracts
+                continue
+            alive.append(leg)
+        open_legs = alive
+        # Combined NAV: spot plus live protection plus realized put P&L.
+        day_mark = 0.0
+        for leg in open_legs:
+            remaining = max((leg.expiry_day - bar.day).days, 0) / YEAR
+            mark = exit_value(bar.close, leg.strike, remaining, iv / SKEW)
+            day_mark += (mark - leg.premium_each) * leg.contracts
+        combined.append(bar.close * notional_btc + day_mark + realized_pnl)
+        # Fill the pending purchase (decided on bar i-1) at this bar's open.
+        if pending_close is not None:
+            tenor = rule.tenor_days / YEAR
+            strike = (1 - rule.otm) * pending_close
+            premium = buy_premium(bar.open, strike, tenor, iv)
+            expiry = add_days(bar.day, rule.tenor_days)
+            fill = bar
+            open_legs.append(Leg(fill.day, expiry, strike, notional_btc, premium))
+            spend += premium * notional_btc
+            legs.append(open_legs[-1])
+            pending_close = None
+            continue
+        # Decide a new purchase on bar i (fills bar i+1). Spacing applies
+        # to every trigger: without it, a persistent signal stacks
+        # overlapping cover and the bleed multiplies.
+        spaced = not legs or (bar.day - legs[-1].entry_day).days >= rule.spacing_days
+        trigger = False
+        if rule.trigger == "monthly":
+            trigger = True
+        elif rule.trigger == "cheap_vol":
+            trigger = trailing_pct.get(bar.day, 100.0) <= rule.cheap_vol_pct
+        elif rule.trigger == "pre_event":
+            trigger = any(0 < (event - bar.day).days <= rule.pre_event_days for event in event_set)
+        elif rule.trigger == "stress":
+            trigger = bar.day in (stress_days or set())
+        if trigger and spaced:
+            pending_close = bar.close
+
+    for leg in open_legs:
+        if leg.exit_day is None:
+            leg.exit_day = bars[-1].day
+            remaining = max((leg.expiry_day - bars[-1].day).days, 0) / YEAR
+            leg.exit_each = exit_value(
+                bars[-1].close, leg.strike, remaining, vol_at(len(bars) - 1) / SKEW
+            )
+    return {
+        "spend": spend,
+        "legs": [
+            {
+                "entry": leg.entry_day.isoformat(),
+                "strike": round(leg.strike, 1),
+                "premium": round(leg.premium_each, 1),
+                "exit": leg.exit_day.isoformat() if leg.exit_day else None,
+                "exit_value": round(leg.exit_each, 1),
+            }
+            for leg in legs
+        ],
+        "combined": combined,
+        "naked": [b.close * notional_btc for b in bars],
+    }
+
+
+def add_days(day: date, n: int) -> date:
+    from datetime import timedelta
+
+    return day + timedelta(days=n)
+
+
+def max_dd(path: list[float]) -> float:
+    peak = path[0]
+    worst = 0.0
+    for value in path:
+        peak = max(peak, value)
+        if peak > 0:
+            worst = min(worst, value / peak - 1)
+    return worst
+
+
+def crash_payoffs(result: dict, bars: list[Bar]) -> list[dict]:
+    """Per-crash payoff of the insured vs naked path (rebased at window start)."""
+    days = [b.day for b in bars]
+    out = []
+    for name, start_s, end_s in CRASHES:
+        start, end = date.fromisoformat(start_s), date.fromisoformat(end_s)
+        idx = [i for i, d in enumerate(days) if start <= d <= end]
+        if len(idx) < 2:
+            continue
+        base_naked = result["naked"][idx[0]] or 1.0
+        base_hedged = result["combined"][idx[0]] or 1.0
+        naked_dd = min(result["naked"][i] / base_naked - 1 for i in idx)
+        if base_hedged <= 0:
+            # Cumulative bleed already bankrupted the overlay before the
+            # window: ratios are meaningless; say so instead of printing
+            # a -1000% artifact.
+            out.append(
+                {"crash": name, "naked_dd": round(naked_dd * 100, 1),
+                 "hedged_dd": None, "dd_reduction_pp": None}
+            )
+            continue
+        hedged_dd = min(result["combined"][i] / base_hedged - 1 for i in idx)
+        out.append(
+            {
+                "crash": name,
+                "naked_dd": round(naked_dd * 100, 1),
+                "hedged_dd": round(hedged_dd * 100, 1),
+                "dd_reduction_pp": round((hedged_dd - naked_dd) * 100, 1),
+            }
+        )
+    return out
