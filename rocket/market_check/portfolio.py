@@ -86,7 +86,8 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         cash -= spend
         traded += spend
         trades.append({
-            "date": start.isoformat(), "ticker": name, "side": "buy",
+            "date": start.isoformat(), "decided": start.isoformat(),
+            "ticker": name, "side": "buy",
             "shares": shares[name], "price": fill, "notional": spend, "reason": "initial",
         })
     last_add: dict[str, date] = {}
@@ -96,13 +97,57 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     nav_path = []
     regimes: list[str] = []
     path = score_path(panel, scoring_days(panel, config), config)
-    for day in days:
+    # Next-session execution. A decision taken on day T fills at the next
+    # session's price: orders decided today sit in `pending` and print
+    # tomorrow. Nothing ever trades at the same close it was decided on
+    # (the opening buys are initialization, identical for every benchmark).
+    pending: list[dict[str, Any]] = []
+    for index, day in enumerate(days):
         view = panel.asof(day, config.lags)
         prices = {}
         for name in set(shares) | set(config.portfolio.universe):
             price = view.value(name)
             if price:
                 prices[name] = price
+        if pending:
+            carry: list[dict[str, Any]] = []
+            for order in pending:
+                price = prices.get(order["name"])
+                if price is None or price <= 0:
+                    carry.append(order)
+                    continue
+                if order["kind"] == "sell":
+                    held = shares.get(order["name"], 0.0)
+                    qty = min(order["qty"], held)
+                    if qty <= 1e-12:
+                        continue
+                    fill = price * (1 - slip)
+                    proceeds = qty * fill
+                    cash += proceeds
+                    shares[order["name"]] = held - qty
+                    traded += proceeds
+                    trades.append({
+                        "date": day.isoformat(), "decided": order["decided"],
+                        "ticker": order["name"], "side": "sell",
+                        "shares": qty, "price": fill, "notional": proceeds,
+                        "reason": order["reason"],
+                    })
+                else:
+                    spend = min(order["spend"], cash)
+                    if spend <= 1e-12:
+                        continue
+                    fill = price * (1 + slip)
+                    qty = spend / fill
+                    cash -= spend
+                    shares[order["name"]] = shares.get(order["name"], 0.0) + qty
+                    traded += spend
+                    trades.append({
+                        "date": day.isoformat(), "decided": order["decided"],
+                        "ticker": order["name"], "side": "buy",
+                        "shares": qty, "price": fill, "notional": spend,
+                        "reason": order["reason"],
+                    })
+            pending = carry
         nav = _nav(cash, shares, prices)
         score = score_on(path, day) or {"regime": "unknown", "oil_shock": False, "events_today": []}
         regime = score["regime"]
@@ -117,7 +162,8 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         ):
             redeploy_count = 0
             last_bottom = None
-        if day != start:
+        # No decision on the final session: there is no next session to fill it.
+        if day != start and index + 1 < len(days):
             index_return = session_return(view, "spy")
             index_bounce = trailing_bounce(view, "spy", config.windows.index_bounce_lookback)
             # v3 holds through the release. v4 holds the redeploy until the next
@@ -154,16 +200,12 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                 for name, fraction in plan_trims(shares, prices, cash, nav, target, allowed, config):
                     held = shares[name]
                     qty = held * fraction
-                    fill = prices[name] * (1 - slip)
-                    proceeds = qty * fill
-                    cash += proceeds
-                    shares[name] = held - qty
-                    traded += proceeds
-                    trades.append({
-                        "date": day.isoformat(), "ticker": name, "side": "sell",
-                        "shares": qty, "price": fill, "notional": proceeds, "reason": "trim_cash_target",
+                    if qty <= 1e-12:
+                        continue
+                    pending.append({
+                        "kind": "sell", "name": name, "qty": qty,
+                        "decided": day.isoformat(), "reason": "trim_cash_target",
                     })
-                nav = _nav(cash, shares, prices)
                 if bottom and nav > 0:
                     last_bottom = day
                     gap_ok = last_redeploy is None or (day - last_redeploy).days >= config.redeploy.gap_days
@@ -173,25 +215,21 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         picks = redeploy_picks(view, config)
                         if picks:
                             each = (excess / room) / len(picks)
-                            bought = False
+                            reserved = 0.0
+                            ordered = False
                             for sleeve, name, price in picks:
-                                if each <= 0 or price <= 0 or each > cash:
+                                spend = min(each, cash - reserved)
+                                if spend <= 0 or price <= 0:
                                     continue
-                                fill = price * (1 + slip)
-                                qty = each / fill
-                                cash -= each
-                                shares[name] = shares.get(name, 0.0) + qty
-                                traded += each
-                                bought = True
-                                trades.append({
-                                    "date": day.isoformat(), "ticker": name, "side": "buy",
-                                    "shares": qty, "price": fill, "notional": each,
-                                    "reason": f"redeploy_{sleeve}",
+                                reserved += spend
+                                ordered = True
+                                pending.append({
+                                    "kind": "buy", "name": name, "spend": spend,
+                                    "decided": day.isoformat(), "reason": f"redeploy_{sleeve}",
                                 })
-                            if bought:
+                            if ordered:
                                 redeploy_count += 1
                                 last_redeploy = day
-                                nav = _nav(cash, shares, prices)
                 episode_open = last_bottom is not None and redeploy_count < config.redeploy.tranches
                 blockers = add_blockers(
                     regime=regime, oil_shock=bool(score["oil_shock"]), events_today=list(score["events_today"]),
@@ -222,17 +260,11 @@ def simulate_portfolio(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                         extra = cash - target * nav
                         spend = min(config.portfolio.tranche_nav * nav, extra, cash)
                         if spend > 0 and price > 0:
-                            fill = price * (1 + slip)
-                            qty = spend / fill
-                            cash -= spend
-                            shares[name] = shares.get(name, 0.0) + qty
-                            traded += spend
                             last_add[name] = day
-                            trades.append({
-                                "date": day.isoformat(), "ticker": name, "side": "buy",
-                                "shares": qty, "price": fill, "notional": spend, "reason": "add_bottom_half",
+                            pending.append({
+                                "kind": "buy", "name": name, "spend": spend,
+                                "decided": day.isoformat(), "reason": "add_bottom_half",
                             })
-                            nav = _nav(cash, shares, prices)
         nav_path.append(nav)
         regimes.append(regime)
     universe = _buy_hold(panel, config, config.portfolio.universe, days)

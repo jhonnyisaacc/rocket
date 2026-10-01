@@ -212,7 +212,9 @@ add_names = ["ETN", "CAT", "APH", "AMAT"]
 buy_zone_fraction = 0.25
 
 [costs]
-equity_slippage_bps = 15.0
+# 0.3% per stock trade each way: fill worsened by half the round trip
+# (commission plus Ondo spread/slippage proxy).
+equity_slippage_bps = 30.0
 perp_fee_bps = 4.0
 perp_slippage_bps = 2.0
 option_fee_bps_underlying = 3.0
