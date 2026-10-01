@@ -76,6 +76,7 @@ def acquire_quotes(
                         available_at=current.isoformat(),
                         citation=url,
                         classification="PROVIDER_SUPPORTED",
+                        failure_kind=None,
                         status="OK"
                         if price > 0 and equity_observation_fresh(stamp.isoformat(), current, daily=False)
                         else "STALE",

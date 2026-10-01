@@ -11,9 +11,12 @@ from rocket.providers.fundamentals import fundamentals_row
 from rocket.providers.ism import ISMIndustryRanking, ISMReport
 from rocket.providers.massive import MassiveFundamentals
 from rocket.providers.protocols import ProviderResult
+from rocket.providers.registry import Registry
 from rocket.providers.shorts import acquire_short_snapshot
 from rocket.workflows.ism import IsmWorkflow
 from rocket.workflows.shorts import ShortsWorkflow, score_ism_short_candidate
+
+LEGACY_REGISTRY = lambda: Registry({"fundamentals": {"primary": "fmp", "fallbacks": ["massive"]}})
 
 NOW = datetime(2026, 9, 8, 15, tzinfo=UTC)
 
@@ -98,7 +101,7 @@ def mixed_rows(failure_kind="Entitlement"):
 
     fmp.fundamentals.side_effect = primary
     massive.fetch.side_effect = fallback
-    rows = {s: fundamentals_row(s, fmp=fmp, massive=massive) for s in ("F", "CAT", "NUE", "TXN")}
+    rows = {s: fundamentals_row(s, fmp=fmp, massive=massive, registry=LEGACY_REGISTRY()) for s in ("F", "CAT", "NUE", "TXN")}
     assert [call.args[0] for call in massive.fetch.call_args_list] == [
         "CAT",
         "NUE",
@@ -256,6 +259,7 @@ def test_real_adapters_recover_empty_eps_and_keep_fmp_valuation():
         massive.fetch.side_effect = lambda symbol: adapter.fetch(symbol, now=NOW)
         row = fundamentals_row(
             "CAT",
+            registry=LEGACY_REGISTRY(),
             fmp=FMPClient(api_key="SECRET", http=client),
             massive=massive,
         )
@@ -279,10 +283,12 @@ def test_hard_and_transient_failures_preserve_both_endpoint_traces(code, kind):
     with httpx.Client(transport=httpx.MockTransport(handler)) as client:
         row = fundamentals_row(
             "NUE",
+            registry=LEGACY_REGISTRY(),
             fmp=FMPClient(api_key="SECRET", http=client),
             massive=MassiveFundamentals(api_key="SECRET", http=client),
         )
     assert row["company_fundamentals"] is None
     assert {a["provider"] for a in row["provider_attempts"]} == {"fmp", "massive"}
-    assert all(a["failure_kind"] == kind for a in row["provider_attempts"])
+    assert all(a["failure_kind"] == ("HardError" if kind == "ExternalOutage" else kind)
+               for a in row["provider_attempts"])
     assert "SECRET" not in str(row)

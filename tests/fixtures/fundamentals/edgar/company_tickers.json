@@ -1,0 +1,22 @@
+{
+  "0": {
+    "cik_str": 18230,
+    "ticker": "CAT",
+    "title": "CATERPILLAR INC"
+  },
+  "1": {
+    "cik_str": 19617,
+    "ticker": "JPM",
+    "title": "JPMORGAN CHASE & CO"
+  },
+  "2": {
+    "cik_str": 104169,
+    "ticker": "WMT",
+    "title": "WALMART INC."
+  },
+  "3": {
+    "cik_str": 789019,
+    "ticker": "MSFT",
+    "title": "MICROSOFT CORPORATION"
+  }
+}

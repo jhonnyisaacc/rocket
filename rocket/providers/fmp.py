@@ -110,7 +110,7 @@ def payload_error_kind(payload):
         return "Entitlement"
     if any(x in text for x in ("api key", "apikey", "unauthorized", "authentication")):
         return "Authentication"
-    if any(x in text for x in ("rate limit", "too many requests")):
+    if any(x in text for x in ("rate limit", "too many requests", "limit reach", "daily limit")):
         return "RateLimit"
     return "InvalidProviderData"
 
@@ -150,6 +150,7 @@ class FMPClient:
     def __init__(self, *, api_key: str | None = None, http: httpx.Client | None = None):
         self.api_key = api_key if api_key is not None else env("FMP_API_KEY")
         self.http = http
+        self._quota_day = None
 
     def configured(self) -> bool:
         return bool(self.api_key)
@@ -157,19 +158,28 @@ class FMPClient:
     def _get(self, path: str, *, params: dict[str, Any] | None = None) -> Any:
         if not self.api_key:
             raise RuntimeError("FMP_API_KEY is not set")
+        if self._quota_day == datetime.now(UTC).date():
+            raise ProviderPayloadError("RateLimit")
         owns = self.http is None
         client = self.http or httpx.Client(timeout=20.0, headers={"User-Agent": "rocket-research"})
         try:
             response = get_read(client,
                 f"{FMP_STABLE_URL}{path}",
                 params={"apikey": self.api_key, **(params or {})},
+                retry_statuses=(500, 502, 503, 504),
             )
             response.raise_for_status()
             payload = response.json()
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 429:
+                self._quota_day = datetime.now(UTC).date()
+            raise
         finally:
             if owns:
                 client.close()
         if kind := payload_error_kind(payload):
+            if kind == "RateLimit":
+                self._quota_day = datetime.now(UTC).date()
             raise ProviderPayloadError(kind)
         return payload
 

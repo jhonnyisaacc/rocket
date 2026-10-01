@@ -13,8 +13,8 @@ env = []
 
 [fundamentals]
 primary = "fmp"
-fallbacks = ["massive"]
-env = ["FMP_API_KEY", "MASSIVE_API_KEY"]
+fallbacks = ["sec.edgar", "massive"]
+env = ["FMP_API_KEY", "ROCKET_SEC_USER_AGENT", "MASSIVE_API_KEY"]
 
 [universe]
 primary = "coingecko"

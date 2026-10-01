@@ -1,54 +1,117 @@
 # Fundamentals coverage and recovery
 
-FMP is primary and Massive is invoked when the required EPS flag is missing.
-Observed false flags are data, not missing data. Provider order is configured in
-config/providers.toml. Endpoint attempts include ticker, provider, endpoint,
-retrieval time, coverage and failure_kind, including attempts from providers whose
-rows were rejected. ISM candidate context and operational providers, and shorts
-operational providers, retain these diagnostics.
+The default dispatch order in `config/providers.toml` is **FMP → SEC EDGAR →
+Massive**. FMP remains primary when it supplies eligible EPS. A daily-quota HTTP
+429 (including "Limit Reach") opens an in-memory guard for that FMP client until
+the next UTC day; the remaining endpoints and tickers in the scan do not spend
+requests on an exhausted quota. EDGAR and Massive are tried when required EPS is
+missing. Observed false flags are evidence and stop fallback, just as before.
 
-EmptyData means a successful endpoint returned no rows. InsufficientCoverage means
-rows could not supply eligible required evidence (for example stale/incomparable
-EPS periods). Entitlement means paid-plan access was denied; authentication, rate
-limits, transport outages and malformed provider data remain distinct. HTTP-200
-error envelopes are classified without retaining their text or credentials.
+Valid FMP valuation fields survive fallback EPS recovery, including the existing
+`valuation_support` short veto. `fundamentals_source` names the EPS provider;
+`field_provenance` attributes each recovered field, including mixed snapshots.
+Diagnostics retain ticker, provider, endpoint, retrieval time, coverage and
+`failure_kind`: RateLimit, Entitlement, Empty, NotFound or HardError. Earlier adapter
+classifications (such as EmptyData or ExternalOutage) are retained additively as
+`original_failure_kind` in merged diagnostics. Credentials and provider error
+messages are never retained. Missing values remain null/UNKNOWN; mixed coverage
+is PARTIAL rather than a total provider outage.
 
-Validated EPS fields recover together from one source. Observed FMP valuation
-fields survive Massive EPS recovery, including valuation_support's existing
-shorts veto. field_provenance attributes mixed fields; fundamentals_source names
-the EPS source when available. Snapshot availability is retrieval-based and never
-claims historical replay availability. Missing values remain UNKNOWN and candidates
-remain NEEDS_REVIEW; mixed coverage is PARTIAL rather than a total provider outage.
+## Free SEC EDGAR coverage
+
+The adapter uses the official keyless [SEC XBRL APIs](https://www.sec.gov/search-filings/edgar-application-programming-interfaces):
+`https://www.sec.gov/files/company_tickers.json` maps ticker to CIK, and
+`https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json` supplies facts using
+10-digit, zero-padded CIKs. Dot/hyphen ticker spellings are normalized.
+
+Set `ROCKET_SEC_USER_AGENT` to a descriptive project name plus your contact email,
+for example `rocket research Your Name you@example.com`. The default identifies
+rocket and its public GitHub issue contact URL. SEC may deny access based on the
+network or identification; configure your actual contact before VPS verification.
+Requests are serialized with at least 350 ms between starts (under three/second),
+well below [SEC's ten requests/second limit](https://www.sec.gov/about/developer-resources).
+The ticker map, facts and failed responses are cached for one UTC day under
+`<research-state-dir>/cache/sec-edgar/`. `--state-dir` selects that directory for
+ISM and shorts; otherwise `ROCKET_HOME` / `NAVE_RESEARCH_STATE_DIR` applies.
+Cached evidence retains its original retrieval timestamp. Restarting a scan
+reuses that day's SEC snapshots; retry a cached failure on the next day or remove
+its specific cache file after resolving access.
+
+Supported facts and units:
+
+| Field | Tags / basis | Unit |
+| --- | --- | --- |
+| EPS | EarningsPerShareDiluted, then EarningsPerShareBasic | USD/shares |
+| Revenue | RevenueFromContractWithCustomerExcludingAssessedTax, Revenues, SalesRevenueNet, then RevenuesNetOfInterestExpense | USD |
+| Net income | NetIncomeLoss, then ProfitLoss | USD |
+| Common shares outstanding | dei:EntityCommonStockSharesOutstanding | shares |
+| Trailing P/E | Existing Yahoo price / positive reported TTM EPS | ratio |
+
+`metrics` reports tag, unit, latest quarter, TTM, prior TTM and both TTM and
+quarterly YoY growth; EPS also has additive top-level fields. Periods retain filing
+date, accession and whether a quarter was derived. The adapter deduplicates each
+start/end period using the latest filing visible at observation time, including
+amendments. It uses actual fiscal dates rather than the containing filing's `fy`,
+`fp` or calendar frame labels. Direct quarterly facts take precedence; cumulative
+YTD differences derive missing quarters. Q4 is FY minus nine months, or FY minus
+three contiguous quarters if nine-month facts are missing. Non-calendar and
+52/53-week fiscal years are supported; gaps and incompatible windows stay UNKNOWN.
+
+TTM prefers reported FY or FY plus current YTD minus comparable prior YTD, with
+four contiguous quarters as fallback. Trailing EPS assembled across periods is
+an approximation because EPS uses different weighted share counts and rounding.
+Latest-quarter evidence must be within 200 days. Growth is `(current-prior) /
+abs(prior)`; zero denominators stay UNKNOWN. The gate's EPS growth uses TTM YoY
+when available, otherwise same-quarter YoY, with its basis recorded explicitly.
+
+The unchanged `ism_simple` gates remain: ISM contracting, close below the prior
+20-session low, and bearish EPS growth. When FMP valuation is missing, EDGAR TTM
+EPS plus the already acquired Yahoo price supplies trailing P/E and the same
+positive P/E <= 15 valuation-support veto. Its provenance is `sec.edgar+yahoo`.
+Nonpositive or unavailable EPS/price leaves valuation UNKNOWN. Instantaneous
+shares are reported separately: dividing net income by current common shares
+would misstate diluted EPS, especially for multiple share classes.
+
+Limits: this adapter supports US 10-K/10-Q filers and standard USD US-GAAP XBRL
+facts only. There are no analyst estimates, forecast revisions or custom issuer
+tag inference. Tag variance, changed accounting bases, missing comparatives,
+stale tags and incomplete filings can leave individual fields UNKNOWN. JPM's
+standard bank revenue tag is supported; unsupported financial-company revenue is
+not synthesized from interest components. SEC network restrictions can still
+prevent acquisition. Snapshot availability is observation-based and never claims
+historical replay availability.
 
 ## Actual VPS limitations, October 1, 2026
 
-FMP provided EPS/P-E for F. CAT's profile worked, while ratios, estimates and income
-growth returned Entitlement. CAT, NUE, TXN, UPS and DOW attempted Massive and returned
-Entitlement; VLO encountered a Massive rate limit after FMP entitlement failure.
-These are observed plan restrictions, not proof that the symbols lack filings.
-A later isolated smoke run encountered FMP/Massive RateLimit as well: both ISM
-reports were CURRENT with PARTIAL overall health; shorts was PARTIAL with
-INSUFFICIENT_EVIDENCE. Successful EPS recovery is fixture-tested, not claimed
-for entitlement-blocked live symbols.
+FMP's daily quota returned HTTP 429 "Limit Reach", leaving NUE, TXN, CAT, DOW,
+PEP, F, WMT, GOOGL, UPS and JPM without fundamentals in the observed scan. Massive
+financials require [Stocks Advanced or the Financials and Ratios Expansion](https://massive.com/knowledge-base/article/what-fields-can-i-expect-from-massives-financials-api);
+setting MASSIVE_API_KEY does not establish entitlement. EDGAR offers a free
+recovery path without purchasing a plan. Massive remains the final fallback for
+fresh, identified, comparable reported annual diluted EPS; it supplies no P/E or
+forecast revisions.
 
-Massive's current adapter supplies reported annual diluted EPS growth from fresh,
-identified consecutive fiscal years. It does not supply P/E or forecast revisions.
-EPS-only recovery can support the unchanged ism_simple EPS gate, but ISM long
-ranking still needs observed valuation, otherwise it remains NEEDS_REVIEW.
-No paid-plan upgrade or alternative provider is automatically purchased.
-
-[Massive coverage documentation](https://massive.com/knowledge-base/article/what-fields-can-i-expect-from-massives-financials-api)
-states that these financials require Stocks Advanced or the Financials and Ratios
-Expansion. Setting MASSIVE_API_KEY alone does not establish entitlement.
+Recorded CAT/JPM/MSFT fixtures test successful EDGAR growth and fiscal periods;
+a partial WMT recording tests UNKNOWN comparatives. MockTransport tests cover
+FMP 429 → EDGAR, mixed coverage, missing tickers, caching and unchanged gates.
+SEC returned HTTP 403 from the development network, so live recovery for all VPS
+tickers remains a verification step, not a claimed observed result.
 
 ## VPS verification
 
 ```bash
+cd /home/david/rocket && git fetch && git checkout codex/edgar-fundamentals
 set -a && source /home/david/nave/.env && set +a
+# Configure ROCKET_SEC_USER_AGENT with your descriptive name and contact email.
 /home/david/rocket/.venv/bin/rocket ism --json
 /home/david/rocket/.venv/bin/rocket shorts --json
 ```
 
-Run ISM before shorts; use --state-dir <isolated-directory> for review. Inspect
-per-ticker attempts, field provenance, UNKNOWN factors and NEEDS_REVIEW candidates.
-Confirm execution_enabled=false. Rocket reads process environment, never dotenv.
+Run ISM before shorts to refresh the canonical contracting-industry inputs. With
+FMP rate-limited and accessible SEC facts, NUE/TXN/CAT/DOW/PEP/F/WMT/GOOGL/UPS should
+show `fundamentals_source: sec.edgar` and non-null EPS growth. This removes missing
+fundamentals as the reason for NEEDS_REVIEW; technical, valuation and other
+requirements still apply. Inspect JPM's unchanged short gates and valuation veto,
+per-ticker attempts, `field_provenance`, UNKNOWN fields and `execution_enabled:
+false`. No short selection or long classification is guaranteed by provider
+coverage alone. Rocket reads process environment and never loads dotenv itself.

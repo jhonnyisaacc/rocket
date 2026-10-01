@@ -126,7 +126,7 @@ def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
 
     ISM supplies the contracting-industry signal, Yahoo supplies the price
     breakdown, and shared fundamentals supplies bearish EPS growth (FMP primary,
-    validated Massive fallback). Optional valuation support remains a
+    SEC EDGAR then validated Massive fallback). Optional valuation support remains a
     safety veto when the provider has it.
     """
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
@@ -205,7 +205,8 @@ class ShortsWorkflow:
             return result
         universe = {r["ticker"]: r.get("sector_etf") for r in inputs}
         rows = (snapshot_fetcher or acquire_short_snapshot)(universe=universe,
-                                                            fundamentals=live_fundamentals_fetcher(), now=now)
+                                                            fundamentals=live_fundamentals_fetcher(
+                                                                state_dir=self.store.root if self.store else None), now=now)
         by_ticker = {r["ticker"]: r for r in inputs}
         for row in rows:
             seed = by_ticker[row["ticker"]]

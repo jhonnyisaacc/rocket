@@ -1,0 +1,268 @@
+{
+  "cik": 104169,
+  "entityName": "WALMART INC.",
+  "facts": {
+    "us-gaap": {
+      "EarningsPerShareBasic": {
+        "description": "The amount of net income (loss) for the period per each share of common stock or unit outstanding during the reporting period.",
+        "label": "Earnings Per Share, Basic",
+        "units": {
+          "USD/shares": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "frame": "CY2025",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 2.74
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 1.47
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 0.8
+            }
+          ]
+        }
+      },
+      "EarningsPerShareDiluted": {
+        "description": "The amount of net income (loss) for the period available to each share of common stock or common unit outstanding during the reporting period and to each share or unit that would have been outstanding assuming the issuance of common shares or units for all dilutive potential common shares or units outstanding during the reporting period.",
+        "label": "Earnings Per Share, Diluted",
+        "units": {
+          "USD/shares": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "frame": "CY2025",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 2.73
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 1.46
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 0.8
+            }
+          ]
+        }
+      },
+      "NetIncomeLoss": {
+        "description": "The portion of profit or loss for the period, net of income taxes, which is attributable to the parent.",
+        "label": "Net Income (Loss) Attributable to Parent",
+        "units": {
+          "USD": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 21893000000
+            },
+            {
+              "accn": "0001193125-26-152873",
+              "end": "2026-01-31",
+              "filed": "2026-04-13",
+              "form": "PRE 14A",
+              "fp": null,
+              "fy": null,
+              "start": "2025-02-01",
+              "val": 21893000000
+            },
+            {
+              "accn": "0001193125-26-173673",
+              "end": "2026-01-31",
+              "filed": "2026-04-23",
+              "form": "DEF 14A",
+              "fp": null,
+              "frame": "CY2025",
+              "fy": null,
+              "start": "2025-02-01",
+              "val": 21893000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 11696000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 6366000000
+            }
+          ]
+        }
+      },
+      "ProfitLoss": {
+        "description": "The consolidated profit or loss for the period, net of income taxes, including the portion attributable to the noncontrolling interest.",
+        "label": "Net Income (Loss), Including Portion Attributable to Noncontrolling Interest",
+        "units": {
+          "USD": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "frame": "CY2025",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 22270000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 12019000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 6529000000
+            }
+          ]
+        }
+      },
+      "RevenueFromContractWithCustomerExcludingAssessedTax": {
+        "description": "Amount, excluding tax collected from customer, of revenue from satisfaction of performance obligation by transferring promised good or service to customer. Tax collected from customer is tax assessed by governmental authority that is both imposed on and concurrent with specific revenue-producing transaction, including, but not limited to, sales, use, value added and excise.",
+        "label": "Revenue from Contract with Customer, Excluding Assessed Tax",
+        "units": {
+          "USD": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "frame": "CY2025",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 706413000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 361784000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 186100000000
+            }
+          ]
+        }
+      },
+      "Revenues": {
+        "description": "Amount of revenue recognized from goods sold, services rendered, insurance premiums, or other activities that constitute an earning process. Includes, but is not limited to, investment and interest income before deduction of interest expense when recognized as a component of revenue, and sales and trading gain (loss).",
+        "label": "Revenues",
+        "units": {
+          "USD": [
+            {
+              "accn": "0000104169-26-000055",
+              "end": "2026-01-31",
+              "filed": "2026-03-13",
+              "form": "10-K",
+              "fp": "FY",
+              "frame": "CY2025",
+              "fy": 2026,
+              "start": "2025-02-01",
+              "val": 713163000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "fy": 2027,
+              "start": "2026-02-01",
+              "val": 365688000000
+            },
+            {
+              "accn": "0000104169-26-000154",
+              "end": "2026-07-31",
+              "filed": "2026-08-28",
+              "form": "10-Q",
+              "fp": "Q2",
+              "frame": "CY2026Q2",
+              "fy": 2027,
+              "start": "2026-05-01",
+              "val": 187937000000
+            }
+          ]
+        }
+      }
+    }
+  }
+}
