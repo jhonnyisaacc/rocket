@@ -60,6 +60,19 @@ def test_put_price_matches_the_zero_rate_reference():
     assert abs(price - 7.965567) < 1e-3
 
 
+def test_deflated_sharpe_rejects_heavy_mining():
+    from rocket.market_check.metrics import deflated_sharpe
+
+    assert deflated_sharpe(1.0, [], 10) == {"benchmark": None, "deflated": None}
+    assert deflated_sharpe(1.0, [0.01] * 100, 10)["deflated"] is None
+    strong = [0.01] * 200 + [-0.005] * 200
+    one = deflated_sharpe(1.5, strong, 1)
+    many = deflated_sharpe(1.5, strong, 100)
+    assert one["deflated"] > many["deflated"]
+    assert many["benchmark"] > one["benchmark"]
+    assert 0.0 <= many["deflated"] <= 1.0
+
+
 def test_drawdown_and_flat_sharpe():
     days = [date(2024, 1, 2) + timedelta(days=index) for index in range(4)]
     assert max_drawdown([100, 80, 90, 70]) == pytest.approx(-0.3)
