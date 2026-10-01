@@ -43,8 +43,7 @@ def fetch_klines_daily(symbol: str, start_ms: int, end_ms: int) -> list[list]:
     cursor = start_ms
     while True:
         url = (
-            f"{BINANCE}?symbol={symbol}&interval=1d&limit=1000&startTime={cursor}"
-            f"&endTime={end_ms}"
+            f"{BINANCE}?symbol={symbol}&interval=1d&limit=1000&startTime={cursor}&endTime={end_ms}"
         )
         batch = get(url)
         assert isinstance(batch, list)
@@ -62,9 +61,7 @@ def fetch_funding_binance(start_ms: int, end_ms: int) -> list[dict]:
     out: list[dict] = []
     cursor = start_ms
     while True:
-        url = (
-            f"{FAPI}?symbol=BTCUSDT&limit=1000&startTime={cursor}&endTime={end_ms}"
-        )
+        url = f"{FAPI}?symbol=BTCUSDT&limit=1000&startTime={cursor}&endTime={end_ms}"
         batch = get(url)
         assert isinstance(batch, list)
         if not batch:

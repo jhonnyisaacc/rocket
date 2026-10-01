@@ -11,10 +11,10 @@ payoff in each crash window.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 
-from rocket.crypto.data import Bar, CRASHES
+from rocket.crypto.data import CRASHES, Bar
 from rocket.market_check.bs import bs_put
 
 YEAR = 365.0
@@ -68,7 +68,10 @@ def buy_premium(spot: float, strike: float, tenor_years: float, iv: float) -> fl
 
 
 def exit_value(
-    spot: float, strike: float, remaining_years: float, iv: float,
+    spot: float,
+    strike: float,
+    remaining_years: float,
+    iv: float,
 ) -> float:
     if remaining_years <= 0:
         return max(strike - spot, 0.0)
@@ -153,9 +156,7 @@ def run_insurance(
         elif rule.trigger == "cheap_vol":
             trigger = percentile(vols.get(bar.day, 1e9)) <= rule.cheap_vol_pct
         elif rule.trigger == "pre_event":
-            trigger = any(
-                0 < (event - bar.day).days <= rule.pre_event_days for event in event_set
-            )
+            trigger = any(0 < (event - bar.day).days <= rule.pre_event_days for event in event_set)
         elif rule.trigger == "stress":
             trigger = bar.day in (stress_days or set())
         if trigger:

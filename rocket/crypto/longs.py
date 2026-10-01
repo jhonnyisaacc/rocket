@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 
-from rocket.crypto.data import Bar, CRASHES
+from rocket.crypto.data import CRASHES, Bar
 
 
 @dataclass(frozen=True)
@@ -101,9 +101,7 @@ def run_longs(
         if position is not None and "exit_decided" in position:
             _, why = position["exit_decided"]
             ret = bar.open / position["entry"] - 1
-            legs.append(
-                Leg(position["day"], position["entry"], bar.day, bar.open, why, ret)
-            )
+            legs.append(Leg(position["day"], position["entry"], bar.day, bar.open, why, ret))
             position = None
             continue
         if position is None and pending is not None:
@@ -167,11 +165,7 @@ def crash_legs(result: dict, bars: list[Bar]) -> list[dict]:
     """Legs grouped by crash window, for the per-crash table."""
     out = []
     for name, start_s, end_s in CRASHES:
-        legs = [
-            leg
-            for leg in result["legs"]
-            if start_s <= leg["entry"] <= end_s
-        ]
+        legs = [leg for leg in result["legs"] if start_s <= leg["entry"] <= end_s]
         if not legs:
             continue
         rets = [leg["return"] for leg in legs]

@@ -27,8 +27,7 @@ def _shock_open(bars: list[Bar], index: int, mult: float) -> list[Bar]:
     for i, bar in enumerate(bars):
         if i == index:
             changed.append(
-                Bar(bar.day, bar.open * mult, bar.high * mult,
-                    bar.low, bar.close, bar.volume)
+                Bar(bar.day, bar.open * mult, bar.high * mult, bar.low, bar.close, bar.volume)
             )
         else:
             changed.append(bar)
@@ -52,8 +51,9 @@ def test_long_fill_uses_next_open():
     bars = _bars()
     vols = {b.day: 50.0 for b in bars}
     funding = {b.day: {"binance": 0.0001} for b in bars}
-    rule = longs_mod.LongRule(entry="drawdown", drawdown=0.2, stop=0.5, target=0.05,
-                              time_stop_days=200, trailing=0.0)
+    rule = longs_mod.LongRule(
+        entry="drawdown", drawdown=0.2, stop=0.5, target=0.05, time_stop_days=200, trailing=0.0
+    )
     base = longs_mod.run_longs(bars, vols, funding, rule)
     assert base["n_legs"] >= 1
     entry_idx = next(i for i, b in enumerate(bars) if b.day.isoformat() == base["legs"][0]["entry"])

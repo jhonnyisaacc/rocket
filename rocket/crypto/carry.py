@@ -34,8 +34,6 @@ def run_carry(
     funding: dict[date, dict[str, float]],
     rule: CarryRule,
 ) -> dict:
-    closes = {b.day: b.close for b in bars}
-    opens = {b.day: b.open for b in bars}
     days = [b.day for b in bars]
 
     def median(day: date) -> float | None:
@@ -99,12 +97,18 @@ def run_carry(
         "flips": flips,
         "funding_earned": round(earned, 4),
         "caveats": [
-            "Capacity: extreme funding prints coincide with wide spreads "
-            "and thin books; size fills at worse than the mark.",
-            "Exchange risk: a market-neutral book is still exposed to venue "
-            "outage, clawback, and margin-currency moves; FTX 2022 is the "
-            "proof that venue risk is not theoretical.",
-            "Regime risk: funding is a crowded premium; post-2023 prints "
-            "are thinner than 2020-2021.",
+            (
+                "Capacity: extreme funding prints coincide with wide spreads "
+                "and thin books; size fills at worse than the mark."
+            ),
+            (
+                "Exchange risk: a market-neutral book is still exposed to venue "
+                "outage, clawback, and margin-currency moves; FTX 2022 is the "
+                "proof that venue risk is not theoretical."
+            ),
+            (
+                "Regime risk: funding is a crowded premium; post-2023 prints "
+                "are thinner than 2020-2021."
+            ),
         ],
     }

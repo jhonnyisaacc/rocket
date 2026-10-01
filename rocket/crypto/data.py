@@ -8,8 +8,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
-from pathlib import Path
+from datetime import UTC, date, datetime
 
 from rocket.config import PACKAGE_ROOT
 
@@ -34,10 +33,8 @@ def load_btc_daily() -> list[Bar]:
     payload = _read("btc_daily.json")
     bars = []
     for row in payload["rows"]:
-        day = datetime.fromtimestamp(row["t"] / 1000, tz=timezone.utc).date()
-        bars.append(
-            Bar(day, row["o"], row["h"], row["l"], row["c"], row["v"])
-        )
+        day = datetime.fromtimestamp(row["t"] / 1000, tz=UTC).date()
+        bars.append(Bar(day, row["o"], row["h"], row["l"], row["c"], row["v"]))
     return sorted(bars, key=lambda b: b.day)
 
 
@@ -59,7 +56,7 @@ def load_funding_daily() -> dict[date, dict[str, float]]:
                 ts, rate = int(row["fundingTime"]), float(row["fundingRate"])
             else:
                 ts, rate = int(row["fundingRateTimestamp"]), float(row["fundingRate"])
-            day = datetime.fromtimestamp(ts / 1000, tz=timezone.utc).date()
+            day = datetime.fromtimestamp(ts / 1000, tz=UTC).date()
             by_day.setdefault(day, []).append(rate)
         for day, rates in by_day.items():
             gross = 1.0
@@ -77,7 +74,7 @@ def load_dvol() -> dict[date, float]:
         ts, _o, _h, _l, close = row
         if not ts or close is None:
             continue
-        day = datetime.fromtimestamp(ts / 1000, tz=timezone.utc).date()
+        day = datetime.fromtimestamp(ts / 1000, tz=UTC).date()
         out[day] = float(close)
     return out
 
@@ -89,9 +86,7 @@ def load_events() -> dict[str, list[date]]:
     payload = json.loads((DATA / "events.json").read_text())
     out: dict[str, list[date]] = {}
     for key in ("fomc", "elections"):
-        out[key] = [
-            date.fromisoformat(item) for item in payload.get(key, [])
-        ]
+        out[key] = [date.fromisoformat(item) for item in payload.get(key, [])]
     return out
 
 
