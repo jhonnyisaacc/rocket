@@ -429,7 +429,7 @@ def resolve_regime(
         if pillar_total <= config.model.v1_risk_off_max or _classic(pillars):
             return "risk-off", False
         return _quiet_regime(pillars, pillar_total, config), False
-    if config.model.version == "v4":
+    if config.model.version in {"v4", "v5", "v6"}:
         if bottom:
             return _quiet_regime(pillars, pillar_total, config), False
         if combo:
@@ -461,7 +461,7 @@ def _hold_state(
     The warning that is already on at the bottom does not count. Quiet up-days
     do not release the hold.
     """
-    if config.model.version != "v4":
+    if config.model.version not in {"v4", "v5", "v6"}:
         return False, False
     if bottom:
         return True, False

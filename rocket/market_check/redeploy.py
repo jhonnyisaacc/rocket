@@ -19,7 +19,7 @@ def is_bottom(view: AsOfView, config: Config) -> bool:
     vix = view.closes("vix")
     if len(vix) < rules.spike_lookback:
         return False
-    if max(vix[-rules.spike_lookback:]) < rules.vix_spike:
+    if max(vix[-rules.spike_lookback :]) < rules.vix_spike:
         return False
     fade = level_change(vix, rules.vix_fade_sessions)
     if fade is None or fade >= 0:
@@ -27,13 +27,31 @@ def is_bottom(view: AsOfView, config: Config) -> bool:
     spy = view.closes("spy")
     if len(spy) < 20:
         return False
-    peak = max(spy[-rules.peak_lookback:])
+    peak = max(spy[-rules.peak_lookback :])
     if peak <= 0 or spy[-1] / peak - 1 > -rules.spy_drawdown:
         return False
     if "fomc" in events_on(view.day, config):
         return False
     oil = pct_change(view.closes("wti"), config.regime.stress.oil_sessions)
-    return oil is None or oil < config.oil.shock_return
+    if oil is not None and oil >= config.oil.shock_return:
+        return False
+    return not (config.model.version == "v6" and not _broad_bounce(view, config))
+
+
+def _broad_bounce(view: AsOfView, config: Config) -> bool:
+    """v6 only: a durable low bounces broadly, not in one or two names.
+
+    Economic reason: participation. A VIX fade with only narrow leadership
+    (e.g. the March 2025 fade) fails; the April 2025 low bounced across the
+    book. Fixed majority of the 7 core names with a positive 5-session
+    return — a fixed structural definition, not a tuned threshold.
+    """
+    bouncing = 0
+    for name in config.portfolio.core:
+        rebound = pct_change(view.closes(name), config.redeploy.rebound_sessions)
+        if rebound is not None and rebound > 0:
+            bouncing += 1
+    return bouncing >= (len(config.portfolio.core) // 2 + 1)
 
 
 def name_state(view: AsOfView, name: str, config: Config) -> tuple[float, float] | None:

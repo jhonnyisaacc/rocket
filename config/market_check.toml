@@ -223,6 +223,8 @@ option_iv_slippage = 0.005
 
 [derivatives]
 stop = 0.08
+# v5 only: exit decided at this fraction above the entry fill. 0 disables.
+profit_take = 0.0
 long_size = 1.0
 long_size_below_fast = 0.5
 short_size = 0.5

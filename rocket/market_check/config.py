@@ -212,6 +212,9 @@ class Costs:
 @dataclass(frozen=True)
 class Derivatives:
     stop: float
+    # Profit-take for v5 bottom longs, as a fraction above the entry fill
+    # (0.30 = exit decided at +30%). 0 or negative disables it. v4 ignores it.
+    profit_take: float
     long_size: float
     long_size_below_fast: float
     short_size: float
@@ -437,6 +440,7 @@ def load_config(path: Path | None = None) -> Config:
         )}),
         derivatives=Derivatives(
             stop=float(derivatives["stop"]),
+            profit_take=float(derivatives.get("profit_take", 0.0)),
             long_size=float(derivatives["long_size"]),
             long_size_below_fast=float(derivatives["long_size_below_fast"]),
             short_size=float(derivatives["short_size"]),
@@ -529,7 +533,7 @@ def _validate(cfg: Config) -> None:
         raise ValueError("cash targets must rise from risk-on to risk-off and stay inside the ceiling")
     if cfg.window.start >= cfg.window.oos_start or cfg.window.oos_start > cfg.window.end:
         raise ValueError("out-of-sample split must sit inside the backtest window")
-    if cfg.model.version not in {"v1", "v2", "v3", "v4"}:
+    if cfg.model.version not in {"v1", "v2", "v3", "v4", "v5", "v6"}:
         raise ValueError("model version must be v1, v2, v3, or v4")
     if cfg.model.v4_caution not in {"band", "light"}:
         raise ValueError("v4 caution must be band or light")

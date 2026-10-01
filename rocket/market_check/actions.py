@@ -118,11 +118,11 @@ def decide(
     released = bool(score.get("released"))
     version = config.model.version
     holding = (version == "v3" and (bottom or released)) or (
-        version == "v4" and bool(score.get("redeploy_hold"))
+        version in {"v4", "v5", "v6"} and bool(score.get("redeploy_hold"))
     )
     if holding:
         target = config.redeploy.cash_target
-    elif version == "v4" and score["regime"] == "caution":
+    elif version in {"v4", "v5", "v6"} and score["regime"] == "caution":
         target = config.model.v4_light_cash
     else:
         target = cash_target(score["regime"], index_return, config)

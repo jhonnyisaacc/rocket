@@ -53,22 +53,28 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
     active = [row for row in rows if row["success"] is not None]
     pnls = [float(row["pnl"]) for row in active]
     perp_rows = [row for row in rows if row["position"] != "flat"]
-    hedge_rows = [row for row in rows if row["hedge"] == "btc_puts" and row["hedge_pnl"] is not None]
+    hedge_rows = [
+        row for row in rows if row["hedge"] == "btc_puts" and row["hedge_pnl"] is not None
+    ]
     wealth = 1.0
     for pnl in pnls:
         if pnl <= -1:
             wealth = 0.0
             break
         wealth *= 1 + pnl
+
     def _hit(sample: list[dict[str, Any]], key: str) -> float | None:
         usable = [row for row in sample if row.get(key) is not None]
         if not usable:
             return None
         return sum(1 for row in usable if float(row[key]) > 0) / len(usable)
+
     return {
         "months": len(rows),
         "active_months": len(active),
-        "hit_rate": None if not active else sum(1 for row in active if row["success"]) / len(active),
+        "hit_rate": None
+        if not active
+        else sum(1 for row in active if row["success"]) / len(active),
         "sum_pnl": sum(pnls) if pnls else 0.0,
         "mean_pnl": None if not pnls else sum(pnls) / len(pnls),
         "best_pnl": None if not pnls else max(pnls),
@@ -83,7 +89,11 @@ def _summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
 
 def _put_pnl(
-    panel: SeriesPanel, config: Config, entry_day: date, exit_day: date, entry_spot: float,
+    panel: SeriesPanel,
+    config: Config,
+    entry_day: date,
+    exit_day: date,
+    entry_spot: float,
 ) -> tuple[float, str, float | None, float | None]:
     iv, pricing = _iv(panel, config, entry_day)
     if iv is None or entry_spot <= 0:
@@ -91,14 +101,21 @@ def _put_pnl(
     strike = entry_spot * (1 - config.derivatives.put_otm)
     years = config.derivatives.put_tenor_days / 365.25
     premium = bs_put(
-        entry_spot, strike, years, iv + config.costs.option_iv_slippage, _rate(panel, config, entry_day),
+        entry_spot,
+        strike,
+        years,
+        iv + config.costs.option_iv_slippage,
+        _rate(panel, config, entry_day),
     )
     exit_spot = panel.asof(exit_day, config.lags).value("btc") or entry_spot
     remaining = (entry_day + timedelta(days=config.derivatives.put_tenor_days) - exit_day).days
     exit_iv, _source = _iv(panel, config, exit_day)
     mark = bs_put(
-        exit_spot, strike, max(remaining, 0) / 365.25,
-        exit_iv if exit_iv is not None else iv, _rate(panel, config, exit_day),
+        exit_spot,
+        strike,
+        max(remaining, 0) / 365.25,
+        exit_iv if exit_iv is not None else iv,
+        _rate(panel, config, exit_day),
     )
     option_fees = entry_spot * (config.costs.option_fee_bps_underlying / 10_000) * 2
     return (mark - premium - option_fees) / entry_spot, pricing, strike, premium
@@ -126,10 +143,7 @@ def _btc_drawdown(panel: SeriesPanel, config: Config, day: date) -> float | None
 
 def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     """v3: puts on a fresh warning, longs only on the buy-the-low signal. No monthly drift bet."""
-    days = [
-        day for day in panel.dates("spy")
-        if config.window.start <= day <= config.window.end
-    ]
+    days = [day for day in panel.dates("spy") if config.window.start <= day <= config.window.end]
     slip = config.costs.perp_slippage_bps / 10_000
     fee = config.costs.perp_fee_bps / 10_000
     path = score_path(panel, scoring_days(panel, config), config)
@@ -142,8 +156,13 @@ def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         stopped = False
         for index, day in enumerate(members):
             scored = score_on(path, day)
-            previous = score_on(path, members[index - 1]) if index else score_on(
-                path, day - timedelta(days=1),
+            previous = (
+                score_on(path, members[index - 1])
+                if index
+                else score_on(
+                    path,
+                    day - timedelta(days=1),
+                )
             )
             if put_entry is None and _warning(previous, scored):
                 put_entry = day
@@ -165,7 +184,11 @@ def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                 held = [item for item in members if long_entry <= item <= day]
                 price = panel.asof(day, config.lags).value("btc")
                 entry_spot = panel.asof(long_entry, config.lags).value("btc") or price
-                if price is not None and entry_spot and price <= entry_spot * (1 - config.derivatives.stop):
+                if (
+                    price is not None
+                    and entry_spot
+                    and price <= entry_spot * (1 - config.derivatives.stop)
+                ):
                     long_exit = day
                     stopped = True
                 elif len(held) > config.redeploy.hold_sessions:
@@ -189,7 +212,11 @@ def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             for day in hold:
                 rate = panel.asof(day, config.lags).value("funding_daily") or 0.0
                 funding -= size * rate
-            gross = size * ((exit_price * (1 - slip)) / (entry_price * (1 + slip)) - 1) if entry_price else 0.0
+            gross = (
+                size * ((exit_price * (1 - slip)) / (entry_price * (1 + slip)) - 1)
+                if entry_price
+                else 0.0
+            )
             fees = size * fee * 2
             perp_pnl = gross + funding - fees
         hedge_pnl = None
@@ -218,30 +245,32 @@ def _simulate_timed(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         scored = score_on(path, anchor)
         if scored:
             regime = scored["regime"]
-        rows.append({
-            "month": members[0].strftime("%Y-%m"),
-            "date": (long_entry or put_entry or members[0]).isoformat(),
-            "signal": signal,
-            "regime": regime,
-            "position": direction,
-            "size": size,
-            "entry": entry_price,
-            "exit": exit_price,
-            "exit_date": (long_exit or put_exit or members[-1]).isoformat(),
-            "stopped": stopped,
-            "funding_pnl": funding,
-            "fees": fees,
-            "perp_pnl": perp_pnl,
-            "hedge": hedge,
-            "hedge_signal": hedge == "btc_puts",
-            "strike": strike,
-            "premium": premium,
-            "hedge_pnl": hedge_pnl,
-            "pricing": pricing,
-            "pnl": total,
-            "success": (total > 0) if active else None,
-            "options": "n/a",
-        })
+        rows.append(
+            {
+                "month": members[0].strftime("%Y-%m"),
+                "date": (long_entry or put_entry or members[0]).isoformat(),
+                "signal": signal,
+                "regime": regime,
+                "position": direction,
+                "size": size,
+                "entry": entry_price,
+                "exit": exit_price,
+                "exit_date": (long_exit or put_exit or members[-1]).isoformat(),
+                "stopped": stopped,
+                "funding_pnl": funding,
+                "fees": fees,
+                "perp_pnl": perp_pnl,
+                "hedge": hedge,
+                "hedge_signal": hedge == "btc_puts",
+                "strike": strike,
+                "premium": premium,
+                "hedge_pnl": hedge_pnl,
+                "pricing": pricing,
+                "pnl": total,
+                "success": (total > 0) if active else None,
+                "options": "n/a",
+            }
+        )
     oos = config.window.oos_start
     in_rows = [row for row in rows if date.fromisoformat(row["date"]) < oos]
     out_rows = [row for row in rows if date.fromisoformat(row["date"]) >= oos]
@@ -308,6 +337,51 @@ def _next_session(days: list[date], day: date) -> date | None:
     return days[index + 1]
 
 
+def _apply_v5_exits(
+    panel: SeriesPanel,
+    config: Config,
+    days: list[date],
+    longs: list[tuple[date, date, bool]],
+) -> list[tuple[date, date, bool]]:
+    """v5 only: each bottom long carries its own stop and profit-take.
+
+    Economic reason: a bottom long is a reflexive-bounce trade, not a secular
+    hold. Without exits the April 2025 long rode the later BTC drawdown into a
+    -44% out-of-sample loss. The stop cuts exposure when the bounce fails; the
+    target banks the bounce when it works. Checked on daily closes, filled the
+    next session like every other signal.
+    """
+    stop = config.derivatives.stop
+    target = config.derivatives.profit_take
+    if stop <= 0 and target <= 0:
+        return longs
+    pos = {day: index for index, day in enumerate(days)}
+    out = []
+    for entry, exit_day, _stopped in longs:
+        entry_fill = _next_session(days, entry)
+        ref = panel.asof(entry_fill, config.lags).value("btc") if entry_fill else None
+        if not ref or entry_fill not in pos or exit_day not in pos:
+            out.append((entry, exit_day, False))
+            continue
+        decided: date | None = None
+        hit_stop = False
+        for day in days[pos[entry_fill] : pos[exit_day] + 1]:
+            price = panel.asof(day, config.lags).value("btc")
+            if price is None:
+                continue
+            if stop > 0 and price <= ref * (1 - stop):
+                decided, hit_stop = day, True
+                break
+            if target > 0 and price >= ref * (1 + target):
+                decided, hit_stop = day, False
+                break
+        if decided is None or decided >= exit_day:
+            out.append((entry, exit_day, False))
+        else:
+            out.append((entry, decided, hit_stop))
+    return out
+
+
 def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     """Longs at the bottom, held until the next warning. Puts are optional and reported apart.
 
@@ -315,10 +389,7 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
     legs are all shifted one session forward. A signal on the final session
     cannot fill and is dropped.
     """
-    days = [
-        day for day in panel.dates("spy")
-        if config.window.start <= day <= config.window.end
-    ]
+    days = [day for day in panel.dates("spy") if config.window.start <= day <= config.window.end]
     slip = config.costs.perp_slippage_bps / 10_000
     fee = config.costs.perp_fee_bps / 10_000
     path = score_path(panel, scoring_days(panel, config), config)
@@ -345,7 +416,11 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                 long_entry = day
                 long_exit = None
         if puts_on:
-            previous = score_on(path, days[index - 1]) if index else score_on(path, day - timedelta(days=1))
+            previous = (
+                score_on(path, days[index - 1])
+                if index
+                else score_on(path, day - timedelta(days=1))
+            )
             month_end = index + 1 == len(days) or days[index + 1].month != day.month
             if put_entry is None and _warning(previous, scored):
                 put_entry = day
@@ -354,6 +429,8 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
                 put_entry = None
     if long_entry is not None:
         longs.append((long_entry, days[-1], False))
+    if config.model.version in {"v5", "v6"}:
+        longs = _apply_v5_exits(panel, config, days, longs)
     # Shift decision days to fill sessions. Entries that cannot fill are dropped;
     # an exit still open at the window end is marked at the last close.
     filled_longs: list[tuple[date, date, bool]] = []
@@ -402,7 +479,8 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
         total = perp_pnl + (put_pnl if hedge == "btc_puts" else 0.0)
         parts = []
         stopped_here = any(
-            stopped and members[0] <= exit_day <= members[-1] for _entry, exit_day, stopped in long_hits
+            stopped and members[0] <= exit_day <= members[-1]
+            for _entry, exit_day, stopped in long_hits
         )
         if long_hits:
             parts.append("bottom long")
@@ -428,38 +506,41 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             entry_price = _price_on(panel, config, anchor) or 0.0
             exit_price = _price_on(panel, config, exit_stamp) or entry_price
         scored = score_on(path, anchor) or {}
-        rows.append({
-            "month": members[0].strftime("%Y-%m"),
-            "date": members[0].isoformat(),
-            "entry_date": long_hits[0][0].isoformat() if opened else None,
-            "opened": opened,
-            "signal": " + ".join(parts) if parts else "flat",
-            "regime": scored.get("regime", "neutral"),
-            "position": "long" if long_hits else "flat",
-            "size": size if long_hits else 0.0,
-            "entry": entry_price,
-            "exit": exit_price,
-            "exit_date": exit_stamp.isoformat(),
-            "stopped": stopped_here,
-            "funding_pnl": 0.0,
-            "fees": 0.0,
-            "perp_pnl": perp_pnl,
-            "hedge": hedge,
-            "hedge_signal": hedge == "btc_puts",
-            "strike": strike,
-            "premium": premium,
-            "hedge_pnl": put_pnl if hedge == "btc_puts" else None,
-            "pricing": pricing,
-            "pnl": total,
-            "success": (total > 0) if active else None,
-            "options": "n/a",
-        })
+        rows.append(
+            {
+                "month": members[0].strftime("%Y-%m"),
+                "date": members[0].isoformat(),
+                "entry_date": long_hits[0][0].isoformat() if opened else None,
+                "opened": opened,
+                "signal": " + ".join(parts) if parts else "flat",
+                "regime": scored.get("regime", "neutral"),
+                "position": "long" if long_hits else "flat",
+                "size": size if long_hits else 0.0,
+                "entry": entry_price,
+                "exit": exit_price,
+                "exit_date": exit_stamp.isoformat(),
+                "stopped": stopped_here,
+                "funding_pnl": 0.0,
+                "fees": 0.0,
+                "perp_pnl": perp_pnl,
+                "hedge": hedge,
+                "hedge_signal": hedge == "btc_puts",
+                "strike": strike,
+                "premium": premium,
+                "hedge_pnl": put_pnl if hedge == "btc_puts" else None,
+                "pricing": pricing,
+                "pnl": total,
+                "success": (total > 0) if active else None,
+                "options": "n/a",
+            }
+        )
     oos = config.window.oos_start
     in_rows = [row for row in rows if date.fromisoformat(row["date"]) < oos]
     out_rows = [row for row in rows if date.fromisoformat(row["date"]) >= oos]
     put_note = (
         "Puts are opened on a fresh warning and marked to the bottom or month-end."
-        if puts_on else "Puts are off in this configuration."
+        if puts_on
+        else "Puts are off in this configuration."
     )
     return {
         "rows": rows,
@@ -477,14 +558,11 @@ def _simulate_v4(panel: SeriesPanel, config: Config) -> dict[str, Any]:
 
 
 def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
-    if config.model.version == "v4":
+    if config.model.version in {"v4", "v5", "v6"}:
         return _simulate_v4(panel, config)
     if config.model.version == "v3":
         return _simulate_timed(panel, config)
-    days = [
-        day for day in panel.dates("btc")
-        if config.window.start <= day <= config.window.end
-    ]
+    days = [day for day in panel.dates("btc") if config.window.start <= day <= config.window.end]
     slip = config.costs.perp_slippage_bps / 10_000
     fee = config.costs.perp_fee_bps / 10_000
     path = score_path(panel, scoring_days(panel, config), config)
@@ -548,42 +626,55 @@ def simulate_derivatives(panel: SeriesPanel, config: Config) -> dict[str, Any]:
             else:
                 strike = entry * (1 - config.derivatives.put_otm)
                 years = config.derivatives.put_tenor_days / 365.25
-                premium = bs_put(entry, strike, years, iv + config.costs.option_iv_slippage, _rate(panel, config, entry_day))
-                remaining_days = (entry_day + timedelta(days=config.derivatives.put_tenor_days) - exit_day).days
+                premium = bs_put(
+                    entry,
+                    strike,
+                    years,
+                    iv + config.costs.option_iv_slippage,
+                    _rate(panel, config, entry_day),
+                )
+                remaining_days = (
+                    entry_day + timedelta(days=config.derivatives.put_tenor_days) - exit_day
+                ).days
                 exit_iv, _source = _iv(panel, config, exit_day)
                 mark = bs_put(
-                    exit_price, strike, max(remaining_days, 0) / 365.25,
-                    exit_iv if exit_iv is not None else iv, _rate(panel, config, exit_day),
+                    exit_price,
+                    strike,
+                    max(remaining_days, 0) / 365.25,
+                    exit_iv if exit_iv is not None else iv,
+                    _rate(panel, config, exit_day),
                 )
                 option_fees = entry * (config.costs.option_fee_bps_underlying / 10_000) * 2
                 # Premium, mark and fees are USD per BTC. P&L is a fraction of the entry spot.
                 hedge_pnl = (mark - premium - option_fees) / entry
         total = perp_pnl + (hedge_pnl or 0.0)
         active = direction != "flat" or hedge == "btc_puts"
-        rows.append({
-            "month": entry_day.strftime("%Y-%m"),
-            "date": entry_day.isoformat(),
-            "signal": perps["direction"] if direction == "flat" else f"{direction} {size:g}",
-            "regime": scored["regime"],
-            "position": direction,
-            "size": size,
-            "entry": entry,
-            "exit": exit_price,
-            "exit_date": exit_day.isoformat(),
-            "stopped": stopped,
-            "funding_pnl": funding,
-            "fees": fees,
-            "perp_pnl": perp_pnl,
-            "hedge": hedge,
-            "hedge_signal": perps["hedge_signal"],
-            "strike": strike,
-            "premium": premium,
-            "hedge_pnl": hedge_pnl,
-            "pricing": pricing,
-            "pnl": total,
-            "success": (total > 0) if active else None,
-            "options": perps["options"],
-        })
+        rows.append(
+            {
+                "month": entry_day.strftime("%Y-%m"),
+                "date": entry_day.isoformat(),
+                "signal": perps["direction"] if direction == "flat" else f"{direction} {size:g}",
+                "regime": scored["regime"],
+                "position": direction,
+                "size": size,
+                "entry": entry,
+                "exit": exit_price,
+                "exit_date": exit_day.isoformat(),
+                "stopped": stopped,
+                "funding_pnl": funding,
+                "fees": fees,
+                "perp_pnl": perp_pnl,
+                "hedge": hedge,
+                "hedge_signal": perps["hedge_signal"],
+                "strike": strike,
+                "premium": premium,
+                "hedge_pnl": hedge_pnl,
+                "pricing": pricing,
+                "pnl": total,
+                "success": (total > 0) if active else None,
+                "options": perps["options"],
+            }
+        )
     oos = config.window.oos_start
     in_rows = [row for row in rows if date.fromisoformat(row["date"]) < oos]
     out_rows = [row for row in rows if date.fromisoformat(row["date"]) >= oos]
