@@ -86,6 +86,9 @@ class ProviderHealth:
     retrieved_at: datetime | None = None
     failure_kind: str | None = None
     coverage: str | None = None
+    ticker: str | None = None
+    provider: str | None = None
+    endpoint: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -94,6 +97,8 @@ class ProviderHealth:
             "retrieved_at": iso(self.retrieved_at),
             "failure_kind": self.failure_kind,
             "coverage": self.coverage,
+            **({"ticker": self.ticker, "provider": self.provider, "endpoint": self.endpoint}
+               if self.ticker is not None else {}),
         }
 
     @classmethod
@@ -104,6 +109,9 @@ class ProviderHealth:
             retrieved_at=parse_datetime(value.get("retrieved_at")),
             failure_kind=value.get("failure_kind"),
             coverage=value.get("coverage"),
+            ticker=value.get("ticker"),
+            provider=value.get("provider"),
+            endpoint=value.get("endpoint"),
         )
 
 
