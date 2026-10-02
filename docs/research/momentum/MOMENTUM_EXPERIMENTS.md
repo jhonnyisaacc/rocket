@@ -65,3 +65,11 @@ Failure closes this exact conditional path. No MOM-002, slow data, Pana,
 news/LLM, or threshold/feature/model/horizon rescue. Amendments explicitly
 consume the inherited research budget. Prospective final confirmation remains
 mandatory even if all historical development gates pass.
+
+## Pre-outcome source clarification, MOM-DATA-001
+
+Before any census score: verified archives contain missing hours and one
+nonstandard close timestamp. Parser now retains raw bytes, excludes that
+incomplete bar with its row hash, and exposes gaps. This implements the
+registered incomplete-history/UNKNOWN policy; no mathematical barrier,
+candidate, sample gate or horizon was changed. Zero predictive trials consumed.
