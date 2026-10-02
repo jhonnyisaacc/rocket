@@ -1,0 +1,100 @@
+{
+  "files": [
+    {
+      "bytes": 2146495,
+      "checksum_sha256": "f6cd2b7576d32f2775b620c241fb300c7f5c3b306c572447ce87f6489b8b3c89",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "c30a63bd0e8a77f2d18a2a019272b907f29a84fd5378796cf9333b041edcb12b",
+      "source_key": "data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2024-11.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 1921220,
+      "checksum_sha256": "bd715d4c57c6e62220b86b0f29c37424373471b2cd02a2645db8009c90d2287a",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "4170f68dd576e8af35ecc9b19808dcb673c0423838bd560c7c4c1fabefdad5ad",
+      "source_key": "data/futures/um/monthly/klines/ETHUSDT/1m/ETHUSDT-1m-2024-11.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 1556146,
+      "checksum_sha256": "404864c71cb5d4aa70bdfe3cfa6bcc97df3b5350fa981b306d2476539a37488f",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "cc26ccf5eb442a5d66daa7396eb589d7c9934ba3301503a753c03ddbe94a4af0",
+      "source_key": "data/futures/um/monthly/klines/SOLUSDT/1m/SOLUSDT-1m-2024-11.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 2120466,
+      "checksum_sha256": "879c848ceb00f9e0f7200383a486d1beef123e9c1a8e63a1fc57cfa9094878dd",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "4103d48887f9f5ec04144b190314ec31db9e3094674e5d53a3436b338854848f",
+      "source_key": "data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2025-04.zip",
+      "timestamp_unit": "microseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 1895060,
+      "checksum_sha256": "e6c0b680d0eb245c13a2e29c788270487b5048a0cbb226d1f7883e6c1c39e773",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "75ea6a45c8bed04294449ff7d56f047c235a36fac176736816c01d6892bd8687",
+      "source_key": "data/futures/um/monthly/klines/ETHUSDT/1m/ETHUSDT-1m-2025-04.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 1688075,
+      "checksum_sha256": "d18c6e1ee0659ed2c1e18bc7a2c17957c756ad2abda86dcb4d24ca590d197f57",
+      "missing_minutes": 0,
+      "rows": 43200,
+      "sha256": "e946bbf26b8faf4b0be15d2f7763515d358a04062ddd662ff4a3c286740612b3",
+      "source_key": "data/futures/um/monthly/klines/SOLUSDT/1m/SOLUSDT-1m-2025-04.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 2150048,
+      "checksum_sha256": "cff244d59fd844785f18a41e28c280e6d013b97ec4b280438b89e066b640b7f6",
+      "missing_minutes": 0,
+      "rows": 44640,
+      "sha256": "11da1c7db8949cbdcbb757531756eda55f2a3d663cfac671c5d1a8a87911318f",
+      "source_key": "data/spot/monthly/klines/BTCUSDT/1m/BTCUSDT-1m-2025-08.zip",
+      "timestamp_unit": "microseconds",
+      "zero_base_volume": 0
+    },
+    {
+      "bytes": 2017496,
+      "checksum_sha256": "b0c2ba358593af37f07ae5782b96f80cd0022fef8800951a1e9b2691d0c25ade",
+      "missing_minutes": 0,
+      "rows": 44640,
+      "sha256": "8cd85f1c417c4c65cd32348f3e4e23c8b35dd4e5e59a20a187e2a74777bd6664",
+      "source_key": "data/futures/um/monthly/klines/ETHUSDT/1m/ETHUSDT-1m-2025-08.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 18
+    },
+    {
+      "bytes": 1848031,
+      "checksum_sha256": "611c049f9d2bbc72cda36d51d8a384b67220ec4fc470b65c6031bca540c14bfa",
+      "missing_minutes": 0,
+      "rows": 44640,
+      "sha256": "9916be68e1e354b1d2ad30e09ca2f0552ddbf9a3ad64d2854bd54016463b56a6",
+      "source_key": "data/futures/um/monthly/klines/SOLUSDT/1m/SOLUSDT-1m-2025-08.zip",
+      "timestamp_unit": "milliseconds",
+      "zero_base_volume": 19
+    }
+  ],
+  "meaning": "fixed source files from return-free checksum and clock audit; no signal outcomes",
+  "months": [
+    "2024-11",
+    "2025-04",
+    "2025-08"
+  ]
+}

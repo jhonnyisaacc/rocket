@@ -1,0 +1,17 @@
+{
+  "meaning": "Dated official Binance notices for FUT-004 selected closures absent from prior event catalogs; source leads, not exact settlement prices",
+  "events": [
+    {
+      "date": "2022-05-13",
+      "settlement_time_utc": "04:00",
+      "symbols": ["ANCUSDT"],
+      "source_url": "https://www.binance.com/en/support/announcement/detail/0bfb6cfd10aa4d26926260c0159ef58d"
+    },
+    {
+      "date": "2023-05-25",
+      "settlement_time_utc": "09:00",
+      "symbols": ["COCOSUSDT"],
+      "source_url": "https://www.binance.com/en/support/announcement/detail/45852dc155b641bc9e1c23bc41d8ded6"
+    }
+  ]
+}

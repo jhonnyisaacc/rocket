@@ -1,0 +1,41 @@
+name: Futures research
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/futures-research.yml'
+      - 'research/futures/**'
+      - 'tests/research/**'
+      - 'docs/research/futures/**'
+      - 'docs/research/RESEARCH_CONSTITUTION.md'
+      - 'pyproject.toml'
+  push:
+    branches: [main, research/crypto-futures-strategy]
+    paths:
+      - '.github/workflows/futures-research.yml'
+      - 'research/futures/**'
+      - 'tests/research/**'
+      - 'docs/research/futures/**'
+      - 'docs/research/RESEARCH_CONSTITUTION.md'
+      - 'pyproject.toml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-research:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]' 'ruff==0.16.6'
+      - run: python -m pytest tests/research -m 'not integration'
+      - run: ruff check research/futures tests/research
+      - name: Check changed whitespace
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: git diff --check "$BASE_SHA" HEAD

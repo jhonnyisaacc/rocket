@@ -1,0 +1,70 @@
+{
+  "meaning": "fixed non-TWAP losing HYPE close fills; transaction-source check only",
+  "results": [
+    {
+      "action_type": "order",
+      "error": null,
+      "matches_fill_hash_wallet_block": true,
+      "order_count": 1,
+      "order_tifs": [
+        "Ioc"
+      ],
+      "response_type": "txDetails",
+      "sample_fill_block": 734022607,
+      "sample_fill_hash": "0xda4d192e0ab20d5adbc6042bc04bcf020b700013a5b52c2c7e15c480c9b5e745",
+      "sample_fill_oid": 165764308035,
+      "source_sha256": "0af4daacdb172fc76608e0804b4b474225f79ea5d2811c2ff32d1d435e8c7280",
+      "transaction_time_ms": 1758153604132,
+      "wallet": "0x162cc7c861ebd0c06b3d72319201150482518185"
+    },
+    {
+      "action_type": "order",
+      "error": null,
+      "matches_fill_hash_wallet_block": true,
+      "order_count": 1,
+      "order_tifs": [
+        "Ioc"
+      ],
+      "response_type": "txDetails",
+      "sample_fill_block": 734022610,
+      "sample_fill_hash": "0xae822b3a2738fcdcaffb042bc04bd2020b29001fc23c1bae524ad68ce63cd6c7",
+      "sample_fill_oid": 165764314528,
+      "source_sha256": "070257586625e67ee0c1be1b0f62e5f1d7d4c7c40e50244448ec9e6e9bc56c4e",
+      "transaction_time_ms": 1758153604333,
+      "wallet": "0xc5ed4501500fcbfb2b88fb7f0aa52f834ed44346"
+    },
+    {
+      "action_type": "order",
+      "error": null,
+      "matches_fill_hash_wallet_block": true,
+      "order_count": 1,
+      "order_tifs": [
+        "Ioc"
+      ],
+      "response_type": "txDetails",
+      "sample_fill_block": 734022715,
+      "sample_fill_hash": "0xd36bf05b101a5c1fd4e5042bc04c3b02011a0040ab1d7af177349badcf1e360a",
+      "sample_fill_oid": 165764434192,
+      "source_sha256": "d3bfc6af686f5c51d5c1502909bbdd5b7264af8168d5a87552bf18cd3973cd91",
+      "transaction_time_ms": 1758153614596,
+      "wallet": "0xee162a5a60829bd346f0c1ac3514b21fe5f4b290"
+    },
+    {
+      "action_type": "order",
+      "error": null,
+      "matches_fill_hash_wallet_block": true,
+      "order_count": 1,
+      "order_tifs": [
+        "Ioc"
+      ],
+      "response_type": "txDetails",
+      "sample_fill_block": 734022716,
+      "sample_fill_hash": "0xda77ca5342d827e4dbf1042bc04c3c0207610038dddb46b67e4075a601dc01cf",
+      "sample_fill_oid": 165764438140,
+      "source_sha256": "4b8787fbee99ebae1e35073c316309f8f99c4eed789448c38dbc02c600e078ad",
+      "transaction_time_ms": 1758153614680,
+      "wallet": "0x7b7f72a28fe109fa703eeed7984f2a8a68fedee2"
+    }
+  ],
+  "retrieved_at": "2026-09-25T13:27:45.130154+00:00"
+}

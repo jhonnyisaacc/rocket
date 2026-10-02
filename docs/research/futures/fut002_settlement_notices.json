@@ -1,0 +1,84 @@
+{
+  "meaning": "Official Binance cessation notice candidates for FUT-002; times are UTC; outcome bounds remain provisional until archive checks",
+  "status": "NOTICE_CUTOFFS_IDENTIFIED",
+  "events": [
+    {
+      "date": "2021-12-19",
+      "settlement_time_utc": "02:00",
+      "representative_symbol": "BZRXUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/dff27dc6bcbb432c902bcbea5e24ddfa"
+    },
+    {
+      "date": "2022-01-14",
+      "settlement_time_utc": "02:00",
+      "representative_symbol": "BTTUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/2722e6da4f5141dd9b2fb07b5b1f3f75"
+    },
+    {
+      "date": "2022-02-15",
+      "settlement_time_utc": "02:00",
+      "representative_symbol": "KEEPUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/96698a6a80f64cb1ae27f813032bfaa9"
+    },
+    {
+      "date": "2022-04-12",
+      "settlement_time_utc": "09:00",
+      "representative_symbol": "YFIIUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/4baf8d70485c46e38637bd063c58c4d8"
+    },
+    {
+      "date": "2022-05-12",
+      "settlement_time_utc": "15:30",
+      "representative_symbol": "LUNAUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/ef3ce76d5c2d45ee9b6dc3f281cde744"
+    },
+    {
+      "date": "2022-05-27",
+      "settlement_time_utc": "09:00",
+      "representative_symbol": "DODOUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/d1cb959677034c45b5149f1d998ae2b1",
+      "symbol_settlement_time_utc": {
+        "AKROUSDT": "07:00"
+      },
+      "symbol_sources": {
+        "AKROUSDT": "https://www.binance.com/en/support/announcement/detail/185001cde1614f0e8987c4d39aca8639"
+      }
+    },
+    {
+      "date": "2022-06-17",
+      "settlement_time_utc": "09:00",
+      "representative_symbol": "SCUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/6ce355dedc5d438abde7b5dc99b3a56d"
+    },
+    {
+      "date": "2022-08-18",
+      "settlement_time_utc": "09:00",
+      "representative_symbol": "BTSUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/90498d8e2fec42468ec3d659bdfbb78b"
+    },
+    {
+      "date": "2022-11-14",
+      "settlement_time_utc": "04:00",
+      "representative_symbol": "FTTUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/3b4c7c08479b48d48189191e37a7adca"
+    },
+    {
+      "date": "2022-11-15",
+      "settlement_time_utc": "04:00",
+      "representative_symbol": "RAYUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/9a6676662bd5417c92267953f3819dd0",
+      "symbol_settlement_time_utc": {
+        "SRMUSDT": "04:30"
+      },
+      "symbol_sources": {
+        "SRMUSDT": "https://www.binance.com/en/support/announcement/detail/9a6676662bd5417c92267953f3819dd0"
+      }
+    },
+    {
+      "date": "2022-11-29",
+      "settlement_time_utc": "09:00",
+      "representative_symbol": "CVCUSDT",
+      "source_url": "https://www.binance.com/en/support/announcement/detail/3188e26f14a1464b91487abad452c04f"
+    }
+  ]
+}

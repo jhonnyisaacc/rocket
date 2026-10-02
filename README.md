@@ -19,6 +19,10 @@ python3 -m venv .venv
 
 Secrets come from the process environment (existing names). Rocket never deletes or rewrites them. Callers pass private state paths explicitly.
 
+## Research
+
+The current crypto futures research hierarchy begins with the [research constitution](docs/research/RESEARCH_CONSTITUTION.md), [futures pillar](docs/research/futures/FUTURES_PILLAR.md), and [single frontier](docs/research/futures/FUTURES_FRONTIER.md). Historical PRs remain evidence; no research result enables execution.
+
 ## Research data
 
 Large research payloads (for example the ~1GB Solana memecoin follower-study

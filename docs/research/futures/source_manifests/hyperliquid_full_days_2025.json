@@ -1,0 +1,590 @@
+{
+  "dates": {
+    "20250814": [
+      {
+        "filename": "batch_upto_20250814_0.lz4_1765108666.parquet",
+        "hour_suffix": 0,
+        "sha256": "07f72ad648698e216d797d33f15c9e8038ad69820b4ed6d6b2d87e04f848eb5f",
+        "size_bytes": 48372348
+      },
+      {
+        "filename": "batch_upto_20250814_1.lz4_1765108677.parquet",
+        "hour_suffix": 1,
+        "sha256": "a87b4cbb3eb0e464e439b946d41e05a25e45d8335afb2568cb88f1f9543e7a1a",
+        "size_bytes": 38243968
+      },
+      {
+        "filename": "batch_upto_20250814_2.lz4_1765108875.parquet",
+        "hour_suffix": 2,
+        "sha256": "636126fae6bb410ca96aa7dd23599d585c70a534fdf9b5c60def86e2ac91c5ed",
+        "size_bytes": 40521822
+      },
+      {
+        "filename": "batch_upto_20250814_3.lz4_1765108945.parquet",
+        "hour_suffix": 3,
+        "sha256": "0c4c2a3dd92ad9b0e92b6c04f03eac264d9f4ba89dec96185a1f11583a0b8568",
+        "size_bytes": 45767692
+      },
+      {
+        "filename": "batch_upto_20250814_4.lz4_1765108958.parquet",
+        "hour_suffix": 4,
+        "sha256": "85546c8ecd236f729d8facf4bcac473aca37141c41cce1cc63194ff4ccefe7e4",
+        "size_bytes": 41310428
+      },
+      {
+        "filename": "batch_upto_20250814_5.lz4_1765108971.parquet",
+        "hour_suffix": 5,
+        "sha256": "fb71aa0af6c6437c9aca3b3698e7a4475532e80217e36c17a595fa1964dff5a8",
+        "size_bytes": 41490777
+      },
+      {
+        "filename": "batch_upto_20250814_6.lz4_1765108986.parquet",
+        "hour_suffix": 6,
+        "sha256": "e35c37214000ec17fd3ff979e05e6e66befbdbc3cd86864f4ac42b436befc463",
+        "size_bytes": 61192423
+      },
+      {
+        "filename": "batch_upto_20250814_7.lz4_1765109002.parquet",
+        "hour_suffix": 7,
+        "sha256": "aec5613efa41589bec1884b8cba3d9401624ab9fde8586b984b01456bb6683a7",
+        "size_bytes": 44924319
+      },
+      {
+        "filename": "batch_upto_20250814_8.lz4_1765109016.parquet",
+        "hour_suffix": 8,
+        "sha256": "10b0369c0160abbcfbab1e57c0498d668fa33048ac6b8c800e58f3e9b284f10b",
+        "size_bytes": 46957321
+      },
+      {
+        "filename": "batch_upto_20250814_9.lz4_1765109029.parquet",
+        "hour_suffix": 9,
+        "sha256": "791efc3db80eb7a2abf8c84957d3f1f510a319d9d040ee25a9e02d40b239b08e",
+        "size_bytes": 36231111
+      },
+      {
+        "filename": "batch_upto_20250814_10.lz4_1765108689.parquet",
+        "hour_suffix": 10,
+        "sha256": "fe7ade318df7bc0bcd8737aaad608da239d9037f2c52ff7375e15c342fab6a6f",
+        "size_bytes": 41441522
+      },
+      {
+        "filename": "batch_upto_20250814_11.lz4_1765108701.parquet",
+        "hour_suffix": 11,
+        "sha256": "90dc5d4360fbc3805ce6168e4f78ac7ec65678d21979fb344fe404d79607dcc4",
+        "size_bytes": 33754286
+      },
+      {
+        "filename": "batch_upto_20250814_12.lz4_1765108729.parquet",
+        "hour_suffix": 12,
+        "sha256": "7f9fe7b23e92dd683689de52a020be0b88754fa17aa7cf7de546b9aec58aa8b0",
+        "size_bytes": 178965935
+      },
+      {
+        "filename": "batch_upto_20250814_13.lz4_1765108768.parquet",
+        "hour_suffix": 13,
+        "sha256": "0e5b853c27c38bc599a3923ec4abeae1c971f3878fb3a546ed0bc66fa65b857d",
+        "size_bytes": 165146570
+      },
+      {
+        "filename": "batch_upto_20250814_14.lz4_1765108792.parquet",
+        "hour_suffix": 14,
+        "sha256": "d89481ea017aa8b171939633f9294bdd62d5827455fdcae7aa75a8fbe39cc1cb",
+        "size_bytes": 75920810
+      },
+      {
+        "filename": "batch_upto_20250814_15.lz4_1765108808.parquet",
+        "hour_suffix": 15,
+        "sha256": "07372958191cdea13ee51282d9a8f092c901fae67825e4b1bde82a2726b65d20",
+        "size_bytes": 59856627
+      },
+      {
+        "filename": "batch_upto_20250814_16.lz4_1765108824.parquet",
+        "hour_suffix": 16,
+        "sha256": "5264747479d676b011426b8c8f5a9dfce43dac58b5234e9b8cbd974a977ab26d",
+        "size_bytes": 72716365
+      },
+      {
+        "filename": "batch_upto_20250814_17.lz4_1765108839.parquet",
+        "hour_suffix": 17,
+        "sha256": "ce2a9bc49b687cb6424a8be9a5a57b9fa99a01453a3942dc0e7a7390ab038234",
+        "size_bytes": 43756913
+      },
+      {
+        "filename": "batch_upto_20250814_18.lz4_1765108852.parquet",
+        "hour_suffix": 18,
+        "sha256": "75d1bee380ecbdc0bfa437c092c71b259e24bc80ba16a9505b14bc76298d6583",
+        "size_bytes": 41546532
+      },
+      {
+        "filename": "batch_upto_20250814_19.lz4_1765108864.parquet",
+        "hour_suffix": 19,
+        "sha256": "7950f68511cfcb98204761a23c78b9602d3b25f0f15d90ffaf3c5ea943b83e6d",
+        "size_bytes": 33571313
+      },
+      {
+        "filename": "batch_upto_20250814_20.lz4_1765108887.parquet",
+        "hour_suffix": 20,
+        "sha256": "fe07ac6c466914df45229a187a780c3c0cb982626ed9539d81a8e61cb03a960f",
+        "size_bytes": 33583052
+      },
+      {
+        "filename": "batch_upto_20250814_21.lz4_1765108902.parquet",
+        "hour_suffix": 21,
+        "sha256": "16d6cc5bf196f83137d25273cc25728943120ec5acbec4dc67bcd0fefb350f7e",
+        "size_bytes": 67666766
+      },
+      {
+        "filename": "batch_upto_20250814_22.lz4_1765108920.parquet",
+        "hour_suffix": 22,
+        "sha256": "e16f4379ddff9940555c431b6227b1bd0d6534b2dcf3332a63bc4f57e17e4c62",
+        "size_bytes": 35153459
+      },
+      {
+        "filename": "batch_upto_20250814_23.lz4_1765108932.parquet",
+        "hour_suffix": 23,
+        "sha256": "d44dc626795eebdcc407747991f83f88f4286ba40de65cb77d3c7a98ef72b29c",
+        "size_bytes": 30437999
+      }
+    ],
+    "20250918": [
+      {
+        "filename": "batch_upto_20250918_0.lz4_1765114808.parquet",
+        "hour_suffix": 0,
+        "sha256": "d011706b4d02be6712e12d920ceb13529c7bfafc34abab1bc7be8cc54ca55ebb",
+        "size_bytes": 48304973
+      },
+      {
+        "filename": "batch_upto_20250918_1.lz4_1765114818.parquet",
+        "hour_suffix": 1,
+        "sha256": "f9d46943c65318137d0cda16a20bb36b599688c58be5cadf34d5e28d64778930",
+        "size_bytes": 50174213
+      },
+      {
+        "filename": "batch_upto_20250918_2.lz4_1765114948.parquet",
+        "hour_suffix": 2,
+        "sha256": "8a5ec6e0fe087aae4b919f104ccc6c78e47d94028e42f756f558816e46c8f31d",
+        "size_bytes": 47070696
+      },
+      {
+        "filename": "batch_upto_20250918_3.lz4_1765115001.parquet",
+        "hour_suffix": 3,
+        "sha256": "e5ae2f98e7e337f175876ff3b5ae5d51f23aeff08703a6b7f61878e8bde1917b",
+        "size_bytes": 61657949
+      },
+      {
+        "filename": "batch_upto_20250918_4.lz4_1765115013.parquet",
+        "hour_suffix": 4,
+        "sha256": "6ea90c385c1df42712b861634b9e9d2fa7a90ad01d83d336fda4ea01883e971d",
+        "size_bytes": 47646477
+      },
+      {
+        "filename": "batch_upto_20250918_5.lz4_1765115024.parquet",
+        "hour_suffix": 5,
+        "sha256": "67d426305b9a5b134f99c03ba5b8b05522eb7f41dec73351a621a1aa372abb5a",
+        "size_bytes": 42313158
+      },
+      {
+        "filename": "batch_upto_20250918_6.lz4_1765115034.parquet",
+        "hour_suffix": 6,
+        "sha256": "2bbc6d9b4a8e70833973151e326eefc272577c2639311df20fb4f37db5e14ee1",
+        "size_bytes": 46625469
+      },
+      {
+        "filename": "batch_upto_20250918_7.lz4_1765115044.parquet",
+        "hour_suffix": 7,
+        "sha256": "5616f6a36477653daefdfa85f334a872b7fa25ceb69e68e8e42714a8ac73077e",
+        "size_bytes": 45385758
+      },
+      {
+        "filename": "batch_upto_20250918_8.lz4_1765115055.parquet",
+        "hour_suffix": 8,
+        "sha256": "80dd7db79d0e19d3c13226055503484104334c6cd7f5176310cd87a323eda308",
+        "size_bytes": 53290716
+      },
+      {
+        "filename": "batch_upto_20250918_9.lz4_1765115066.parquet",
+        "hour_suffix": 9,
+        "sha256": "8416b31b86731278f220cca6e4bb96e273a3a8340fffef797bb73b68fd9509b4",
+        "size_bytes": 43380921
+      },
+      {
+        "filename": "batch_upto_20250918_10.lz4_1765114829.parquet",
+        "hour_suffix": 10,
+        "sha256": "52066af60fa05b8ea91fef6f1e0c6a669e6ca889c00443cf62e0ba67df51edea",
+        "size_bytes": 41655489
+      },
+      {
+        "filename": "batch_upto_20250918_11.lz4_1765114839.parquet",
+        "hour_suffix": 11,
+        "sha256": "9c08a91a28747fe5115589fa5f1947b5ed7455e523f66cb0951ae88e119e6cea",
+        "size_bytes": 40103654
+      },
+      {
+        "filename": "batch_upto_20250918_12.lz4_1765114849.parquet",
+        "hour_suffix": 12,
+        "sha256": "1b5b89a2aa8316c2c97e114ea9bd7a62ce8bee0d9b3a438ec7ddef4dc563f96f",
+        "size_bytes": 42890185
+      },
+      {
+        "filename": "batch_upto_20250918_13.lz4_1765114860.parquet",
+        "hour_suffix": 13,
+        "sha256": "f9125e9352af52a594f2b0d82e22ee83926f8dad2d656e2f58efe363dd6387aa",
+        "size_bytes": 58831906
+      },
+      {
+        "filename": "batch_upto_20250918_14.lz4_1765114873.parquet",
+        "hour_suffix": 14,
+        "sha256": "34b02fe78e9cbfb100d1fc9951904c9c5337d7e0a9d66241855748e899e3d811",
+        "size_bytes": 57565649
+      },
+      {
+        "filename": "batch_upto_20250918_15.lz4_1765114886.parquet",
+        "hour_suffix": 15,
+        "sha256": "8180b1e1ced6958e35529cc0ecbf65dc9f555a8c3a461f2060579595b19e0888",
+        "size_bytes": 50686306
+      },
+      {
+        "filename": "batch_upto_20250918_16.lz4_1765114897.parquet",
+        "hour_suffix": 16,
+        "sha256": "b66d749f57b194a7a6a6daf89d852717c6f33c62c458358825e4f44430a45854",
+        "size_bytes": 48936619
+      },
+      {
+        "filename": "batch_upto_20250918_17.lz4_1765114909.parquet",
+        "hour_suffix": 17,
+        "sha256": "2dcae5056c41503c7bbe9a87b98e6a39a32fd60c512dbed932c20586f4d3b601",
+        "size_bytes": 55511069
+      },
+      {
+        "filename": "batch_upto_20250918_18.lz4_1765114921.parquet",
+        "hour_suffix": 18,
+        "sha256": "ea5b0e12469ac3b5f19999221b60fd1aa5780e4d4efd65b3421c87011219d69b",
+        "size_bytes": 51969118
+      },
+      {
+        "filename": "batch_upto_20250918_19.lz4_1765114937.parquet",
+        "hour_suffix": 19,
+        "sha256": "d8f0f9373edfb2197608632822c74ee30d95f0ad40f0a66626846b1ca40c5e63",
+        "size_bytes": 52255238
+      },
+      {
+        "filename": "batch_upto_20250918_20.lz4_1765114960.parquet",
+        "hour_suffix": 20,
+        "sha256": "4c7b3800e5550b2636345f7370f41a634efdb84592a9cc68db0abd3b967cd71a",
+        "size_bytes": 43628119
+      },
+      {
+        "filename": "batch_upto_20250918_21.lz4_1765114970.parquet",
+        "hour_suffix": 21,
+        "sha256": "089b5305ac888d6bc07dee720050bcccc07d6ce67f3472461a81d38658a32829",
+        "size_bytes": 36649120
+      },
+      {
+        "filename": "batch_upto_20250918_22.lz4_1765114979.parquet",
+        "hour_suffix": 22,
+        "sha256": "84059cb3c154809417361c37bde4b255221654486260c59b9201b366b3f3b653",
+        "size_bytes": 34073703
+      },
+      {
+        "filename": "batch_upto_20250918_23.lz4_1765114989.parquet",
+        "hour_suffix": 23,
+        "sha256": "f27172bdfeec8b9a45e02c29568fcff70b91df203a4503913352330b9e3ed203",
+        "size_bytes": 40084565
+      }
+    ],
+    "20250925": [
+      {
+        "filename": "batch_upto_20250925_0.lz4_1765116560.parquet",
+        "hour_suffix": 0,
+        "sha256": "3b3f5cab490646413320a756822f396c04f99b27f55fd65ce3d70a5901486496",
+        "size_bytes": 32916228
+      },
+      {
+        "filename": "batch_upto_20250925_1.lz4_1765116571.parquet",
+        "hour_suffix": 1,
+        "sha256": "4871851545f5ca0aeda601ee40b414ef8de496576d93cab84cc0ebe3e020c8dc",
+        "size_bytes": 43282038
+      },
+      {
+        "filename": "batch_upto_20250925_2.lz4_1765116742.parquet",
+        "hour_suffix": 2,
+        "sha256": "79a141290d574792efa08b7f9cf567d2035f8b0dc3e03174f7d86854be025e0b",
+        "size_bytes": 44779557
+      },
+      {
+        "filename": "batch_upto_20250925_3.lz4_1765116815.parquet",
+        "hour_suffix": 3,
+        "sha256": "32385d5f0693feee528d1845459101e9d5d5fd4f48e14140db2054424106d4a4",
+        "size_bytes": 57983530
+      },
+      {
+        "filename": "batch_upto_20250925_4.lz4_1765116833.parquet",
+        "hour_suffix": 4,
+        "sha256": "1009f1838a4b45a9cc6ae15c19862288d93f0c22a4ab42dbc6090e3d81f2a5a0",
+        "size_bytes": 75016788
+      },
+      {
+        "filename": "batch_upto_20250925_5.lz4_1765116847.parquet",
+        "hour_suffix": 5,
+        "sha256": "2cc802ef3488dbafc7058bdd0c39f34b61d7497132523199e4d8a18a0da46577",
+        "size_bytes": 45101362
+      },
+      {
+        "filename": "batch_upto_20250925_6.lz4_1765116858.parquet",
+        "hour_suffix": 6,
+        "sha256": "32891f4ebb44629a8b006b30d5708b0786444659fa936d5303591ba51fdf28ae",
+        "size_bytes": 42197595
+      },
+      {
+        "filename": "batch_upto_20250925_7.lz4_1765116869.parquet",
+        "hour_suffix": 7,
+        "sha256": "0ff141599ae1a4c5bc9cc09e202d298d2142c520856e5ab03d33a03d69402322",
+        "size_bytes": 42343374
+      },
+      {
+        "filename": "batch_upto_20250925_8.lz4_1765116880.parquet",
+        "hour_suffix": 8,
+        "sha256": "46a726ba232b46964250c634bca68a9f47518aa6c679f764f9900122b94756d3",
+        "size_bytes": 41998974
+      },
+      {
+        "filename": "batch_upto_20250925_9.lz4_1765116890.parquet",
+        "hour_suffix": 9,
+        "sha256": "6c71d3b2e38129baed9a9721033160e8947cb28742b622ed44d69f68fd43c016",
+        "size_bytes": 36623372
+      },
+      {
+        "filename": "batch_upto_20250925_10.lz4_1765116581.parquet",
+        "hour_suffix": 10,
+        "sha256": "40493beeb35d1ea315e3b4a1b45649ba57f80322f0575597e197b101a19dac46",
+        "size_bytes": 35389152
+      },
+      {
+        "filename": "batch_upto_20250925_11.lz4_1765116592.parquet",
+        "hour_suffix": 11,
+        "sha256": "e8369884c9d56f02015055efb73fb2a799a2313c15ea40c4920ad548bc8b6292",
+        "size_bytes": 45834166
+      },
+      {
+        "filename": "batch_upto_20250925_12.lz4_1765116606.parquet",
+        "hour_suffix": 12,
+        "sha256": "2b7b1c1c12c8b840644c98de6054cdffcedff1649bd6da48de7c9d2e1cc0637a",
+        "size_bytes": 80486779
+      },
+      {
+        "filename": "batch_upto_20250925_13.lz4_1765116624.parquet",
+        "hour_suffix": 13,
+        "sha256": "3ae66b49c2e62295b9a75f7d2bc2e7bd18067ba04557b4b60f85e924a3a34f28",
+        "size_bytes": 80794078
+      },
+      {
+        "filename": "batch_upto_20250925_14.lz4_1765116642.parquet",
+        "hour_suffix": 14,
+        "sha256": "b8a00c022442a934ba601625783e6ce066e9ca010517913bd3d680ff0a68697c",
+        "size_bytes": 70042318
+      },
+      {
+        "filename": "batch_upto_20250925_15.lz4_1765116658.parquet",
+        "hour_suffix": 15,
+        "sha256": "15d3ac71f8653f3944a8744507c1c5f02186158ee50c2eff21790834751f9a71",
+        "size_bytes": 67281518
+      },
+      {
+        "filename": "batch_upto_20250925_16.lz4_1765116674.parquet",
+        "hour_suffix": 16,
+        "sha256": "7e6df284cc26dc53d2c71da199b4a78feac687ebe576d22ad8cca432b9f169c3",
+        "size_bytes": 62489054
+      },
+      {
+        "filename": "batch_upto_20250925_17.lz4_1765116692.parquet",
+        "hour_suffix": 17,
+        "sha256": "a05b2ea668ffe1591b2e68f2b625432904729e8a319cbf00c600709e7b2e4b44",
+        "size_bytes": 100633995
+      },
+      {
+        "filename": "batch_upto_20250925_18.lz4_1765116713.parquet",
+        "hour_suffix": 18,
+        "sha256": "d778cdfae0cb63abfb8b2d87fd927ba0b0c95e2630b0b11f62b372a5aad3ca97",
+        "size_bytes": 83094691
+      },
+      {
+        "filename": "batch_upto_20250925_19.lz4_1765116728.parquet",
+        "hour_suffix": 19,
+        "sha256": "6f8a92bfcf532f8b050bdba154361748d1ea7a9861ea76653fc704fbf6b072bc",
+        "size_bytes": 54310620
+      },
+      {
+        "filename": "batch_upto_20250925_20.lz4_1765116755.parquet",
+        "hour_suffix": 20,
+        "sha256": "54a207c2bb9cc5e1a2e8bb90d620c8a198589de4f84346bd2c268f963d6a5296",
+        "size_bytes": 55521012
+      },
+      {
+        "filename": "batch_upto_20250925_21.lz4_1765116771.parquet",
+        "hour_suffix": 21,
+        "sha256": "82ce1a830b2735ff173902ecfe49313818eab858e85d5b972f6646bf4928902c",
+        "size_bytes": 51379576
+      },
+      {
+        "filename": "batch_upto_20250925_22.lz4_1765116784.parquet",
+        "hour_suffix": 22,
+        "sha256": "930c5ec52902d4663da0803703a8c5f822e5dd544cf4ddcbd31ab6533f6c1262",
+        "size_bytes": 50918127
+      },
+      {
+        "filename": "batch_upto_20250925_23.lz4_1765116799.parquet",
+        "hour_suffix": 23,
+        "sha256": "728dfa7056b23344e52618b6a7811888af056eddec86718bf29c8d47136b634f",
+        "size_bytes": 59899513
+      }
+    ],
+    "20251004": [
+      {
+        "filename": "batch_upto_20251004_0.lz4_1765118483.parquet",
+        "hour_suffix": 0,
+        "sha256": "0abd77a4d15d5dd4eb4bb95143a6099431bf6df6255f58bb5697486749e93c26",
+        "size_bytes": 30392140
+      },
+      {
+        "filename": "batch_upto_20251004_1.lz4_1765118492.parquet",
+        "hour_suffix": 1,
+        "sha256": "a476fec95a668a1cf6107325dc3ec0b1e979cbb675970d39552dfaeee5c170cb",
+        "size_bytes": 28743499
+      },
+      {
+        "filename": "batch_upto_20251004_2.lz4_1765118587.parquet",
+        "hour_suffix": 2,
+        "sha256": "e0b094263ff0e8bbe0a7a3b968b00a30a0fa8657590f4095b834f930d7e49f78",
+        "size_bytes": 26775437
+      },
+      {
+        "filename": "batch_upto_20251004_3.lz4_1765118618.parquet",
+        "hour_suffix": 3,
+        "sha256": "cf8f7088292026c82840884cb57479c454c689a0122c304a216c116306ddced7",
+        "size_bytes": 22426109
+      },
+      {
+        "filename": "batch_upto_20251004_4.lz4_1765118624.parquet",
+        "hour_suffix": 4,
+        "sha256": "832a0dee9be3f2cda7e8722618301776c72cd66032ef3a40e99a9f2069d18a50",
+        "size_bytes": 21926712
+      },
+      {
+        "filename": "batch_upto_20251004_5.lz4_1765118630.parquet",
+        "hour_suffix": 5,
+        "sha256": "80d1aebc883ea69c27fcdc79a7174338839e82232300c5ac04212321e86d99a0",
+        "size_bytes": 29576451
+      },
+      {
+        "filename": "batch_upto_20251004_6.lz4_1765118640.parquet",
+        "hour_suffix": 6,
+        "sha256": "6000a8363b5edd3d84671491b69de6604fd7ec85a203fed8719c09b74a4f462a",
+        "size_bytes": 32213143
+      },
+      {
+        "filename": "batch_upto_20251004_7.lz4_1765118648.parquet",
+        "hour_suffix": 7,
+        "sha256": "4484a3e189d801e6679ccadfceee282d8e5319bb37dec8de9c24294b373cdf39",
+        "size_bytes": 28189358
+      },
+      {
+        "filename": "batch_upto_20251004_8.lz4_1765118656.parquet",
+        "hour_suffix": 8,
+        "sha256": "8815fc69c252851b94c721d2edd6a2ee1fbd09c82b8433cee779b67962507f21",
+        "size_bytes": 38275272
+      },
+      {
+        "filename": "batch_upto_20251004_9.lz4_1765118665.parquet",
+        "hour_suffix": 9,
+        "sha256": "8310b71bac21f28763d5ca19ac22e9602734c457623e23eb3d8c7b4890bf526c",
+        "size_bytes": 26587821
+      },
+      {
+        "filename": "batch_upto_20251004_10.lz4_1765118499.parquet",
+        "hour_suffix": 10,
+        "sha256": "2efa2c827543ca775f6bace84926378f2b59fbb4b802f271e6704ba32b6d9f4e",
+        "size_bytes": 27788758
+      },
+      {
+        "filename": "batch_upto_20251004_11.lz4_1765118506.parquet",
+        "hour_suffix": 11,
+        "sha256": "fc21008c428b65458a6c09b649e9f2849f06d0127777a7f59aeed66f60ad3a21",
+        "size_bytes": 31295775
+      },
+      {
+        "filename": "batch_upto_20251004_12.lz4_1765118515.parquet",
+        "hour_suffix": 12,
+        "sha256": "1ed66a9a43a1d733abb30c89524940b8f275819e59df6786e235938c91f4a616",
+        "size_bytes": 29271712
+      },
+      {
+        "filename": "batch_upto_20251004_13.lz4_1765118524.parquet",
+        "hour_suffix": 13,
+        "sha256": "85bda370316ccd3e49270b01817b8008fd233558f6f05e47ed5be2a29e87b191",
+        "size_bytes": 34032173
+      },
+      {
+        "filename": "batch_upto_20251004_14.lz4_1765118533.parquet",
+        "hour_suffix": 14,
+        "sha256": "ad8d23c9adc11e7eee25e64ed14c06e602f36d6dd7c9f0e9189aede9179dc1cd",
+        "size_bytes": 32396566
+      },
+      {
+        "filename": "batch_upto_20251004_15.lz4_1765118544.parquet",
+        "hour_suffix": 15,
+        "sha256": "b86c2475aa3cf12d8cb524e7e28caeefcdbcc3a52cc1ba81cd3effdff6f1a1db",
+        "size_bytes": 42056420
+      },
+      {
+        "filename": "batch_upto_20251004_16.lz4_1765118555.parquet",
+        "hour_suffix": 16,
+        "sha256": "e1ee4cf4cba00759cac3766dbae31c5517e835592cfc813309281098c2c072f2",
+        "size_bytes": 34267809
+      },
+      {
+        "filename": "batch_upto_20251004_17.lz4_1765118564.parquet",
+        "hour_suffix": 17,
+        "sha256": "45a7e1073ca9a7f579d607f258920ae4d53ac1c15780f65a11bdb92e8db2a0fa",
+        "size_bytes": 26328007
+      },
+      {
+        "filename": "batch_upto_20251004_18.lz4_1765118572.parquet",
+        "hour_suffix": 18,
+        "sha256": "3c4a4ea5c558641c5d54d5e3453c0893423848fd35e5b2ee0021167ce10a61ac",
+        "size_bytes": 26642041
+      },
+      {
+        "filename": "batch_upto_20251004_19.lz4_1765118582.parquet",
+        "hour_suffix": 19,
+        "sha256": "95ecd86f2369feb8aade408442117bb63044f498a7d6b69586abecc1159c2cfa",
+        "size_bytes": 22731151
+      },
+      {
+        "filename": "batch_upto_20251004_20.lz4_1765118594.parquet",
+        "hour_suffix": 20,
+        "sha256": "6f19cefa52fae650c684fcdfca714f79ea05731813d654a605c1782a5de34f6d",
+        "size_bytes": 24680849
+      },
+      {
+        "filename": "batch_upto_20251004_21.lz4_1765118600.parquet",
+        "hour_suffix": 21,
+        "sha256": "c1edb01d8ca63847d3bbc626dbf45d3a73f6a4c495f30263774c4c21845e76b6",
+        "size_bytes": 23564271
+      },
+      {
+        "filename": "batch_upto_20251004_22.lz4_1765118606.parquet",
+        "hour_suffix": 22,
+        "sha256": "d30491194e7490564b31d2aafb600e096fb66d17544a9c8d7cd66b212218f3b0",
+        "size_bytes": 20379671
+      },
+      {
+        "filename": "batch_upto_20251004_23.lz4_1765118612.parquet",
+        "hour_suffix": 23,
+        "sha256": "b5ad5e12914ce9ca2a4ca0f0bd5687c25fc3178361b7a0f37ce81c96710714bb",
+        "size_bytes": 20265921
+      }
+    ]
+  },
+  "selection": "complete 0-23 batch-hour suffixes from metadata; Aug 14 and Oct 4 bracket Sep 18 and Sep 25",
+  "source": "gionuibk/hyperliquid-node-fills-by-block"
+}
