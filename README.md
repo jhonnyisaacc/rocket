@@ -17,6 +17,13 @@ python3 -m venv .venv
 .venv/bin/pytest -q -m 'not integration'
 ```
 
+Daily macro check and the 2024-10 to 2026-09 backtest: [docs/market_check.md](docs/market_check.md).
+
+```bash
+.venv/bin/rocket market-check run --panel data/market_check/panel.json
+.venv/bin/rocket market-check backtest --panel data/market_check/panel.json
+```
+
 Secrets come from the process environment (existing names). Rocket never deletes or rewrites them. Callers pass private state paths explicitly.
 
 ## Research data

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 
+from rocket.market_check.workflow import MarketCheckWorkflow
 from rocket.models import (
     Mode,
     OperationalStatus,
@@ -27,6 +28,8 @@ from rocket.workflows.watch import WatchWorkflow
 WORKFLOWS: dict[str, type] = {
     "fixture.scan": FixtureWorkflow,
     "macro": MacroWorkflow,
+    "market_check": MarketCheckWorkflow,
+    "market_check.backtest": MarketCheckWorkflow,
     "cava": CavaWorkflow,
     "watch.check": WatchWorkflow,
     "portfolio.review": PortfolioWorkflow,

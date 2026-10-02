@@ -1,5 +1,6 @@
 """Research workflows. Each returns a ResearchResult."""
 
+from rocket.market_check.workflow import MarketCheckWorkflow
 from rocket.workflows.cava import CavaWorkflow
 from rocket.workflows.crypto import CryptoWorkflow
 from rocket.workflows.disclosures import DisclosureWorkflow
@@ -19,6 +20,7 @@ __all__ = [
     "FixtureWorkflow",
     "IsmWorkflow",
     "MacroWorkflow",
+    "MarketCheckWorkflow",
     "MemecoinWorkflow",
     "OptionsWorkflow",
     "PortfolioWorkflow",

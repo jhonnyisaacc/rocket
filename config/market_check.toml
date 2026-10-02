@@ -1,0 +1,283 @@
+# Daily macro market check and backtest parameters.
+# One file on purpose. v3 is the live rule. v1 and v2 stay here so the
+# comparison can be rerun. Buy-the-low cuts were chosen on the in-sample half.
+
+[model]
+version = "v6"
+# v1 only: weighted pillar total at or below this is risk-off.
+v1_risk_off_max = -2.0
+# v4 cash policy, chosen on the in-sample half and not moved after out of sample.
+# band: 35-45% Porto band unless VIX>=25 and credit has widened 40bp.
+# light: that same combo is the only large raise; other stress is a 27.5% caution
+# with adds paused. Puts follow the same in-sample choice.
+v4_caution = "band"
+v4_light_cash = 0.275
+v4_puts = false
+# v6 FINAL rule (frozen after 43 walk-forward experiments; see
+# docs/market_check/EXPERIMENTS.md). Version-gated so v1-v4 rerun bit-identical.
+v6_credit_widen = 0.50
+v6_hold_cash = 0.30
+v6_stop = 0.15
+v6_take = 0.30
+
+[window]
+start = 2024-10-01
+end = 2026-09-30
+oos_start = 2025-10-01
+# Ondo tokenized US stocks on Solana. Earlier sessions use the underlying as a proxy.
+ondo_live = 2025-09-02
+warmup_start = 2023-01-01
+
+[windows]
+trend = 20
+shock = 5
+rv = 20
+sma_fast = 50
+sma_slow = 200
+funding_days = 7
+range_lookback = 252
+soft_patch = 30
+index_bounce_lookback = 5
+
+[rollup]
+# Mean of sub-scores in {green=+1, yellow=0, red=-1}.
+green_min = 0.34
+red_max = -0.34
+
+[regime]
+# Pillar total (green positive). Risk-on still uses this. Risk-off does not:
+# a level rule fired once in two years and missed the April 2025 selloff.
+risk_on_min = 2.0
+min_pillars = 4
+
+[regime.weights]
+rates = 1.5
+credit = 1.25
+volatility = 1.25
+crypto = 1.0
+oil = 0.75
+dollar_gold = 0.75
+
+# Stress score, higher means worse. Points are 0, 1, or 2 from round economic cuts
+# (a 6-point VIX jump, 40bp of credit widening, a 35bp 30y backup, an 8% oil
+# shock, a 15% BTC drawdown). Families are capped so one market cannot fill the
+# whole score. Hysteresis: enter risk-off at 4, leave it below 2; enter caution
+# at 2, leave it below 1. These cuts were checked against in-sample episodes
+# only (through the out-of-sample split). They were not moved to improve P&L.
+[regime.stress]
+vix_jump_sessions = 5
+vix_jump_caution = 6.0
+vix_jump_risk = 10.0
+vix_level_caution = 25.0
+vix_level_risk = 35.0
+vix_cap = 3
+credit_sessions = 20
+credit_widen_caution = 0.40
+credit_widen_risk = 0.80
+yield_sessions = 20
+yield_caution = 0.35
+yield_risk = 0.50
+yield_breakout_sessions = 60
+yield_breakout_min_change = 0.20
+yield_cap = 2
+oil_sessions = 5
+oil_caution = 0.05
+oil_risk = 0.08
+btc_roc_sessions = 10
+btc_roc_caution = -0.12
+btc_roc_risk = -0.18
+btc_dd_sessions = 60
+btc_dd_caution = -0.15
+btc_dd_risk = -0.25
+btc_cap = 2
+enter_risk_off = 4.0
+exit_risk_off = 2.0
+enter_caution = 2.0
+exit_caution = 1.0
+# Reporting only. Not used to choose the score.
+spy_drawdown = 0.08
+btc_drawdown = 0.15
+lead_sessions = 10
+
+# Buy-the-low. In sample, a VIX fade while SPY was only 8-10% off its high
+# (March 2025) failed, and the real low was still about 12% down when VIX
+# first fell off a spike of 25 or more. Credit did not tighten until weeks
+# after that low, so it is not an entry. These cuts were not moved to catch
+# the later, shallower dip.
+[redeploy]
+spy_drawdown = 0.12
+vix_spike = 25.0
+vix_fade_sessions = 5
+spike_lookback = 10
+peak_lookback = 60
+name_drawdown = 0.10
+rebound_sessions = 5
+tranches = 3
+gap_days = 3
+episode_gap_days = 15
+cash_target = 0.35
+btc_drawdown = 0.10
+hold_sessions = 15
+quality = ["MSFT", "META", "AMZN", "EQIX"]
+high_beta = ["TSLA", "FCX", "BAC", "ETN", "CAT", "APH", "AMAT"]
+
+# Calendar-day publication lag. A print dated D is visible only on dates >= D+lag.
+# Equity, crypto, VIX, oil, dollar, gold, yields, DVOL and funding stay at 0
+# (same-close assumption, documented in the report). Credit OAS and EFFR
+# are treated as next-day prints.
+[lags_calendar_days]
+hy_oas = 1
+ig_oas = 1
+fed_funds = 1
+
+[pillars.rates]
+yield_10y_green_max = 4.0
+yield_10y_red_min = 4.75
+yield_30y_green_max = 4.25
+yield_30y_red_min = 5.0
+# 20-session change in the yield, in percentage points (0.15 = 15bp).
+trend_abs = 0.15
+# 10y minus 2y. Below invert_red is an inversion. Above stress_red while the
+# 10y is already red is a term-premium blowout, not a healthy steepener.
+curve_invert_red = -0.25
+curve_stress_red = 1.50
+curve_healthy_max = 1.25
+# 2y minus fed funds. Futures odds are not available historically.
+hike_spread_red = 0.40
+cut_spread_green = -0.40
+
+[pillars.oil]
+wti_green_max = 75.0
+wti_red_min = 90.0
+brent_green_max = 80.0
+brent_red_min = 95.0
+momentum_red = 0.08
+momentum_green = -0.05
+# 5-session WTI jump that blocks Porto adds.
+shock_return = 0.08
+
+[pillars.volatility]
+vix_green_max = 18.0
+vix_red_min = 25.0
+# MOVE is not on a free historical feed. Proxy: 20-day annualized realized
+# volatility of TLT. Thresholds are TLT vol, not MOVE index points.
+tlt_rv_green_max = 0.12
+tlt_rv_red_min = 0.20
+
+[pillars.credit]
+# FRED BAMLH0A0HYM2, percent (3.5 = 350bp OAS).
+hy_green_max = 3.5
+hy_red_min = 5.0
+hy_widen_red = 0.40
+hy_tighten_green = -0.20
+# Used only when the OAS series is missing: 20-session HYG/LQD return.
+hyg_lqd_red = -0.02
+hyg_lqd_green = 0.01
+
+[pillars.dollar_gold]
+dxy_trend_red = 0.015
+dxy_trend_green = -0.015
+gold_stress = 0.06
+
+[pillars.crypto]
+dvol_cheap_max = 45.0
+dvol_expensive_min = 65.0
+# Sum of hourly funding over the lookback, as a fraction of notional.
+funding_hot = 0.002
+funding_cold = -0.001
+funding_panic = -0.003
+
+[portfolio]
+cash_risk_on = 0.35
+cash_neutral = 0.40
+# Between neutral and risk-off. Caution raises dry powder without the full sleeve.
+cash_caution = 0.42
+cash_risk_off = 0.45
+cash_strength_bump = 0.05
+cash_ceiling = 0.45
+cash_tolerance = 0.02
+initial_cash = 0.40
+megacap_bounce = 0.05
+cyclical_bounce = 0.08
+hard_down_return = -0.01
+index_bounce_min = 0.005
+half_trim = 0.50
+light_trim = 0.25
+tranche_nav = 0.02
+min_days_between_adds = 5
+# Daily bars are regular-hours closes, so the hours gate passes.
+assume_regular_hours = true
+core = ["MSFT", "META", "FCX", "BAC", "AMZN", "EQIX", "TSLA"]
+megacaps = ["META", "MSFT", "EQIX", "AMZN"]
+cyclicals = ["TSLA", "FCX", "BAC"]
+sale_order = ["TSLA", "FCX", "BAC", "META", "EQIX", "MSFT", "AMZN"]
+half_names = ["META", "EQIX", "MSFT"]
+light_names = ["AMZN"]
+add_names = ["ETN", "CAT", "APH", "AMAT"]
+# Bottom fraction of the trailing range is the buy zone. Adds only in its lower half.
+buy_zone_fraction = 0.25
+
+[costs]
+# 0.3% per stock trade each way: fill worsened by half the round trip
+# (commission plus Ondo spread/slippage proxy).
+equity_slippage_bps = 30.0
+perp_fee_bps = 4.0
+perp_slippage_bps = 2.0
+option_fee_bps_underlying = 3.0
+# Added to entry IV only (a worse fill). Marks use unslipped IV.
+option_iv_slippage = 0.005
+
+[derivatives]
+stop = 0.08
+# v5 only: exit decided at this fraction above the entry fill. 0 disables.
+profit_take = 0.0
+long_size = 1.0
+long_size_below_fast = 0.5
+short_size = 0.5
+short_size_below_slow_only = 0.25
+put_otm = 0.15
+put_tenor_days = 60
+cheap_vol_event_days = 10
+# A short perp is already the bearish expression. Do not also buy puts.
+put_with_short = false
+fallback_rate = 0.0
+
+[phillip]
+names = ["SPCX", "BE", "EQIX", "ETN", "CAT", "VST", "APH", "CRWD", "AMAT", "MRVL", "DDOG"]
+zone_fraction = 0.25
+raise_risk_on = 0.03
+lower_risk_off = 0.05
+closest_count = 5
+
+[events]
+horizon_days = 14
+# Decision dates (second day of the meeting). Static schedule, not a live Fed feed.
+fomc = [
+    2024-01-31, 2024-03-20, 2024-05-01, 2024-06-12, 2024-07-31, 2024-09-18, 2024-11-07, 2024-12-18,
+    2025-01-29, 2025-03-19, 2025-05-07, 2025-06-18, 2025-07-30, 2025-09-17, 2025-10-29, 2025-12-10,
+    2026-01-28, 2026-03-18, 2026-04-29, 2026-06-17, 2026-07-29, 2026-09-16, 2026-10-28, 2026-12-09,
+    2027-01-27, 2027-03-17,
+]
+
+[scorecard]
+within_days = 21
+
+[current_book]
+as_of = 2026-09-30
+nav_usd = 798.0
+note = "Snapshot only. No cost basis exists before 2026-09-15, so the backtest does not replay this book."
+
+[current_book.weights]
+MSFT = 0.156
+META = 0.155
+FCX = 0.144
+BAC = 0.131
+AMZN = 0.129
+EQIX = 0.125
+USDC = 0.156
+
+[[current_book.trades]]
+date = 2026-09-23
+ticker = "TSLA"
+side = "sell"
+note = "sold all TSLA; the only logged real trade"

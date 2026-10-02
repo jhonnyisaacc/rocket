@@ -8,4 +8,5 @@ dist/
 build/
 .env
 .rocket/
+data/market_check/raw/
 *.parquet
