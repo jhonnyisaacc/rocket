@@ -55,3 +55,12 @@ failed trading rules. No fabricated independent approval is recorded. Preserve
 its admission restrictions for those families. Historical walk-forward is
 research development, not a pristine final validation. Final validation is
 prospective; no ETH/SOL expansion or slow-context rescue is admitted.
+
+## Reconciliation continuation
+
+The later user-authorized pass reconciles PR #50 against the unchanged
+MOM-000 contract; see [replication report](REPLICATION_REPORT.md). The primary
+STOP and closed MOM-001 remain. The separately requested [MOM-002 proposal](MOM_002_PROPOSAL.md)
+is complete and PENDING_INDEPENDENT_REVIEW, with zero predictive trials. No
+scoring or automatic successor is authorized. Its terminal gate closes this
+candidate-based BTC line on failure; it cannot rescue the binary experiment.

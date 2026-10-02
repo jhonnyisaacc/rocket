@@ -54,7 +54,10 @@ labels and gated conditional prediction. Experiment 0 failed its independent
 sample gate; no predictive model or execution is admitted. See the
 [final report](docs/research/momentum/MOMENTUM_FINAL_REPORT.md),
 [historical negative evidence](docs/research/momentum/EVIDENCE_AUDIT.md) and
-[prospective collection](docs/research/momentum/PROSPECTIVE_OPERATIONS.md).
+[prospective collection](docs/research/momentum/PROSPECTIVE_OPERATIONS.md),
+[PR #50 replication](docs/research/momentum/REPLICATION_REPORT.md) and the
+[unscored MOM-002 proposal](docs/research/momentum/MOM_002_PROPOSAL.md), pending
+independent review.
 The staged crypto scan remains an operational research readout; its older
 futures artifacts preserve evidence and do not define a competing active
 momentum experiment roadmap.

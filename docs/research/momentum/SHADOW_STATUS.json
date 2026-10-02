@@ -1,8 +1,13 @@
 {
-  "audited_at": 1790972367836,
+  "audited_at": 1790976098961,
   "forecast_records": 2,
   "outcome_records": 0,
   "source_blobs_verified": 1,
+  "forecast_source_blobs_verified": 1,
+  "outcome_source_blobs_verified": 0,
+  "outcome_records_replayed": 0,
+  "outcome_records_without_source_receipt": 0,
+  "outcome_receipt_integrity": "PENDING_NO_OUTCOMES",
   "forecast_ids": [
     "140d49c35c0c7c04d1fe55b80e2b5372aadf04b2f9bbe91269c058813ade7427",
     "41f51acdcf36e58e321c73731c36c3c78bea46a4d0ed17f31a94a5be95830a24"
@@ -19,7 +24,39 @@
   "model_versions": [
     "UNTRAINED"
   ],
+  "feature_schema_versions": [
+    "price-market-v1",
+    "price-market-v2"
+  ],
+  "code_commits": [
+    "56688295a5554723bcd87cb848e577ff3b87829d",
+    "c6458e38d4ea1c336733e6c7fd25b7a620e078a6"
+  ],
+  "forecasts_without_code_tree_sha256": 1,
+  "utc_cutoff_hours": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "scheduled_decision_lag_ms": 300000,
   "integrity": "VERIFIED",
+  "immutable_triggers_verified": [
+    "forecast_delete",
+    "forecast_update",
+    "outcome_delete",
+    "outcome_update"
+  ],
   "automation_id": "btc-momentum-prospective-shadow",
-  "automation_state": "CONFIGURED_ACTIVE_NOT_YET_SUSTAINED_VALIDATION"
+  "automation_state": "NOT_VERIFIED_BY_JOURNAL_AUDIT",
+  "automation_config_audit": {
+    "status": "ACTIVE",
+    "rrule": "FREQ=DAILY;BYHOUR=1,5,9,13,17,21;BYMINUTE=2;BYSECOND=0",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "target_thread_id": "01a0fe33-e6f9-7bf0-b373-b4a2e3675e86",
+    "evidence": "local automation.toml read; journal command does not inspect scheduler state"
+  },
+  "journal_sha256": "705753758109e3bf71028904f2a88f729907d39c8b008e14b6847e5b10208cf2"
 }

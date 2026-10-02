@@ -99,7 +99,9 @@ def collect(root: Path, *, mode="scheduled", now_fn=clock_ms, fetch=None, commit
     candidate = None
     if view.direction:
         previous = snapshot(bars, decision, cutoff - FOUR_HOURS, prospective=True)
-        if previous.state != "UNKNOWN" and previous.direction != view.direction:
+        # The frozen historical scan resets active to None on UNKNOWN. The
+        # first valid active decision after warmup/a gap therefore is a crossing.
+        if previous.direction != view.direction:
             key = {"cutoff": cutoff, "direction": view.direction, "generator": CONTRACT}
             candidate = asdict(
                 CandidateEvent(
