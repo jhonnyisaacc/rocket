@@ -198,3 +198,15 @@ Canonical references: [research plan](MOMENTUM_RESEARCH.md),
 [event contract](MOMENTUM_EVENT_CONTRACT.md), [data audit](MOMENTUM_DATA_AUDIT.md),
 [ledger](MOMENTUM_EXPERIMENTS.md), [frontier](MOMENTUM_FRONTIER.md),
 [prospective operations](PROSPECTIVE_OPERATIONS.md).
+
+## Branch hygiene incident and repair
+
+The checkout had push.default=upstream; creating the branch from origin/main
+inherited main as its upstream. An initial source-only push therefore sent
+83efd92 to main. This was immediately restored atomically to the verified
+pre-task 09d71503906345c194778ecf951dc3a06f2b42cc using an exact lease on
+83efd92f60dbd731af263433784f05822c73ea31, while creating the intended remote
+feat/momentum-refactor-codex branch. Remote refs were checked after repair;
+no intervening third-party commits were removed. The branch now tracks its
+own remote ref. Subsequent pushes use an explicit destination ref. This is
+an operational mistake/repair, not a scientific amendment or a trial.
