@@ -57,3 +57,5 @@ to persistent failures/integrity conflicts. It runs deterministic commands;
 an LLM supplies neither the candidate nor a probability. Desktop/scheduler
 uptime and public network access are operational dependencies. No live market
 alert or trade authorization is implied by this collection.
+
+Final committed v2 collector was also executed against a real receipt at 2026-10-02T20:19:06.108000+00:00. Both startup records retain distinct identities; the v1 original is unchanged. The current journal contains two startup snapshots and no mature candidate outcomes; scheduled continuity is still pending.
