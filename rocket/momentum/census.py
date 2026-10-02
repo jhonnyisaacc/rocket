@@ -55,7 +55,7 @@ def concentration(weights):
     }
 
 
-def segment_legs(bars, events):
+def segment_legs(bars, events, *, audit=None):
     """Ex-post directional-change diagnostics; NEVER used for candidate labels/features."""
     scales = []
     for i, b in enumerate(bars):
@@ -63,11 +63,29 @@ def segment_legs(bars, events):
         scales.append(s.sigma * math.sqrt(42) if s.sigma else None)
     valid = [i for i, s in enumerate(scales) if s]
     if not valid:
+        if audit is not None:
+            audit.update(
+                algorithm="closed-4h-extremum-scale-v1",
+                completed_legs=0,
+                gap_censored_legs=[],
+                censored_tail=None,
+            )
         return []
     lo = hi = anchor = valid[0]
     direction, finished = 0, []
+    gap_censored = []
     for i in range(valid[0] + 1, len(bars)):
         if scales[i] is None:
+            if audit is not None and direction:
+                gap_censored.append(
+                    {
+                        "direction": direction,
+                        "start": bars[anchor].end_time,
+                        "extremum": bars[hi if direction == 1 else lo].end_time,
+                        "gap_observed_at": bars[i].end_time,
+                        "censored": True,
+                    }
+                )
             direction, lo, hi, anchor = 0, i, i, i
             continue
         price = bars[i].close
@@ -92,6 +110,37 @@ def segment_legs(bars, events):
             elif math.log(price / bars[lo].close) >= scales[lo]:
                 finished.append((anchor, lo, -1, i))
                 direction, anchor, hi = 1, lo, i
+    if audit is not None:
+        audit.update(
+            algorithm="closed-4h-extremum-scale-v1",
+            completed_legs=len(finished),
+            completed_leg_geometry=[
+                {
+                    "start": bars[start].end_time,
+                    "end": bars[end].end_time,
+                    "direction": side,
+                    "start_price": bars[start].close,
+                    "extremum_price": bars[end].close,
+                    "anchor_scale_S": scales[start],
+                    "extremum_reversal_scale_S": scales[end],
+                    "magnitude_log": side * math.log(bars[end].close / bars[start].close),
+                    "large": side * math.log(bars[end].close / bars[start].close)
+                    >= 2 * scales[start],
+                    "reversal_observed_at": bars[reversal].end_time,
+                    "censored": False,
+                }
+                for start, end, side, reversal in finished
+            ],
+            gap_censored_legs=gap_censored,
+            censored_tail={
+                "direction": direction,
+                "start": bars[anchor].end_time,
+                "extremum": bars[hi if direction == 1 else lo].end_time,
+                "censored": True,
+            }
+            if bars and direction
+            else None,
+        )
     legs = []
     for start, end, side, reversal in finished:
         scale = scales[start]
@@ -271,7 +320,9 @@ def run(root: Path, output: Path):
         "eligible_decisions": eligible,
         "candidate_crossings": len(events),
         "independent_candidates": len(independent),
-        "overlap_components": len(interval_groups(events)),
+        "overlap_components_7d": len(interval_groups(events, 7 * DAY)),
+        "overlap_components_14d": len(interval_groups(events, 14 * DAY)),
+        "overlap_interval_convention": "closed [decision_time, data_cutoff+horizon]; touching connects",
         "usable_years": years,
         "sides": sides,
         "sensitivity": sensitivity,
@@ -316,7 +367,8 @@ def run(root: Path, output: Path):
                 for k in (
                     "candidate_crossings",
                     "independent_candidates",
-                    "overlap_components",
+                    "overlap_components_7d",
+                    "overlap_components_14d",
                     "gate",
                     "feasibility_checks",
                 )

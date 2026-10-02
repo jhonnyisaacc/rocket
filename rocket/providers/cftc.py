@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
 from collections.abc import Mapping
 from datetime import UTC, datetime
@@ -11,6 +12,7 @@ from typing import Any
 import httpx
 
 from rocket.models import OperationalStatus
+from rocket.pit import Availability, PointInTime, iso, parse_datetime
 from rocket.providers.protocols import ProviderResult
 
 CFTC_FUTURES_URL = "https://www.cftc.gov/dea/futures/deacmelf.htm"
@@ -19,6 +21,12 @@ MARKET_NAMES = {
     "ETH": "ETHER CASH SETTLED - CHICAGO MERCANTILE EXCHANGE",
 }
 STALE_AFTER_DAYS = 14
+HISTORY_METADATA = {
+    "history_kind": "CURRENT_REPORTED_LATEST_REPORT",
+    "historical_pit": False,
+    "historical_available_at": None,
+    "vintage_id": None,
+}
 
 
 def _positions_line(block: list[str]) -> str:
@@ -96,6 +104,12 @@ def parse_cftc_report(html: str) -> dict[str, dict[str, Any]]:
             "bias": bias_from_speculator_pct(pct_oi),
             "as_of_date": as_of.date().isoformat() if as_of else None,
             "release_date": None,
+            "event_time": iso(as_of),
+            "event_time_precision": "date",
+            "available_at": None,
+            "ingested_at": None,
+            "availability_basis": "publication timestamp absent from current report",
+            **HISTORY_METADATA,
             "source": "cftc_direct",
         }
     return markets
@@ -124,11 +138,19 @@ def regime_from_markets(markets: Mapping[str, Mapping[str, Any]]) -> str:
 def fetch_cftc_direct(*, http: httpx.Client | None = None) -> ProviderResult:
     owns = http is None
     client = http or httpx.Client(timeout=30.0, headers={"User-Agent": "rocket-research"}, follow_redirects=True)
-    retrieved = datetime.now(UTC)
     try:
         response = client.get(CFTC_FUTURES_URL)
         response.raise_for_status()
+        retrieved = datetime.now(UTC)
         markets = parse_cftc_report(response.text)
+        source_sha256 = hashlib.sha256(response.content).hexdigest()
+        for row in markets.values():
+            row.update({
+                "available_at": iso(retrieved),
+                "ingested_at": iso(retrieved),
+                "availability_basis": "observed response receipt; historical publication unknown",
+                "source_sha256": source_sha256,
+            })
     except (httpx.HTTPError, TypeError, ValueError) as exc:
         if owns:
             client.close()
@@ -136,7 +158,7 @@ def fetch_cftc_direct(*, http: httpx.Client | None = None) -> ProviderResult:
             status=OperationalStatus.UNAVAILABLE,
             failure_kind=type(exc).__name__,
             source="cftc",
-            retrieved_at=retrieved,
+            retrieved_at=datetime.now(UTC),
         )
     if owns:
         client.close()
@@ -149,7 +171,8 @@ def fetch_cftc_direct(*, http: httpx.Client | None = None) -> ProviderResult:
         records=records,
         retrieved_at=retrieved,
         source="cftc_direct",
-        extras={"url": CFTC_FUTURES_URL, "markets": markets},
+        extras={"url": CFTC_FUTURES_URL, "markets": markets,
+                "source_sha256": source_sha256, **HISTORY_METADATA},
     )
 
 
@@ -158,16 +181,34 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
     markets = {str(row["asset"]): dict(row) for row in result.records if row.get("asset")}
     as_of_dates = []
     for row in markets.values():
+        for key, value in HISTORY_METADATA.items():
+            row.setdefault(key, value)
         raw = row.get("as_of_date")
         if raw:
             try:
                 as_of_dates.append(datetime.fromisoformat(str(raw)).date())
             except ValueError:
                 continue
+        # The positions date is a date-granularity event marker. It cannot
+        # stand in for knowledge time, even on a normal Tuesday-Friday week.
+        try:
+            event = parse_datetime(row.get("event_time"))
+            if event is None and raw:
+                event = datetime.fromisoformat(str(raw)).replace(tzinfo=UTC)
+            receipt = parse_datetime(row.get("available_at")) or result.retrieved_at
+            row["point_in_time"] = PointInTime(event, receipt, observed).to_dict()
+        except ValueError:
+            row["point_in_time"] = PointInTime(decision_time=observed).to_dict()
     freshest = min(as_of_dates) if as_of_dates else None
     freshness_days = (observed.date() - freshest).days if freshest else None
     stale = freshness_days is None or not 0 <= freshness_days <= STALE_AFTER_DAYS
     incomplete = result.status is not OperationalStatus.HEALTHY or len(markets) < 2
+    pit_states = {row.get("point_in_time", {}).get("availability", "UNKNOWN")
+                  for row in markets.values()}
+    knowledge_time_status = (
+        "LATE" if "LATE" in pit_states else
+        "ELIGIBLE" if pit_states == {"ELIGIBLE"} and not incomplete else "UNKNOWN"
+    )
     regime = regime_from_markets(markets)
     status = "UNAVAILABLE"
     if result.status is OperationalStatus.UNAVAILABLE:
@@ -178,6 +219,9 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
     elif incomplete:
         status = "PARTIAL"
         regime = "unknown"
+    elif knowledge_time_status == Availability.LATE.value:
+        status = "LATE"
+        regime = "unknown"
     else:
         status = "OK"
     warnings = []
@@ -187,6 +231,8 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
         warnings.append("COT market coverage is incomplete")
     if stale:
         warnings.append("COT report is stale; no directional COT gate was applied")
+    if status == "LATE":
+        warnings.append("COT source was observed after the decision; no directional COT gate was applied")
     return {
         "status": status,
         "regime": regime,
@@ -194,6 +240,9 @@ def cot_context_from_result(result: ProviderResult, *, now: datetime | None = No
         "source": "OpenBB/CFTC futures-only report" if result.source == "OpenBB/CFTC" else "CFTC futures-only report",
         "as_of_date": freshest.isoformat() if freshest else None,
         "freshness_days": freshness_days,
+        "knowledge_time_status": knowledge_time_status,
+        "retrieved_at": iso(result.retrieved_at),
+        **HISTORY_METADATA,
         "markets": markets,
         "warnings": warnings,
         "failure_kind": result.failure_kind,
@@ -218,7 +267,7 @@ def fetch_cot_context(*, now: datetime | None = None, http: httpx.Client | None 
     acquisition = registry.acquire(
         "cot",
         required=False,
-        sufficient=lambda r: cot_context_from_result(r, now=observed)["status"] == "OK",
+        sufficient=lambda r: cot_context_from_result(r, now=now or datetime.now(UTC))["status"] == "OK",
     )
     # A stale or partial official report is a diagnosis. Do not replace it with
     # SourcesExhausted when the OpenBB fallback also fails.
@@ -232,13 +281,14 @@ def fetch_cot_context(*, now: datetime | None = None, http: httpx.Client | None 
             failure_kind="SourcesExhausted",
             retrieved_at=observed,
         )
-    context = cot_context_from_result(result, now=observed)
+    context = cot_context_from_result(result, now=now or datetime.now(UTC))
     context["provider_attempts"] = [attempt.to_dict() for attempt in acquisition.attempts]
     context["required"] = False
     context["endpoint"] = CFTC_FUTURES_URL
     context["stale_after_days"] = STALE_AFTER_DAYS
     context["staleness_rule"] = (
         f"cot_regime is unknown unless BTC and ETH both parse and the older as-of date "
-        f"is 0 to {STALE_AFTER_DAYS} days before the decision date"
+        f"is 0 to {STALE_AFTER_DAYS} days before the decision date; an observed receipt "
+        "after the decision cannot be used"
     )
     return context

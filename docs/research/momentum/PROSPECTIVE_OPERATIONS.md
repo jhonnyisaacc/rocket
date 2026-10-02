@@ -59,3 +59,33 @@ uptime and public network access are operational dependencies. No live market
 alert or trade authorization is implied by this collection.
 
 Final committed v2 collector was also executed against a real receipt at 2026-10-02T20:19:06.108000+00:00. Both startup records retain distinct identities; the v1 original is unchanged. The current journal contains two startup snapshots and no mature candidate outcomes; scheduled continuity is still pending.
+
+## Reconciliation audit and limits
+
+The latest [SHADOW_STATUS.json](SHADOW_STATUS.json) separates journal integrity
+from independently read automation configuration. The journal command does
+not claim ACTIVE merely from a hardcoded name. It opens SQLite read-only,
+checks original indexed identities/schema/clocks and immutable triggers,
+verifies forecast source hashes, and verifies/replays source-backed mature
+outcomes with their separately recorded receipt. Legacy synthetic labels
+without receipt cannot claim full source parity. The original v1 startup
+predates candidate_event/code_tree fields and remains auditable as that
+original schema, without retrofit. Code-identified new v2 snapshots include
+the full current schema.
+
+A collector implementation bug suppressed a current ACTIVE crossing when its
+previous window was UNKNOWN. The frozen historical scan resets the active
+state on UNKNOWN and emits that first valid active crossing. The collector
+now matches it, with a boundary regression; both real startup records were
+NO_CANDIDATE and remain untouched. No historical candidate or forecast is
+reconstructed from a missing scheduled receipt.
+
+Active collection is operational causality/parity evidence, not statistical
+validation. There are still two startup records and no mature real candidate
+labels in the audit. Sustained scheduled continuity is not yet demonstrated.
+At the census's roughly0.71UP/1.14DOWN complete spaced successes per calendar
+year, accumulating40 per side from a new prospective start could take decades
+if those rates persisted; they are descriptive, not rate forecasts. This log
+cannot fix the current binary rare-positive power problem over a useful short
+period. No probability or MOM-002 forecast is emitted: MOM-002 remains
+PENDING_INDEPENDENT_REVIEW and unscored.

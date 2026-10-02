@@ -1,0 +1,19 @@
+{
+  "experiment": "MOM-002",
+  "contract_version": "mom002-continuous-v1",
+  "status": "PENDING_INDEPENDENT_REVIEW",
+  "scoring_authorized": false,
+  "predictive_trials": 0,
+  "model_fitted": false,
+  "scored_outputs": 0,
+  "proposal_sha256": "5c0ecbf5302145a98c620c7f44f7f027b9d376fd9c0e9289f0a304c961307df2",
+  "candidate_event_ids_sha256": "ac18c9a168f148ced2b4316255945f5589713d9fc2f7b9949a9c92c6de95cc52",
+  "spaced_event_ids_sha256": "78cf2b74b5c83991031129249b3a67132d007206be8069270e72a8b9e812aa91",
+  "raw_candidates": 354,
+  "globally_spaced_candidates": 107,
+  "reviewer": null,
+  "approved_commit": null,
+  "prior_binary_disposition": "STOP_INSUFFICIENT_FEASIBILITY",
+  "terminal_failure_disposition": "STOP_CANDIDATE_BTC_LINE_CLOSED",
+  "review_requirement": "Reviewer must not have designed the contract; approval names exact commit before fitting, association inspection, forecasts or gate evaluation."
+}

@@ -122,6 +122,43 @@ def test_first_hit_timeout_unknown_and_signal_bar_excluded():
     assert label(event(), forward() + [bar(7 * DAY, high=200.0)]) == label(event(), forward())
 
 
+@pytest.mark.parametrize(
+    "favorable,adverse,outcome",
+    [
+        (0.11, -0.01, "CONTINUES"),
+        (0.01, -0.06, "FAILS"),
+        (0.11, -0.06, "UNKNOWN"),
+        (0.01, -0.01, "TIMEOUT"),
+    ],
+)
+def test_ohlc_barrier_geometry_is_log_mirrored(favorable, adverse, outcome):
+    results = []
+    for side in (1, -1):
+        good = 100 * math.exp(side * favorable)
+        bad = 100 * math.exp(side * adverse)
+        rows = forward()
+        rows[0] = bar(HOUR, high=max(good, bad), low=min(good, bad))
+        result = label(event(side), rows)
+        expected = (
+            f"CONTINUES_{'UP' if side == 1 else 'DOWN'}" if outcome == "CONTINUES" else outcome
+        )
+        assert result.outcome == expected
+        assert result.barrier_time == (None if outcome == "TIMEOUT" else 2 * HOUR)
+        assert result.reason == ("AMBIGUOUS_INTRABAR_ORDER" if outcome == "UNKNOWN" else None)
+        results.append(result)
+    # The DOWN low/high must reproduce UP high/low, including full-window excursions.
+    assert results[0].mfe == pytest.approx(results[1].mfe)
+    assert results[0].mae == pytest.approx(results[1].mae)
+    assert results[0].signed_return == pytest.approx(results[1].signed_return)
+
+
+def test_primary_overlap_clock_does_not_connect_exact_seven_day_spacing():
+    first = event()
+    second = replace(first, event_id="second", data_cutoff=7 * DAY, decision_time=7 * DAY + LAG)
+    assert len(interval_groups([first, second], 7 * DAY)) == 2
+    assert len(interval_groups([first, second], 14 * DAY)) == 1
+
+
 def test_crossing_dedup_and_causal_cooldown():
     rows = history(181) + [
         bar(181 * FOUR_HOURS, 110.0, interval=FOUR_HOURS),

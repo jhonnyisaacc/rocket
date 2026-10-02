@@ -235,3 +235,34 @@ def test_status_detects_blob_tampering_and_missing_scheduled_slots(tmp_path):
     (tmp_path / "sources" / f"{digest}.json").write_bytes(b"changed")
     with pytest.raises(ValueError, match="integrity"):
         status(tmp_path, now=2 * DAY)
+
+
+def test_first_valid_active_decision_after_unknown_matches_frozen_crossing(tmp_path):
+    import math
+    from dataclasses import replace
+
+    from rocket.momentum.collect import parse_live
+    from rocket.momentum.core import FOUR_HOURS, aggregate_four_hours, candidates, snapshot
+
+    cutoff = 32 * DAY
+    start = cutoff - 181 * FOUR_HOURS
+    data = []
+    for i in range(181 * 4):
+        t = start + i * HOUR
+        p = 100 + math.sin(i // 4) * 0.2 if i < 180 * 4 else 110.0
+        data.append([t, p, p, p, p, 10, t + HOUR - 1, 1000, 1, 5, 500, 0])
+    raw = json.dumps(data).encode()
+    bars = [
+        replace(b, available_at=b.end_time + LAG)
+        for b in aggregate_four_hours(parse_live(raw, cutoff + 121000))
+    ]
+    assert snapshot(bars, cutoff + LAG, cutoff - FOUR_HOURS).state == "UNKNOWN"
+    expected, _ = candidates(bars)
+    assert len(expected) == 1
+    times = iter([cutoff + 120000, cutoff + 121000])
+    result = collect(tmp_path, now_fn=lambda: next(times), fetch=lambda _: raw, commit="fixture")
+    actual = result["forecast"]["candidate_event"]
+    assert actual["event_id"] == expected[0].event_id
+    assert actual["direction"] == 1
+    assert actual["reference_price"] == expected[0].reference_price
+    assert actual["scale"] == pytest.approx(expected[0].scale)

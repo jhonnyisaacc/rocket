@@ -1,13 +1,17 @@
 # Momentum experiment ledger
 
 Registration precedes outcomes. Historical failures do not disappear when
-this directory changes. See EVIDENCE_AUDIT.md (audit in progress).
+this directory changes. See EVIDENCE_AUDIT.md and REPLICATION_REPORT.md.
 
 | ID | Kind | Contract | State | Predictive trials |
 | --- | --- | --- | --- | --- |
-| MOM-000 | Non-predictive census | event contract v1, BTC 2019–2025 | COMPLETE_SAMPLE_GATE_FAILED | 0 |
+| MOM-000 | Non-predictive census | event contract v1, BTC 2019–2025 | STOP_INSUFFICIENT_FEASIBILITY | 0 |
 | MOM-DATA-001 | Source/PIT investigation | 1h archive integrity, 4h aggregation | COMPLETE_GAPS_RETAINED | 0 |
 | MOM-001 | Conditional prediction | below, contingent registration | NOT_ADMITTED_SAMPLE_GATE_FAILED | 0 |
+| MOM-REPL-001 | Descriptive replication | pinned PR49/PR50, same source bytes | COMPLETE_STOP_PRESERVED | 0 |
+| MOM-DATA-002 | Tier B / CFTC source investigation | source catalogs/checksums/release lineage | COMPLETE_READINESS_ONLY | 0 |
+| MOM-DATA-003 | Future source contract | interval-based metadata proposal | PROPOSED_NOT_ACTIVATED | 0 |
+| MOM-002 | New continuous information proposal | mom002-continuous-v1 | PENDING_INDEPENDENT_REVIEW | 0 |
 
 ## MOM-000 feasibility gates (frozen before results)
 
@@ -68,17 +72,19 @@ mandatory even if all historical development gates pass.
 
 ## Pre-outcome source clarification, MOM-DATA-001
 
-Before any census score: verified archives contain missing hours and one
-nonstandard close timestamp. Parser now retains raw bytes, excludes that
-incomplete bar with its row hash, and exposes gaps. This implements the
+Before any census score: the initial source clarification singled out a nonstandard
+close timestamp. The committed manifest actually lists nine excluded rows
+and 59 absent hours. Parser retains raw bytes, excludes those nine under the
+frozen rule with row hashes, and exposes gaps. A nonstandard close timestamp
+alone is not a proved invalid price; see the later source-contract finding. This implements the
 registered incomplete-history/UNKNOWN policy; no mathematical barrier,
 candidate, sample gate or horizon was changed. Zero predictive trials consumed.
 
 ## MOM-000 first result / admission decision
 
 Primary census: 354 crossings, 107 globally spaced candidates, 101 fully
-labeled (UP 60, DOWN 41), only **5 UP and 8 DOWN successes**. Forty-seven
-connected overlap components expose further clustering. Sample gates fail;
+labeled (UP 60, DOWN 41), only **5 UP and 8 DOWN successes**. The explicit
+component counts are 128 at 7d and 47 at 14d under decision-time intervals. Sample gates fail;
 MOM-001 is **NOT_ADMITTED_SAMPLE_GATE_FAILED**, predictive trial spend **0**.
 No A-only substitute, alternative classifier or MOM-002 is run.
 
@@ -92,3 +98,28 @@ must preserve counts and label fingerprint. The original v1 startup forecast
 remains immutable with its code commit. New forecasts also preserve candidate
 crossing objects and code-tree hashes; no old forecast is rewritten. This is
 an implementation correction, not another scientific trial or outcome rescue.
+
+## Explicit later authorization: reconciliation and MOM-002 proposal only
+
+The user subsequently requested a separate MOM-002 continuous information
+proposal. This supersedes the earlier automatic-successor prohibition only
+for writing that proposal, not for scoring it or reopening MOM-001.
+[MOM_002_PROPOSAL.md](MOM_002_PROPOSAL.md) freezes a new target, low-capacity
+model, exact features/clocks, paired benchmarks, causal folds/budget and all
+gates. State is PENDING_INDEPENDENT_REVIEW, with no scorer/fitting/association
+inspection or independent approval. Existing descriptive end returns were
+already exposed; history remains contaminated development data.
+
+[Replication](REPLICATION_REPORT.md) restores definitive comparison to the
+frozen contract: 354/107 candidates, 5 UP/8 DOWN successes, identical label
+fingerprint and STOP. Orientation and MFE conventions explain Muse's label
+and excursion differences; clock/horizon conventions explain components.
+Quarantine, leg and Tier B audits are descriptive/source work, not predictive
+trials. Correcting prospective crossing parity after UNKNOWN affects new
+code-identified snapshots only and preserves both original startup forecasts.
+
+If an independently approved MOM-002 later fails any frozen predictive,
+incremental or economic gate, this candidate-based BTC line closes. No
+MOM-003, COT/macro/Cava/X/news/Pana, ETH/SOL, replacement generator/horizon,
+model complexity or feature-transform rescue. This is a research STOP, not a
+universal claim that momentum anticipation is impossible.

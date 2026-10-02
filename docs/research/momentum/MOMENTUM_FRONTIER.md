@@ -1,6 +1,7 @@
 # Momentum frontier
 
-Current state: **MOM-000_SAMPLE_GATE_FAILED / MOM-001_NOT_ADMITTED**.
+Current state: **MOM-000_SAMPLE_GATE_FAILED / MOM-001_NOT_ADMITTED /
+MOM-002_PENDING_INDEPENDENT_REVIEW**.
 Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No validated momentum edge,
 model forecast or trade signal exists. Model output is null/UNTRAINED.
 
@@ -9,7 +10,9 @@ model forecast or trade signal exists. Model output is null/UNTRAINED.
 The deterministic BTC definition can be reproduced on 61,300 checksum-verified
 hourly observations, with 4h decisions and honest gaps. Primary 7d census has
 354 crossings; 107 causally spaced candidates; 101 complete labels; only
-5 UP / 8 DOWN spaced successes. There are 47 connected overlap components.
+5 UP / 8 DOWN spaced successes. There are 128 primary 7d
+components and 47 maximum-horizon 14d components; the interval begins at
+decision_time=cutoff+5m. Muse's 117 joins exact-seven-day cutoff contacts.
 107 is an interval-independence upper bound, not an inferred effective N.
 No annual fold has the registered ten successes in either direction.
 Historical continuation edge has not been established.
@@ -35,7 +38,9 @@ in EVIDENCE_AUDIT.md. A different directory does not reset their trial debt.
 ## Unresolved / blocked
 
 Useful conditional market information is untested here: no predictive trial
-ran. Tier B historical receipt/OI/participation and 4h IV clocks are unverified.
+ran. Tier B archive coverage is audited, including intraday OI and monthly
+premium-index availability; historical receipt/vintage assumptions and 4h IV
+clocks remain unverified.
 Authentic old market receipts are unavailable; archives can be revised. Sample
 independence across episodes/regimes is not proven. Small side counts cannot
 support calibration, PR-AUC/lift or bootstrap success claims.
@@ -56,7 +61,7 @@ prospective evidence; history is development, not a new holdout.
 
 ## Not admitted
 
-MOM-001 scoring, an A-only substitution, MOM-002, ETH/SOL expansion, new clocks/
+MOM-001 scoring, an A-only substitution, MOM-002 scoring, ETH/SOL expansion, new clocks/
 barriers after results, boosters/deep nets/search, earlier anticipation, COT,
 macro/Cava/X/news/Pana rescue, wallet cohort guesses, old flow/lead-lag rescue,
 leverage/options optimization, live execution, wallet/signing or trade alerts.
@@ -73,3 +78,17 @@ calibration failure; concentration in a handful of episodes/years; MAE or costs
 removing remaining economic opportunity. Before that future evaluation its
 period, power, feature schema, model, budget and gates must be registered and
 independently reviewed. No result-triggered parameter rescue is allowed.
+
+## Separately requested proposal, not a scored successor
+
+[MOM-002](MOM_002_PROPOSAL.md) asks whether the same frozen BTC breakout
+population's six fast features contain OOS information about signed 7d end
+return divided by inherited S. It is PENDING_INDEPENDENT_REVIEW. No scoring
+implementation or execution is admitted before a reviewer who did not design
+it approves the exact commit and assumptions. No pristine historical holdout
+is claimed. Its terminal commitment closes this candidate-based BTC line on
+failure; there is no rescue via MOM-003 or the prohibited families above.
+
+[Replication report](REPLICATION_REPORT.md) and [final report](MOMENTUM_FINAL_REPORT.md)
+explain definitive counts, quarantine taxonomy, canonical ex-post diagnostics
+and source/collector fixes. None changes MOM-000's failed feasibility gate.

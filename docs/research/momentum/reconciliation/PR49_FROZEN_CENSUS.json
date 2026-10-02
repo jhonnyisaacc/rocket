@@ -8,9 +8,7 @@
   "eligible_decisions": 11943,
   "candidate_crossings": 354,
   "independent_candidates": 107,
-  "overlap_components_7d": 128,
-  "overlap_components_14d": 47,
-  "overlap_interval_convention": "closed [decision_time, data_cutoff+horizon]; touching connects",
+  "overlap_components": 47,
   "usable_years": 7.000684462696783,
   "sides": {
     "UP": {
@@ -5122,7 +5120,7 @@
   "labels_fingerprint": "cea8f41de55a5b65c432120db79aa58e2da06c8df7452741a9f8dca55802fbfb",
   "diagnostic_warning": "Ex-post legs/oracle condition on realized large moves; not training labels.",
   "independence_warning": "Spacing is an independent-interval upper bound, not proof of stochastic independence.",
-  "implementation_sha256": "da36f2155088ffd736f85040d4a0d768d81e7d4814c537a3de5c26bf3992cf80",
+  "implementation_sha256": "42917ae8d701c64b9a57313bb51d2db7103cd8970a068b9f3784e9b101b54c53",
   "contract_sha256": "27fd2dea1465142446d5ebad70473f3ae40837770355aeb14208dec9ba673789",
   "source_manifest_sha256": "06d3f51d704cb7121441dceebdcc1cdc5854efab5b46373cdb412f0d761a7e80"
 }

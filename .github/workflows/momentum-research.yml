@@ -16,5 +16,5 @@ jobs:
           python-version: '3.12'
       - run: pip install -e '.[dev]' 'ruff==0.16.6'
       - run: pytest -m 'not integration' -ra
-      - run: ruff check rocket/momentum tests/momentum
+      - run: ruff check rocket/momentum tests/momentum rocket/providers/cftc.py rocket/providers/openbb_cftc.py tests/test_cftc_pit_contract.py
       - run: git diff --check
