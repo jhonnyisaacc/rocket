@@ -304,6 +304,7 @@ def disclosures(
     from rocket.providers.disclosures import (
         OfficialHouseDisclosureProvider,
         OfficialOGEExecutiveDisclosureProvider,
+        executive_failure_status,
     )
     from rocket.workflows.disclosures import DisclosureWorkflow
 
@@ -333,7 +334,7 @@ def disclosures(
             executive = OfficialOGEExecutiveDisclosureProvider().fetch()
             status["executive"] = {"status": "OK"}
         except Exception as exc:
-            status["executive"] = {"status": "UNAVAILABLE", "failure_kind": failure_kind(exc)}
+            status["executive"] = executive_failure_status(exc)
     trump_history = None
     if "donald_trump" in selected:
         from rocket.providers.open_cabinet import OpenCabinetProvider

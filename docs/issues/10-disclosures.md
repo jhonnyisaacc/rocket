@@ -45,6 +45,8 @@ and other HTTP statuses are not retried. After those attempts, executive
 mark the OGE window as scanned. The next healthy executive fetch sets
 `executive_recovery_rescan` and reports filings that were not already seen.
 
+The records URL is read from the index HTML (`API.xsp/vN/rest` on `extapps2.oge.gov`); the highest version is used. A failed executive fetch adds `provider_status.executive.reason`, a short token with no URL or exception text. Schema tokens: `oge_index_api_marker_missing`, `oge_index_empty`, `oge_index_stale_or_future`, `oge_subject_filter_ignored`, `oge_pagination_stopped`, `oge_pagination_incomplete`, `oge_malformed_records`. Transport tokens: `transport_error`, or `http_` plus the status (`http_503`). `failure_kind` is unchanged (`InvalidProviderData` for schema, `ExternalOutage` for transport and HTTP 5xx).
+
 ## Pelosi secondary
 
 `pelosi_secondary_history` is optional. HTTP 402/403 stay `Entitlement` and HTTP 429
