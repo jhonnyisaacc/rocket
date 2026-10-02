@@ -5,9 +5,9 @@ this directory changes. See EVIDENCE_AUDIT.md (audit in progress).
 
 | ID | Kind | Contract | State | Predictive trials |
 | --- | --- | --- | --- | --- |
-| MOM-000 | Non-predictive census | event contract v1, BTC 2019–2025 | REGISTERED | 0 |
-| MOM-DATA-001 | Source/PIT investigation | 1h archive integrity, 4h aggregation | REGISTERED | 0 |
-| MOM-001 | Conditional prediction | below, contingent registration | NOT_ADMITTED_PENDING_CENSUS | 0 |
+| MOM-000 | Non-predictive census | event contract v1, BTC 2019–2025 | COMPLETE_SAMPLE_GATE_FAILED | 0 |
+| MOM-DATA-001 | Source/PIT investigation | 1h archive integrity, 4h aggregation | COMPLETE_GAPS_RETAINED | 0 |
+| MOM-001 | Conditional prediction | below, contingent registration | NOT_ADMITTED_SAMPLE_GATE_FAILED | 0 |
 
 ## MOM-000 feasibility gates (frozen before results)
 
@@ -73,3 +73,22 @@ nonstandard close timestamp. Parser now retains raw bytes, excludes that
 incomplete bar with its row hash, and exposes gaps. This implements the
 registered incomplete-history/UNKNOWN policy; no mathematical barrier,
 candidate, sample gate or horizon was changed. Zero predictive trials consumed.
+
+## MOM-000 first result / admission decision
+
+Primary census: 354 crossings, 107 globally spaced candidates, 101 fully
+labeled (UP 60, DOWN 41), only **5 UP and 8 DOWN successes**. Forty-seven
+connected overlap components expose further clustering. Sample gates fail;
+MOM-001 is **NOT_ADMITTED_SAMPLE_GATE_FAILED**, predictive trial spend **0**.
+No A-only substitute, alternative classifier or MOM-002 is run.
+
+## Implementation correction, after census and before prediction
+
+Relative-volume denominator had a one-bar offset versus the immediately
+preceding 174 bars. Corrected with an explicit boundary test; feature schema
+advanced from price-market-v1 to price-market-v2. No predictive feature was
+scored. Candidate/label mathematics and the census gate are unchanged; replay
+must preserve counts and label fingerprint. The original v1 startup forecast
+remains immutable with its code commit. New forecasts also preserve candidate
+crossing objects and code-tree hashes; no old forecast is rewritten. This is
+an implementation correction, not another scientific trial or outcome rescue.

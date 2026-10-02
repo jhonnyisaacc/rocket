@@ -80,3 +80,9 @@ silently proxied. Source feasibility alone never establishes alpha.
 PR #40 and #46 already exposed 2026 prices/outcomes. We exclude 2026 from
 historical census by pre-registration; it is not a pristine holdout. Prospective
 records created now, without future labels, are the eventual validation basis.
+
+Provider metadata improvement: normal FRED CSV/OpenBB payloads and the
+FredMacroSeries adapter now explicitly expose CURRENT_REPORTED_HISTORY,
+historical_pit=false, vintage_id=null and available_at=null. The observation
+date is never relabeled as publication. Mock-source tests pin this distinction;
+operational acquisition behavior and record values are preserved.

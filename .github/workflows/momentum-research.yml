@@ -1,0 +1,20 @@
+name: Momentum research
+on:
+  pull_request:
+    paths: ['rocket/**', 'tests/**', 'docs/research/momentum/**', 'pyproject.toml', '.github/workflows/momentum-research.yml']
+  push:
+    branches: ['feat/momentum-refactor-codex']
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e '.[dev]' 'ruff==0.16.6'
+      - run: pytest -m 'not integration' -ra
+      - run: ruff check rocket/momentum tests/momentum
+      - run: git diff --check

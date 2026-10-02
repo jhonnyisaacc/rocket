@@ -153,3 +153,27 @@ def test_purge_embargo_and_label_maturity():
     }
     assert ResearchFold(test, 40 * DAY).training([safe, overlap, near], labels) == [safe]
     assert ResearchFold(test, 40 * DAY).testing([replace(safe, decision_time=test)])
+
+
+def test_relative_volume_uses_immediately_preceding_174_bars():
+    rows = [replace(b, volume=i + 1.0) for i, b in enumerate(history(181))]
+    cutoff = rows[-1].end_time
+    view = snapshot(rows, cutoff + LAG, cutoff)
+    assert view.values["relative_volume"] == pytest.approx(178.5 / 88.5)
+
+
+def test_invalid_label_geometry_fails_closed():
+    with pytest.raises(ValueError):
+        replace(event(), scale=0.0)
+    with pytest.raises(ValueError):
+        replace(event(), direction=0)
+    with pytest.raises(ValueError):
+        label(event(), forward(), upper=float("nan"))
+
+
+def test_future_revision_conflicts_do_not_change_past_join():
+    old = Observation("x", 1.0, 0, 5, 6, "src", "v1")
+    future = Observation("x", 2.0, 0, 20, 21, "src", "v2")
+    assert pit_join([old, future, replace(future, value=3.0)], 10) == pit_join([old], 10)
+    with pytest.raises(ValueError, match="ambiguous revision"):
+        pit_join([old, replace(old, value=2.0, vintage="unordered-name")], 10)

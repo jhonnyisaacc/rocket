@@ -19,7 +19,15 @@ FOUR_HOURS = 4 * HOUR
 LAG = 5 * 60_000
 DAY = 24 * HOUR
 CONTRACT = "btc-breakout-triple-barrier-v1"
-FEATURE_SCHEMA = "price-market-v1"
+FEATURE_SCHEMA = "price-market-v2"
+FEATURE_NAMES = (
+    "signed_return_24h",
+    "rv_ratio",
+    "relative_volume",
+    "funding_24h",
+    "oi_change_24h",
+    "spot_perp_volume_ratio",
+)
 
 
 def fingerprint(value: Any) -> str:
@@ -60,17 +68,22 @@ def pit_join(observations: Iterable[Observation], decision: int, *, prospective=
     result = {}
     identities = {}
     for row in observations:
+        if not row.eligible(decision, prospective=prospective):
+            continue
         key = (row.name, row.event_time, row.available_at, row.vintage)
         if key in identities and identities[key] != row:
             raise ValueError("conflicting observation identity")
         identities[key] = row
-        if not row.eligible(decision, prospective=prospective):
-            continue
         previous = result.get(row.name)
-        if previous is None or (row.event_time, row.available_at, row.vintage) > (
+        if (
+            previous is not None
+            and (row.event_time, row.available_at) == (previous.event_time, previous.available_at)
+            and row != previous
+        ):
+            raise ValueError("ambiguous revision at identical publication time")
+        if previous is None or (row.event_time, row.available_at) > (
             previous.event_time,
             previous.available_at,
-            previous.vintage,
         ):
             result[row.name] = row
     return result
@@ -197,7 +210,7 @@ def snapshot(bars: Iterable[Bar], decision: int, cutoff: int, *, prospective=Fal
         else None
     )
     values["rv_ratio"] = statistics.stdev(returns[-6:]) / sigma
-    denominator = statistics.mean(b.volume for b in visible[-181:-7])
+    denominator = statistics.mean(b.volume for b in visible[-180:-6])
     values["relative_volume"] = (
         statistics.mean(b.volume for b in visible[-6:]) / denominator if denominator > 0 else None
     )
@@ -223,6 +236,17 @@ class CandidateEvent:
     scale: float
     snapshot_id: str
     generator: str = CONTRACT
+
+    def __post_init__(self):
+        if (
+            self.direction not in (-1, 1)
+            or self.decision_time < self.data_cutoff
+            or not math.isfinite(self.scale)
+            or self.scale <= 0
+            or not math.isfinite(self.reference_price)
+            or self.reference_price <= 0
+        ):
+            raise ValueError("invalid candidate geometry/clocks")
 
 
 def candidates(bars: Iterable[Bar]) -> tuple[list[CandidateEvent], int]:
@@ -291,7 +315,13 @@ class ForwardLabel:
 
 
 def label(event: CandidateEvent, hourly: Iterable[Bar], days=7, upper=2.0, lower=1.0):
-    if days not in (3, 7, 14) or upper <= 0 or lower <= 0:
+    if (
+        days not in (3, 7, 14)
+        or not math.isfinite(upper)
+        or not math.isfinite(lower)
+        or upper <= 0
+        or lower <= 0
+    ):
         raise ValueError("invalid barrier contract")
     end = event.data_cutoff + days * DAY
     rows = validate_bars(

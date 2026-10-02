@@ -32,3 +32,17 @@ dataset. Fetch what you need, for example:
 hf download jhonnyisaacc/rocket --repo-type=dataset \
   --include 'docs/research/memecoin/data/*'
 ```
+
+## Momentum research
+
+The current momentum research roadmap is
+[Momentum research](docs/research/momentum/MOMENTUM_RESEARCH.md).
+It separates point-in-time snapshots, deterministic BTC candidates, future-only
+labels and gated conditional prediction. Experiment 0 failed its independent
+sample gate; no predictive model or execution is admitted. See the
+[final report](docs/research/momentum/MOMENTUM_FINAL_REPORT.md),
+[historical negative evidence](docs/research/momentum/EVIDENCE_AUDIT.md) and
+[prospective collection](docs/research/momentum/PROSPECTIVE_OPERATIONS.md).
+The staged crypto scan remains an operational research readout; its older
+futures artifacts preserve evidence and do not define a competing active
+momentum experiment roadmap.

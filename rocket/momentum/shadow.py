@@ -6,13 +6,22 @@ import json
 import sqlite3
 from pathlib import Path
 
-from rocket.momentum.core import CONTRACT, FEATURE_SCHEMA, canonical, fingerprint
+from rocket.momentum.core import (
+    CONTRACT,
+    FEATURE_NAMES,
+    FEATURE_SCHEMA,
+    CandidateEvent,
+    canonical,
+    fingerprint,
+)
 
 FORECAST_FIELDS = {
     "decision_time",
     "data_cutoff",
     "candidate_state",
     "candidate_direction",
+    "candidate_event",
+    "code_tree_sha256",
     "features",
     "unknown_features",
     "feature_schema_version",
@@ -72,6 +81,22 @@ class ShadowLog:
             or payload["label_contract_version"] != CONTRACT
         ):
             raise ValueError("unknown schema/contract identity")
+        if set(payload["features"]) != set(FEATURE_NAMES):
+            raise ValueError("feature schema keys do not match version")
+        if sorted(payload["unknown_features"]) != sorted(
+            k for k, v in payload["features"].items() if v is None
+        ):
+            raise ValueError("unknown feature identity mismatch")
+        candidate = payload["candidate_event"]
+        if candidate is not None:
+            event = CandidateEvent(**candidate)
+            if (
+                event.decision_time != payload["decision_time"]
+                or event.data_cutoff != payload["data_cutoff"]
+                or event.direction != payload["candidate_direction"]
+                or event.generator != CONTRACT
+            ):
+                raise ValueError("candidate does not match forecast")
         if payload["model_version"] == "UNTRAINED" and payload["model_output"] is not None:
             raise ValueError("untrained model cannot emit a probability")
         encoded = canonical(payload).decode()
@@ -136,6 +161,14 @@ class ShadowLog:
         if fingerprint(payload) != row[1]:
             raise ValueError("forecast integrity failure")
         return payload
+
+    def at_decision(self, decision: int, mode: str):
+        with self.connect() as db:
+            row = db.execute(
+                "SELECT id FROM forecasts WHERE decision_time=? AND collection_mode=?",
+                (decision, mode),
+            ).fetchone()
+        return (row[0], self.forecast(row[0])) if row else None
 
     def forecasts(self):
         with self.connect() as db:
