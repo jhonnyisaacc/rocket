@@ -1,0 +1,23 @@
+{
+  "audited_at": 1790972164527,
+  "forecast_records": 1,
+  "outcome_records": 0,
+  "source_blobs_verified": 1,
+  "forecast_ids": [
+    "140d49c35c0c7c04d1fe55b80e2b5372aadf04b2f9bbe91269c058813ade7427"
+  ],
+  "first_decision_time": 1790971766580,
+  "latest_decision_time": 1790971766580,
+  "scheduled_slots_expected_since_startup": 0,
+  "scheduled_slots_recorded": 0,
+  "missing_scheduled_cutoffs": [],
+  "source_states": [
+    "OK"
+  ],
+  "model_versions": [
+    "UNTRAINED"
+  ],
+  "integrity": "VERIFIED",
+  "automation_id": "btc-momentum-prospective-shadow",
+  "automation_state": "CONFIGURED_ACTIVE_NOT_YET_SUSTAINED_VALIDATION"
+}

@@ -187,6 +187,10 @@ def summarize(events, outcomes, side, years):
         str(bp): distribution([l.signed_return - bp / 10_000 for _, l in complete])
         for bp in (20, 40, 80)
     }
+    result["delayed_net_log_return_hurdles"] = {
+        str(bp): distribution([l.delay_4h_return - bp / 10_000 for _, l in complete])
+        for bp in (20, 40, 80)
+    }
     result["top5_removed_return"] = distribution([l.signed_return for _, l in top_removed])
     return result
 
@@ -277,6 +281,16 @@ def run(root: Path, output: Path):
         "diagnostic_warning": "Ex-post legs/oracle condition on realized large moves; not training labels.",
         "independence_warning": "Spacing is an independent-interval upper bound, not proof of stochastic independence.",
     }
+    report["implementation_sha256"] = fingerprint(
+        {
+            name: fingerprint((Path(__file__).parent / name).read_text())
+            for name in ("core.py", "source.py", "census.py")
+        }
+    )
+    contract_file = Path("docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md")
+    report["contract_sha256"] = fingerprint(contract_file.read_text())
+    manifest = json.loads(Path("docs/research/momentum/SOURCE_MANIFEST.json").read_text())
+    report["source_manifest_sha256"] = manifest["manifest_sha256"]
     output.mkdir(parents=True, exist_ok=True)
     (output / "CENSUS.json").write_text(json.dumps(report, indent=2) + "\n")
     (output / "EPISODES_DIAGNOSTIC.json").write_text(json.dumps(legs, indent=2) + "\n")

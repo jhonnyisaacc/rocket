@@ -44,3 +44,17 @@ Ordinary engineering is outside research WIP/admission; independent scientific
 review is recorded in artifacts and may be published by the same GitHub actor.
 MOM-002 remains Draft/unapproved/unscored. Rocket remains
 `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`; these controls authorize no execution.
+
+## Momentum research
+
+The current momentum research roadmap is
+[Momentum research](docs/research/momentum/MOMENTUM_RESEARCH.md).
+It separates point-in-time snapshots, deterministic BTC candidates, future-only
+labels and gated conditional prediction. Experiment 0 failed its independent
+sample gate; no predictive model or execution is admitted. See the
+[final report](docs/research/momentum/MOMENTUM_FINAL_REPORT.md),
+[historical negative evidence](docs/research/momentum/EVIDENCE_AUDIT.md) and
+[prospective collection](docs/research/momentum/PROSPECTIVE_OPERATIONS.md).
+The staged crypto scan remains an operational research readout; its older
+futures artifacts preserve evidence and do not define a competing active
+momentum experiment roadmap.

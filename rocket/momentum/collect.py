@@ -5,8 +5,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import subprocess
 import urllib.request
+from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -18,7 +20,9 @@ from rocket.momentum.core import (
     HOUR,
     LAG,
     Bar,
+    CandidateEvent,
     aggregate_four_hours,
+    fingerprint,
     snapshot,
 )
 from rocket.momentum.shadow import ShadowLog
@@ -58,8 +62,13 @@ def collect(root: Path, *, mode="scheduled", now_fn=clock_ms, fetch=None, commit
     started = now_fn()
     cutoff = started // FOUR_HOURS * FOUR_HOURS
     planned = cutoff + LAG
-    if mode == "scheduled" and started < cutoff:
-        raise ValueError("invalid scheduled slot")
+    if mode not in {"startup", "scheduled"}:
+        raise ValueError("unknown collection mode")
+    journal = ShadowLog(root / "shadow.sqlite")
+    existing = journal.at_decision(planned, mode) if mode == "scheduled" else None
+    if existing:
+        return {"forecast_id": existing[0], "forecast": existing[1]}
+
     status = "OK"
     digest = None
     bars = []
@@ -87,6 +96,28 @@ def collect(root: Path, *, mode="scheduled", now_fn=clock_ms, fetch=None, commit
         status = "UNKNOWN_LATE_RECEIPT"
         bars = []
     view = snapshot(bars, decision, cutoff, prospective=True)
+    candidate = None
+    if view.direction:
+        previous = snapshot(bars, decision, cutoff - FOUR_HOURS, prospective=True)
+        if previous.state != "UNKNOWN" and previous.direction != view.direction:
+            key = {"cutoff": cutoff, "direction": view.direction, "generator": CONTRACT}
+            candidate = asdict(
+                CandidateEvent(
+                    fingerprint(key),
+                    decision,
+                    cutoff,
+                    view.direction,
+                    view.reference_price,
+                    view.sigma * math.sqrt(42),
+                    view.identity,
+                )
+            )
+    code_tree = fingerprint(
+        {
+            p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+            for p in sorted(Path(__file__).parent.glob("*.py"))
+        }
+    )
     if commit is None:
         commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
         if subprocess.check_output(["git", "status", "--porcelain"], text=True).strip():
@@ -96,6 +127,8 @@ def collect(root: Path, *, mode="scheduled", now_fn=clock_ms, fetch=None, commit
         "data_cutoff": cutoff,
         "candidate_state": view.state,
         "candidate_direction": view.direction,
+        "candidate_event": candidate,
+        "code_tree_sha256": code_tree,
         "features": view.values,
         "unknown_features": list(view.unknown),
         "feature_schema_version": FEATURE_SCHEMA,
@@ -111,7 +144,6 @@ def collect(root: Path, *, mode="scheduled", now_fn=clock_ms, fetch=None, commit
         "source_status": status,
         "snapshot_id": view.identity,
     }
-    journal = ShadowLog(root / "shadow.sqlite")
     identity = journal.append_forecast(payload)
     return {"forecast_id": identity, "forecast": payload}
 

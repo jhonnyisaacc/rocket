@@ -14,6 +14,13 @@ from rocket.providers.http import get_read
 from rocket.providers.protocols import ProviderResult
 
 FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv"
+# Default FRED/OpenBB reads are current reported history, never as-known vintages.
+HISTORY_METADATA = {
+    "history_mode": "CURRENT_REPORTED_HISTORY",
+    "historical_pit": False,
+    "vintage_id": None,
+    "available_at": None,
+}
 
 
 def _number(value: Any) -> float | None:
@@ -92,6 +99,7 @@ def fetch_fred_csv(series_id: str, *, http: httpx.Client | None = None) -> Mappi
         "latest_observation_at": observed,
         "retrieved_at": retrieved,
         "source": "FRED direct",
+        **HISTORY_METADATA,
     }
 
 
@@ -117,6 +125,7 @@ def fetch_openbb_fred(series_id: str) -> Mapping[str, Any]:
         "latest_observation_at": observed,
         "retrieved_at": datetime.now(UTC).isoformat(),
         "source": "OpenBB/FRED",
+        **HISTORY_METADATA,
     }
 
 
@@ -166,12 +175,12 @@ class FredMacroSeries:
                 if retrieved
                 else datetime.now(UTC),
                 source=source,
-                extras={"series_id": symbol},
+                extras={"series_id": symbol, **HISTORY_METADATA},
             )
         except Exception as exc:
             return ProviderResult(
                 status=OperationalStatus.UNAVAILABLE,
                 failure_kind=type(exc).__name__,
                 source="fred",
-                extras={"series_id": symbol},
+                extras={"series_id": symbol, **HISTORY_METADATA},
             )
