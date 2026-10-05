@@ -3,7 +3,7 @@
 from datetime import UTC, datetime
 
 from rocket.models import OperationalStatus
-from rocket.providers.cftc import MARKET_NAMES, bias_from_speculator_pct
+from rocket.providers.cftc import HISTORY_METADATA, MARKET_NAMES, bias_from_speculator_pct
 from rocket.providers.dispatch import failure_kind
 from rocket.providers.protocols import ProviderResult
 
@@ -40,6 +40,7 @@ class OpenBBCFTC:
                     raise ValueError("invalid COT positions")
                 if not 0 <= ((now or datetime.now(UTC)).date() - day).days <= 14:
                     raise ValueError("stale or future COT")
+                received = datetime.now(UTC)
                 pct = (long - short) / oi * 100
                 records.append({"asset": asset, "market": MARKET_NAMES[asset],
                                 "open_interest": oi, "noncomm_long": long, "noncomm_short": short,
@@ -47,10 +48,14 @@ class OpenBBCFTC:
                                 "bias": bias_from_speculator_pct(pct), "as_of_date": day.isoformat(),
                                 "release_date": None, "source": "OpenBB/CFTC",
                                 "citation": "https://publicreporting.cftc.gov/",
-                                "available_at": (now or datetime.now(UTC)).isoformat(),
-                                "availability_basis": "first observed retrieval; report date is positions as-of, not release"})
-            return ProviderResult(OperationalStatus.HEALTHY, tuple(records), now or datetime.now(UTC),
-                                  source="OpenBB/CFTC")
+                                "event_time": datetime(day.year, day.month, day.day, tzinfo=UTC).isoformat(),
+                                "event_time_precision": "date",
+                                "available_at": received.isoformat(),
+                                "ingested_at": received.isoformat(),
+                                "availability_basis": "observed adapter receipt; historical publication unknown",
+                                **HISTORY_METADATA})
+            return ProviderResult(OperationalStatus.HEALTHY, tuple(records), datetime.now(UTC),
+                                  source="OpenBB/CFTC", extras=HISTORY_METADATA)
         except Exception as exc:
-            return ProviderResult(OperationalStatus.UNAVAILABLE, retrieved_at=now or datetime.now(UTC),
+            return ProviderResult(OperationalStatus.UNAVAILABLE, retrieved_at=datetime.now(UTC),
                                   source="OpenBB/CFTC", failure_kind=failure_kind(exc))
