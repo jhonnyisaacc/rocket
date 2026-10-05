@@ -1,5 +1,6 @@
 """Adversarial governance checks using synthetic files only; no market experiment."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -182,15 +183,26 @@ def test_forged_receipt_or_draft_cannot_kill_real_branch(tmp_path):
 
 
 def test_wip_and_admission_unlock_evidence_before_dispatch():
-    item = {"id": "53", "primary_work_item": True, "status": "Ready", "priority": "P1",
+    root = Path(__file__).resolve().parents[2]
+    config = json.loads((root / "research/governance/project.json").read_text())
+    fields = config["items"]["power"]["fields"]
+    item = {"id": config["items"]["power"]["id"], "primary_work_item": True, "status": "Ready", "priority": "P0",
             "admission_verified": True, "dependencies_verified": True,
-            "unlock_verified": False, "kill_condition": "FAIL rejects downstream"}
-    assert next_item([item]) is None
+            "unlock_verified": False, "kill_condition": "FAIL rejects downstream",
+            "project_id": config["project"]["id"], "repository": "jhonnyisaacc/rocket",
+            "review_tier": fields["Review Tier"], "gate_source": fields["Gate Source"],
+            "trial_budget": 0, "trials_consumed": 0}
+    others = [dict(item, id=config["items"][key]["id"], status="Parked")
+              for key in config["primary_work_item_keys"] if key != "power"]
+    snapshot = {"project_id": config["project"]["id"], "items": [item, *others]}
+    assert next_item(snapshot) is None
     item["unlock_verified"] = True
-    assert next_item([item]) == item
-    active = [{"primary_work_item": True, "status": "In Progress"} for _ in range(3)]
+    assert next_item(snapshot) == item
+    active = [dict(item, id=config["items"][key]["id"], status="In Progress")
+              for key in ("reconcile", "cftc", "history")]
     with pytest.raises(GateError, match="WIP limit"):
-        next_item(active + [item])
+        active_ids = {i["id"] for i in active}
+        next_item(dict(snapshot, items=active + [item] + [i for i in others if i["id"] not in active_ids]))
 
 
 def test_hash_chain_tampering_detected(synthetic_repo):

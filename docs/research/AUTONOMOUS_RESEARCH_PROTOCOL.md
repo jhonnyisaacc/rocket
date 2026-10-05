@@ -56,6 +56,41 @@ After a future acknowledged PASS, default to simple entry, deterministic risk ma
 
 ## Outcome access and implementation limits
 
+Before MOM-002 enters independent admission review or any official freeze:
+#51 foundation reconciliation, Tier-B readiness and overlap semantics must be
+accepted; #58 synthetic power/gate feasibility must be complete and independently
+accepted; #56's five near-term decisions must be recorded; and every resulting
+pre-result contract change must be finalized/versioned. #54 receives only that
+final post-power-audit isolated packet, then approves exact commit/artifacts.
+The freeze hashes `mom002_prerequisites.json` and the final contract; the
+verifier refuses FROZEN/ADMITTED states with pending prerequisite evidence.
+MOM-002 remains Draft/NEEDS_PRE_RESULT_GATE_REVIEW, unscored and unadmitted.
+
+Trial Budget reserves allowed future trials; Trials Consumed records first
+official START. #53 has budget 1, consumed 0; #58 has budget/consumed 0. Review
+Tier and Gate Source summarize committed policy, not board-edit authority.
+HUMAN/CAPITAL tasks are not agent-dispatched. Dispatch intersects canonical
+Project membership with the committed primary-item registry, checks WIP,
+dependencies/unlocks/admission and review/trial policy, and excludes linked PR
+evidence, historical/failed items and healthy operational services. Unrelated
+Rocket issues cannot compete even if marked Ready or given a generic priority.
+
+PR dispositions and their individual blockers are machine-readable in
+`project.json`. #57 and #49 are MERGE_WHEN_ACCEPTED; #26/#38/#40/#46/#50 are
+CLOSE_EVIDENCE_ARCHIVE. All remain open while blockers are unverified. The
+action planner grants no experiment admission and no agent merge permission.
+Sequence: #57 review/merge -> #51 acceptance -> #49 governed-main update/review/
+merge; #50 preservation/note/closure after #51; #55 individual historical
+preservation/note/closures. Main becomes the only canonical authority; old
+open/closed branches remain evidence and grant no continuation.
+
+The synthetic audit never changes MOM-002 gates. Underpower triggers
+NEEDS_PRE_RESULT_GATE_REVIEW, not FAIL or a consumed trial. Required human
+decisions choose terminal or descriptive economics before independent review.
+After the final independently approved official freeze, gates cannot change.
+#59 risk/capital charter stays Parked and joins the whole downstream kill on
+MOM-002 FAIL. There is still no MOM-003 rescue.
+
 Official path: `rocket research score <experiment-id>`. The manifest must be admitted, frozen, independently approved and committed on reviewed main. It pins dataset bytes and all artifact hashes. Each invocation records experiment/trial identity, current commit, timestamp, dataset fingerprint, frozen hashes, scorer identity, result fingerprint and PASS/FAIL/BLOCKED in a hash-chain journal. See [technical contract](../../research/governance/README.md). CI checks frozen files against both their preregistration Git revision and the base branch, as well as append-only journals/ledger. Frozen manifests cannot be edited or deleted; invalidate through an appended record and re-admit a new ID/trial.
 
 Public market data cannot be perfectly cryptographically hidden from an agent with network access. The goal is auditable admissibility. Git review, protected main, distinct credentials and durable receipt publication are part of the trust boundary; hashes cannot prove that a human/agent did not inspect data elsewhere. Local file locks serialize one checkout only. There is no deployed scoring service, secret outcome vault, independent reviewer, or live-trading authority. MOM-002 remains Draft and has no scorer in this PR.

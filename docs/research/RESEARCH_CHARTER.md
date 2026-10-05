@@ -6,6 +6,22 @@ The human-value contract is to determine whether a scientifically defensible BTC
 
 ## Decisions reserved to the human
 
+Before MOM-002, [#56](https://github.com/jhonnyisaacc/rocket/issues/56) requires
+only independent scientific reviewer identity/process, appropriateness of
+the proposed 40bp hurdle, minimum effect worth prospective continuation,
+the post-[#58](https://github.com/jhonnyisaacc/rocket/issues/58) choice of
+terminal versus descriptive economics, and confirmation of the research-line
+STOP philosophy. The first four remain HUMAN_DECISION_REQUIRED. The 2026-10-05
+human mandate already confirms the STOP/no-MOM-003 philosophy; its attribution
+and source hash are recorded in `research/governance/human_decisions.json` for
+reviewed-main publication. The power audit does not make these value judgments.
+
+Final leverage, trade risk, exposure, drawdown, pilot capital/loss and
+venue/account/live-capital authorization are deferred to Parked
+[#59](https://github.com/jhonnyisaacc/rocket/issues/59). It unlocks only on an
+audited MOM-002 historical PASS acknowledged by the human and is automatically
+Rejected on MOM-002 FAIL. These downstream values do not block MOM-002.
+
 | Decision | Frozen value | Required before |
 | --- | --- | --- |
 | Rare/high-conviction opportunity: frequency, alert budget and conviction criterion | HUMAN_DECISION_REQUIRED | Strategy contract |
@@ -18,6 +34,10 @@ The human-value contract is to determine whether a scientifically defensible BTC
 | Maximum pilot loss and stop/reset policy | HUMAN_DECISION_REQUIRED | Capital review |
 | Capital authorization: venue, amount, instruments, duration, responsible human, revocation | HUMAN_DECISION_REQUIRED | Any real-capital pilot |
 | Independent scientific reviewer identity/process | HUMAN_DECISION_REQUIRED | MOM-002 admission |
+| Appropriateness of proposed 40bp research cost hurdle | HUMAN_DECISION_REQUIRED | Final MOM-002 contract |
+| Minimum effect worth prospective continuation | HUMAN_DECISION_REQUIRED | Final MOM-002 contract |
+| Economic gate terminal or descriptive after power audit | HUMAN_DECISION_REQUIRED | Final MOM-002 contract |
+| Confirm candidate-line STOP philosophy | Confirmed by 2026-10-05 human mandate; reviewed record required | MOM-002 admission |
 
 An existing proposal's numerical research thresholds (including #49's descriptive 40bp/80bp hurdles) are proposal evidence, not human economic or risk approval. Agents may neither invent these values nor fill them after seeing results. Human decisions must be dated, attributed, committed and reviewed before the affected contract is frozen. Changes require a recorded rationale before outcome access; prior tests remain consumed.
 

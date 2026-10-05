@@ -1,0 +1,13 @@
+{
+  "schema": "rocket.power.environment.v1",
+  "python_version": "3.14.1 (main, Dec  2 2025, 20:56:31) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "platform": "darwin",
+  "dependencies": {
+    "numpy": "2.5.3",
+    "orjson": "3.12.0",
+    "matplotlib": "3.11.2"
+  },
+  "matplotlib_scope": "Optional figure renderer only; not used for Monte Carlo or CI tests",
+  "random_generator": "NumPy default_rng PCG64; fixed seeds recorded in surface.json",
+  "reproduction": "Use matching Python/NumPy versions and single-thread BLAS; read committed structural geometry only."
+}

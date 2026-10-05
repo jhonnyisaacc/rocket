@@ -1,6 +1,6 @@
 # Live Project configuration and remaining UI steps
 
-Project: [Rocket — Derivatives Strategy Research](https://github.com/users/jhonnyisaacc/projects/4), user-owned Projects v2 #4, linked to jhonnyisaacc/rocket. It remains private; authenticated agents need Projects read/write scope. All seven Status options and fourteen custom fields exist. GitHub rejects the reserved custom name `Reviewer`; the equivalent text field is **Research Reviewer**. Native `Reviewers` is GitHub PR review requests, not the scientific identity field.
+Project: [Rocket — Derivatives Strategy Research](https://github.com/users/jhonnyisaacc/projects/4), user-owned Projects v2 #4, linked to jhonnyisaacc/rocket. The live readback on 2026-10-05 reports **public**; mutations require authenticated Projects write access. All seven Status options and nineteen custom fields exist (32 total including native fields). GitHub rejects the reserved custom name `Reviewer`; the equivalent text field is **Research Reviewer**. Native `Reviewers` is GitHub PR review requests, not the scientific identity field.
 
 Status: Backlog, Ready, In Progress, Review / Gate, Done, Rejected, Parked. Program Outcome: Active, Strategy Validated, Research Line Rejected, Ready for Capital Review. Priority/Family/Type/State/Phase options match the request. Trials Consumed is numeric; unknown historical totals stay blank with evidence annotations. Program outcome is synchronized across linked items by audited code-gate disposition; it is not an LLM's subjective decision.
 
@@ -14,6 +14,25 @@ API-created views have these persisted layouts/filters/grouping:
 | Rejected / Historical | Table, Research Family groups | `research-state:Historical,Failed` |
 | Data / PIT | Table | `research-family:"Data / PIT"` |
 | Program Roadmap | Table, Phase groups | all items; phases are conditional, no invented dates |
+| PR Dispositions | Table, explicit disposition/blocker columns | `is:pr` |
+| Review Tiers | Table, review/budget/gate columns | `is:issue` |
+| Human Decisions | Table, near-term/deferred scope | `is:issue gate-source:HUMAN` |
+
+The five added fields are Trial Budget (Number), Gate Source (CODE/HUMAN/DATA/
+REVIEW/NONE), Review Tier (MAINTENANCE/FOUNDATION/SCIENTIFIC_ADMISSION/
+PROSPECTIVE_VALIDATION/CAPITAL), PR Disposition (CONTINUE_ACTIVE/
+MERGE_WHEN_ACCEPTED/CLOSE_EVIDENCE_ARCHIVE/SUPERSEDED/BLOCKED), and Disposition
+Blocker (Text). #53 budget 1 differs from consumed 0; #58 and other new
+non-predictive issues have both 0. Exact semantics are in AGENT_ROLES.md,
+POWER_AUDIT.md and committed policy. PR dispositions remain fixed while their
+preservation/review blockers are outstanding, rather than being relabeled
+BLOCKED and losing the intended action.
+
+All nine views show the new fields. Existing Status/Phase grouping and sorting
+were preserved. GraphQL permits the three new views' filters and visible fields
+but offers no grouping/sorting input; those new tables have no claimed grouped
+layout. Current REST list attempts returned 404; this is a view-read limitation,
+not a failure to create fields or views. Live GraphQL readbacks verify them.
 
 All six display Title, Priority, Research Reviewer, Trials Consumed, Unlock/Kill, Status, Family, Research State, Phase, Evidence, Depends On and Program Outcome, with gate fields early in the visible-field order. Rejected items must have Research State Failed; the archive view thus includes historical/failed evidence without unsupported cross-field OR. Review / Gate items use Admission Review, Admitted, Running, Passed or Blocked states, all included by Research Gates. BLOCKED must always retain its kill condition.
 

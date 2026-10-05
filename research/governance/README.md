@@ -71,3 +71,34 @@ successor. See the protocol for full human and scientific gates.
 
 The authoritative setup includes no scoring of MOM-002, new alpha trial,
 trading key, order placement, execution toggle or historical dataset acquisition.
+
+## Refinement contracts
+
+`project.json` distinguishes Trial Budget from Trials Consumed and commits
+Review Tier, Gate Source, primary-item membership, all seven PR dispositions
+and individually named blockers. `rocket.research.policy.pr_action` emits a
+reviewable action plan; it cannot merge, close or admit a PR. Linked evidence
+rows and unrelated issues are outside dispatch. HUMAN/CAPITAL work cannot be
+selected by the agent dispatcher. Maintenance requires tests/CI/separate code
+review, without imposing MOM-002's isolated scientific admission burden.
+
+MOM-002 FROZEN/ADMITTED states additionally require every entry in
+`mom002_prerequisites.json` ACCEPTED, with exact Git/artifact evidence,
+resolved reviewer and prior aware timestamp. Freeze hashes that acceptance
+contract and the final post-power-audit proposal. Pending #51 foundation,
+Tier-B/overlap, #58 power, pre-result amendments or #56 decisions block it.
+An edit to a Project field cannot satisfy this verifier.
+
+The synthetic audit is `python scripts/research/power_audit.py`, with only
+draw-count options and one strict approved structural input. Its code has no
+I/O or real-data loader; the runner cannot choose an outcome file. The separate
+geometry export uses causal MOM-000 source primitives only, removing forward
+label definitions and requiring existing frozen ZIPs without acquisition.
+See [audit scope](../../docs/research/POWER_AUDIT.md). Neither command invokes
+the official scorer or writes the invocation journal. Tests use synthetic
+geometry/features/endpoints exclusively.
+
+`sync_gate.py` rejects every item marked `kill_on_mom002_fail`, including the
+parked human risk/capital charter, on an independently audited official FAIL.
+A conditional/underpowered synthetic audit is never a predictive FAIL and
+never invokes this kill. After the final official freeze, no gate changes.

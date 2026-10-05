@@ -74,6 +74,9 @@ def verify_manifest(root: Path, manifest: dict) -> None:
         return
     if manifest.get("state") not in FROZEN:
         raise GateError("Unknown manifest state")
+    if manifest.get("experiment_id") == "MOM-002":
+        from rocket.research.policy import mom002_prerequisites
+        mom002_prerequisites(root, manifest)
     artifacts = manifest.get("artifacts", {})
     if not isinstance(artifacts, dict) or not ROLES <= artifacts.keys() or not all(artifacts[r] for r in ROLES):
         raise GateError("All six frozen artifact roles required")
@@ -159,6 +162,12 @@ def at_revision(root: Path, revision: str, path: str) -> bytes | None:
 
 
 def verify_repository(root: Path, base: str | None = None) -> dict:
+    project_path = root / GOVERNANCE / "project.json"
+    if project_path.exists():
+        from rocket.research.policy import authority
+        authority(root)
+    elif base and at_revision(root, base, f"{GOVERNANCE}/project.json") is not None:
+        raise GateError("Authoritative Project policy deleted")
     folder = root / GOVERNANCE / "manifests"
     current = {p.relative_to(root).as_posix(): p for p in folder.glob("*.json")}
     for relative, path in current.items():
@@ -269,15 +278,10 @@ def score(root: Path, experiment_id: str) -> dict:
         return append_record(handle, receipt, previous)
 
 
-def next_item(items: list[dict], wip_limit: int = 3) -> dict | None:
-    """Dispatch only explicit primary work items with independently supplied readiness evidence."""
-    primary = [i for i in items if i.get("primary_work_item")]
-    if sum(i.get("status") in {"In Progress", "Review / Gate"} for i in primary) >= wip_limit:
-        raise GateError("Research WIP limit reached")
-    ready = [i for i in primary if i.get("status") == "Ready"
-             and i.get("admission_verified") is True and i.get("unlock_verified") is True
-             and i.get("dependencies_verified") is True and i.get("kill_condition")]
-    return min(ready, key=lambda i: (i["priority"], i["id"])) if ready else None
+def next_item(snapshot: dict, wip_limit: int = 3, *, root: Path | None = None) -> dict | None:
+    """Repository policy and Project membership govern dispatch, never issue ordering."""
+    from rocket.research.policy import select_next
+    return select_next(root or Path(__file__).resolve().parents[2], snapshot, wip_limit)
 
 
 def disposition(root: Path, receipt: dict, *, audit: dict) -> dict:

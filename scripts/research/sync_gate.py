@@ -33,9 +33,11 @@ def plan(config: dict, receipt: dict, decision: dict) -> dict:
         "Trials Consumed": 1,
         "Evidence": f"{receipt['commit_sha']}; invocation {receipt['invocation_id']}; receipt {receipt['record_sha256']}",
     })
-    downstream = updates[config["items"]["downstream"]["id"]]
-    downstream["Status"] = decision["downstream_status"]
-    downstream["Research State"] = "Failed" if decision.get("stop") else "Draft"
+    for item in config["items"].values():
+        if item.get("kill_on_mom002_fail"):
+            downstream = updates[item["id"]]
+            downstream["Status"] = decision["downstream_status"]
+            downstream["Research State"] = "Failed" if decision.get("stop") else "Draft"
     return {"project_id": config["project"]["id"], "receipt_sha256": receipt["record_sha256"],
             "decision": decision, "updates": updates}
 

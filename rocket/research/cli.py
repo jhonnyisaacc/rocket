@@ -36,7 +36,7 @@ def select_next(snapshot: Path = typer.Option(..., exists=True, readable=True)) 
         data = json.loads(snapshot.read_text())
         if not data.get("audited_at") or not data.get("project_url"):
             raise GateError("Timestamped Project snapshot required")
-        result = next_item(data["items"])
+        result = next_item(data, root=Path.cwd())
     except (GateError, KeyError, OSError, ValueError) as exc:
         typer.echo(json.dumps({"status": "BLOCKED", "reason": str(exc)}))
         raise typer.Exit(2) from exc

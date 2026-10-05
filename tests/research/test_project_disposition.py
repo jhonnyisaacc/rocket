@@ -19,5 +19,7 @@ def test_fail_plan_rejects_branch_and_marks_outcome_on_all_existing_items():
     assert set(update_plan["updates"]) == {i["id"] for i in config["items"].values()}
     assert all(v["Program Outcome"] == "Research Line Rejected" for v in update_plan["updates"].values())
     assert update_plan["updates"][config["items"]["downstream"]["id"]]["Status"] == "Rejected"
+    assert update_plan["updates"][config["items"]["risk_charter"]["id"]]["Status"] == "Rejected"
+    assert update_plan["updates"][config["items"]["risk_charter"]["id"]]["Research State"] == "Failed"
     assert update_plan["updates"][config["items"]["mom002"]["id"]]["Trials Consumed"] == 1
     assert update_plan["decision"]["successor_admitted"] is False

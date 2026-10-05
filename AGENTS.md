@@ -12,6 +12,17 @@ contracts. Project edits alone do not grant experiment admission.
 - MOM-002 is Draft, unapproved and unscored. No fitting, association inspection,
   forecasts or scoring until exact independent admission/freeze requirements
   are met. A reviewable proposal freeze is not scoring permission.
+- Before MOM-002 independent admission review/freeze, require accepted #51
+  foundation/Tier-B/overlap, accepted #58 synthetic power audit, finalized
+  pre-result changes and #56 near-term human decisions. #54 receives only the
+  final post-power-audit packet. #59 risk/capital decisions are downstream.
+- Use committed Review Tier requirements. #52 maintenance needs tests, CI and
+  separate code review, not MOM-002 isolated scientific admission. Shared
+  @jhonnyisaacc cannot prove independence; #60 tracks real identities.
+- Dispatch only committed Project primary items. Open historical PRs and
+  unrelated repository issues never grant admission or compete for WIP.
+- Follow exact PR dispositions/blockers in research/governance/project.json:
+  #57/#49 intended merge; #26/#38/#40/#46/#50 evidence closure after preservation.
 - No agent approves or merges its own PR/experiment. Reviewers must not have
   designed or implemented the experiment. Do not invent a reviewer identity.
 - Do not invent human economic/risk values or fill them after viewing results.

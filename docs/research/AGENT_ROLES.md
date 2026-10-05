@@ -13,3 +13,22 @@ Actual MOM-002 reviewer: **UNRESOLVED**. Existing Codex/Muse collaborators on MO
 The authenticated GitHub actor is the real repository owner `@jhonnyisaacc`, with admin permission. CODEOWNERS uses this valid owner for sensitive files. GitHub cannot distinguish a human from an LLM using the same credential. Required PR/last-push review and no bypass reduce accidental pushes, but separate reviewer credentials/collaborator access are needed for meaningful platform identity separation. The owner is not invented as the scientific reviewer. Agents must never approve or merge their own research PRs. Human charter/capital approval is separate from scientific review.
 
 Admission outcomes: APPROVE; APPROVE_WITH_PRE_RESULT_CHANGES (renewed review required); REJECT_AS_RESCUE; REJECT_AS_UNDERPOWERED. Approval must precede fitting/association access and name the exact pre-result revision, artifact hashes and single-trial budget. Audit approval after scoring validates provenance, not scientific taste.
+
+## Review tiers
+
+| Tier | Required acceptance |
+| --- | --- |
+| MAINTENANCE | One implementer, meaningful tests, CI and a different agent/person code review. No isolated scientific package. Includes #52 PIT correctness, #55 evidence indexing and governance maintenance. |
+| FOUNDATION | Strong independent technical/adversarial review of exact artifacts; zero-alpha reconciliation #51 and synthetic methodology #58 are not predictive trials. |
+| SCIENTIFIC_ADMISSION | Isolated pre-result package; no result access; reviewer did not design/implement; preferably distinct model family; exact commit/artifact approval. #53/#54 receive only the finalized post-power-audit contract. |
+| PROSPECTIVE_VALIDATION | Separately admitted frozen forward forecasts, stopping rule, isolated mature outcomes and independent exact-artifact review; historical PASS alone does not admit it. |
+| CAPITAL | Human-only risk/value/capital authorization; agents stop at READY_FOR_CAPITAL_REVIEW. |
+
+[#60](https://github.com/jhonnyisaacc/rocket/issues/60) tracks real owner,
+implementer GitHub App/account, and reviewer App/collaborator separation.
+Currently human, Codex and Muse operations all appear as `jhonnyisaacc`.
+Different agent names do not establish GitHub or scientific independence.
+The approving GitHub identity must differ from author/last pusher under the
+ruleset. Identity rollout does not block ordinary zero-alpha maintenance
+implementation/testing; required protected-branch merge review still applies.
+It does not replace #56's human-approved scientific review process.

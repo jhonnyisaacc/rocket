@@ -1,0 +1,30 @@
+{
+  "schema": "rocket.research.human-decisions.v1",
+  "outcome_accessed": false,
+  "scope": "Near-term MOM-002 decisions; #59 risk/capital deferred",
+  "decisions": {
+    "reviewer_identity_process": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "cost_hurdle_40bp": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "minimum_worthwhile_effect": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "economic_gate_role": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "stop_philosophy": {
+      "status": "CONFIRMED_BY_HUMAN_MANDATE",
+      "value": "MOM-002 FAIL rejects candidate BTC line and all downstream work; no MOM-003 rescue",
+      "attribution": "Human task brief, 2026-10-05, sections 21 and 24",
+      "source_sha256": "1ab97ae01e0e44a810e8b0d36e2530227e3ed94b7d3592f908c969853f668b2e",
+      "reviewed_main_record_required": true
+    }
+  }
+}

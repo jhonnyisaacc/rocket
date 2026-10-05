@@ -21,9 +21,18 @@
     "sha256": "5c0ecbf5302145a98c620c7f44f7f027b9d376fd9c0e9289f0a304c961307df2",
     "status": "PENDING_INDEPENDENT_REVIEW"
   },
-  "unlock_condition": "Independently accepted #51 reconciliation/overlap/Tier-B foundation; isolated review; human-approved independent reviewer/process; exact approved final contract/code hashes before scoring",
+  "unlock_condition": "Accept #51 foundation/Tier-B/overlap and #58 audit; record #56 decisions; finalize pre-result changes; #54 exact final isolated approval; hash acceptance contract before official freeze",
   "success_condition": "Every frozen predictive/incremental/economic/robustness gate PASS; provenance audit; human acknowledgment before downstream admission",
   "failure_condition": "Any required gate FAIL or undefined; readiness gap BLOCKED before fitting",
   "kill_condition": "MOM-002 FAIL rejects entire candidate-based BTC downstream branch; no MOM-003 rescue",
-  "depends_on": [51, 54, 56]
+  "depends_on": [
+    51,
+    58,
+    56,
+    54
+  ],
+  "review_tier": "SCIENTIFIC_ADMISSION",
+  "gate_source": "REVIEW",
+  "pre_result_state": "NEEDS_PRE_RESULT_GATE_REVIEW",
+  "prerequisite_contract": "research/governance/mom002_prerequisites.json"
 }

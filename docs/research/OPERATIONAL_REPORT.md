@@ -1,63 +1,216 @@
 # Rocket autonomous research program — operational report
 
-Safety: **READ_ONLY_RESEARCH_ONLY_HUMAN_GATED**. No MOM-002 score, model fit, outcome-association inspection, new alpha experiment, market data acquisition or execution enablement occurred. Scientific work remains gated; infrastructure completion is not strategy validation.
+Updated 2026-10-05 for the existing [PR #57](https://github.com/jhonnyisaacc/rocket/pull/57)
+on `chore/autonomous-research-project`. Safety remains
+**READ_ONLY_RESEARCH_ONLY_HUMAN_GATED**. MOM-002 is Draft /
+**NEEDS_PRE_RESULT_GATE_REVIEW**, unapproved, unadmitted and unscored. Its
+budget is 1 and consumed count 0; the official invocation journal is empty.
+No real feature/outcome association, fitted forecast, future-return/label/MFE/
+MAE analysis, new alpha trial, market acquisition or execution occurred.
 
-## Delivered
+## Project and persistent authority
 
-- [User-owned GitHub Project #4](https://github.com/users/jhonnyisaacc/projects/4), linked to the repository: seven Status options, fourteen custom fields and six named API-created views with verified Status/Phase grouping and Priority sorting. Reviewer uses GitHub-supported name Research Reviewer. README states mission, WIP 3, decision tree, FAIL kill, human gates and terminal outcomes.
-- Real issues: [#51 MOM-000 reconciliation acceptance](https://github.com/jhonnyisaacc/rocket/issues/51), [#52 CFTC PIT fix acceptance](https://github.com/jhonnyisaacc/rocket/issues/52), [#53 MOM-002 draft](https://github.com/jhonnyisaacc/rocket/issues/53), [#54 independent review](https://github.com/jhonnyisaacc/rocket/issues/54), [#55 historical evidence consolidation](https://github.com/jhonnyisaacc/rocket/issues/55), [#56 human charter/identities](https://github.com/jhonnyisaacc/rocket/issues/56). Each has question, rationale, scope, inherited evidence, unlock/success/failure/kill, dependencies, trial impact, roles and links.
-- Two draft cards: completed MOM-000 census (Done/Historical), and one entire downstream derivatives branch (Parked/Draft; MOM-002 FAIL kills it). Six requested PRs #49/#50/#38/#40/#46/#26 are Project evidence items. No historical PR was merged or closed. Thirteen focused repository labels were created/normalized; archive labels preserve historical visibility.
-- Dedicated `chore/autonomous-research-project` branch/PR from inspected main `09d71503906345c194778ecf951dc3a06f2b42cc`. Charter, protocol, roles, append-only trial ledger, pinned evidence index, Project configuration, collector operations and agent instructions are present. They become main authority through independently reviewed merge; agents do not merge their own PRs.
-- Minimal gate primitives: manifest registry; six artifact hash roles (contract/population/features/model/gate/runtime); exact independent approval; SHA-pinned dataset; clean reviewed-main scoring; no retry after START; fsynced SHA-chain invocation receipts; append-only invalidations/ledger; base-branch freeze checks; deterministic FAIL/PASS/BLOCKED disposition and audited Project synchronizer. MOM-002 registration is Draft, scoring_authorized=false, approval=null, scorer=null, trials consumed=0. No experiment scorer is supplied for it.
-- CODEOWNERS names actual owner @jhonnyisaacc. Required offline workflow **Governance checks** runs on this PR and all future PRs after merge; it does not acquire market data or score a hypothesis.
-- Active main ruleset [24519812](https://github.com/jhonnyisaacc/rocket/settings/rules/24519812): PR required; one independent/last-push approval; stale reviews dismissed; threads resolved; strict required Governance checks from GitHub Actions app 15368; no force-push/deletion; no bypass actors. Effective branch rules were independently re-read. No main push was attempted to test protection.
+[Project #4](https://github.com/users/jhonnyisaacc/projects/4) is preserved,
+with seven Status values, existing families/types/states/phases and WIP=3.
+There are 18 items and 32 total fields (19 custom). Five added fields:
+Trial Budget (Number), Gate Source, Review Tier, PR Disposition (single
+selects), and Disposition Blocker (Text). Trial reservations and consumed
+history are separate; historical counts remain inherited, including UNKNOWN
+counts rather than invented zeros.
 
-## Current scientific state
+Nine views now exist. Original six Status/Phase/grouping/filter/sorting
+configurations remain; new tables are PR Dispositions (`is:pr`), Review Tiers
+(`is:issue`) and Human Decisions (`is:issue gate-source:HUMAN`). All views
+show the new policy fields. Live GraphQL readbacks verified IDs, filters,
+visible fields and preserved grouping/sort. New-view grouping/sort is not
+exposed by GraphQL; no unsupported configuration is claimed. The current
+Project reports public; this task did not change its visibility. See
+[configuration](PROJECT_CONFIGURATION.md) for API limitations.
 
-#49 already contained the requested reconciliation and CFTC correction before this infrastructure work. #51/#52 track independent acceptance/merge of those existing implementations, not permission to rerun alpha. #49/#50 heads remained unchanged on reinspection, with no review approvals. MOM-000 remains STOP_INSUFFICIENT_FEASIBILITY, MOM-001 never admitted, predictive trials zero. #49's corrected 5 UP/8 DOWN and 128/47 interval components are pinned evidence; program foundation acceptance remains pending. The original #50 5/7 is preserved, not promoted as final truth.
+Issues #51–#56 were refined with specific rationale, dependencies and review
+requirements. Added [#58 synthetic power audit](https://github.com/jhonnyisaacc/rocket/issues/58),
+[#59 deferred risk/capital charter](https://github.com/jhonnyisaacc/rocket/issues/59)
+and [#60 identity separation](https://github.com/jhonnyisaacc/rocket/issues/60).
+Committed issue bodies, Project registry and per-PR blockers make this handoff
+independent of the chat. Repository contracts govern admission; board edits do
+not substitute for acceptance or scientific approval.
 
-MOM-002 has a detailed reviewable proposal in #49 but no independent reviewer/approved commit. This Project correctly keeps it Backlog/Draft until #51 foundation/overlap/Tier-B acceptance, then Admission Review, isolated independent approval and exact scorer freeze. Future budget is one trial. FAIL rejects the entire candidate-based BTC downstream item and emits RESEARCH_LINE_REJECTED; no MOM-003 rescue. A future PASS requires provenance audit and human acknowledgment before separately admitting only the next permitted phase.
+## Power audit and data boundary
 
-Historical trials are inherited, not reset: #38's thirteen FUT contracts plus older screens; #40's 43 macro variants; #46's reported A18/B10/C6 including sensitivities, with header/count inconsistencies explicit; #26's equity ablations/unknown exact trial total. Historic numeric counts are source-reported summaries, not claims of unique independent tests. Unresolved historical totals remain blank in the Project, with explanatory evidence. Options surface/quote data is insufficient; future expression remains BLOCKED_DATA without admitted defensible history. No macro, Cava, X or options warehouse was built.
+#58 implementation is complete, **Review / Gate / Admitted**, FOUNDATION,
+Gate Source CODE, Trial Budget 0 / Trials Consumed 0. Independent methodology
+acceptance remains pending. [Power results](POWER_AUDIT_RESULTS.md) report
+2,000 Monte Carlo draws per regime and 2,000 paired bootstrap draws under
+both cluster definitions: 80 experiment regimes and 240 economic surface
+rows. Fixed seeds, source/code hashes, every marginal/full probability and
+Monte Carlo uncertainty are in the JSON/CSV.
 
-Prospective collection is documented as an operational service: health, expected/successful cutoffs, missing receipts, UNKNOWN rate, source hashes and collector version. The source status in #49 is historical; no current-health or deployed-monitor claim is made. Future labels remain separate from causal forecast records. Collection cannot solve the binary rare-positive power problem on a useful short timescale.
+The causal structural replay reproduced 354 candidates, 107 spaced
+identities, and 128/47 components. It used only checksum-pinned existing
+spot ZIPs, frozen causal generator definitions and timestamp coverage;
+forward-label definitions were removed before execution. No stored result,
+label or excursion artifact was opened. The simulation receives a strict
+structural manifest and creates all features, targets, predictions and paths
+synthetically. It has no data loader/network/file I/O or official scorer call.
 
-## Validation and limits
+Allowed real input: candidate identities/timestamps/directions, folds,
+7d/14d component membership, spaced identities, frequency, causal fold sizes,
+alert-cap arithmetic, source coverage, feature availability/missingness,
+frozen causal S and, when necessary, feature-feature structure. Forbidden:
+actual future 7d return/y/binary success/MFE/MAE, actual feature/outcome
+associations, fitted MOM-002 forecasts or real gate results. Existing MOM-000
+aggregate evidence remains documented and never tunes synthetic scenarios.
 
-Local latest full offline suite: **605 passed, 1 live integration test excluded**; **50 targeted governance/safety tests passed**, including Project disposition, malformed scorer output, unresolved identity and immutable-freeze checks. Ruff and frozen-manifest/base-branch verification passed. Tests use synthetic scorer/data fixtures only. Authoritative MOM-002 journal remains empty; no research trial was consumed. GitHub CI verification and final PR URL are recorded below after publication.
+Under the documented coverage/complete-feature assumption, annual caps are
+4/4/4: at most 12 OOS alerts. The top-five positive-component <=60% gate
+requires at least nine positive-contributing 14d components. No complete
+PASS was observed in any tested regime, including nominal r=.40. The
+per-regime 0/2,000 Wilson 95% upper bound is ~0.192%; common random numbers
+couple regimes, so these are not pooled independent trials. At r=.40 under
+independent noise/zero synthetic drift, information passes ~88%, economics
+~13%, complete PASS 0%. Concentration is the usual bottleneck.
 
-Git protects committed integrity, not impossible market-data secrecy. Public outcomes remain accessible to networked agents. Hashes cannot prove unseen outcomes or model-family independence. Official scoring needs one appointed serialized scoring checkout; local locks do not serialize multiple hosts. Independent review, complete runtime dependency listing and durable publication through protected main remain part of admissibility. No giant framework, live execution service or secret outcome vault was deployed.
+Conclusion: **INDETERMINATE_ASSUMPTIONS_REQUIRED**, with a conditional
+feasibility warning. Actual six-feature completeness/readiness, human minimum
+worthwhile effect and terminal/descriptive economic role are unresolved;
+synthetic bridge adversity is assumption-dependent. This is not a real FAIL,
+scientific admission, threshold amendment or consumed predictive trial.
 
-## Remaining UI/human gates
+## Exact MOM-002 dependency graph
 
-[Project configuration](PROJECT_CONFIGURATION.md) records verified Status columns, Phase grouping, gate field order, Priority/Phase sorting and actual filtered item membership. These were completed through REST view creation plus GraphQL verification. No mandatory grouping step remains; a graphical WIP affordance is optional because no API parameter exposes it.
+```text
+#51 accepted foundation reconciliation
+ + accepted Tier-B source/readiness
+ + accepted overlap semantics
+ + #58 completed and independently accepted power/methodology audit
+ + #56 recorded near-term human decisions
+ + #53 finalized/versioned pre-result contract changes
+ -> #54 isolated review of FINAL post-power-audit packet
+ -> independent exact commit/artifact APPROVE
+ -> official admission/freeze of all six roles + prerequisite hashes
+ -> one future authorized official scorer START (not authorized now)
+ -> machine PASS / FAIL / BLOCKED + independent provenance audit
+```
 
-Only @jhonnyisaacc currently has repository collaborator access. The owner must invite the real selected independent reviewer (Settings → Collaborators → Add people) before an owner-authored PR can receive the required approval. CODEOWNERS review is not mandatory while its only owner is also the PR author; independent/last-push review is mandatory. Do not invent a collaborator, self-approve or disable the rules to merge. Existing PRs must receive the governance workflow to satisfy its required check.
+`mom002_prerequisites.json` currently has six PENDING acceptances. The verifier
+refuses MOM-002 FROZEN/ADMITTED states without accepted prior, resolved,
+Git/artifact-bound evidence and the final contract. Review #54 is likewise
+blocked until the post-power prerequisites are accepted. No scorer/model is
+implemented for real MOM-002. A future final freeze forbids further gate
+changes. FAIL deterministically rejects the entire downstream BTC branch,
+including #59; no MOM-003 rescue. PASS requires human acknowledgment before
+separately admitting only the next permitted phase.
 
-Human intervention remains: supply charter economic/risk values; approve independent reviewer/process; acknowledge a future MOM-002 PASS; explicitly authorize/reject capital only after complete historical/prospective strategy validation. Current values/identity are HUMAN_DECISION_REQUIRED, not filled by an agent. Routine admitted research proceeds through the documented loop without repeated human prompting.
+## Human decisions and review tiers
 
-Terminal strategy PASS requires a complete frozen, reproducible forecast/setup/management/expression/cost/risk policy surviving historical robustness and prospective validation. STRATEGY_VALIDATED becomes READY_FOR_CAPITAL_REVIEW and agents stop. Terminal FAIL preserves negative evidence and stops without inventing another experiment.
+#56 now covers five near-term decisions only: scientific reviewer identity/
+process, appropriateness of proposed 40bp, minimum effect worth prospective
+continuation, post-audit terminal/descriptive economics, and STOP philosophy.
+The user mandate already confirms STOP/no-MOM-003; attribution/source hash is
+recorded for reviewed-main publication in `human_decisions.json`. The other
+four remain HUMAN_DECISION_REQUIRED; agents do not choose them.
 
-## Publication verification
+#59 is **Parked / Draft / CAPITAL / HUMAN**, unlocked by audited MOM-002
+historical PASS acknowledged by the human. Drawdown, risk per trade, leverage,
+margin/liquidation, gross/net/correlated/venue exposure, pilot capital/max loss,
+pilot stop/reset, venue/account and live-capital authorization are deferred.
+They are not #53/#54 prerequisites. Actual capital still requires a fully
+validated historical/prospective strategy and separate human authorization.
+MOM-002 FAIL automatically rejects #59 with the rest of downstream work.
 
-[Dedicated draft governance PR #57](https://github.com/jhonnyisaacc/rocket/pull/57) is attached to the Codex chat and linked to the Project (15 total items). Initial GitHub push/PR Governance checks passed on Python 3.12 with app ID 15368. [PR run](https://github.com/jhonnyisaacc/rocket/actions/runs/37351585753). [Latest PR checks](https://github.com/jhonnyisaacc/rocket/pull/57/checks) are the live source for the required check; handoff verifies the final follow-up revision, not only the initial runs. Main remains 09d71503906345c194778ecf951dc3a06f2b42cc; no merge/main rewrite was performed.
-
-## Requirement-by-requirement completion evidence
-
-| Requirement | Authoritative evidence |
+| Review Tier | Requirements and scope |
 | --- | --- |
-| Inspect main, six PRs, auth/settings before mutation | IMPLEMENTATION_PLAN.md; EVIDENCE_INDEX.md pins inspected revisions; initial main SHA unchanged |
-| Real Project, all statuses/custom fields, six configured views | Live #4 GraphQL/REST readbacks; project.json records IDs/options; real view item queries verify filters |
-| Real work issues with all mandatory sections and links | Live #51–#56 bodies; complete Project field readback matches committed configuration |
-| Census and killable downstream branch; historical PR links | Live Done/Historical census, Parked/Draft downstream with FAIL kill; six research PRs plus #57 |
-| Charter/protocol/roles/cross-family trial history | Canonical source documents in dedicated PR #57; human numbers/reviewer unresolved as required |
-| Machine contracts/frozen-file CI/official scoring identity | rocket/research/governance.py, manifests/MOM-002.json, required workflow, synthetic adversarial tests |
-| Append-only auditable trials, code gate, WIP and FAIL kill | Hash-chain/base-prefix checks; next/disposition CLI; sync_gate.py tested across every Project item |
-| Main direct/force protection, PR/review/CI, no self merge | Effective ruleset 24519812 with no bypass; real CODEOWNERS; #57 remains draft/unmerged |
-| Operational collector status and no short-term power claim | PROSPECTIVE_OPERATIONS.md plus collector_status.schema.json; no invented current-health assertion |
-| Historical preservation/data/option restrictions | Pinned evidence and archive labels; #55 future individualized closure; no research PR merged/closed; options BLOCKED_DATA |
-| Program/human terminal gates and sparse post-PASS scope | Charter/protocol/downstream card: one next admitted phase, human PASS acknowledgment and capital authorization |
-| No prohibited experiment/execution | Authoritative MOM-002 Draft/null scorer/approval, empty invocation journal, read-only safety suite; no market acquisition |
-| Reviewable repository delivery | Dedicated branch, attached draft PR #57, green required CI; source enters main only after independent review/merge |
+| MAINTENANCE | One implementer, tests, CI, different agent/person code review; no isolated scientific packet. #52 PIT correctness and #55 evidence indexing. |
+| FOUNDATION | Strong independent technical/adversarial exact-artifact review. #51 reconciliation and #58 zero-alpha methodology. |
+| SCIENTIFIC_ADMISSION | Isolated pre-result package, no result access, reviewer did not design/implement, preferably distinct model family, exact artifact/commit approval. #53/#54. |
+| PROSPECTIVE_VALIDATION | Separately admitted frozen forecasts/stopping rule, isolated mature outcomes, independent exact-artifact review. |
+| CAPITAL | Human-only authorization; agents stop at READY_FOR_CAPITAL_REVIEW. |
 
-Independent review/merge, human charter values and future scientific gates remain deliberate human/research gates. This report does not assert they have occurred. All available infrastructure is delivered for review without bypassing those gates.
+Current GitHub operations from human/Codex/Muse share `jhonnyisaacc`; GitHub
+cannot distinguish them. Only that actor currently has collaborator access.
+#60 seeks real owner, implementation App/account and review App/collaborator
+separation. A protected PR approval must differ from author/last pusher;
+scientific independence also needs #56's accepted process and contribution
+history. Maintenance implementation/testing can proceed while identity
+infrastructure is established; required independent merge review still applies.
+
+## Exact PR dispositions and intended sequence
+
+All seven PRs remain **open** because their individual acceptance/preservation
+blockers have not been verified. No historical PR was closed, and no PR was
+merged. Every mapping/blocker is machine-readable in `project.json`.
+
+| PR | Disposition | Outstanding blocker / preserved conclusion |
+| --- | --- | --- |
+| #57 governance | MERGE_WHEN_ACCEPTED | Distinct required GitHub review, final Governance checks and acceptance of this iteration. Governance must become main authority first. |
+| #49 canonical momentum | MERGE_WHEN_ACCEPTED | #57 merged first; update/rebase onto governed main; #51 foundation acceptance; review/checks; MOM-002 locked unscored/unadmitted until #58/#54. Merging does not score it. |
+| #50 Muse replication | CLOSE_EVIDENCE_ARCHIVE | #51 complete; useful Tier-B/source findings and original 5 UP/7 DOWN plus DOWN-orientation bug preserved; archive label; note points to #49/#51. Do not merge. |
+| #38 futures | CLOSE_EVIDENCE_ARCHIVE | #55 verifies FUT-001..FUT-013/necessary older findings, SHA-pinned evidence/index/ledger, archive label and note. No validated directional futures edge. No runtime merge for history. |
+| #40 macro timing | CLOSE_EVIDENCE_ARCHIVE | 43-variant history, final holdout failure, deflated-Sharpe conclusion/documents/links, archive label and note preserved. Do not merge runtime. |
+| #46 BTC derivatives | CLOSE_EVIDENCE_ARCHIVE | Puts/capitulation/carry, approximation/options-data limits, trial accounting and #40 dependency preserved; archive label/note. Future expression inherits evidence; do not merge as active strategy. |
+| #26 ISM/equity shorts | CLOSE_EVIDENCE_ARCHIVE | EDGE_NOT_VALIDATED, strict-PIT limits, borrow/funding UNKNOWN and useful architecture findings preserved; archive label/note. Future useful components need focused infrastructure ports. |
+
+Sequence: #57 review -> authorized merge; #51 foundation acceptance -> #49
+governed-main update/review -> authorized merge; #50 preservation/note ->
+closure after #51; #55 verified/indexed preservation -> individual
+#26/#38/#40/#46 notes/closures. Main becomes sole canonical research authority;
+old PRs remain permanent evidence and grant no continuation permission.
+Agents do not merge their own PRs or disable branch protection.
+
+## Dispatch, operational service and blockers
+
+Current primary research WIP is **3/3**: #51 In Progress, #52 In Progress,
+#58 Review / Gate. Linked PR rows do not count. Finish these admitted items;
+do not start a fourth. Highest-priority next autonomous action after #57 is
+independently reviewed/merged: **independent technical/adversarial review of
+#58's exact synthetic code/geometry/surface hashes and assumptions in its
+existing WIP slot**, while #51/#52 acceptance continues. Record genuine
+acceptance evidence; do not treat this implementer's report as its own review.
+Then resolve #56's remaining human choices and finalize #53 before #54.
+
+Human blockers: real independent GitHub reviewer/access for #57/#49,
+scientific reviewer/process, 40bp decision, minimum worthwhile effect,
+post-power economic role. Code/data/review blockers: #51 foundation/Tier-B/
+overlap acceptance, exact six-feature completeness/source/PIT readiness,
+#52 correction acceptance on governed main, #58 methodology acceptance and
+final pre-result contract. #59 capital terms are downstream and do not block
+MOM-002. Historical preservation attestations still block closures.
+
+Dispatch requires a complete canonical primary inventory (preventing omitted
+WIP), registry membership, Project/repository identity, verified dependencies/
+unlock/admission and matching committed review/budget/gate policy. HUMAN/
+CAPITAL work cannot be agent-dispatched. Scientific dispatch additionally
+verifies prerequisites and exact admitted manifest. Unrelated Rocket issues,
+linked historical PRs and healthy operational services never compete for WIP.
+A Project edit cannot create scientific admission.
+
+Shadow collection remains an operational service, with expected/successful
+cutoff, missing receipts, UNKNOWN rate, source hashes and collector version
+health reporting in PROSPECTIVE_OPERATIONS.md. This task did not start or
+inspect mature collector outcomes, claim current health, or create an eternal
+In Progress service card. More rare binary candidates do not quickly solve
+MOM-000 power. Existing trial ledger, frozen manifests, append-only journals,
+hashing, official scorer path and deterministic terminal kill remain intact.
+
+## Verification and publication
+
+Full offline suite: **629 passed, one live integration test excluded**.
+Targeted governance/safety: **74 passed**. Ruff, whitespace and Git-base
+freeze/append-only verification passed; current MOM-002 journal records = 0.
+Tests cover field types/options, budget versus consumption, exact dispositions,
+maintenance/scientific review, pre-power freeze prohibition, #59 FAIL kill,
+historical/unrelated exclusion, complete WIP inventory, deterministic synthetic
+reproduction, duplicate-cluster statistics and rejection of outcome columns.
+Power tests use only synthetic fixtures, including a file-access trap.
+
+Active ruleset **24519812** was re-read unchanged: PR, one author/last-pusher-
+independent approval, stale review dismissal, resolved threads, strict
+Governance checks (Actions app 15368), no force-push/deletion and no bypass.
+No main push/merge was attempted. Final [PR checks](https://github.com/jhonnyisaacc/rocket/pull/57/checks)
+remain required, along with independent acceptance; hashes protect integrity,
+not secret outcomes or scientific independence. Public outcome access cannot
+be cryptographically excluded on every networked host, and local scorer
+locking does not serialize multiple clones.
+
+This PR refines the existing program. It does not score/admit MOM-002, change
+its proposed gates, authorize a successor, capital, orders or live execution.
