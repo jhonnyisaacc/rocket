@@ -143,7 +143,9 @@ BLOCKED/REVIEW_REQUIRED to **CLEAN / MERGEABLE**, with no required review or
 registered check runs. No repository merge blocker remains in the live readback.
 Their changed paths are excluded from scoped research CI; no research WIP slot,
 admission, second account/App or scientific reviewer is needed. These PRs remain
-open; this correction did not merge them or validate their feature branches.
+outside research dispatch. During final verification, `jhonnyisaacc` merged #63
+at 20:30:06 UTC and #64 at 20:30:11 UTC on 2026-10-05. Both are now **MERGED**.
+This correction did not perform those merges or validate their feature branches.
 
 Scientific independence records model/family, role, isolated pre-result context,
 contribution history, exact commit/artifact hashes and decision. The publishing

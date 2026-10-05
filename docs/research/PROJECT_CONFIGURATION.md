@@ -50,7 +50,8 @@ Live GitHub readback returned no remaining rulesets and no classic main branch
 protection. No replacement, bypass exception or unrelated setting was changed.
 Ordinary PRs need no second GitHub account/App, scientific review, admission,
 research WIP slot or mandatory Governance checks. #63/#64 became CLEAN/MERGEABLE
-immediately after removal; inspect their current normal tests before merging.
+immediately after removal. Final live verification shows both subsequently merged
+by `jhonnyisaacc` on 2026-10-05; this correction did not perform those merges.
 
 Scientific approval records reviewer role/model family, isolated pre-result
 context, contribution history, exact commit/artifact hashes and decision. The
