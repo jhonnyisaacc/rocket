@@ -2,6 +2,12 @@
 
 Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. Execution is disabled.
 
+Repository workflow is LIGHTWEIGHT; scientific research is STRICT /
+MACHINE-GATED. Scientific reviewer/process decisions refer to model/family,
+role, isolated context and contribution history, not a second GitHub account.
+The same GitHub actor may publish independent exact-artifact review evidence.
+Ordinary engineering needs no research admission, WIP slot or scientific review.
+
 The human-value contract is to determine whether a scientifically defensible BTC derivatives strategy can identify a small number of unusually attractive directional momentum opportunities, enter efficiently, manage systematically and express appropriately through futures/options — or terminate the line with preserved negative evidence. Desired behavior is sparse, deterministic, reproducible, cost-aware and bounded by an explicitly approved risk policy. An LLM has no discretionary trade override.
 
 ## Decisions reserved to the human

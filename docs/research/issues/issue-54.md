@@ -58,5 +58,5 @@ Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No scoring, trading or live execu
 
 ## Review Tier
 
-SCIENTIFIC_ADMISSION, Gate Source REVIEW, Trial Budget 0, Trials Consumed 0. Isolation, no result access, non-designing/non-implementing reviewer, exact commit/artifact approval. #60 records GitHub identity rollout; do not claim independence from shared @jhonnyisaacc.
+SCIENTIFIC_ADMISSION, Gate Source REVIEW, Trial Budget 0, Trials Consumed 0. Isolation, no result access, non-designing/non-implementing reviewer, exact commit/artifact approval. Record model/family, role, isolated context, contribution history and exact hashes/decision. Publication by @jhonnyisaacc is allowed; a second GitHub account/App is not required. #60 mandatory identity rollout is retired.
 

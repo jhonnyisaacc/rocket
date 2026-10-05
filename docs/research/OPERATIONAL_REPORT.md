@@ -30,7 +30,7 @@ Project reports public; this task did not change its visibility. See
 Issues #51–#56 were refined with specific rationale, dependencies and review
 requirements. Added [#58 synthetic power audit](https://github.com/jhonnyisaacc/rocket/issues/58),
 [#59 deferred risk/capital charter](https://github.com/jhonnyisaacc/rocket/issues/59)
-and [#60 identity separation](https://github.com/jhonnyisaacc/rocket/issues/60).
+and [#60 retired mandatory identity rollout](https://github.com/jhonnyisaacc/rocket/issues/60).
 Committed issue bodies, Project registry and per-PR blockers make this handoff
 independent of the chat. Repository contracts govern admission; board edits do
 not substitute for acceptance or scientific approval.
@@ -126,13 +126,38 @@ MOM-002 FAIL automatically rejects #59 with the rest of downstream work.
 | PROSPECTIVE_VALIDATION | Separately admitted frozen forecasts/stopping rule, isolated mature outcomes, independent exact-artifact review. |
 | CAPITAL | Human-only authorization; agents stop at READY_FOR_CAPITAL_REVIEW. |
 
-Current GitHub operations from human/Codex/Muse share `jhonnyisaacc`; GitHub
-cannot distinguish them. Only that actor currently has collaborator access.
-#60 seeks real owner, implementation App/account and review App/collaborator
-separation. A protected PR approval must differ from author/last pusher;
-scientific independence also needs #56's accepted process and contribution
-history. Maintenance implementation/testing can proceed while identity
-infrastructure is established; required independent merge review still applies.
+## Lightweight repository correction
+
+Repository workflow is **LIGHTWEIGHT**; scientific research is **STRICT /
+MACHINE-GATED**. The human identified newly introduced repository ruleset
+24519812 as an incorrect coupling. It was deleted on 2026-10-05, with no
+replacement, bypass exception or change to unrelated settings. Live GitHub
+returned no rulesets and no classic main protection. Existing merge-method
+and auto-merge settings are retained. This removes global approval/last-pusher/
+stale-review/thread-resolution/Governance-check/force/deletion restrictions
+introduced by this governance work; ordinary Git discipline remains.
+
+[#63](https://github.com/jhonnyisaacc/rocket/pull/63) Open Cabinet and
+[#64](https://github.com/jhonnyisaacc/rocket/pull/64) ISM EPS changed from
+BLOCKED/REVIEW_REQUIRED to **CLEAN / MERGEABLE**, with no required review or
+registered check runs. No repository merge blocker remains in the live readback.
+Their changed paths are excluded from scoped research CI; no research WIP slot,
+admission, second account/App or scientific reviewer is needed. These PRs remain
+open; this correction did not merge them or validate their feature branches.
+
+Scientific independence records model/family, role, isolated pre-result context,
+contribution history, exact commit/artifact hashes and decision. The publishing
+GitHub actor may be `jhonnyisaacc` for both implementation and genuinely
+independent evidence. The manifest verifier now requires `review_provenance`
+and rejects design/implementation/outcome-access conflicts. A second GitHub
+account/App is optional technical infrastructure and provides no scientific
+approval by itself. #60 is closed as superseded, Done/Historical and excluded
+from primary research WIP. #56's scientific reviewer/process decision remains.
+
+Governance CI is scoped to research/governance and shared dependency/CLI/contract
+paths, and is informational repository CI. CODEOWNERS provides optional ownership
+hints. Green CI, ordinary merging and removal of repository controls never
+promote a Draft manifest, satisfy its prerequisites or authorize real scoring.
 
 ## Exact PR dispositions and intended sequence
 
@@ -142,8 +167,8 @@ merged. Every mapping/blocker is machine-readable in `project.json`.
 
 | PR | Disposition | Outstanding blocker / preserved conclusion |
 | --- | --- | --- |
-| #57 governance | MERGE_WHEN_ACCEPTED | Distinct required GitHub review, final Governance checks and acceptance of this iteration. Governance must become main authority first. |
-| #49 canonical momentum | MERGE_WHEN_ACCEPTED | #57 merged first; update/rebase onto governed main; #51 foundation acceptance; review/checks; MOM-002 locked unscored/unadmitted until #58/#54. Merging does not score it. |
+| #57 governance | MERGE_WHEN_ACCEPTED | Technical acceptance of this iteration and relevant research validation through normal PR workflow; no second GitHub identity or globally required check. Governance must become main authority first. |
+| #49 canonical momentum | MERGE_WHEN_ACCEPTED | #57 merged first; update/rebase onto governed main; #51 foundation acceptance; independent technical acceptance recorded in research evidence and relevant validation; MOM-002 locked unscored/unadmitted until #58/#54. Merging does not score it. GitHub account separation is not a prerequisite. |
 | #50 Muse replication | CLOSE_EVIDENCE_ARCHIVE | #51 complete; useful Tier-B/source findings and original 5 UP/7 DOWN plus DOWN-orientation bug preserved; archive label; note points to #49/#51. Do not merge. |
 | #38 futures | CLOSE_EVIDENCE_ARCHIVE | #55 verifies FUT-001..FUT-013/necessary older findings, SHA-pinned evidence/index/ledger, archive label and note. No validated directional futures edge. No runtime merge for history. |
 | #40 macro timing | CLOSE_EVIDENCE_ARCHIVE | 43-variant history, final holdout failure, deflated-Sharpe conclusion/documents/links, archive label and note preserved. Do not merge runtime. |
@@ -155,21 +180,20 @@ governed-main update/review -> authorized merge; #50 preservation/note ->
 closure after #51; #55 verified/indexed preservation -> individual
 #26/#38/#40/#46 notes/closures. Main becomes sole canonical research authority;
 old PRs remain permanent evidence and grant no continuation permission.
-Agents do not merge their own PRs or disable branch protection.
+Normal repository operations do not constitute scientific acceptance; no agent independently approves its own experiment.
 
 ## Dispatch, operational service and blockers
 
-Current primary research WIP is **3/3**: #51 In Progress, #52 In Progress,
-#58 Review / Gate. Linked PR rows do not count. Finish these admitted items;
-do not start a fourth. Highest-priority next autonomous action after #57 is
-independently reviewed/merged: **independent technical/adversarial review of
+Current primary research WIP is **3/3**: #51, #52 and #58 all Review / Gate. Linked PR rows do not count. Finish these admitted items;
+do not start a fourth. Highest-priority next autonomous action after the corrected #57 is
+accepted into canonical main: **independent technical/adversarial review of
 #58's exact synthetic code/geometry/surface hashes and assumptions in its
 existing WIP slot**, while #51/#52 acceptance continues. Record genuine
 acceptance evidence; do not treat this implementer's report as its own review.
 Then resolve #56's remaining human choices and finalize #53 before #54.
 
-Human blockers: real independent GitHub reviewer/access for #57/#49,
-scientific reviewer/process, 40bp decision, minimum worthwhile effect,
+Human blockers: scientific reviewer/process (role/model/context/contribution
+evidence, with no separate GitHub account requirement), 40bp decision, minimum worthwhile effect,
 post-power economic role. Code/data/review blockers: #51 foundation/Tier-B/
 overlap acceptance, exact six-feature completeness/source/PIT readiness,
 #52 correction acceptance on governed main, #58 methodology acceptance and
@@ -194,23 +218,25 @@ hashing, official scorer path and deterministic terminal kill remain intact.
 
 ## Verification and publication
 
-Full offline suite: **629 passed, one live integration test excluded**.
-Targeted governance/safety: **74 passed**. Ruff, whitespace and Git-base
+Full offline suite: **640 passed, one live integration test excluded**.
+Targeted governance/safety: **85 passed**. Ruff, whitespace and Git-base
 freeze/append-only verification passed; current MOM-002 journal records = 0.
 Tests cover field types/options, budget versus consumption, exact dispositions,
 maintenance/scientific review, pre-power freeze prohibition, #59 FAIL kill,
 historical/unrelated exclusion, complete WIP inventory, deterministic synthetic
 reproduction, duplicate-cluster statistics and rejection of outcome columns.
-Power tests use only synthetic fixtures, including a file-access trap.
+Power tests use only synthetic fixtures, including a file-access trap. New tests
+verify shared GitHub publication with independent scientific provenance, reject
+contribution/outcome conflicts, keep Draft MOM-002 blocked in a temporary synthetic
+repository, exclude ordinary PRs from WIP and skip the actual #63/#64 CI paths.
 
-Active ruleset **24519812** was re-read unchanged: PR, one author/last-pusher-
-independent approval, stale review dismissal, resolved threads, strict
-Governance checks (Actions app 15368), no force-push/deletion and no bypass.
-No main push/merge was attempted. Final [PR checks](https://github.com/jhonnyisaacc/rocket/pull/57/checks)
-remain required, along with independent acceptance; hashes protect integrity,
-not secret outcomes or scientific independence. Public outcome access cannot
-be cryptographically excluded on every networked host, and local scorer
-locking does not serialize multiple clones.
+The live ruleset removal is verified independently of local files. No globally
+required Governance status or equivalent replacement remains. Relevant research
+CI can still be delayed by GitHub's hosted-runner incident; that is an informational
+validation limitation, not a repository-wide merge gate. Final-head CI must be
+reported honestly. Hashes protect integrity, not unseen outcome access or the
+truth of contribution histories; independent scientific review remains necessary.
+Local scorer locking still does not serialize multiple clones.
 
 This PR refines the existing program. It does not score/admit MOM-002, change
 its proposed gates, authorize a successor, capital, orders or live execution.

@@ -1,6 +1,6 @@
 """Synchronize only a committed, audited official MOM-002 receipt to its Project.
 
-Run from the reviewed canonical checkout. Defaults to a reviewable JSON plan.
+Run from the canonical checkout with recorded experiment review. Defaults to a JSON plan.
 --apply writes deterministic fields; it never admits/decomposes a successor.
 """
 
@@ -85,7 +85,7 @@ def main() -> None:
     print(json.dumps(update_plan, indent=2))
     if args.apply:
         if git(root, "rev-parse", "HEAD") != git(root, "rev-parse", "origin/main"):
-            raise GateError("Fetch and use reviewed main before applying gate disposition")
+            raise GateError("Fetch and use canonical main before applying gate disposition")
         apply(config, update_plan)
 
 

@@ -32,7 +32,7 @@ Missing near-term values/process blocks #53 admission/freeze. MOM-002 FAIL still
 
 ## Dependencies
 
-#57 governance; #58 power audit informs terminal/descriptive economic decision; #60 separate GitHub identities/process infrastructure. This item does not require downstream risk/capital charter #59.
+#57 governance; #58 power audit informs terminal/descriptive economic decision; #60 mandatory account rollout is retired; scientific process records model/family, role, isolated context and contribution history, even when @jhonnyisaacc publishes it. This item does not require downstream risk/capital charter #59.
 
 ## Trial impact
 

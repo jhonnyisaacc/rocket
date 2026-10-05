@@ -2,6 +2,19 @@
 
 Authority: committed charter/contracts and machine gates; Project fields summarize that authority. Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`.
 
+Repository workflow is **LIGHTWEIGHT**; scientific research is **STRICT /
+MACHINE-GATED**. Research WIP, admission and review apply only to primary
+derivatives research. Ordinary bugfix/disclosures/provider/refactor PRs need
+no research reviewer, second GitHub account/App, Project WIP slot or globally
+required Governance check. Ruleset 24519812 was removed by the human correction;
+do not replace it with repository-wide controls or branch/actor exceptions.
+
+Independent review records model/family, role, isolated pre-result context,
+contribution history, exact reviewed revision/artifacts and decision. Scientific
+contributor roles differ; the record may be committed/pushed by `jhonnyisaacc`.
+GitHub mergeability never constitutes scientific acceptance. The manifest
+verifier checks review provenance and authorization without GitHub permissions.
+
 ```text
 IDEA
 ↓
@@ -91,8 +104,8 @@ After the final independently approved official freeze, gates cannot change.
 #59 risk/capital charter stays Parked and joins the whole downstream kill on
 MOM-002 FAIL. There is still no MOM-003 rescue.
 
-Official path: `rocket research score <experiment-id>`. The manifest must be admitted, frozen, independently approved and committed on reviewed main. It pins dataset bytes and all artifact hashes. Each invocation records experiment/trial identity, current commit, timestamp, dataset fingerprint, frozen hashes, scorer identity, result fingerprint and PASS/FAIL/BLOCKED in a hash-chain journal. See [technical contract](../../research/governance/README.md). CI checks frozen files against both their preregistration Git revision and the base branch, as well as append-only journals/ledger. Frozen manifests cannot be edited or deleted; invalidate through an appended record and re-admit a new ID/trial.
+Official path: `rocket research score <experiment-id>`. The manifest must be admitted, frozen, independently approved and committed on canonical main with recorded scientific review. It pins dataset bytes and all artifact hashes. Each invocation records experiment/trial identity, current commit, timestamp, dataset fingerprint, frozen hashes, scorer identity, result fingerprint and PASS/FAIL/BLOCKED in a hash-chain journal. See [technical contract](../../research/governance/README.md). CI checks frozen files against both their preregistration Git revision and the base branch, as well as append-only journals/ledger. Frozen manifests cannot be edited or deleted; invalidate through an appended record and re-admit a new ID/trial.
 
-Public market data cannot be perfectly cryptographically hidden from an agent with network access. The goal is auditable admissibility. Git review, protected main, distinct credentials and durable receipt publication are part of the trust boundary; hashes cannot prove that a human/agent did not inspect data elsewhere. Local file locks serialize one checkout only. There is no deployed scoring service, secret outcome vault, independent reviewer, or live-trading authority. MOM-002 remains Draft and has no scorer in this PR.
+Public market data cannot be perfectly cryptographically hidden from an agent with network access. The goal is auditable admissibility. Independent scientific review evidence, canonical Git history and durable receipt publication are part of the trust boundary; hashes cannot prove that a human/agent did not inspect data elsewhere. Local file locks serialize one checkout only. There is no deployed scoring service, secret outcome vault, independent reviewer, or live-trading authority. MOM-002 remains Draft and has no scorer in this PR.
 
 Historical failures: [trial ledger](TRIAL_LEDGER.md). Collector: [operations](PROSPECTIVE_OPERATIONS.md). [Roles](AGENT_ROLES.md). [Project](https://github.com/users/jhonnyisaacc/projects/4).

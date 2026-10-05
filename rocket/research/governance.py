@@ -1,7 +1,7 @@
 """Small Git-backed freeze verifier and single-trial official scoring journal.
 
 Hashes prove integrity, not scientific independence or unseen outcome access.
-Independent admission and protected Git review remain part of the trust boundary.
+Independent experiment review is recorded in artifacts, independent of GitHub permissions.
 """
 
 from __future__ import annotations
@@ -115,6 +115,16 @@ def verify_manifest(root: Path, manifest: dict) -> None:
             raise GateError("Resolved contributor/reviewer identities required")
         if not reviewer or reviewer == manifest.get("proposer") or reviewer == manifest.get("implementer"):
             raise GateError("Independent reviewer required")
+        provenance = approval.get("review_provenance")
+        if not isinstance(provenance, dict) or any(
+            not isinstance(provenance.get(field), str) or not provenance[field].strip()
+            for field in ("model_family", "role", "isolated_context", "contribution_history")
+        ):
+            raise GateError("Scientific review role/model/context/contribution provenance required")
+        if any(provenance.get(field) is not False for field in (
+            "designed_experiment", "implemented_experiment", "outcomes_accessed"
+        )):
+            raise GateError("Scientific reviewer must be independent and pre-result")
         if approval.get("decision") != "APPROVE" or approval.get("reviewed_revision") != revision:
             raise GateError("Approval must name exact frozen revision")
         if approval.get("artifact_fingerprint") != digest(canonical(artifacts)):
@@ -233,9 +243,9 @@ def score(root: Path, experiment_id: str) -> dict:
             if manifest["scorer"]["python_version"] != sys.version:
                 raise GateError("Interpreter differs from admitted runtime")
             if receipt["commit_sha"] != git(root, "rev-parse", "origin/main").decode().strip():
-                raise GateError("Official scoring requires reviewed main; fetch main before invocation")
+                raise GateError("Official scoring requires canonical main; fetch main before invocation")
             if git(root, "status", "--porcelain", "--untracked-files=all").strip():
-                raise GateError("Official scoring requires a clean reviewed checkout")
+                raise GateError("Official scoring requires a clean canonical checkout")
             if at_revision(root, "HEAD", manifest_path(root, experiment_id).relative_to(root).as_posix()) is None:
                 raise GateError("Admission manifest must be committed")
             invalidations = safe_path(root, f"{GOVERNANCE}/invalidations.jsonl").read_text()

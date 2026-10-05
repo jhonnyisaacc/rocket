@@ -42,12 +42,32 @@ GitHub's [REST view creation API](https://docs.github.com/en/rest/projects/views
 
 No mandatory view grouping/sorting action remains. If the current UI offers a WIP display, set the program research limit to 3; no available view API parameter exposes that limit. The authoritative limit is three unique primary work items across In Progress/Review / Gate, not three per column. The `research next` dispatch check enforces the count from a verified current snapshot. Do not mistake linked PR evidence rows for separate admissions. Optional tab/layout preferences do not affect authority.
 
-## Main protection and review rollout
+## Repository workflow and scientific authority
 
-Active repository ruleset **24519812**, [settings](https://github.com/jhonnyisaacc/rocket/settings/rules/24519812): required PR, one approving review, dismissal of stale reviews, approval by someone other than the last pusher, resolved review threads, strict **Governance checks** from GitHub Actions app 15368, no force push/deletion and no bypass actors. Direct main pushes cannot satisfy the PR rule. No destructive main push was used to test it.
+**Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.**
+The human's 2026-10-05 correction removes newly introduced ruleset **24519812**.
+Live GitHub readback returned no remaining rulesets and no classic main branch
+protection. No replacement, bypass exception or unrelated setting was changed.
+Ordinary PRs need no second GitHub account/App, scientific review, admission,
+research WIP slot or mandatory Governance checks. #63/#64 became CLEAN/MERGEABLE
+immediately after removal; inspect their current normal tests before merging.
 
-Only `jhonnyisaacc` was returned by the collaborators API. GitHub cannot accept the author's self-review. Before merge, the human owner must open **Settings → Collaborators → Add people**, invite the real selected reviewer with sufficient repository access, and have that person independently review/approve the PR after the last push. The scientific reviewer identity/model family/contribution history also needs human approval in #56. Do not invent another account or disable protections to merge.
+Scientific approval records reviewer role/model family, isolated pre-result
+context, contribution history, exact commit/artifact hashes and decision. The
+reviewer must not have designed or implemented the experiment. Evidence can be
+committed/pushed by `jhonnyisaacc`; GitHub username is not proof of scientific
+independence. #56 still resolves the scientific reviewer/process and human
+values. #60's mandatory separate-account rollout is retired; technical identity
+separation is optional infrastructure with no admission or repository blocker.
 
-CODEOWNERS names the valid owner for sensitive files. Mandatory code-owner review is intentionally not enabled while the sole owner is also the PR author; the independent/last-push approval rule is enabled. When a real second governance owner is approved, add it through reviewed CODEOWNERS changes before enabling mandatory code-owner review. Agents never merge their own PRs.
+CODEOWNERS provides optional ownership hints. Research-governance CI runs only
+for research/governance paths and shared CLI/dependency/contract files. It is
+informational repository CI, with no globally required status check. The actual
+changed paths in #63/#64 match none of its filters. A relevant research change
+still needs tests and protocol-level acceptance; a green merge or skipped
+workflow never grants experiment scoring permission.
 
-The governance workflow arrives on main only through the dedicated PR. It runs on this branch/PR now and on every future PR after merge, with no path filters that could skip a required check. Existing PRs must receive/rebase onto the governance commit before they can produce the required check. Do not lower the required check to merge old research branches.
+The research dispatcher intersects Project membership with the committed primary
+registry. WIP=3 applies to primary derivatives research only. Disclosures,
+Cursor/provider fixes, refactors and unrelated ordinary engineering are outside
+that registry. Their GitHub mergeability never calls `rocket research next`.

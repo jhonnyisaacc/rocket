@@ -32,7 +32,7 @@ Disable affected CFTC historical eligibility until fixed; preserve FUT-005 failu
 
 ## Dependencies
 
-#49 provider correction and pinned #38 FUT-005 lineage. No #54 or full scientific admission package dependency. Separate identities are tracked in #60; implementation/testing may proceed meanwhile.
+#49 provider correction and pinned #38 FUT-005 lineage. No #54 or full scientific admission package dependency. Technical GitHub identity separation is optional; normal provider-fix merges need no research review or WIP slot. This issue tracks scientific correctness acceptance separately.
 
 ## Trial impact
 
@@ -48,7 +48,7 @@ Codex or equivalent; implementation already present in #49 where specified.
 
 ## Reviewer
 
-Different agent/person reviews the provider fix, tests and CI. MAINTENANCE does not require MOM-002 isolated scientific admission review or #54 completion. Protected GitHub merge still requires a real distinct approving actor.
+Different agent/person reviews the provider fix, tests and CI. MAINTENANCE does not require MOM-002 isolated scientific admission review or #54 completion. This is research acceptance evidence, not a repository-wide GitHub merge requirement; it may be published by the same GitHub actor.
 
 ## Evidence links
 

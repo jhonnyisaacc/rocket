@@ -63,7 +63,7 @@ Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No scoring, trading or live execu
 
 ## Disposition sequence
 
-#57 independent review + Governance checks -> human/authorized merge. #51 foundation acceptance -> #49 governed-main update/rebase + review + checks -> human/authorized merge, with MOM-002 unscored/unadmitted. #50 preserve evidence -> note -> close after #51. #55 verify/index preservation -> individual #26/#38/#40/#46 notes/closure. Main becomes sole canonical research authority; open/closed old PRs grant no continuation. Agents do not merge their own PRs.
+#57 tested governance correction and normal workflow acceptance -> authorized merge. Scoped Governance checks validate research changes; they are not a globally required repository status. #51 foundation acceptance -> #49 governed-main update/rebase + review + checks -> human/authorized merge, with MOM-002 unscored/unadmitted. #50 preserve evidence -> note -> close after #51. #55 verify/index preservation -> individual #26/#38/#40/#46 notes/closure. Main becomes sole canonical research authority; open/closed old PRs grant no continuation. No merge alone grants scientific acceptance; agents cannot independently approve their own experiments.
 
 
 ## Review Tier

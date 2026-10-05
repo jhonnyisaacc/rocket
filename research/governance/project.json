@@ -15,7 +15,7 @@
       "type": "User"
     },
     "public": true,
-    "readme": "Rocket remains READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with negative evidence.\n\nThis Project is a decision tree. Every primary work item has unlock/success/failure/kill conditions. WIP = 3 unique research work items (In Progress + Review / Gate); linked PRs are evidence for those items, not extra research admissions. Healthy operational services do not consume WIP.\n\nMOM-000 is completed: STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted; predictive trials zero. #49 contains reconciliation and CFTC corrections pending independent acceptance. MOM-002 is Draft in this program despite its frozen reviewable proposal in #49: no fitting, association inspection or scoring. Accepted #51 foundation/Tier-B/overlap + accepted #58 pre-outcome power audit -> #56 near-term human decisions and finalized pre-result contract -> #54 independent exact final-packet review -> official admission/freeze -> code gate/audit. MOM-002 is Draft/NEEDS_PRE_RESULT_GATE_REVIEW, unapproved/unadmitted/unscored. Conditional synthetic findings do not amend gates or consume a predictive trial. FAIL rejects the entire parked downstream branch; no MOM-003 rescue. PASS needs human acknowledgment before only the next separately admitted phase is decomposed. Data only for admitted work or existing correctness bugs.\n\nTerminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (agents stop; capital requires human authorization), or RESEARCH_LINE_REJECTED (preserve negative evidence and stop). Reviewer/process, 40bp appropriateness, minimum worthwhile effect and post-audit terminal/descriptive economics remain human decisions. STOP/no-MOM-003 is confirmed by the human mandate. #59 downstream risk/capital charter remains Parked until audited historical PASS acknowledged by human; MOM-002 FAIL rejects it. #60 tracks real identity separation; shared @jhonnyisaacc proves no scientific independence.\n\nGovernance source: docs/research/AUTONOMOUS_RESEARCH_PROTOCOL.md via dedicated governance PR. Historical PRs remain evidence; do not merge runtime changes to preserve documents. Main must require PR/review/CI and forbid force pushes. Project fields summarize authority; committed contracts and code gates govern outcomes.\n\nReview tiers: MAINTENANCE (tests/CI/separate code review; #52/#55), FOUNDATION (independent technical/adversarial #51/#58), SCIENTIFIC_ADMISSION (isolated no-result exact-artifact #53/#54), PROSPECTIVE_VALIDATION, CAPITAL (human only). Trial Budget differs from Trials Consumed: #53 1/0; #58 0/0. Primary membership and committed policy govern dispatch; unrelated Rocket issues and historical PRs never compete for WIP.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED, #57 first then #51 acceptance/#49 governed-main update/review. #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual preservation, archive label and closing note; #50 after #51, note references #49/#51. All remain open pending blockers; no agent self-merge. Final frozen MOM-002 FAIL rejects entire downstream branch; no MOM-003 rescue.\n",
+    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/separate code review; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#52/#58 all Review / Gate), Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
     "shortDescription": "Gated BTC derivatives research. WIP 3. Preserve failures; no rescue; read-only and human-gated.",
     "title": "Rocket \u2014 Derivatives Strategy Research",
     "url": "https://github.com/users/jhonnyisaacc/projects/4"
@@ -458,14 +458,14 @@
     "reconcile": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sTcs",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/51",
-      "title": null,
+      "title": "research(momentum): reconcile MOM-000 implementations",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex or equivalent",
         "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
         "Program Outcome": "Active",
-        "Status": "In Progress",
+        "Status": "Review / Gate",
         "Priority": "P0",
         "Research Family": "Momentum",
         "Work Type": "Replication",
@@ -473,7 +473,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Already admitted; accept existing #49 reconciliation independently",
         "Kill Condition": "Invalid MOM-000 blocks MOM-002 freeze; irreparable foundation kills branch",
-        "Evidence": "PR #49 reconciliation + #50 original; pinned evidence index",
+        "Evidence": "PR #49 reconciliation + #50 original; pinned evidence index; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
         "Depends On": "#49, #50; independent acceptance",
         "Review Tier": "FOUNDATION",
         "Gate Source": "REVIEW",
@@ -484,14 +484,14 @@
     "cftc": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sTfA",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/52",
-      "title": null,
+      "title": "fix(data): make CFTC publication availability point-in-time safe",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex or equivalent",
         "Research Reviewer": "Different agent/person code review; no MOM-002 isolated scientific packet",
         "Program Outcome": "Active",
-        "Status": "In Progress",
+        "Status": "Review / Gate",
         "Priority": "P0",
         "Research Family": "Data / PIT",
         "Work Type": "Bug",
@@ -499,18 +499,19 @@
         "Phase": "Foundation",
         "Unlock Condition": "Existing PIT correctness bug; tests/CI and separate code review; zero alpha; no #54 prerequisite",
         "Kill Condition": "Disable unsafe historical CFTC eligibility until corrected; no COT rescue",
-        "Evidence": "#49 CFTC_LINEAGE_AUDIT.md and regression tests; #38 FUT-005",
+        "Evidence": "#49 CFTC_LINEAGE_AUDIT.md and regression tests; #38 FUT-005; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
         "Depends On": "#49 provider fix, #38 lineage",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "REVIEW",
-        "Trial Budget": 0
+        "Trial Budget": 0,
+        "Disposition Blocker": "Research correctness acceptance: tests/relevant CI and separate code review pending; no #54 scientific packet. Ordinary provider-fix merges are outside research WIP/admission."
       },
       "primary_work_item": true
     },
     "mom002": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sTiU",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/53",
-      "title": null,
+      "title": "research(momentum): MOM-002 continuous breakout-quality experiment",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
@@ -538,7 +539,7 @@
     "review": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sTlU",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/54",
-      "title": null,
+      "title": "review(momentum): independent admission review for MOM-002",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
@@ -564,7 +565,7 @@
     "history": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sToc",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/55",
-      "title": null,
+      "title": "research: consolidate historical evidence and close stale research PRs",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
@@ -605,7 +606,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Record reviewer/process, 40bp hurdle, minimum worthwhile effect, post-#58 terminal/descriptive economic gate, STOP philosophy",
         "Kill Condition": "Missing near-term decisions blocks #53/#54; downstream risk/capital values deferred to #59",
-        "Evidence": "RESEARCH_CHARTER.md; #58 power; #59 deferred capital; #60 identity rollout",
+        "Evidence": "RESEARCH_CHARTER.md; #58 power; #59 deferred capital; scientific model/role/context/contribution provenance",
         "Depends On": "#57 governance; #58 audit informs economic-gate choice",
         "Review Tier": "SCIENTIFIC_ADMISSION",
         "Gate Source": "HUMAN",
@@ -668,7 +669,7 @@
     "pr49": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sTzQ",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/49",
-      "title": null,
+      "title": "feat/momentum-refactor-codex",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
@@ -689,14 +690,14 @@
         "Gate Source": "REVIEW",
         "Trial Budget": 0,
         "PR Disposition": "MERGE_WHEN_ACCEPTED",
-        "Disposition Blocker": "Merge #57 governance first; Update/rebase onto governed main; #51 reconciliation/foundation accepted; Required Governance checks and independent GitHub review; MOM-002 stays unscored/unadmitted until #58 + #54"
+        "Disposition Blocker": "#57 canonical governance first; update onto canonical main; #51 foundation acceptance and relevant research validation; MOM-002 remains unscored/unadmitted until prerequisites and #54; no distinct GitHub actor requirement"
       },
       "primary_work_item": false
     },
     "pr50": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sT2A",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/50",
-      "title": null,
+      "title": "feat/momentum-refactor-muse",
       "fields": {
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
@@ -724,7 +725,7 @@
     "pr38": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sT4s",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/38",
-      "title": null,
+      "title": "research: establish canonical crypto futures strategy line",
       "fields": {
         "Trials Consumed": 13,
         "Proposer": "Human research mandate",
@@ -752,7 +753,7 @@
     "pr40": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sT8o",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/40",
-      "title": null,
+      "title": "Add daily macro market check and 2024-10 to 2026-09 backtest",
       "fields": {
         "Trials Consumed": 43,
         "Proposer": "Human research mandate",
@@ -780,7 +781,7 @@
     "pr46": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sUBQ",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/46",
-      "title": null,
+      "title": "BTC derivatives research: puts insurance, capitulation longs, funding carry",
       "fields": {
         "Trials Consumed": 34,
         "Proposer": "Human research mandate",
@@ -808,7 +809,7 @@
     "pr26": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sUFI",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/26",
-      "title": null,
+      "title": "feat(shorts): add ISM-driven Shorts v2 research and backtesting",
       "fields": {
         "Proposer": "Human research mandate",
         "Implementer": "PR authors; see pinned evidence",
@@ -835,7 +836,7 @@
     "governance_pr": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-sbLw",
       "url": "https://github.com/jhonnyisaacc/rocket/pull/57",
-      "title": "chore: establish autonomous derivatives research governance",
+      "title": "chore: restore lightweight GitHub workflow and preserve research gates",
       "fields": {
         "Status": "Review / Gate",
         "Priority": "P0",
@@ -849,7 +850,12 @@
         "Gate Source": "REVIEW",
         "Trial Budget": 0,
         "PR Disposition": "MERGE_WHEN_ACCEPTED",
-        "Disposition Blocker": "Required distinct GitHub author/last-pusher-independent review; Governance checks pass on final iteration; Changes from this iteration accepted"
+        "Disposition Blocker": "Iteration acceptance and relevant research validation; no mandatory GitHub review, second identity or globally required check",
+        "Depends On": "Normal repository workflow acceptance; no second GitHub identity requirement",
+        "Unlock Condition": "Tested governance correction through ordinary PR workflow",
+        "Kill Condition": "GitHub merge never grants scientific scoring authority",
+        "Research Reviewer": "Technical review evidence; publishing GitHub actor may be shared",
+        "Evidence": "PR #57 operational report; lightweight permissions / strict scientific gates"
       },
       "primary_work_item": false
     },
@@ -874,7 +880,7 @@
         "Gate Source": "CODE",
         "Unlock Condition": "Zero-alpha synthetic methodology; strict structural geometry only; assumed readiness explicit",
         "Kill Condition": "No MOM-002 review/freeze until accepted audit, pre-result changes and human decisions; no automatic changes",
-        "Evidence": "#58 POWER_AUDIT_RESULTS.md; SHA-pinned structural manifest and 2,000-draw synthetic surface; INDETERMINATE_ASSUMPTIONS_REQUIRED; independent acceptance pending",
+        "Evidence": "#58 POWER_AUDIT_RESULTS.md; SHA-pinned structural manifest and 2,000-draw synthetic surface; INDETERMINATE_ASSUMPTIONS_REQUIRED; independent acceptance pending; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
         "Depends On": "#49 frozen causal structural provenance; #51 accepts source/overlap separately; #56 decisions follow audit"
       },
       "primary_work_item": true
@@ -888,7 +894,7 @@
         "Trial Budget": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Human owner",
-        "Research Reviewer": "Human owner decision; distinct review unresolved",
+        "Research Reviewer": "Human owner capital/value decisions; scientific process separate",
         "Program Outcome": "Active",
         "Status": "Parked",
         "Priority": "P2",
@@ -909,28 +915,29 @@
     "identities": {
       "id": "PVTI_lAHOA5rv284Blgkvzg-tZPw",
       "url": "https://github.com/jhonnyisaacc/rocket/issues/60",
-      "title": "governance: establish separate implementer and reviewer GitHub identities",
+      "title": "governance: retire mandatory GitHub identity separation",
       "fields": {
         "Trials Consumed": 0,
         "Trial Budget": 0,
         "Proposer": "Human research mandate",
-        "Implementer": "Human owner",
-        "Research Reviewer": "Human owner decision; distinct review unresolved",
+        "Implementer": "Codex; human workflow correction",
+        "Research Reviewer": "Scientific independence documented in artifacts; technical identities optional",
         "Program Outcome": "Active",
-        "Status": "Backlog",
+        "Status": "Done",
         "Priority": "P1",
         "Research Family": "Cross-cutting",
         "Work Type": "Governance",
-        "Research State": "Draft",
+        "Research State": "Historical",
         "Phase": "Foundation",
         "Review Tier": "MAINTENANCE",
-        "Gate Source": "HUMAN",
-        "Unlock Condition": "Human chooses real owner/implementation/review identities; maintenance implementation may proceed",
-        "Kill Condition": "No shared-actor scientific independence; no self approval/merge or protection bypass",
-        "Evidence": "AGENT_ROLES.md; ruleset 24519812; #56 reviewer process",
-        "Depends On": "#57 protection; real owner access setup; #56 scientific process"
+        "Gate Source": "NONE",
+        "Unlock Condition": "Resolved by human correction; no mandatory account/App rollout",
+        "Kill Condition": "No identity or repository merge grants scientific approval",
+        "Evidence": "#60 resolution; AGENT_ROLES.md; ruleset 24519812 removed; #56 scientific process retained",
+        "Depends On": "None; optional technical identities are not a program prerequisite",
+        "Disposition Blocker": "Resolved: second GitHub account/App/collaborator requirement retired"
       },
-      "primary_work_item": true
+      "primary_work_item": false
     }
   },
   "primary_work_item_keys": [
@@ -942,8 +949,7 @@
     "charter",
     "downstream",
     "power",
-    "risk_charter",
-    "identities"
+    "risk_charter"
   ],
   "wip_limit": 3,
   "reviewer_field_alias": "Research Reviewer",
@@ -1264,13 +1270,13 @@
       "disposition": "MERGE_WHEN_ACCEPTED",
       "blockers": [
         {
-          "id": "independent_github_review",
-          "description": "Required distinct GitHub author/last-pusher-independent review",
+          "id": "technical_acceptance",
+          "description": "Technical review/iteration acceptance in normal repository workflow; publishing GitHub actor may be shared",
           "accepted": false
         },
         {
           "id": "governance_checks",
-          "description": "Governance checks pass on final iteration",
+          "description": "Relevant research validation tests/checks; not globally required GitHub status",
           "accepted": false
         },
         {
@@ -1302,7 +1308,7 @@
         },
         {
           "id": "governance_checks",
-          "description": "Required Governance checks and independent GitHub review",
+          "description": "Research correctness validation and independent technical acceptance recorded in evidence; no separate GitHub account requirement",
           "accepted": false
         },
         {
@@ -1440,5 +1446,15 @@
       "research_admitted": false
     }
   },
-  "view_api_limitations": "GraphQL supports filter/visible fields, but does not expose new-view grouping/sorting input. Existing Status/Phase grouping/sort preserved. REST create endpoint is used only when available; no unsupported limit or grouping is claimed for the three new tables."
+  "view_api_limitations": "GraphQL supports filter/visible fields, but does not expose new-view grouping/sorting input. Existing Status/Phase grouping/sort preserved. REST create endpoint is used only when available; no unsupported limit or grouping is claimed for the three new tables.",
+  "repository_workflow": {
+    "mode": "LIGHTWEIGHT",
+    "scientific_workflow": "STRICT / MACHINE-GATED",
+    "removed_ruleset_id": 24519812,
+    "required_github_review": false,
+    "required_governance_check": false,
+    "separate_github_identity_required": false,
+    "ordinary_engineering_uses_research_wip": false,
+    "correction_date": "2026-10-05"
+  }
 }

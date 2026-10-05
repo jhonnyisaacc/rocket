@@ -1,8 +1,21 @@
 name: Research governance
+# Research validation is informational repository CI, not a global merge gate.
 on:
   pull_request:
+    paths: [
+      "AGENTS.md", "docs/research/**", "research/**", "rocket/research/**",
+      "rocket/momentum/**", "scripts/research/**", "tests/research/**",
+      "tests/momentum/**", "tests/contract/**", "pyproject.toml", "rocket/cli.py",
+      ".github/workflows/research-governance.yml", ".github/ISSUE_TEMPLATE/research.yml"
+    ]
   push:
     branches: [main, chore/autonomous-research-project]
+    paths: [
+      "AGENTS.md", "docs/research/**", "research/**", "rocket/research/**",
+      "rocket/momentum/**", "scripts/research/**", "tests/research/**",
+      "tests/momentum/**", "tests/contract/**", "pyproject.toml", "rocket/cli.py",
+      ".github/workflows/research-governance.yml", ".github/ISSUE_TEMPLATE/research.yml"
+    ]
 permissions:
   contents: read
 jobs:

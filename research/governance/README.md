@@ -16,21 +16,25 @@ population, features, model, gate, runtime (runner, dependency lock/environment
 identity and relevant transitive source files). List every code dependency;
 undeclared code imports are an independent-review rejection. Files must be
 repository-relative, tracked at the frozen revision, and not symlinks. An
-ADMITTED manifest must itself be committed on reviewed main before scoring.
+ADMITTED manifest must itself be committed on canonical main with scientific approval evidence before scoring.
 
 Set explicit family, proposer, implementer, positive trial_number, trial_budget
 1, dataset `{path, sha256}`, scorer `{path, protocol: "python-json-v1",
 timeout_seconds, python_version}` and approval `{reviewer, decision: "APPROVE",
-reviewed_revision, artifact_fingerprint, timestamp, evidence}`. The approval's
+reviewed_revision, artifact_fingerprint, timestamp, evidence, review_provenance}`. The approval's
 artifact fingerprint is SHA-256 of the canonical JSON artifacts mapping
 (sorted keys, compact separators, UTF-8). Approval identifies the exact
 freeze_revision and must come from someone who neither proposed nor
-implemented/designed the experiment. The human-reviewed approval evidence must
-include model family and contribution history; strings alone cannot prove
-independence. Freeze actual solver/package/interpreter versions, source/PIT
+implemented/designed the experiment. The approval's `review_provenance` must contain nonempty `model_family`, `role`,
+`isolated_context` and `contribution_history`; `designed_experiment`,
+`implemented_experiment` and `outcomes_accessed` must each be false. Optional
+`github_actor` identifies the publisher and may match the implementer's actor.
+Scientific contributor IDs and contributions establish review independence;
+GitHub username separation is not required. Recorded claims still need genuine
+independent review; hashes/strings alone cannot prove unseen outcome access. Freeze actual solver/package/interpreter versions, source/PIT
 rules, metrics, thresholds and dependencies, not merely a narrative contract.
 
-After fetching main, score only from a clean reviewed checkout matching
+After fetching main, score only from a clean canonical checkout matching
 origin/main, with dataset bytes matching the admitted fingerprint. The frozen
 Python scorer is run without shell interpretation or inherited credentials:
 `python -I frozen_scorer.py dataset_path`. It must emit a single JSON object
@@ -45,7 +49,7 @@ written the trial is reserved permanently, including timeout/crash/invalid
 output. The paired FINISH records commit/time, frozen hashes, dataset/scorer
 identity, output fingerprint and code result. No retry flag exists. Preserve
 stdout/stderr/result artifacts in the evidence PR before continuing. Publish
-the journal addition through a reviewed PR; CI refuses any rewritten prefix.
+the journal addition through the ordinary PR workflow with scientific audit evidence; CI refuses any rewritten prefix.
 Local locking serializes one checkout only: before a future official score,
 appoint one scoring authority/checkout and prohibit parallel scoring in other
 clones. A protected external serialized runner would be required for stronger
@@ -102,3 +106,12 @@ geometry/features/endpoints exclusively.
 parked human risk/capital charter, on an independently audited official FAIL.
 A conditional/underpowered synthetic audit is never a predictive FAIL and
 never invokes this kill. After the final official freeze, no gate changes.
+
+## Lightweight repository workflow
+
+No repository-wide scientific review/check ruleset is required. The human removed
+ruleset 24519812; research CI is scoped and informational. Official scoring still
+requires the admitted manifest, independent scientific provenance, all prerequisite
+and frozen hashes, clean canonical main, exact dataset/runtime and an unconsumed
+single trial. GitHub mergeability never creates admission. Ordinary PRs are outside
+research dispatch/WIP; optional technical identity separation grants no authority.

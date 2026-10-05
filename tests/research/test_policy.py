@@ -52,6 +52,23 @@ def test_historical_or_operational_rows_never_compete_for_wip():
     assert next_item(snapshot)['id']==snapshot['items'][0]['id']
 
 
+def test_ordinary_engineering_prs_are_outside_research_dispatch_and_wip():
+    snapshot = snapshot_for('power')
+    snapshot['items'].extend({
+        'id': f'ordinary-pr-{number}', 'status': 'In Progress',
+        'primary_work_item': True, 'repository': 'jhonnyisaacc/rocket',
+        'project_id': snapshot['project_id'],
+    } for number in (63, 64, 999))
+    assert next_item(snapshot) == snapshot['items'][0]
+    config = authority(ROOT)
+    assert config['repository_workflow']['mode'] == 'LIGHTWEIGHT'
+    assert config['repository_workflow']['required_github_review'] is False
+    assert config['repository_workflow']['required_governance_check'] is False
+    assert config['repository_workflow']['separate_github_identity_required'] is False
+    assert 'identities' not in config['primary_work_item_keys']
+    assert 'independent_github_review' not in pr_action(config, 57)['missing_blockers']
+
+
 def test_incomplete_inventory_or_duplicate_rows_cannot_evade_wip():
     snapshot=snapshot_for('power')
     snapshot['items'].pop()

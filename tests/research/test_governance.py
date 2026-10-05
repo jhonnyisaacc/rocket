@@ -64,7 +64,14 @@ def synthetic_repo(tmp_path, request):
                    "python_version": sys.version},
         "approval": {"reviewer": "independent", "decision": "APPROVE", "reviewed_revision": freeze,
                      "artifact_fingerprint": digest(canonical(artifacts)), "timestamp": "2026-01-01T00:00:00Z",
-                     "evidence": "Synthetic independent approval"},
+                     "evidence": "Synthetic independent approval",
+                     "review_provenance": {
+                         "model_family": "synthetic-review-family", "role": "independent reviewer",
+                         "isolated_context": "Synthetic pre-result packet only",
+                         "contribution_history": "No design or implementation contributions",
+                         "designed_experiment": False, "implemented_experiment": False,
+                         "outcomes_accessed": False, "github_actor": "shared-publisher",
+                     }},
     }
     path = root / GOVERNANCE / "manifests/SYN-001.json"
     path.write_bytes(canonical(manifest))
@@ -122,6 +129,48 @@ def test_unresolved_reviewer_cannot_be_an_approval(synthetic_repo):
     root, manifest, _ = synthetic_repo
     manifest["approval"]["reviewer"] = "UNRESOLVED"
     with pytest.raises(GateError, match="Resolved contributor/reviewer identities"):
+        verify_manifest(root, manifest)
+
+
+def test_scientific_review_allows_shared_github_actor_without_branch_rules(synthetic_repo):
+    root, manifest, _ = synthetic_repo
+    manifest["proposer_github_actor"] = manifest["implementer_github_actor"] = "shared-publisher"
+    assert manifest["approval"]["review_provenance"]["github_actor"] == "shared-publisher"
+    verify_manifest(root, manifest)
+
+
+@pytest.mark.parametrize("field", ["model_family", "role", "isolated_context", "contribution_history"])
+def test_scientific_review_requires_provenance(synthetic_repo, field):
+    root, manifest, _ = synthetic_repo
+    manifest["approval"]["review_provenance"][field] = ""
+    with pytest.raises(GateError, match="provenance required"):
+        verify_manifest(root, manifest)
+
+
+def test_github_merge_or_draft_edit_cannot_authorize_mom002(synthetic_repo):
+    root, _, _ = synthetic_repo
+    actual_draft = json.loads((Path(__file__).resolve().parents[2] / GOVERNANCE /
+                               'manifests/MOM-002.json').read_text())
+    path = root / GOVERNANCE / 'manifests/MOM-002.json'
+    path.write_bytes(canonical(actual_draft))
+    result = score(root, 'MOM-002')  # Synthetic temporary repo; never the real journal.
+    assert result['result'] == 'BLOCKED' and result['trial_consumed'] is False
+    assert result['scorer'] is None and 'not admitted' in result['reason']
+    assert actual_draft['scoring_authorized'] is False
+    assert actual_draft['trial_budget'] == 1 and actual_draft['trials_consumed'] == 0
+    (root / GOVERNANCE / 'mom002_prerequisites.json').write_bytes(
+        (Path(__file__).resolve().parents[2] / GOVERNANCE / 'mom002_prerequisites.json').read_bytes()
+    )
+    actual_draft.update(state='ADMITTED', scoring_authorized=True)
+    with pytest.raises(GateError, match='prerequisite not accepted'):
+        verify_manifest(root, actual_draft)
+
+
+@pytest.mark.parametrize("field", ["designed_experiment", "implemented_experiment", "outcomes_accessed"])
+def test_shared_github_actor_cannot_hide_scientific_conflict(synthetic_repo, field):
+    root, manifest, _ = synthetic_repo
+    manifest["approval"]["review_provenance"][field] = True
+    with pytest.raises(GateError, match="independent and pre-result"):
         verify_manifest(root, manifest)
 
 

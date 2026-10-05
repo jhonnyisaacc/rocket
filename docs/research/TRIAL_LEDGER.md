@@ -33,3 +33,10 @@ MOM-002 outcomes/associations/forecasts/scoring. MOM-002 remains Draft,
 NEEDS_PRE_RESULT_GATE_REVIEW, budget 1 / consumed 0. #59 downstream human
 risk/capital decisions parked and killed on future MOM-002 FAIL; #60 identity
 rollout grants no scientific admission. No historical trial history reset.
+
+2026-10-05: human lightweight-workflow correction removes repository ruleset
+24519812 and retires #60 mandatory GitHub identity rollout. Scientific approval
+is recorded by model/role/isolated context/contribution history and exact hashes;
+publication may use a shared GitHub actor. Repository permissions are LIGHTWEIGHT,
+research gates remain STRICT / MACHINE-GATED. 0 predictive/strategy trials;
+MOM-002 remains Draft, budget 1 / consumed 0. No previous entry is rewritten.
