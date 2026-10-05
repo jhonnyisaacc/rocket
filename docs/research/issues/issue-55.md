@@ -8,7 +8,7 @@ Every current/historical PR needs an explicit deterministic disposition so open 
 
 ## Scope
 
-#26 -> CLOSE_EVIDENCE_ARCHIVE; #38 -> CLOSE_EVIDENCE_ARCHIVE; #40 -> CLOSE_EVIDENCE_ARCHIVE; #46 -> CLOSE_EVIDENCE_ARCHIVE; #50 -> CLOSE_EVIDENCE_ARCHIVE after #51. #49 remains canonical active through #51, MERGE_WHEN_ACCEPTED; never archive it. #57 is canonical governance, MERGE_WHEN_ACCEPTED; never archive it. No PR is closed during this iteration; all individual blockers must be genuinely satisfied first. Exact machine mapping: research/governance/project.json, pr_dispositions.
+#26 -> CLOSE_EVIDENCE_ARCHIVE; #38 -> CLOSE_EVIDENCE_ARCHIVE; #40 -> CLOSE_EVIDENCE_ARCHIVE; #46 -> CLOSE_EVIDENCE_ARCHIVE; #50 -> CLOSE_EVIDENCE_ARCHIVE after #51. #49 remains canonical active through #51, MERGE_WHEN_ACCEPTED; never archive it. #57 is canonical governance, MERGE_WHEN_ACCEPTED; never archive it. The autonomous mandate authorizes individual closures only after each preservation, canonical publication, label and closing-note blocker is satisfied. #50 alone still requires accepted #51. Exact machine mapping: research/governance/project.json, pr_dispositions.
 
 ## Inherited evidence
 
@@ -68,5 +68,15 @@ Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No scoring, trading or live execu
 
 ## Review Tier
 
-MAINTENANCE; separate code/evidence review, tests and CI. Trial Budget 0; Trials Consumed 0; Gate Source CODE.
+MAINTENANCE; normal code/evidence review when available, tests and relevant CI. No independent scientific acceptance is fabricated. Trial Budget 0; Trials Consumed 0; Gate Source CODE.
 
+
+## Current execution
+
+#57 governance and focused #65/#52 receipt correctness are canonical on main.
+The verified complete Project dispatcher selected this admitted zero-trial item
+with two prior active items and one free slot. Forty-three historical documents
+from #26/#38/#40/#46 are preserved byte-for-byte with individual source revisions
+and SHA-256 manifests. Close each only after canonical publication plus its
+individual archive label/note. #50 remains open until independent #51 acceptance;
+#49 remains intended active foundation and is not archived or accepted here.

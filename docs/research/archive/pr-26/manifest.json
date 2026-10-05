@@ -1,0 +1,27 @@
+{
+  "schema": "rocket.historical-evidence-archive.v1",
+  "pr": 26,
+  "source_revision": "d198e80a5b43b0d28de1da7ba50845230de4b1f1",
+  "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+  "verification": "EXACT_BYTES_PRESERVED",
+  "closure_state": "READY_AFTER_CANONICAL_MERGE_AND_INDIVIDUAL_LABEL_NOTE",
+  "summary": "EDGE_NOT_VALIDATED, current-map versus strict-PIT limitations, borrow/funding UNKNOWN, A0-A6 ablations and next-open/RR sensitivities preserved. Exact independent trial/outcome-access total remains UNKNOWN, not seven or zero. Useful architecture may be ported only through a later focused justified change; no whole-runtime merge.",
+  "trial_accounting_changed": false,
+  "predictive_trials_consumed_this_operation": 0,
+  "runtime_merged": false,
+  "scientific_admission_granted": false,
+  "files": [
+    {
+      "source_path": "docs/SHORTS_V2.md",
+      "canonical_path": "docs/research/archive/pr-26/docs/SHORTS_V2.md",
+      "sha256": "5556658b842f31ff45e8271adec51b66a2daf3a46a794b8dfab89aeed95a4b38",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/d198e80a5b43b0d28de1da7ba50845230de4b1f1/docs/SHORTS_V2.md"
+    },
+    {
+      "source_path": "docs/analysis/shorts_v2_backtest.md",
+      "canonical_path": "docs/research/archive/pr-26/docs/analysis/shorts_v2_backtest.md",
+      "sha256": "aab9b5ab7df214f4987eb96fc1bad035811867dde8b20684be0f739b036afd47",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/d198e80a5b43b0d28de1da7ba50845230de4b1f1/docs/analysis/shorts_v2_backtest.md"
+    }
+  ]
+}
