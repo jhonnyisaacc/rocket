@@ -15,14 +15,17 @@ when available; FOUNDATION/admission still require truthful independence.
 The live complete inventory verified 18 items and two active primary items
 after #52 completion. The governed dispatcher selected admitted #55 for only
 #26/#38/#40/#46 preservation/closure. #50 is explicitly excluded until accepted
-#51. #55 now occupies the freed slot; WIP=3 (#51/#58 Review / Gate, #55 In Progress).
+#51. #55 used the freed slot and now awaits only #50 closure; WIP=3
+(#51/#58/#55 Review / Gate).
 No unrelated ordinary PR or healthy service consumes research WIP.
 
-Forty-three historical documents are preserved byte-for-byte in the
+Fifty historical documents are preserved byte-for-byte in the
 [canonical archive index](EVIDENCE_INDEX.md), with individual source revisions,
-SHA-256 manifests, limitations and unchanged trial accounting. The four PRs
-are ready for individual archive labels/closing notes/closures after this
-preservation reaches canonical main. No strategy/runtime or raw market tape
+SHA-256 manifests, limitations and unchanged trial accounting. The four #26/#38/#40/#46 PRs are now CLOSED_EVIDENCE_ARCHIVE with live-verified
+labels, individual canonical notes and unchanged source heads. #50's seven
+original replication/source documents are also preserved; #50 remains OPEN
+until independent #51 acceptance. Exact closure receipts are in
+`research/governance/operations/session-2026-10-05.json`. No strategy/runtime or raw market tape
 is merged or rescored. #50/#49 remain open for their own explicit prerequisites.
 
 [Self-contained FOUNDATION packets](REVIEW_PACKAGES.md) cover #51 (42 pinned
@@ -39,10 +42,21 @@ Program Outcome is Active. Failed trials/terminal STOP/no MOM-003/downstream
 kill and human capital authorization remain intact. No ruleset/replacement,
 second-account requirement or mandatory repository-wide check was introduced.
 
-Finish the four verified archival dispositions, then recompute the complete
-live inventory. The next scientific gate is independent FOUNDATION acceptance
+The archival dispositions are complete except #50, and its remaining blocker
+is independent #51 acceptance. The complete live inventory has no autonomous
+Ready work or satisfied Draft/backlog admission. The next scientific gate is
+independent FOUNDATION acceptance
 of the exact #51/#58 packets. After those are accepted, #56 supplies only the
 review process, 40bp cost-hurdle judgment, minimum worthwhile effect and
 terminal/descriptive economic role. STOP is already human-confirmed and its
 attributed record is canonical. Then finalize/version #53 and construct the
 separate final #54 isolated admission packet. No autonomous scoring is eligible.
+
+Final validation: 675 offline tests (one integration excluded), 93 targeted
+governance/contract checks, lint and frozen-artifact/append-only verification.
+CI is informational; read its actual final-main status in GitHub rather than
+inferring success from older heads. The stop is a genuine external
+FOUNDATION-review gate, not a GitHub-account/permission or ordinary-maintenance
+review requirement. No human economic value is requested before that audit
+acceptance. After #51/#58, only the four near-term #56 values/process are needed;
+#59 leverage/exposure/pilot/capital terms remain downstream.

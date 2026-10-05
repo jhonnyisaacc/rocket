@@ -80,3 +80,11 @@ from #26/#38/#40/#46 are preserved byte-for-byte with individual source revision
 and SHA-256 manifests. Close each only after canonical publication plus its
 individual archive label/note. #50 remains open until independent #51 acceptance;
 #49 remains intended active foundation and is not archived or accepted here.
+
+## Verified remaining gate
+
+#26/#38/#40/#46 are now CLOSED_EVIDENCE_ARCHIVE with canonical byte-identical
+evidence, labels and individual closing notes. #50 has seven original documents
+preserved but remains OPEN. Only accepted independent #51 foundation review
+blocks its label/note/closure. This issue stays open / Review / Gate for that
+specific dependency, with 0 trials; no other autonomous archival task remains.

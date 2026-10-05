@@ -1,0 +1,57 @@
+{
+  "schema": "rocket.historical-evidence-archive.v1",
+  "pr": 50,
+  "source_revision": "b8ddbd0d1f477f82f96b26298885b97b0f95e063",
+  "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+  "verification": "EXACT_BYTES_PRESERVED",
+  "closure_state": "BLOCKED_ON_INDEPENDENT_51_ACCEPTANCE",
+  "summary": "Original Muse MOM-000 5 UP/7 DOWN and Tier-B/source findings remain historical replication evidence. The pinned #49 reconciliation documents the DOWN-orientation bug and corrected 5/8. This preservation neither promotes original 5/7 to canonical truth nor independently accepts corrected 5/8. #50 closure is blocked until genuine #51 foundation acceptance. No runtime is merged and no result is recalculated.",
+  "trial_accounting_changed": false,
+  "predictive_trials_consumed_this_operation": 0,
+  "runtime_merged": false,
+  "scientific_admission_granted": false,
+  "files": [
+    {
+      "source_path": "docs/research/momentum/EVIDENCE_AUDIT.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/EVIDENCE_AUDIT.md",
+      "sha256": "4ff6210ceb8d4fc60d59502c29c7292d6226a42bf977cf83347a2d7c2dffca16",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/EVIDENCE_AUDIT.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_DATA_AUDIT.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_DATA_AUDIT.md",
+      "sha256": "2d1a95f308b20b51dab92c4fb59ac9f2929b394b0bb8138b6b2d6e219f0c6fc1",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_DATA_AUDIT.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md",
+      "sha256": "e751cfc9fddd34cb2c66a4ca406f81b7740ae2ffb51cb1d52ffc7a61a0127b37",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_EXPERIMENTS.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_EXPERIMENTS.md",
+      "sha256": "e5f66d1e4786a2c8fa6d953615511a7c16ce799b21485619c5f1c2fe67474a24",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_EXPERIMENTS.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_FINAL_REPORT.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_FINAL_REPORT.md",
+      "sha256": "ca05a922feef965b3a7152631daaac73cf240c0204e634b0dbac3a322158ece0",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_FINAL_REPORT.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_FRONTIER.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_FRONTIER.md",
+      "sha256": "740222ac9991a093f2b35947983b3fb4a6990ba0a7a72a2d0cacdd518b1d730a",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_FRONTIER.md"
+    },
+    {
+      "source_path": "docs/research/momentum/MOMENTUM_RESEARCH.md",
+      "canonical_path": "docs/research/archive/pr-50/docs/research/momentum/MOMENTUM_RESEARCH.md",
+      "sha256": "84b76333ae8c35c47e29b9fd551089ac2c91003089586f51c53e58c891107e24",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/b8ddbd0d1f477f82f96b26298885b97b0f95e063/docs/research/momentum/MOMENTUM_RESEARCH.md"
+    }
+  ]
+}

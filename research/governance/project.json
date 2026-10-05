@@ -15,7 +15,7 @@
       "type": "User"
     },
     "public": true,
-    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/code review when available; no mandatory scientific reviewer; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#58 Review / Gate, #55 In Progress); #52 completed through focused zero-alpha #65; #50 alone waits for #51, Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
+    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/code review when available; no mandatory scientific reviewer; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#58/#55 Review / Gate); #52 Done via focused #65; #26/#38/#40/#46 preserved and closed with labels/notes; #50 source preservation complete, closure alone waits for independent #51. Self-contained FOUNDATION #51/#58 packets are canonical and pending external acceptance. No further autonomous work is eligible now., Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
     "shortDescription": "Gated BTC derivatives research. WIP 3. Preserve failures; no rescue; read-only and human-gated.",
     "title": "Rocket \u2014 Derivatives Strategy Research",
     "url": "https://github.com/users/jhonnyisaacc/projects/4"
@@ -573,20 +573,20 @@
         "Implementer": "Codex or equivalent",
         "Research Reviewer": "Normal evidence/code review when available; no scientific admission by archival",
         "Program Outcome": "Active",
-        "Status": "In Progress",
+        "Status": "Review / Gate",
         "Priority": "P2",
         "Research Family": "Cross-cutting",
         "Work Type": "Governance",
         "Research State": "Admitted",
         "Phase": "Foundation",
-        "Unlock Condition": "Canonical governance/evidence index on main; preserve #26/#38/#40/#46 individually; #50 alone waits for accepted #51",
+        "Unlock Condition": "After independent #51 acceptance, verify preserved #50 source, apply label/closing note and close; no runtime merge",
         "Kill Condition": "Missing provenance pauses affected closure; no runtime merge to retain docs",
-        "Evidence": "43 exact historical documents preserved in archive/pr-26,pr-38,pr-40,pr-46 with source SHA256 manifests; #50 excluded pending #51",
-        "Depends On": "Governance PR; #51 before #50 closure",
+        "Evidence": "50 exact documents preserved; #26/#38/#40/#46 CLOSED_EVIDENCE_ARCHIVE with verified individual notes/labels; #50 source preservation complete, closure pending #51",
+        "Depends On": "Remaining #50 closure requires accepted #51; four other dispositions completed",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
-        "Disposition Blocker": "Four individual closures ready after canonical archive publication, labels and notes; #50 alone waits for independent #51 acceptance"
+        "Disposition Blocker": "EXTERNAL #51 FOUNDATION acceptance blocks only remaining #50 closure; four historical closures complete; no other autonomous archival work remains"
       },
       "primary_work_item": true
     },
@@ -687,12 +687,12 @@
         "Unlock Condition": "Independent acceptance of exact pinned evidence",
         "Kill Condition": "Invalid foundation blocks MOM-002",
         "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/49; EVIDENCE_INDEX.md pins revision",
-        "Depends On": "#51 and #52",
+        "Depends On": "#51 independent foundation acceptance; #52 completed via #65",
         "Review Tier": "FOUNDATION",
         "Gate Source": "REVIEW",
         "Trial Budget": 0,
         "PR Disposition": "MERGE_WHEN_ACCEPTED",
-        "Disposition Blocker": "#57 canonical governance first; update onto canonical main; #51 foundation acceptance and relevant research validation; MOM-002 remains unscored/unadmitted until prerequisites and #54; no distinct GitHub actor requirement"
+        "Disposition Blocker": "#57 canonical governance and #52 focused fix complete; independent #51 foundation acceptance pending; then update/rebase/review #49 onto canonical main; MOM-002 remains unadmitted/unscored"
       },
       "primary_work_item": false
     },
@@ -714,13 +714,13 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/50; EVIDENCE_INDEX.md pins revision",
+        "Evidence": "Canonical archive/pr-50/README.md + source manifest; original 5/7 and Tier-B findings; #49 pinned DOWN bug trace",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
         "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
-        "Disposition Blocker": "#51 reconciliation complete; Preserve useful Tier-B/source findings, original 5 UP/7 DOWN and DOWN-orientation bug; Individual closing note points to #49 and #51; Evidence archive label present"
+        "Disposition Blocker": "Independent #51 foundation acceptance still pending; original replication preservation complete; label/closing note/closure only after accepted #51"
       },
       "primary_work_item": false
     },
@@ -734,7 +734,7 @@
         "Implementer": "PR authors; see pinned evidence",
         "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
         "Program Outcome": "Active",
-        "Status": "Parked",
+        "Status": "Done",
         "Priority": "P2",
         "Research Family": "Futures",
         "Work Type": "Governance",
@@ -742,13 +742,13 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "Canonical docs/research/archive/pr-38/README.md + SHA256 manifest; original immutable revision retained",
+        "Evidence": "docs/research/archive/pr-38/README.md; https://github.com/jhonnyisaacc/rocket/pull/38#issuecomment-6002809950",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
         "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
-        "Disposition Blocker": "#55 verifies FUT-001..FUT-013, older findings, canonical evidence index/trial ledger and SHA-pinned evidence; Individual closing note cites canonical evidence; Evidence archive label present"
+        "Disposition Blocker": "Resolved: CLOSED_EVIDENCE_ARCHIVE 2026-10-05T20:59:10Z; exact canonical evidence, label and note verified; runtime not merged"
       },
       "primary_work_item": false
     },
@@ -762,7 +762,7 @@
         "Implementer": "PR authors; see pinned evidence",
         "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
         "Program Outcome": "Active",
-        "Status": "Parked",
+        "Status": "Done",
         "Priority": "P2",
         "Research Family": "Macro",
         "Work Type": "Governance",
@@ -770,13 +770,13 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "Canonical docs/research/archive/pr-40/README.md + SHA256 manifest; original immutable revision retained",
+        "Evidence": "docs/research/archive/pr-40/README.md; https://github.com/jhonnyisaacc/rocket/pull/40#issuecomment-6002817858",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
         "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
-        "Disposition Blocker": "Preserve 43-variant history, final holdout failure, deflated-Sharpe conclusion and documents/links; Individual closing note cites canonical evidence; Evidence archive label present"
+        "Disposition Blocker": "Resolved: CLOSED_EVIDENCE_ARCHIVE 2026-10-05T20:59:39Z; exact canonical evidence, label and note verified; runtime not merged"
       },
       "primary_work_item": false
     },
@@ -790,7 +790,7 @@
         "Implementer": "PR authors; see pinned evidence",
         "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
         "Program Outcome": "Active",
-        "Status": "Parked",
+        "Status": "Done",
         "Priority": "P2",
         "Research Family": "Options",
         "Work Type": "Governance",
@@ -798,13 +798,13 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "Canonical docs/research/archive/pr-46/README.md + SHA256 manifest; original immutable revision retained",
+        "Evidence": "docs/research/archive/pr-46/README.md; https://github.com/jhonnyisaacc/rocket/pull/46#issuecomment-6002813870",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
         "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
-        "Disposition Blocker": "Preserve puts/capitulation/carry conclusions, approximation/options-data limitations and trial accounting; Record dependency on #40 branch; future expression inherits this evidence; Individual closing note cites canonical evidence; Evidence archive label present"
+        "Disposition Blocker": "Resolved: CLOSED_EVIDENCE_ARCHIVE 2026-10-05T20:59:25Z; exact canonical evidence, label and note verified; runtime not merged"
       },
       "primary_work_item": false
     },
@@ -817,7 +817,7 @@
         "Implementer": "PR authors; see pinned evidence",
         "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
         "Program Outcome": "Active",
-        "Status": "Parked",
+        "Status": "Done",
         "Priority": "P2",
         "Research Family": "Equity",
         "Work Type": "Governance",
@@ -825,13 +825,13 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "Canonical docs/research/archive/pr-26/README.md + SHA256 manifest; original immutable revision retained",
+        "Evidence": "docs/research/archive/pr-26/README.md; https://github.com/jhonnyisaacc/rocket/pull/26#issuecomment-6002806200",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
         "Trial Budget": 0,
         "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
-        "Disposition Blocker": "Preserve EDGE_NOT_VALIDATED, strict-PIT limitations, borrow/funding UNKNOWN and useful architecture findings; Future admitted component needs focused infrastructure port, never whole strategy merge; Individual closing note cites canonical evidence; Evidence archive label present"
+        "Disposition Blocker": "Resolved: CLOSED_EVIDENCE_ARCHIVE 2026-10-05T20:58:56Z; exact canonical evidence, label and note verified; runtime not merged"
       },
       "primary_work_item": false
     },
@@ -1302,7 +1302,8 @@
         {
           "id": "governance_merged",
           "description": "Merge #57 governance first",
-          "accepted": false
+          "accepted": true,
+          "evidence": "#57 main merge b1bdc1bac5464793e63b6596138091f3c35a8dca"
         },
         {
           "id": "governed_rebase",
@@ -1322,7 +1323,8 @@
         {
           "id": "mom002_locked",
           "description": "MOM-002 stays unscored/unadmitted until #58 + #54",
-          "accepted": false
+          "accepted": true,
+          "evidence": "Canonical unchanged Draft manifest; approval null, scoring_authorized=false, prerequisites pending, journals empty"
         }
       ],
       "rationale": "Intended canonical momentum foundation if #51 confirms validity; merging does not score MOM-002",
@@ -1339,7 +1341,8 @@
         {
           "id": "replication_preserved",
           "description": "Preserve useful Tier-B/source findings, original 5 UP/7 DOWN and DOWN-orientation bug",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-50/manifest.json; original 5/7 + Tier-B sources; #49 DOWN bug trace preserved; no independent acceptance"
         },
         {
           "id": "closing_note",
@@ -1362,21 +1365,34 @@
           "id": "futures_preserved",
           "description": "#55 verifies FUT-001..FUT-013, older findings, canonical evidence index/trial ledger and SHA-pinned evidence",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-38/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-38/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "closing_note",
           "description": "Individual closing note cites canonical evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "https://github.com/jhonnyisaacc/rocket/pull/38#issuecomment-6002809950"
         },
         {
           "id": "archive_label",
           "description": "Evidence archive label present",
-          "accepted": false
+          "accepted": true,
+          "evidence": "Live evidence-archive label verified"
         }
       ],
       "rationale": "No validated directional futures edge; no runtime merge to preserve research",
-      "research_admitted": false
+      "research_admitted": false,
+      "state": "CLOSED",
+      "closure": {
+        "pr": 38,
+        "state": "CLOSED",
+        "runtime_merged": false,
+        "closed_at": "2026-10-05T20:59:10Z",
+        "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
+        "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+        "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/38#issuecomment-6002809950",
+        "archive_label": "evidence-archive"
+      }
     },
     "40": {
       "disposition": "CLOSE_EVIDENCE_ARCHIVE",
@@ -1385,21 +1401,34 @@
           "id": "macro_preserved",
           "description": "Preserve 43-variant history, final holdout failure, deflated-Sharpe conclusion and documents/links",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-40/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-40/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "closing_note",
           "description": "Individual closing note cites canonical evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "https://github.com/jhonnyisaacc/rocket/pull/40#issuecomment-6002817858"
         },
         {
           "id": "archive_label",
           "description": "Evidence archive label present",
-          "accepted": false
+          "accepted": true,
+          "evidence": "Live evidence-archive label verified"
         }
       ],
       "rationale": "Do not merge macro strategy runtime",
-      "research_admitted": false
+      "research_admitted": false,
+      "state": "CLOSED",
+      "closure": {
+        "pr": 40,
+        "state": "CLOSED",
+        "runtime_merged": false,
+        "closed_at": "2026-10-05T20:59:39Z",
+        "source_revision": "cf8486ff323d53276273fcbeb28f084e7b07b984",
+        "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+        "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/40#issuecomment-6002817858",
+        "archive_label": "evidence-archive"
+      }
     },
     "46": {
       "disposition": "CLOSE_EVIDENCE_ARCHIVE",
@@ -1408,27 +1437,40 @@
           "id": "derivatives_preserved",
           "description": "Preserve puts/capitulation/carry conclusions, approximation/options-data limitations and trial accounting",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-46/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-46/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "macro_dependency",
           "description": "Record dependency on #40 branch; future expression inherits this evidence",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-46/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-46/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "closing_note",
           "description": "Individual closing note cites canonical evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "https://github.com/jhonnyisaacc/rocket/pull/46#issuecomment-6002813870"
         },
         {
           "id": "archive_label",
           "description": "Evidence archive label present",
-          "accepted": false
+          "accepted": true,
+          "evidence": "Live evidence-archive label verified"
         }
       ],
       "rationale": "Do not merge as active derivatives strategy",
-      "research_admitted": false
+      "research_admitted": false,
+      "state": "CLOSED",
+      "closure": {
+        "pr": 46,
+        "state": "CLOSED",
+        "runtime_merged": false,
+        "closed_at": "2026-10-05T20:59:25Z",
+        "source_revision": "79b83a2f60d0352988ba752828065375bfc3b6be",
+        "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+        "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/46#issuecomment-6002813870",
+        "archive_label": "evidence-archive"
+      }
     },
     "26": {
       "disposition": "CLOSE_EVIDENCE_ARCHIVE",
@@ -1437,27 +1479,40 @@
           "id": "equity_preserved",
           "description": "Preserve EDGE_NOT_VALIDATED, strict-PIT limitations, borrow/funding UNKNOWN and useful architecture findings",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-26/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-26/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "focused_ports_only",
           "description": "Future admitted component needs focused infrastructure port, never whole strategy merge",
           "accepted": true,
-          "evidence": "docs/research/archive/pr-26/manifest.json; exact source bytes preserved; no new scientific admission"
+          "evidence": "docs/research/archive/pr-26/manifest.json; canonical d0aedbc source bytes verified"
         },
         {
           "id": "closing_note",
           "description": "Individual closing note cites canonical evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "https://github.com/jhonnyisaacc/rocket/pull/26#issuecomment-6002806200"
         },
         {
           "id": "archive_label",
           "description": "Evidence archive label present",
-          "accepted": false
+          "accepted": true,
+          "evidence": "Live evidence-archive label verified"
         }
       ],
       "rationale": "Historical ISM/equity research only",
-      "research_admitted": false
+      "research_admitted": false,
+      "state": "CLOSED",
+      "closure": {
+        "pr": 26,
+        "state": "CLOSED",
+        "runtime_merged": false,
+        "closed_at": "2026-10-05T20:58:56Z",
+        "source_revision": "d198e80a5b43b0d28de1da7ba50845230de4b1f1",
+        "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+        "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/26#issuecomment-6002806200",
+        "archive_label": "evidence-archive"
+      }
     }
   },
   "view_api_limitations": "GraphQL supports filter/visible fields, but does not expose new-view grouping/sorting input. Existing Status/Phase grouping/sort preserved. REST create endpoint is used only when available; no unsupported limit or grouping is claimed for the three new tables.",

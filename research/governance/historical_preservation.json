@@ -7,29 +7,41 @@
       "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
       "archive_path": "docs/research/archive/pr-38",
       "files": 37,
-      "manifest_sha256": "372f5223396f19fcaf994fbec4f108eaa6fd8e3b61b6035a28530ca16d39d7df"
+      "manifest_sha256": "722006b92f66ba44b4d0c9cc27147e4809cb93c17e27ac40f0106ddd7626d44e",
+      "closure_state": "CLOSED_EVIDENCE_ARCHIVE"
     },
     {
       "pr": 40,
       "source_revision": "cf8486ff323d53276273fcbeb28f084e7b07b984",
       "archive_path": "docs/research/archive/pr-40",
       "files": 2,
-      "manifest_sha256": "3efd35b82fe968f0a415f1c5cfcbc8ea6641f83dfe3f6ea7708a31a7512e159a"
+      "manifest_sha256": "58b5a60169cc3bd539a2936c1cb0031221a3e6a6fa14e8efe941e4816e9bf68e",
+      "closure_state": "CLOSED_EVIDENCE_ARCHIVE"
     },
     {
       "pr": 46,
       "source_revision": "79b83a2f60d0352988ba752828065375bfc3b6be",
       "archive_path": "docs/research/archive/pr-46",
       "files": 2,
-      "manifest_sha256": "2dda7f4a4ad4c849464a6cb6580b32e57eb3ff28f35bc47d8b4c490c53100dbf"
+      "manifest_sha256": "5f1877dd1d2977aa4979adc58d098a120d47c88d0025595f90645474ef571643",
+      "closure_state": "CLOSED_EVIDENCE_ARCHIVE"
     },
     {
       "pr": 26,
       "source_revision": "d198e80a5b43b0d28de1da7ba50845230de4b1f1",
       "archive_path": "docs/research/archive/pr-26",
       "files": 2,
-      "manifest_sha256": "ef8d46ad3cca7c479bd91dfafe2056e9d60623ea00dafba829e89c0573bba96d"
+      "manifest_sha256": "005916cedebe888af4e96954650dbd0a739a52e45287d41659ce7e66cb2b71b6",
+      "closure_state": "CLOSED_EVIDENCE_ARCHIVE"
+    },
+    {
+      "pr": 50,
+      "source_revision": "b8ddbd0d1f477f82f96b26298885b97b0f95e063",
+      "archive_path": "docs/research/archive/pr-50",
+      "files": 7,
+      "manifest_sha256": "c079d8eac445407467e2233bb8fd00de70e05ede6299e110846b8b991f69fc69",
+      "closure_blocked_on": 51
     }
   ],
-  "excluded_pr50": "Independent #51 foundation acceptance pending; original #50 remains evidence, no closure authorized yet"
+  "excluded_pr50": "Seven original replication/source documents preserved; closure remains blocked on independent #51 acceptance"
 }

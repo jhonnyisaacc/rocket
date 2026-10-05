@@ -21,5 +21,55 @@
   "predictive_trials_consumed": 0,
   "mom002_scoring_authorized": false,
   "program_outcome": "Active",
-  "canonical_main_at_dispatch": "e099893791a182bfd19e3a0a43510f1c954b7007"
+  "canonical_main_at_dispatch": "e099893791a182bfd19e3a0a43510f1c954b7007",
+  "closures": [
+    {
+      "pr": 26,
+      "state": "CLOSED",
+      "runtime_merged": false,
+      "closed_at": "2026-10-05T20:58:56Z",
+      "source_revision": "d198e80a5b43b0d28de1da7ba50845230de4b1f1",
+      "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+      "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/26#issuecomment-6002806200",
+      "archive_label": "evidence-archive"
+    },
+    {
+      "pr": 38,
+      "state": "CLOSED",
+      "runtime_merged": false,
+      "closed_at": "2026-10-05T20:59:10Z",
+      "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
+      "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+      "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/38#issuecomment-6002809950",
+      "archive_label": "evidence-archive"
+    },
+    {
+      "pr": 40,
+      "state": "CLOSED",
+      "runtime_merged": false,
+      "closed_at": "2026-10-05T20:59:39Z",
+      "source_revision": "cf8486ff323d53276273fcbeb28f084e7b07b984",
+      "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+      "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/40#issuecomment-6002817858",
+      "archive_label": "evidence-archive"
+    },
+    {
+      "pr": 46,
+      "state": "CLOSED",
+      "runtime_merged": false,
+      "closed_at": "2026-10-05T20:59:25Z",
+      "source_revision": "79b83a2f60d0352988ba752828065375bfc3b6be",
+      "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+      "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/46#issuecomment-6002813870",
+      "archive_label": "evidence-archive"
+    }
+  ],
+  "additional_pr50_preservation": {
+    "source_revision": "b8ddbd0d1f477f82f96b26298885b97b0f95e063",
+    "files": 7,
+    "closure_blocked_on": 51
+  },
+  "research_wip": 3,
+  "stop_condition": "GENUINE_EXTERNAL_FOUNDATION_REVIEW_REQUIRED; no other eligible autonomous work",
+  "next_action": "Independent exact #51/#58 packet acceptance; then #50 closure / #49 canonicalization and required #56 values before #53/#54"
 }

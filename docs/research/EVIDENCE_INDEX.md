@@ -38,3 +38,9 @@ and live verification. #50 remains open until accepted #51 reconciliation;
 #49 remains the intended active foundation and receives no acceptance here.
 Self-contained independent FOUNDATION review packets: [instructions](REVIEW_PACKAGES.md).
 No archive or GitHub merge permits MOM-002 scoring.
+
+The four #26/#38/#40/#46 archival labels/notes/closures are now live-verified
+without runtime merges or branch deletion. [Original #50 replication evidence](archive/pr-50/README.md)
+adds seven exact historical documents, including 5 UP/7 DOWN and Tier-B findings.
+That source is preserved rather than accepted; its closure remains blocked on
+#51. Closing receipts and source revisions are in the dated operational record.

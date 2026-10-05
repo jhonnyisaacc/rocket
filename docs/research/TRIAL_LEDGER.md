@@ -49,3 +49,11 @@ in SHA-pinned canonical archives before individual documented closure. #50
 still waits for #51. 0 new predictive/strategy trials; all historical trial
 counts/uncertainties remain unchanged. MOM-002 Draft/unauthorized/unscored,
 budget 1/consumed 0. No rescoring, rescue, new hypothesis or capital permission.
+
+2026-10-05: #55 completes individual documented evidence closures #26/#38/#40/#46
+after canonical exact-byte preservation, label and closing note. #50 original
+replication/source preservation is also complete; its closure alone remains
+blocked on independent #51 acceptance. 0 new predictive/strategy trials;
+original 5 UP/7 DOWN, corrected 5/8 and source/vintage/count uncertainties remain
+distinct historical evidence, with no independent foundation approval inferred.
+MOM-002 remains unauthorized/unscored, budget 1/consumed 0.
