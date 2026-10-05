@@ -1,0 +1,33 @@
+name: Research governance
+on:
+  pull_request:
+  push:
+    branches: [main, chore/autonomous-research-project]
+permissions:
+  contents: read
+jobs:
+  governance:
+    name: Governance checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Offline governance and safety tests
+        run: python -m pytest tests/research tests/contract -m 'not integration'
+      - name: Governance lint
+        run: ruff check rocket/research tests/research scripts/research
+      - name: Frozen hashes and append-only evidence
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA=origin/main
+          fi
+          rocket research verify --base "$BASE_SHA"
+      - name: Whitespace
+        run: git diff --check
