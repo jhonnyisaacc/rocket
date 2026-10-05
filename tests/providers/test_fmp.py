@@ -17,6 +17,8 @@ def test_map_short_factors_bearish_growth_and_cheap_pe():
         }
     )
     assert factors["company_fundamentals"] is True
+    assert factors["eps_accounting"] == "FORWARD_ESTIMATE"
+    assert factors["eps_window"] == "FORWARD"
     assert factors["valuation_support"] is True
     assert factors["earnings_revision_deterioration"] is None  # Different periods are not forecast revisions.
 

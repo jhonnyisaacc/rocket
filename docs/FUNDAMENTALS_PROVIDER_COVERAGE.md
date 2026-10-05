@@ -1,11 +1,20 @@
 # Fundamentals coverage and recovery
 
 The default dispatch order in `config/providers.toml` is **FMP → SEC EDGAR →
-Massive**. FMP remains primary when it supplies eligible EPS. A daily-quota HTTP
-429 (including "Limit Reach") opens an in-memory guard for that FMP client until
-the next UTC day; the remaining endpoints and tickers in the scan do not spend
-requests on an exhausted quota. EDGAR and Massive are tried when required EPS is
-missing. Observed false flags are evidence and stop fallback, just as before.
+Massive**. FMP and SEC EDGAR are both read when they are in that chain. The gate
+EPS prefers GAAP TTM, then GAAP quarterly year-over-year, then the only provider
+that returned growth. Massive runs only when neither comparison provider has
+eligible EPS. A daily-quota HTTP 429 (including "Limit Reach") opens an in-memory
+guard for that FMP client until the next UTC day; the remaining endpoints and
+tickers in the scan do not spend requests on an exhausted quota.
+
+`eps_accounting` and `eps_window` name the selected basis. EDGAR us-gaap facts are
+`GAAP` with window `TTM` or `QUARTER`. FMP annual `growthEPS` is `UNSPECIFIED` /
+`ANNUAL` (not a GAAP tag). The unused forward-estimate mapping is
+`FORWARD_ESTIMATE` / `FORWARD`. When both comparison providers return growth,
+`eps_provider_disagreement` lists each reading. Opposite signs force the long
+gate to `NEEDS_REVIEW` (`EPS providers disagree on sign`). A same-sign absolute
+gap of at least 0.25 keeps the preferred basis and sets `reason` to `large_gap`.
 
 Valid FMP valuation fields survive fallback EPS recovery, including the existing
 `valuation_support` short veto. `fundamentals_source` names the EPS provider;

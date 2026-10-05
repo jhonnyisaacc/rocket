@@ -61,16 +61,23 @@ def map_short_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
             or estimates[0].get("estimatedEps")
         )
     eps_growth = None
-    if current_eps not in (None, 0) and next_eps is not None:
-        eps_growth = (next_eps - current_eps) / abs(current_eps)
     # Different fiscal-period estimates are not revisions of the same forecast.
     revision = None
-    growth_basis = "forward EPS versus current EPS"
+    growth_basis = None
+    accounting = "UNKNOWN"
+    window = "UNKNOWN"
+    if current_eps not in (None, 0) and next_eps is not None:
+        eps_growth = (next_eps - current_eps) / abs(current_eps)
+        growth_basis = "forward EPS versus current EPS"
+        accounting = "FORWARD_ESTIMATE"
+        window = "FORWARD"
     growth = _record(payload.get("income_growth"))
     reported_growth = _finite(growth.get("growthEPS"))
     if eps_growth is None and reported_growth is not None:
         eps_growth = reported_growth
         growth_basis = "reported annual EPS growth"
+        accounting = "UNSPECIFIED"
+        window = "ANNUAL"
     valuation_support = None
     if pe is not None and pe > 0:
         valuation_support = pe <= 15
@@ -84,6 +91,8 @@ def map_short_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
         "pe_ttm": pe,
         "eps_growth": eps_growth,
         "eps_growth_basis": growth_basis if eps_growth is not None else None,
+        "eps_accounting": accounting if eps_growth is not None else "UNKNOWN",
+        "eps_window": window if eps_growth is not None else "UNKNOWN",
         "fundamentals_source": "fmp",
     }
 

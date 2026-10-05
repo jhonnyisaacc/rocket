@@ -30,6 +30,8 @@ def test_recorded_cat_reported_eps_revenue_income_and_units():
     assert row["eps_latest_quarter"] == 7.77
     assert row["eps_ttm"] == pytest.approx(23.22)  # FY 18.81 + H1 13.23 - prior H1 8.82
     assert row["eps_growth"] == pytest.approx(0.18228105906313635)
+    assert row["eps_accounting"] == "GAAP"
+    assert row["eps_window"] == "TTM"
     assert row["eps_quarter_yoy_growth"] == pytest.approx((7.77 - 4.62) / 4.62)
     assert row["metrics"]["eps"]["unit"] == "USD/shares"
     assert row["revenue"]["ttm"] == 74_729_000_000
@@ -114,6 +116,8 @@ def test_quarter_growth_fallback_no_prior_ttm_and_zero_prior():
     row = parse_companyfacts(data, now=NOW)
     assert row["eps_growth"] == row["eps_quarter_yoy_growth"]
     assert "latest fiscal quarter" in row["eps_growth_basis"]
+    assert row["eps_accounting"] == "GAAP"
+    assert row["eps_window"] == "QUARTER"
     for r in units["USD/shares"]:
         if r["start"] == "2025-04-01":
             r["val"] = 0
@@ -244,8 +248,11 @@ def test_valid_fmp_fields_survive_sec_recovery_and_false_stops_fallback(tmp_path
             O.HEALTHY, ({"company_fundamentals": False, "eps_growth": 0.1},), NOW, source="fmp"
         )
         row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
-        assert row["fundamentals_source"] == "fmp"
-        assert edgar.fetch.call_count == 1
+        assert row["fundamentals_source"] == "sec.edgar"
+        assert row["eps_accounting"] == "GAAP"
+        assert row["eps_window"] == "TTM"
+        assert row["eps_provider_disagreement"]["flagged"] is False
+        assert edgar.fetch.call_count == 2
         massive.fetch.assert_not_called()
 
 
@@ -344,7 +351,7 @@ def test_malformed_or_wrong_issuer_is_hard_error(tmp_path, payload):
     assert result.extras["provider_attempts"][-1]["failure_kind"] == "HardError"
 
 
-def test_request_spacing_and_valid_fmp_skips_sec(tmp_path, monkeypatch):
+def test_request_spacing_and_valid_fmp_still_reads_edgar(tmp_path, monkeypatch):
     import rocket.providers.edgar as module
 
     sleeps = []
@@ -357,11 +364,17 @@ def test_request_spacing_and_valid_fmp_skips_sec(tmp_path, monkeypatch):
     assert sleeps == [0.35, 0.35]
     fmp, edgar, massive = Mock(), Mock(), Mock()
     fmp.fundamentals.return_value = ProviderResult(
-        O.HEALTHY, ({"company_fundamentals": False, "eps_growth": 0.1},), NOW, source="fmp"
+        O.HEALTHY, ({"company_fundamentals": False, "eps_growth": 0.1,
+                     "eps_growth_basis": "reported annual EPS growth",
+                     "eps_accounting": "UNSPECIFIED", "eps_window": "ANNUAL"},), NOW, source="fmp"
     )
+    edgar.fetch.return_value = ProviderResult(O.UNAVAILABLE, failure_kind="Empty", source="sec.edgar")
     row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
     assert row["fundamentals_source"] == "fmp"
-    edgar.fetch.assert_not_called()
+    assert row["eps_accounting"] == "UNSPECIFIED"
+    assert row["eps_window"] == "ANNUAL"
+    assert row["eps_provider_disagreement"] is None
+    edgar.fetch.assert_called_once()
     massive.fetch.assert_not_called()
 
 

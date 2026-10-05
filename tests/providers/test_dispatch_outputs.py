@@ -61,6 +61,8 @@ def test_massive_reported_comparable_periods_and_availability():
     assert row['eps_growth'] == -.5
     assert row['company_fundamentals'] is True
     assert row['eps_kind'] == 'REPORTED'
+    assert row['eps_accounting'] == 'UNSPECIFIED'
+    assert row['eps_window'] == 'ANNUAL'
     assert row['historical_available_at'] is None
     assert row['available_at'] == NOW.isoformat()
     assert row['periods'][0]['filing_date'] == '2026-02-15'
