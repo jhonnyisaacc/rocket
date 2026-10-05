@@ -230,13 +230,17 @@ def parse_companyfacts(data, *, now):
         shares = None
     growth = eps["ttm_yoy_growth"] if eps else None
     basis = "reported TTM EPS YoY (FY plus comparable YTD; quarter sum fallback)"
+    window = "TTM"
     if growth is None and eps:
         growth = eps["quarter_yoy_growth"]
         basis = "reported latest fiscal quarter EPS YoY"
+        window = "QUARTER"
     return {
         "company_fundamentals": growth < 0 if growth is not None else None,
         "eps_growth": growth,
         "eps_growth_basis": basis if growth is not None else None,
+        "eps_accounting": "GAAP" if growth is not None else "UNKNOWN",
+        "eps_window": window if growth is not None else "UNKNOWN",
         "eps_kind": "REPORTED" if growth is not None else "UNKNOWN",
         "eps_latest_quarter": eps["latest_quarter"] if eps else None,
         "eps_ttm": eps["ttm"] if eps else None,

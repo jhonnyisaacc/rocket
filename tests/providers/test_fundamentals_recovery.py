@@ -292,3 +292,104 @@ def test_hard_and_transient_failures_preserve_both_endpoint_traces(code, kind):
     assert all(a["failure_kind"] == ("HardError" if kind == "ExternalOutage" else kind)
                for a in row["provider_attempts"])
     assert "SECRET" not in str(row)
+
+
+def _provider(growth, *, accounting, window, basis, source, extra=None):
+    record = {
+        "company_fundamentals": growth < 0,
+        "eps_growth": growth,
+        "eps_growth_basis": basis,
+        "eps_accounting": accounting,
+        "eps_window": window,
+        "eps_kind": "REPORTED",
+        **(extra or {}),
+    }
+    return ProviderResult(O.HEALTHY, (record,), NOW, source=source)
+
+
+def test_pep_shaped_opposite_sign_prefers_gaap_ttm_and_flags():
+    fmp, edgar, massive = Mock(), Mock(), Mock()
+    fmp.fundamentals.return_value = _provider(
+        -0.136, accounting="UNSPECIFIED", window="ANNUAL",
+        basis="reported annual EPS growth", source="fmp", extra={"pe_ttm": 22},
+    )
+    edgar.fetch.return_value = _provider(
+        0.39, accounting="GAAP", window="TTM",
+        basis="reported TTM EPS YoY (FY plus comparable YTD; quarter sum fallback)",
+        source="sec.edgar", extra={"eps_ttm": 6.95},
+    )
+    row = fundamentals_row("PEP", fmp=fmp, edgar=edgar, massive=massive)
+    assert row["eps_growth"] == 0.39
+    assert row["company_fundamentals"] is False
+    assert row["eps_accounting"] == "GAAP"
+    assert row["eps_window"] == "TTM"
+    assert row["fundamentals_source"] == "sec.edgar"
+    assert row["field_provenance"]["eps_growth"] == "sec.edgar"
+    assert row["pe_ttm"] == 22
+    assert row["field_provenance"]["pe_ttm"] == "fmp"
+    assert row["eps_ttm"] == 6.95
+    flag = row["eps_provider_disagreement"]
+    assert flag["flagged"] is True
+    assert flag["reason"] == "opposite_sign"
+    assert flag["threshold"] == 0.25
+    assert flag["selected_provider"] == "sec.edgar"
+    assert [item["provider"] for item in flag["providers"]] == ["fmp", "sec.edgar"]
+    assert flag["providers"][0]["eps_growth"] == -0.136
+    assert flag["providers"][0]["eps_window"] == "ANNUAL"
+    assert flag["providers"][1]["eps_accounting"] == "GAAP"
+    massive.fetch.assert_not_called()
+
+
+def test_same_sign_large_gap_keeps_preferred_basis_and_flags():
+    fmp, edgar, massive = Mock(), Mock(), Mock()
+    fmp.fundamentals.return_value = _provider(
+        0.10, accounting="UNSPECIFIED", window="ANNUAL",
+        basis="reported annual EPS growth", source="fmp",
+    )
+    edgar.fetch.return_value = _provider(
+        0.40, accounting="GAAP", window="TTM",
+        basis="reported TTM EPS YoY (FY plus comparable YTD; quarter sum fallback)",
+        source="sec.edgar",
+    )
+    row = fundamentals_row("F", fmp=fmp, edgar=edgar, massive=massive)
+    assert row["eps_growth"] == 0.40
+    assert row["eps_accounting"] == "GAAP"
+    assert row["eps_window"] == "TTM"
+    assert row["eps_provider_disagreement"]["flagged"] is True
+    assert row["eps_provider_disagreement"]["reason"] == "large_gap"
+    massive.fetch.assert_not_called()
+
+
+def test_same_sign_small_gap_records_both_without_flag():
+    fmp, edgar, massive = Mock(), Mock(), Mock()
+    fmp.fundamentals.return_value = _provider(
+        0.10, accounting="UNSPECIFIED", window="ANNUAL",
+        basis="reported annual EPS growth", source="fmp",
+    )
+    edgar.fetch.return_value = _provider(
+        0.18, accounting="GAAP", window="QUARTER",
+        basis="reported latest fiscal quarter EPS YoY", source="sec.edgar",
+    )
+    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
+    assert row["eps_window"] == "QUARTER"
+    assert row["fundamentals_source"] == "sec.edgar"
+    assert row["eps_provider_disagreement"]["flagged"] is False
+    assert row["eps_provider_disagreement"]["reason"] is None
+    assert len(row["eps_provider_disagreement"]["providers"]) == 2
+    massive.fetch.assert_not_called()
+
+
+def test_basis_text_is_inferred_when_structured_fields_are_absent():
+    fmp, edgar, massive = Mock(), Mock(), Mock()
+    fmp.fundamentals.return_value = ProviderResult(
+        O.HEALTHY,
+        ({"company_fundamentals": True, "eps_growth": -0.2,
+          "eps_growth_basis": "reported annual EPS growth"},),
+        NOW, source="fmp",
+    )
+    edgar.fetch.return_value = ProviderResult(O.UNAVAILABLE, failure_kind="Empty", source="sec.edgar")
+    row = fundamentals_row("DOW", fmp=fmp, edgar=edgar, massive=massive)
+    assert row["eps_accounting"] == "UNSPECIFIED"
+    assert row["eps_window"] == "ANNUAL"
+    assert row["eps_provider_disagreement"] is None
+    massive.fetch.assert_not_called()
