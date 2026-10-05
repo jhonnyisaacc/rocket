@@ -1,0 +1,218 @@
+{
+  "DOWN": {
+    "by_year": {
+      "2019": 3,
+      "2020": 3,
+      "2021": 3,
+      "2022": 9,
+      "2023": 7,
+      "2024": 7,
+      "2025": 11
+    },
+    "by_year_success": {
+      "2019": 1,
+      "2022": 2,
+      "2023": 1,
+      "2024": 1,
+      "2025": 2
+    },
+    "concentration_mfe": {
+      "median_count_for_half": 6,
+      "n": 31,
+      "top1_share": 0.14160300875953635,
+      "top5_share": 0.4502325473119158
+    },
+    "continues": 7,
+    "cost_hurdles": {
+      "20bp": {
+        "continues_above_hurdle": 7,
+        "hurdle_bp": 20.0,
+        "n_independent": 43
+      },
+      "40bp": {
+        "continues_above_hurdle": 7,
+        "hurdle_bp": 40.0,
+        "n_independent": 43
+      },
+      "80bp": {
+        "continues_above_hurdle": 7,
+        "hurdle_bp": 80.0,
+        "n_independent": 43
+      }
+    },
+    "crossings": 135,
+    "duration_bars_median": 77.5,
+    "end_S_median": -0.4772896275145145,
+    "fails": 19,
+    "independent": 43,
+    "kish_N_years": 5.654434250764526,
+    "mae_S_median": 0.8432726582722987,
+    "mfe_S_median": 0.29893708352639325,
+    "success_rate": 0.16279069767441862,
+    "timeouts": 15,
+    "unknown": 2
+  },
+  "UP": {
+    "by_year": {
+      "2019": 7,
+      "2020": 10,
+      "2021": 7,
+      "2022": 7,
+      "2023": 11,
+      "2024": 12,
+      "2025": 10
+    },
+    "by_year_success": {
+      "2023": 2,
+      "2024": 2,
+      "2025": 1
+    },
+    "concentration_mfe": {
+      "median_count_for_half": 12,
+      "n": 57,
+      "top1_share": 0.07558566522978839,
+      "top5_share": 0.282985720882635
+    },
+    "continues": 5,
+    "cost_hurdles": {
+      "20bp": {
+        "continues_above_hurdle": 5,
+        "hurdle_bp": 20.0,
+        "n_independent": 64
+      },
+      "40bp": {
+        "continues_above_hurdle": 5,
+        "hurdle_bp": 40.0,
+        "n_independent": 64
+      },
+      "80bp": {
+        "continues_above_hurdle": 5,
+        "hurdle_bp": 80.0,
+        "n_independent": 64
+      }
+    },
+    "crossings": 219,
+    "duration_bars_median": 87.5,
+    "end_S_median": -0.122075547216205,
+    "fails": 21,
+    "independent": 64,
+    "kish_N_years": 6.69281045751634,
+    "mae_S_median": 0.7787227883157835,
+    "mfe_S_median": 0.5066189941070418,
+    "success_rate": 0.078125,
+    "timeouts": 34,
+    "unknown": 4
+  },
+  "candidate_generator": "candgen-v1",
+  "census": "mom000-v1",
+  "ex_post_legs": {
+    "front_loading": {
+      "DOWN": {
+        "frac_at_confirm_median": 0.44374514576223,
+        "frac_plus12h_median": 0.48054406762938734,
+        "frac_plus4h_median": 0.4569522984795013,
+        "frac_plus8h_median": 0.49843674545964545,
+        "n": 28,
+        "never_confirmed": 0
+      },
+      "UP": {
+        "frac_at_confirm_median": 0.2865159888959984,
+        "frac_plus12h_median": 0.23312802647233766,
+        "frac_plus4h_median": 0.2800891497544181,
+        "frac_plus8h_median": 0.2505149954337711,
+        "n": 30,
+        "never_confirmed": 0
+      }
+    },
+    "n_large_uncensored": 58,
+    "n_legs": 122
+  },
+  "gate": {
+    "checks": {
+      "DOWN_frontload_ge_half_retained": true,
+      "DOWN_independent_ge_40succ": false,
+      "DOWN_top_year_le_40pct": true,
+      "UP_frontload_ge_half_retained": true,
+      "UP_independent_ge_40succ": false,
+      "UP_top_year_le_40pct": true,
+      "spaced_ge_120": false,
+      "three_annual_folds": false
+    },
+    "permit_experiment_1": false,
+    "verdict": "STOP"
+  },
+  "label_contract": "label-v1",
+  "n_1h_bars": 61300,
+  "n_4h_bars": 15307,
+  "n_crossings": 354,
+  "n_spaced": 107,
+  "overlap_components": {
+    "largest": 11,
+    "n_components": 117,
+    "singleton_share": 0.3333333333333333
+  },
+  "quarantine_detail": [
+    {
+      "lineno": 166,
+      "raw": "1559941200000,7930.85000000,7930.85000000,7930.85000000,7930.85000000,0.00000000,1559941993524,0.00000000,0,0.00000000,0.00000000,0",
+      "reason": "kline line 166: close_time != open+1h-1unit (open_ms=1559941200000 close_ms=1559941993524 unit=ms)",
+      "vintage": "binance-spot-1h-file005"
+    },
+    {
+      "lineno": 443,
+      "raw": "1582110000000,10125.00000000,10150.00000000,10117.66000000,10148.93000000,405.96951100,1582112132286,4113135.48821602,4680,209.02409600,2117998.70609211,0",
+      "reason": "kline line 443: close_time != open+1h-1unit (open_ms=1582110000000 close_ms=1582112132286 unit=ms)",
+      "vintage": "binance-spot-1h-file013"
+    },
+    {
+      "lineno": 82,
+      "raw": "1583312400000,8818.40000000,8820.68000000,8785.00000000,8795.06000000,254.39256900,1583313706694,2240767.89929574,3743,109.96817000,968815.61160635,0",
+      "reason": "kline line 82: close_time != open+1h-1unit (open_ms=1583312400000 close_ms=1583313706694 unit=ms)",
+      "vintage": "binance-spot-1h-file014"
+    },
+    {
+      "lineno": 495,
+      "raw": "1608559200000,22646.53000000,22646.53000000,22646.53000000,22646.53000000,0.00000000,1608558440521,0.00000000,0,0.00000000,0.00000000,0",
+      "reason": "kline line 495: close_time != open+1h-1unit (open_ms=1608559200000 close_ms=1608558440521 unit=ms)",
+      "vintage": "binance-spot-1h-file023"
+    },
+    {
+      "lineno": 244,
+      "raw": "1613012400000,44582.07000000,44582.07000000,44582.07000000,44582.07000000,0.00000000,1613014854773,0.00000000,0,0.00000000,0.00000000,0",
+      "reason": "kline line 244: close_time != open+1h-1unit (open_ms=1613012400000 close_ms=1613014854773 unit=ms)",
+      "vintage": "binance-spot-1h-file025"
+    },
+    {
+      "lineno": 579,
+      "raw": "1619323200000,49626.76000000,49705.04000000,49600.24000000,49683.94000000,5.88703400,1619323258146,292226.01345715,224,4.22924500,209956.01047409,0",
+      "reason": "kline line 579: close_time != open+1h-1unit (open_ms=1619323200000 close_ms=1619323258146 unit=ms)",
+      "vintage": "binance-spot-1h-file027"
+    },
+    {
+      "lineno": 290,
+      "raw": "1628816400000,44493.69000000,44922.00000000,44455.00000000,44847.26000000,1980.12661900,1628819999000,88562762.79188752,135331,986.53758700,44121929.11192070,0",
+      "reason": "kline line 290: close_time != open+1h-1unit (open_ms=1628816400000 close_ms=1628819999000 unit=ms)",
+      "vintage": "binance-spot-1h-file031"
+    },
+    {
+      "lineno": 557,
+      "raw": "1640318400000,51030.00000000,51109.09000000,50926.55000000,50951.47000000,560.59259000,1640321994362,28611166.12623800,22379,247.37318000,12625307.95136700,0",
+      "reason": "kline line 557: close_time != open+1h-1unit (open_ms=1640318400000 close_ms=1640321994362 unit=ms)",
+      "vintage": "binance-spot-1h-file035"
+    },
+    {
+      "lineno": 565,
+      "raw": "1679659200000,28080.00000000,28080.00000000,28080.00000000,28080.00000000,0.00000000,1679661581646,0.00000000,0,0.00000000,0.00000000,0",
+      "reason": "kline line 565: close_time != open+1h-1unit (open_ms=1679659200000 close_ms=1679661581646 unit=ms)",
+      "vintage": "binance-spot-1h-file050"
+    }
+  ],
+  "quarantined_rows": 9,
+  "sensitivity_primary_mix": {
+    "CONTINUES": 47,
+    "FAILS": 94,
+    "TIMEOUT": 188,
+    "UNKNOWN": 25
+  },
+  "source_fingerprint": "0573411bcc6b700f584ce5f13d65e928"
+}
