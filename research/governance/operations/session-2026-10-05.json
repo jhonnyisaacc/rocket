@@ -1,0 +1,25 @@
+{
+  "schema": "rocket.research.operational-handoff.v1",
+  "mandate_sha256": "8a3986c26e2a547b50dbf0770688a830143ac18c1582b276de8f5fbd96ebd351",
+  "governance_pr57_merge": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+  "provider_pr65_merge": "e099893791a182bfd19e3a0a43510f1c954b7007",
+  "dispatch_snapshot_sha256": "25d8773cf15fe015f6a59cc5e03193535007913cdea1fd7d9b452b8328a1825e",
+  "selected_issue": 55,
+  "scope_prs": [
+    26,
+    38,
+    40,
+    46
+  ],
+  "excluded_pr50": "Requires independent #51 acceptance",
+  "maintenance_review_policy": "Normal code review when available; no scientific admission claimed",
+  "external_foundation_acceptances": {
+    "51": "PENDING",
+    "58": "PENDING"
+  },
+  "scientific_artifacts_changed": false,
+  "predictive_trials_consumed": 0,
+  "mom002_scoring_authorized": false,
+  "program_outcome": "Active",
+  "canonical_main_at_dispatch": "e099893791a182bfd19e3a0a43510f1c954b7007"
+}

@@ -1,0 +1,237 @@
+{
+  "schema": "rocket.historical-evidence-archive.v1",
+  "pr": 38,
+  "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
+  "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+  "verification": "EXACT_BYTES_PRESERVED",
+  "closure_state": "READY_AFTER_CANONICAL_MERGE_AND_INDIVIDUAL_LABEL_NOTE",
+  "summary": "Thirteen named FUT contracts plus unresolved earlier historical screens; related attempts are not thirteen independent tests. No validated directional futures edge. FUT-005 failure and current-reported annual vintage limits remain. Unscored conditional periods stay unread; no FUT-014/COT rescue or runtime merge.",
+  "trial_accounting_changed": false,
+  "predictive_trials_consumed_this_operation": 0,
+  "runtime_merged": false,
+  "scientific_admission_granted": false,
+  "files": [
+    {
+      "source_path": "docs/research/futures/EXPERIMENT_LEDGER.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/EXPERIMENT_LEDGER.md",
+      "sha256": "1f94e9a039a0422b18c1d4c411e88af24009da5008284bc56885ca090ad2fc99",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/EXPERIMENT_LEDGER.md"
+    },
+    {
+      "source_path": "docs/research/futures/HISTORICAL_EVIDENCE.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/HISTORICAL_EVIDENCE.md",
+      "sha256": "0497af489d43c49f093e39ab8cd668b8f7b54445cdfc85fdb2691b04e496bf0a",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/HISTORICAL_EVIDENCE.md"
+    },
+    {
+      "source_path": "docs/research/futures/FAMILY_AUDIT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/FAMILY_AUDIT.md",
+      "sha256": "6531e4fb2c05b7a0396d9172ed4ee6b1ed4ce45c006cec1d6b1bfecb85d2049d",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/FAMILY_AUDIT.md"
+    },
+    {
+      "source_path": "docs/research/futures/EXPERIMENT_ADMISSION.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/EXPERIMENT_ADMISSION.md",
+      "sha256": "3332854622edcf95d5cfe6f683ba026859d79b6112b7fbc771e5d272945832ae",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/EXPERIMENT_ADMISSION.md"
+    },
+    {
+      "source_path": "docs/research/futures/FOUNDATION_AUDIT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/FOUNDATION_AUDIT.md",
+      "sha256": "e311ab9555bdfe0159bbe65d099690cad884e0ac15903a2f33c915c2954d9d66",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/FOUNDATION_AUDIT.md"
+    },
+    {
+      "source_path": "docs/research/futures/DATA_READINESS.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/DATA_READINESS.md",
+      "sha256": "82162a421895fcb6995d99c66862ab259ddc4701fc9781fd954c98deb62f16cd",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/DATA_READINESS.md"
+    },
+    {
+      "source_path": "docs/research/futures/COMPONENT_LEDGER.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/COMPONENT_LEDGER.md",
+      "sha256": "de05f612a3bc2974af58123866bca26a95a120667bb842f2d7ead1faa5acf8a8",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/COMPONENT_LEDGER.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-001-OOS.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-001-OOS.md",
+      "sha256": "16ee364bf13bda48ab052871885ce6c4c708d474327c8c43ee876dfab2db5a12",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-001-OOS.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-001-SETTLEMENT-SCENARIO.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-001-SETTLEMENT-SCENARIO.md",
+      "sha256": "32647b8a0d3e23001f78157779e5051ee189ef8d9d17545d2953652bd4c7c16d",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-001-SETTLEMENT-SCENARIO.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-001.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-001.md",
+      "sha256": "59be48722d4a4aed913434f930448e54518447366d5f4e9d8ddc2c17d1bf917a",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-001.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-002-DATA.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-002-DATA.md",
+      "sha256": "98c3b7e2e8096617eecd6ebfa24e05d58f2380120bec6142d5b71547c656c653",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-002-DATA.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-002-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-002-RESULT.md",
+      "sha256": "6a31ce5c6b681dfec7b31e268a3d5a84700d575bcab11dc745e04f2b8ddcf2f8",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-002-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-002.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-002.md",
+      "sha256": "2f0e5f8f700f99e27c2ec77f1cdfaa3f8ced7880cf068ca509fdc619b3dd1e29",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-002.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-003-DATA.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-003-DATA.md",
+      "sha256": "89c64496941918b4187c657304b2d01a4724bcb5b95883f5de58905c6be2d9d6",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-003-DATA.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-003-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-003-RESULT.md",
+      "sha256": "a070412394e5871240b00e304ce305e33fe3f6c1f197fc0c89b00f6affb8995d",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-003-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-003.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-003.md",
+      "sha256": "fb2bb5f526bcc105df71fcd67ad49e080edc1154d6b9ed1b2855fb8fef343b76",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-003.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-004-DATA.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-004-DATA.md",
+      "sha256": "38a7a3f0cb939357ee52e1617c76c2a961908a2a248382ddb000eebe3c93c4b7",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-004-DATA.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-004-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-004-RESULT.md",
+      "sha256": "121c7991eae19b8a172b94e053e8b836cd739b6940fa9d2c5cbe4ffd18305bb9",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-004-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-004.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-004.md",
+      "sha256": "acaae2bb2c8eefa9e35860a2f8d868d3671ae6caa2c8146707fa1a6f3fa88a8d",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-004.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-005-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-005-RESULT.md",
+      "sha256": "77c0b5108d0fcfbbb8d2d47ca06371918862bf44179e62a41612aa0037552478",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-005-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-005.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-005.md",
+      "sha256": "c8f921451a6c7529a5e2ff30a1327a3130d0c636506307a0c419ab4355c985a1",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-005.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-006-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-006-RESULT.md",
+      "sha256": "f5b8d8f014759f4ca8699736aab7cbddc423c59a471cccdcafce429141e60272",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-006-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-006.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-006.md",
+      "sha256": "3b2b380c4a91e3e31e38943b2a70ddc666ea385406ff5741183e36ec831fc920",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-006.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-007-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-007-RESULT.md",
+      "sha256": "9a47232110f8d275451a727ef7f0d6ef07b3e120ae1a4ecc05b010141e0f9374",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-007-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-007.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-007.md",
+      "sha256": "2b8f8687dd28a993ad7d9b19ccfb3fa192ebac1a64c851dbf40944c8cf501bde",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-007.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-008-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-008-RESULT.md",
+      "sha256": "027bc9ba3fa006ccc1938283249367398c0888adce2011cba2ebbb81f8764e0b",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-008-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-008.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-008.md",
+      "sha256": "af275dbf5cb932483ca309ddb7444881d83ce7ac5d6449ea82a6963731fd0591",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-008.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-009-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-009-RESULT.md",
+      "sha256": "4e880a4a39b8072bd8e69791390b03d559d76bf750dbdd1268153bcc2763aed7",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-009-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-009.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-009.md",
+      "sha256": "32b45f8aa3b54b6f0de1c7823a58ad1805e2fa420e1992ab1b53f9189262ffb3",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-009.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-010-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-010-RESULT.md",
+      "sha256": "e20e61494711ae72e19c908d4dc0658f41367b4409a487a9326ddab9ca90895e",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-010-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-010.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-010.md",
+      "sha256": "c43db9b7b6ed0b037ffbf1df8e3e58f63cef48fd938182c181e0f7a16cffcf85",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-010.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-011-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-011-RESULT.md",
+      "sha256": "44b302fd5de967108dcb75ad88aca99f4ab4751123cb5c8b55470ddef807c2de",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-011-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-011.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-011.md",
+      "sha256": "a4b7f2b2bf6e07efdeaad3a67859d65c89858c5cb17eec428ee5443651c95baa",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-011.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-012-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-012-RESULT.md",
+      "sha256": "4b73952d4228bd6b0ac5be8062cb08977a228f19ffbb37a66d090a19178ec9a3",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-012-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-012.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-012.md",
+      "sha256": "b95590beda5088d193ce8a5ed8c75adeb65798714db1c9cad1ded210000912a1",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-012.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-013-RESULT.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-013-RESULT.md",
+      "sha256": "b4b0979cc4a03909519c58b5ed77897f3cb7c4c90186a40ad6ef93b8fcc05451",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-013-RESULT.md"
+    },
+    {
+      "source_path": "docs/research/futures/experiments/FUT-013.md",
+      "canonical_path": "docs/research/archive/pr-38/docs/research/futures/experiments/FUT-013.md",
+      "sha256": "144a115ac56307f1c7223ca86d6e6c12ec76c62be0d39f9b080034bb4b753060",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-013.md"
+    }
+  ]
+}

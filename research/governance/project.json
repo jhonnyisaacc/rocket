@@ -15,7 +15,7 @@
       "type": "User"
     },
     "public": true,
-    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/separate code review; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#52/#58 all Review / Gate), Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
+    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/code review when available; no mandatory scientific reviewer; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#58 Review / Gate, #55 In Progress); #52 completed through focused zero-alpha #65; #50 alone waits for #51, Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
     "shortDescription": "Gated BTC derivatives research. WIP 3. Preserve failures; no rescue; read-only and human-gated.",
     "title": "Rocket \u2014 Derivatives Strategy Research",
     "url": "https://github.com/users/jhonnyisaacc/projects/4"
@@ -463,7 +463,7 @@
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex or equivalent",
-        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Research Reviewer": "UNRESOLVED \u2014 genuine independent FOUNDATION reviewer; shared GitHub publication allowed",
         "Program Outcome": "Active",
         "Status": "Review / Gate",
         "Priority": "P0",
@@ -473,11 +473,12 @@
         "Phase": "Foundation",
         "Unlock Condition": "Already admitted; accept existing #49 reconciliation independently",
         "Kill Condition": "Invalid MOM-000 blocks MOM-002 freeze; irreparable foundation kills branch",
-        "Evidence": "PR #49 reconciliation + #50 original; pinned evidence index; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
+        "Evidence": "Canonical REVIEW_PACKAGES.md; foundation-51.zip SHA256 98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603; exact source manifest; external review pending",
         "Depends On": "#49, #50; independent acceptance",
         "Review Tier": "FOUNDATION",
         "Gate Source": "REVIEW",
-        "Trial Budget": 0
+        "Trial Budget": 0,
+        "Disposition Blocker": "EXTERNAL FOUNDATION acceptance only: independent exact foundation-51 packet/model/role/context/contribution decision pending; implementation and packet verification complete; 0 predictive trials"
       },
       "primary_work_item": true
     },
@@ -489,22 +490,22 @@
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex or equivalent",
-        "Research Reviewer": "Different agent/person code review; no MOM-002 isolated scientific packet",
+        "Research Reviewer": "Code review when available; no scientific admission by this provider fix",
         "Program Outcome": "Active",
-        "Status": "Review / Gate",
+        "Status": "Done",
         "Priority": "P0",
         "Research Family": "Data / PIT",
         "Work Type": "Bug",
-        "Research State": "Admitted",
+        "Research State": "Passed",
         "Phase": "Foundation",
-        "Unlock Condition": "Existing PIT correctness bug; tests/CI and separate code review; zero alpha; no #54 prerequisite",
+        "Unlock Condition": "Existing correctness bug; normal tests/CI and code review when available; no #54 dependency",
         "Kill Condition": "Disable unsafe historical CFTC eligibility until corrected; no COT rescue",
-        "Evidence": "#49 CFTC_LINEAGE_AUDIT.md and regression tests; #38 FUT-005; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
-        "Depends On": "#49 provider fix, #38 lineage",
+        "Evidence": "#65 merged e099893791a182bfd19e3a0a43510f1c954b7007; 667 offline / 73 focused tests; docs/CFTC_AVAILABILITY.md; #49 pinned FUT-005 lineage retained",
+        "Depends On": "#65 focused provider port on main; pinned #38/#49 FUT-005 lineage retained",
         "Review Tier": "MAINTENANCE",
-        "Gate Source": "REVIEW",
+        "Gate Source": "CODE",
         "Trial Budget": 0,
-        "Disposition Blocker": "Research correctness acceptance: tests/relevant CI and separate code review pending; no #54 scientific packet. Ordinary provider-fix merges are outside research WIP/admission."
+        "Disposition Blocker": "Resolved: observed receipt clocks and UNKNOWN/LATE suppression on main; foundation/readiness acceptance remains #51"
       },
       "primary_work_item": true
     },
@@ -570,21 +571,22 @@
         "Trials Consumed": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex or equivalent",
-        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Research Reviewer": "Normal evidence/code review when available; no scientific admission by archival",
         "Program Outcome": "Active",
-        "Status": "Backlog",
+        "Status": "In Progress",
         "Priority": "P2",
         "Research Family": "Cross-cutting",
         "Work Type": "Governance",
         "Research State": "Admitted",
         "Phase": "Foundation",
-        "Unlock Condition": "Governance evidence index available; individual canonical replacement accepted before closure",
+        "Unlock Condition": "Canonical governance/evidence index on main; preserve #26/#38/#40/#46 individually; #50 alone waits for accepted #51",
         "Kill Condition": "Missing provenance pauses affected closure; no runtime merge to retain docs",
-        "Evidence": "#38, #40, #46, #26, #50 pinned heads",
+        "Evidence": "43 exact historical documents preserved in archive/pr-26,pr-38,pr-40,pr-46 with source SHA256 manifests; #50 excluded pending #51",
         "Depends On": "Governance PR; #51 before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
-        "Trial Budget": 0
+        "Trial Budget": 0,
+        "Disposition Blocker": "Four individual closures ready after canonical archive publication, labels and notes; #50 alone waits for independent #51 acceptance"
       },
       "primary_work_item": true
     },
@@ -740,7 +742,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/38; EVIDENCE_INDEX.md pins revision; 13 named FUT trials plus older unresolved historical screens",
+        "Evidence": "Canonical docs/research/archive/pr-38/README.md + SHA256 manifest; original immutable revision retained",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
@@ -768,7 +770,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/40; EVIDENCE_INDEX.md pins revision",
+        "Evidence": "Canonical docs/research/archive/pr-40/README.md + SHA256 manifest; original immutable revision retained",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
@@ -796,7 +798,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/46; EVIDENCE_INDEX.md pins revision; 34 reported A18/B10/C6 counts including sensitivities; exact deduplication unresolved",
+        "Evidence": "Canonical docs/research/archive/pr-46/README.md + SHA256 manifest; original immutable revision retained",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
@@ -823,7 +825,7 @@
         "Phase": "Foundation",
         "Unlock Condition": "Historical evidence only; no experiment admission",
         "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
-        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/26; EVIDENCE_INDEX.md pins revision; trial total UNKNOWN (A0\u2013A6 ablations, not zero trials)",
+        "Evidence": "Canonical docs/research/archive/pr-26/README.md + SHA256 manifest; original immutable revision retained",
         "Depends On": "#55; #51 also before #50 closure",
         "Review Tier": "MAINTENANCE",
         "Gate Source": "CODE",
@@ -838,11 +840,11 @@
       "url": "https://github.com/jhonnyisaacc/rocket/pull/57",
       "title": "chore: restore lightweight GitHub workflow and preserve research gates",
       "fields": {
-        "Status": "Review / Gate",
+        "Status": "Done",
         "Priority": "P0",
         "Research Family": "Cross-cutting",
         "Work Type": "Governance",
-        "Research State": "Admitted",
+        "Research State": "Passed",
         "Phase": "Foundation",
         "Trials Consumed": 0,
         "Program Outcome": "Active",
@@ -850,12 +852,12 @@
         "Gate Source": "REVIEW",
         "Trial Budget": 0,
         "PR Disposition": "MERGE_WHEN_ACCEPTED",
-        "Disposition Blocker": "Iteration acceptance and relevant research validation; no mandatory GitHub review, second identity or globally required check",
+        "Disposition Blocker": "Resolved: #57 canonical governance merged under the autonomous maintenance mandate; no scoring permission",
         "Depends On": "Normal repository workflow acceptance; no second GitHub identity requirement",
         "Unlock Condition": "Tested governance correction through ordinary PR workflow",
         "Kill Condition": "GitHub merge never grants scientific scoring authority",
-        "Research Reviewer": "Technical review evidence; publishing GitHub actor may be shared",
-        "Evidence": "PR #57 operational report; lightweight permissions / strict scientific gates"
+        "Research Reviewer": "Normal engineering validation; no independent scientific approval claimed",
+        "Evidence": "#57 merged b1bdc1bac5464793e63b6596138091f3c35a8dca; 656 offline tests + lint/hash verification; ordinary engineering acceptance, not scientific admission"
       },
       "primary_work_item": false
     },
@@ -868,7 +870,7 @@
         "Trial Budget": 0,
         "Proposer": "Human research mandate",
         "Implementer": "Codex",
-        "Research Reviewer": "UNRESOLVED; independent technical acceptance",
+        "Research Reviewer": "UNRESOLVED \u2014 genuine independent FOUNDATION reviewer; shared GitHub publication allowed",
         "Program Outcome": "Active",
         "Status": "Review / Gate",
         "Priority": "P0",
@@ -880,8 +882,9 @@
         "Gate Source": "CODE",
         "Unlock Condition": "Zero-alpha synthetic methodology; strict structural geometry only; assumed readiness explicit",
         "Kill Condition": "No MOM-002 review/freeze until accepted audit, pre-result changes and human decisions; no automatic changes",
-        "Evidence": "#58 POWER_AUDIT_RESULTS.md; SHA-pinned structural manifest and 2,000-draw synthetic surface; INDETERMINATE_ASSUMPTIONS_REQUIRED; independent acceptance pending; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
-        "Depends On": "#49 frozen causal structural provenance; #51 accepts source/overlap separately; #56 decisions follow audit"
+        "Evidence": "Canonical REVIEW_PACKAGES.md; foundation-58.zip SHA256 d35d4fcb38eda93aa5eab5de9ca46fb94f0f5e3bbc0dc3ab64ee78667b80ed38; exact source manifest; external review pending",
+        "Depends On": "#49 frozen causal structural provenance; #51 accepts source/overlap separately; #56 decisions follow audit",
+        "Disposition Blocker": "EXTERNAL FOUNDATION acceptance only: independent exact foundation-58 packet/model/role/context/contribution decision pending; implementation and packet verification complete; 0 predictive trials"
       },
       "primary_work_item": true
     },
@@ -1272,21 +1275,26 @@
         {
           "id": "technical_acceptance",
           "description": "Technical review/iteration acceptance in normal repository workflow; publishing GitHub actor may be shared",
-          "accepted": false
+          "accepted": true,
+          "evidence": "#57 canonical merge b1bdc1bac5464793e63b6596138091f3c35a8dca; 656 offline tests; 2026-10-05 autonomous engineering mandate, no scientific acceptance"
         },
         {
           "id": "governance_checks",
           "description": "Relevant research validation tests/checks; not globally required GitHub status",
-          "accepted": false
+          "accepted": true,
+          "evidence": "#57 canonical merge b1bdc1bac5464793e63b6596138091f3c35a8dca; 656 offline tests; 2026-10-05 autonomous engineering mandate, no scientific acceptance"
         },
         {
           "id": "iteration_accepted",
           "description": "Changes from this iteration accepted",
-          "accepted": false
+          "accepted": true,
+          "evidence": "#57 canonical merge b1bdc1bac5464793e63b6596138091f3c35a8dca; 656 offline tests; 2026-10-05 autonomous engineering mandate, no scientific acceptance"
         }
       ],
       "rationale": "Governance canonical on main before research branches",
-      "research_admitted": false
+      "research_admitted": false,
+      "state": "MERGED",
+      "merge_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
     },
     "49": {
       "disposition": "MERGE_WHEN_ACCEPTED",
@@ -1353,7 +1361,8 @@
         {
           "id": "futures_preserved",
           "description": "#55 verifies FUT-001..FUT-013, older findings, canonical evidence index/trial ledger and SHA-pinned evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-38/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "closing_note",
@@ -1375,7 +1384,8 @@
         {
           "id": "macro_preserved",
           "description": "Preserve 43-variant history, final holdout failure, deflated-Sharpe conclusion and documents/links",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-40/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "closing_note",
@@ -1397,12 +1407,14 @@
         {
           "id": "derivatives_preserved",
           "description": "Preserve puts/capitulation/carry conclusions, approximation/options-data limitations and trial accounting",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-46/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "macro_dependency",
           "description": "Record dependency on #40 branch; future expression inherits this evidence",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-46/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "closing_note",
@@ -1424,12 +1436,14 @@
         {
           "id": "equity_preserved",
           "description": "Preserve EDGE_NOT_VALIDATED, strict-PIT limitations, borrow/funding UNKNOWN and useful architecture findings",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-26/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "focused_ports_only",
           "description": "Future admitted component needs focused infrastructure port, never whole strategy merge",
-          "accepted": false
+          "accepted": true,
+          "evidence": "docs/research/archive/pr-26/manifest.json; exact source bytes preserved; no new scientific admission"
         },
         {
           "id": "closing_note",

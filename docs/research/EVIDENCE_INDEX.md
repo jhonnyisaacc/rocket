@@ -18,3 +18,23 @@ MOM-000: 354 crossings, 107 globally spaced candidates; binary admission STOP_IN
 #38 records thirteen FUT contracts and older failed screens; #40 contains macro's 43 variants/failed holdout; #46 records approximate options, thin capitulation longs and regime-concentrated carry; #26 reports equity shorts EDGE_NOT_VALIDATED with mapping/vintage/borrow limits. All failures and uncertainty survive consolidation.
 
 Before closing each historical PR: preserve required result documentation (copy evidence documents only if necessary), pin links, check canonical replacement and independent acceptance, retain evidence-archive label, leave a closing comment pointing here/replacement, then close that PR individually. Do not merge runtime changes merely to preserve docs. No historical PR is closed or merged by this infrastructure setup. Disposition work: #55. #50 additionally waits for #51.
+
+## Canonical historical preservation, 2026-10-05
+
+Existing failed research evidence is copied byte-for-byte into the canonical
+archive, with original revision, individual source URLs and SHA-256 manifests.
+No strategy/runtime branch is merged and no result is rescored. Historical
+uncertainties and conflicting reported counts are retained.
+
+| PR | Canonical evidence | Preserved accounting/limitations |
+| --- | --- | --- |
+| #38 | [Futures archive](archive/pr-38/README.md) | FUT-001..013 plus earlier screens; related attempts and unresolved earlier totals, failed rules and source/vintage limitations |
+| #40 | [Macro archive](archive/pr-40/README.md) | 43 logged variants, final holdout failure, deflated Sharpe; historical recommendations grant no current authority |
+| #46 | [Derivatives archive](archive/pr-46/README.md) | A18/B10/C6 reported incl. sensitivity versus 16/8/4 headline; exact deduplication unresolved; approximate pricing, thin longs, concentrated carry; inherits #40 |
+| #26 | [Equity archive](archive/pr-26/README.md) | EDGE_NOT_VALIDATED, strict-PIT/current-map gap, borrow/funding UNKNOWN, unresolved trial total; future useful ports must be focused |
+
+Individual archival labels/closing notes/closures follow canonical publication
+and live verification. #50 remains open until accepted #51 reconciliation;
+#49 remains the intended active foundation and receives no acceptance here.
+Self-contained independent FOUNDATION review packets: [instructions](REVIEW_PACKAGES.md).
+No archive or GitHub merge permits MOM-002 scoring.

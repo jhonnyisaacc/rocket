@@ -1,0 +1,27 @@
+{
+  "schema": "rocket.historical-evidence-archive.v1",
+  "pr": 46,
+  "source_revision": "79b83a2f60d0352988ba752828065375bfc3b6be",
+  "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+  "verification": "EXACT_BYTES_PRESERVED",
+  "closure_state": "READY_AFTER_CANONICAL_MERGE_AND_INDIVIDUAL_LABEL_NOTE",
+  "summary": "Puts NO EDGE under approximate DVOL/Black-Scholes/skew pricing; capitulation longs NOT SIGNIFICANT; carry MARGINAL/regime concentrated with a negative final holdout. Logs report A18/B10/C6 including sensitivities; headline 16/8/4 and unresolved duplication are retained, not silently reconciled. Dependency on #40 at cf8486ff323d53276273fcbeb28f084e7b07b984 is explicit. Future separately admitted expression must inherit these limitations.",
+  "trial_accounting_changed": false,
+  "predictive_trials_consumed_this_operation": 0,
+  "runtime_merged": false,
+  "scientific_admission_granted": false,
+  "files": [
+    {
+      "source_path": "docs/crypto/BACKTEST.md",
+      "canonical_path": "docs/research/archive/pr-46/docs/crypto/BACKTEST.md",
+      "sha256": "72a026e27fd224eccc32f89841adb0368f4cef9153bd68d8e1f8194388571279",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/79b83a2f60d0352988ba752828065375bfc3b6be/docs/crypto/BACKTEST.md"
+    },
+    {
+      "source_path": "docs/crypto/EXPERIMENTS.md",
+      "canonical_path": "docs/research/archive/pr-46/docs/crypto/EXPERIMENTS.md",
+      "sha256": "ddb4852b3ebacd5db575a94b64068d046db4cb55c75490787bffe4fc5080d26c",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/79b83a2f60d0352988ba752828065375bfc3b6be/docs/crypto/EXPERIMENTS.md"
+    }
+  ]
+}

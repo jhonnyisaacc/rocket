@@ -1,0 +1,35 @@
+{
+  "schema": "rocket.historical-preservation.v1",
+  "trial_accounting_changed": false,
+  "records": [
+    {
+      "pr": 38,
+      "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
+      "archive_path": "docs/research/archive/pr-38",
+      "files": 37,
+      "manifest_sha256": "372f5223396f19fcaf994fbec4f108eaa6fd8e3b61b6035a28530ca16d39d7df"
+    },
+    {
+      "pr": 40,
+      "source_revision": "cf8486ff323d53276273fcbeb28f084e7b07b984",
+      "archive_path": "docs/research/archive/pr-40",
+      "files": 2,
+      "manifest_sha256": "3efd35b82fe968f0a415f1c5cfcbc8ea6641f83dfe3f6ea7708a31a7512e159a"
+    },
+    {
+      "pr": 46,
+      "source_revision": "79b83a2f60d0352988ba752828065375bfc3b6be",
+      "archive_path": "docs/research/archive/pr-46",
+      "files": 2,
+      "manifest_sha256": "2dda7f4a4ad4c849464a6cb6580b32e57eb3ff28f35bc47d8b4c490c53100dbf"
+    },
+    {
+      "pr": 26,
+      "source_revision": "d198e80a5b43b0d28de1da7ba50845230de4b1f1",
+      "archive_path": "docs/research/archive/pr-26",
+      "files": 2,
+      "manifest_sha256": "ef8d46ad3cca7c479bd91dfafe2056e9d60623ea00dafba829e89c0573bba96d"
+    }
+  ],
+  "excluded_pr50": "Independent #51 foundation acceptance pending; original #50 remains evidence, no closure authorized yet"
+}

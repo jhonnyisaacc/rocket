@@ -18,9 +18,11 @@ contracts. Project edits alone do not grant experiment admission.
   foundation/Tier-B/overlap, accepted #58 synthetic power audit, finalized
   pre-result changes and #56 near-term human decisions. #54 receives only the
   final post-power-audit packet. #59 risk/capital decisions are downstream.
-- Use committed Review Tier requirements. #52 maintenance needs tests, CI and
-  separate code review for research acceptance, not MOM-002 isolated scientific
-  admission. Normal PR merging follows the lightweight repository workflow.
+- Use committed Review Tier requirements. MAINTENANCE needs tests, relevant CI
+  and ordinary code review when available, not MOM-002 isolated scientific
+  admission. Do not hold a zero-alpha correctness fix indefinitely for a special
+  scientific reviewer. FOUNDATION and scientific acceptance remain independent.
+  Normal PR merging follows the lightweight repository workflow.
   Scientific independence is documented by role/model family, isolated context,
   contribution history and exact commit/artifact approval. The same GitHub
   actor may publish independent review evidence; a second account/App is optional.

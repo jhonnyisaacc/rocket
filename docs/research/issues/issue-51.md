@@ -48,7 +48,7 @@ Codex or equivalent; implementation already present in #49 where specified.
 
 ## Reviewer
 
-UNRESOLVED — independent identity/process must be approved
+UNRESOLVED — independent FOUNDATION methodology reviewer; no second GitHub account required
 
 ## Evidence links
 
@@ -60,3 +60,13 @@ Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No scoring, trading or live execu
 
 FOUNDATION. Strong independent technical/adversarial review of exact evidence commit; 0 predictive trials. Review acceptance remains pending.
 
+
+## Current bounded review packet
+
+Implementation remains complete and independent acceptance pending. Canonical
+`docs/research/REVIEW_PACKAGES.md` links the self-contained `foundation-51.zip`
+and its exact source manifest. ZIP SHA-256: `98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603`.
+The preparer is the implementer, not an independent reviewer. Extracted packet
+regressions passed (25 checks); no predictive trial or approval is inferred.
+Record a genuine independent model/family, role, isolated context, contribution
+history, exact source/packet hashes and dated decision. Keep #53/#54 locked.

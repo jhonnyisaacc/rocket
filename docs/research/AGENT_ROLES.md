@@ -33,7 +33,7 @@ Admission outcomes: APPROVE; APPROVE_WITH_PRE_RESULT_CHANGES (renewed review req
 
 | Tier | Required acceptance |
 | --- | --- |
-| MAINTENANCE | Research acceptance needs tests, relevant CI and a different agent/person code review; no isolated scientific packet. Includes #52 PIT correctness and #55 evidence indexing. Ordinary engineering outside the Project needs no research review or WIP slot. |
+| MAINTENANCE | Normal technical discipline: tests, relevant CI and code/evidence review when available; no isolated scientific packet or mandatory scientific reviewer. Includes #52 PIT correctness and #55 evidence indexing. Completion grants no FOUNDATION or scientific admission. Ordinary engineering outside the Project needs no research review or WIP slot. |
 | FOUNDATION | Strong independent technical/adversarial review of exact artifacts; zero-alpha reconciliation #51 and synthetic methodology #58 are not predictive trials. |
 | SCIENTIFIC_ADMISSION | Isolated pre-result package; no result access; reviewer did not design/implement; preferably distinct model family; exact commit/artifact approval. #53/#54 receive only the finalized post-power-audit contract. |
 | PROSPECTIVE_VALIDATION | Separately admitted frozen forward forecasts, stopping rule, isolated mature outcomes and independent exact-artifact review; historical PASS alone does not admit it. |

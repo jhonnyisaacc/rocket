@@ -1,0 +1,27 @@
+{
+  "schema": "rocket.historical-evidence-archive.v1",
+  "pr": 40,
+  "source_revision": "cf8486ff323d53276273fcbeb28f084e7b07b984",
+  "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+  "verification": "EXACT_BYTES_PRESERVED",
+  "closure_state": "READY_AFTER_CANONICAL_MERGE_AND_INDIVIDUAL_LABEL_NOTE",
+  "summary": "43 logged variants, final holdout failure and deflated-Sharpe conclusion preserved. Historical source recommendations are evidence, not current capital authorization or a new macro admission.",
+  "trial_accounting_changed": false,
+  "predictive_trials_consumed_this_operation": 0,
+  "runtime_merged": false,
+  "scientific_admission_granted": false,
+  "files": [
+    {
+      "source_path": "docs/market_check/BACKTEST.md",
+      "canonical_path": "docs/research/archive/pr-40/docs/market_check/BACKTEST.md",
+      "sha256": "162893f0430339ba3010a9d82a4756cec786da916ffe322449253e825346cab1",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/cf8486ff323d53276273fcbeb28f084e7b07b984/docs/market_check/BACKTEST.md"
+    },
+    {
+      "source_path": "docs/market_check/EXPERIMENTS.md",
+      "canonical_path": "docs/research/archive/pr-40/docs/market_check/EXPERIMENTS.md",
+      "sha256": "92b242483d0a28ab2d51d8aac4f16d170c17319b7950202b5edf593cdee7cd49",
+      "source_url": "https://github.com/jhonnyisaacc/rocket/blob/cf8486ff323d53276273fcbeb28f084e7b07b984/docs/market_check/EXPERIMENTS.md"
+    }
+  ]
+}
