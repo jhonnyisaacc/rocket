@@ -1,0 +1,22 @@
+{
+  "revision": "45a83e4777dabf9bbb689f128377c81a19028b56",
+  "path": "docs/research/FOUNDATION_51_ERRATA.md",
+  "file_sha256": "84e77842c30078d6fc211979f086e5a0e60bdabce423951e1bda26ae0f6ca81b",
+  "git_blob_id": "f65b1300adbcc6694555b50eb7b635e598e09943",
+  "isolated_source_copy": "/private/tmp/rocket-foundation-51-erratum-independent-kpj6k8r1/FOUNDATION_51_ERRATA.md",
+  "geometry": {
+    "7d_cutoff_start": 117,
+    "7d_decision_start": 128,
+    "14d_cutoff_start": 45,
+    "14d_decision_start": 47
+  },
+  "seven_day_exact_cutoff_contact_count": 11,
+  "fourteen_day_exact_cutoff_contacts": [
+    "2024-12-05T04:00:00+00:00",
+    "2025-12-15T16:00:00+00:00"
+  ],
+  "global_fourteen_day_spacing": 107,
+  "initial_review_and_probe_hashes_unchanged": true,
+  "original_outer_packet_hashes_unchanged": true,
+  "decision": "DOCUMENTATION_CORRECTION_ACCEPTED"
+}

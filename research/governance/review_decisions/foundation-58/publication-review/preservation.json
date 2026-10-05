@@ -1,0 +1,38 @@
+{
+  "schema": "rocket.foundation-publication-review-preservation.v1",
+  "publisher": "Codex root implementer; publisher only",
+  "reviewer": "/root/foundation_58_review",
+  "reviewed_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+  "decision": "APPROVE_PUBLICATION",
+  "scientific_acceptance_scope_unchanged": true,
+  "records_preserved_verbatim": true,
+  "files": [
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication-review/review.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-publication-review.json",
+      "sha256": "957b636f3ebd432d48ea1dbddcb82abd93ce5180462e1a609dfb1fd64638f6e0"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication-review/review.md",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-publication-review.md",
+      "sha256": "6a49246c9557511ddf58d30d6dea60fb1ceb2fb3119fc6f414fe26f9e74ef667"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication-review/verification.json",
+      "reviewer_original_path": "/private/tmp/rocket-58-publication-uta_tlu9/verification.json",
+      "sha256": "e582a265ece4b830cbcc8e8b7f0dd714ad773e8e3a0af13fad1aa3f1c5194e92"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication-review/direct_governance_checks.json",
+      "reviewer_original_path": "/private/tmp/rocket-58-publication-uta_tlu9/direct_governance_checks.json",
+      "sha256": "b7b7d92c9a19f6e77d2f8429a6762459616cf116fcb7fcbae8fc61ae95d28a94"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication-review/test_policy_fixture.diff",
+      "reviewer_original_path": "/private/tmp/rocket-58-publication-uta_tlu9/test_policy_fixture.diff",
+      "sha256": "f2d0df186834b7e6634b29db72e87e6127a75ce2611fdc2d15f5c25eb5a0a38c"
+    }
+  ],
+  "scoring_authorized": false,
+  "predictive_trials_consumed": 0
+}

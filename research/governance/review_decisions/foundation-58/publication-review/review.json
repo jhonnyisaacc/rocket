@@ -1,0 +1,743 @@
+{
+  "schema": "rocket.foundation-publication-integration-review.v1",
+  "issue": 58,
+  "decision": "APPROVE_PUBLICATION",
+  "reviewer": "/root/foundation_58_review",
+  "model_family": "GPT-6 (Codex; known family, exact variant unavailable)",
+  "role": "Original independent #58 reviewer performing bounded publication/integration audit",
+  "timestamp": "2026-10-05T21:42:31.856067+00:00",
+  "reviewed_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+  "fixture_comparison_base_revision": "d908ae8f849182b5840ba0199c108bc8d22e6bf9",
+  "acceptance_scope": "Publication/integration at this exact commit faithfully preserves my original conditional FOUNDATION methodology decision and leaves all actual MOM-002 admission/scoring/human-value gates unresolved. Not final #54 admission.",
+  "original_scientific_decision": "APPROVE exact conditional methodology only",
+  "original_decision_rewritten": false,
+  "original_review_json_sha256": "7accd5121a7589822aa7dd6b203966206a72a826bcda1d0fc5b8be62c017a8f4",
+  "original_review_md_sha256": "6c30edadd23e7bd807b3a7a60e33298995a0adca25a3c741f84d6071991f07a3",
+  "reviewed_power_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+  "reviewed_proposal_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+  "reviewed_artifacts": [
+    {
+      "path": "research/governance/review_decisions/index.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "9d757f10167f6b8c627ae0f0b7fab08559912de5c193c42738241d6aaed3fbb3",
+      "bytes": 2092
+    },
+    {
+      "path": "research/governance/mom002_prerequisites.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "da2820d5ab0c079b691227da92694d227d69418c36f8b32b68879ddf24cd1e01",
+      "bytes": 6788
+    },
+    {
+      "path": "research/governance/project.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "8476668bb4cee0289da66188b73053890f685ce6c7f9aa29a1c24d57db6e876f",
+      "bytes": 56827
+    },
+    {
+      "path": "docs/research/CURRENT_HANDOFF.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "7d342404b40ef2b4a326867e7d47ec6e7cb6d37a373c51a0faa9f80753b317ff",
+      "bytes": 5356
+    },
+    {
+      "path": "docs/research/FOUNDATION_REVIEW_DECISIONS.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "806ce192333174a5ee18e0262ca678d32e8cad8e444b421596923b0b872795b4",
+      "bytes": 4808
+    },
+    {
+      "path": "docs/research/FOUNDATION_58_REPORT_NOTES.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "fe14f6a9c81ba773d459e5e33812ef20c30072a28a5b0ca0dbb9072a2bb4a500",
+      "bytes": 1224
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/publication.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3f0bac8aae290cd1796914437a8bcd0eb315465546c920a5731adc0160368441",
+      "bytes": 2992
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "7accd5121a7589822aa7dd6b203966206a72a826bcda1d0fc5b8be62c017a8f4",
+      "bytes": 43017,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "6c30edadd23e7bd807b3a7a60e33298995a0adca25a3c741f84d6071991f07a3",
+      "bytes": 19043,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probes.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3ff2b820b7314f2518b933e454002dc05ef7683b63018e3d98b2c9d8acd231c4",
+      "bytes": 19865,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probe_results.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "74b8f4c5e6ebc2104a47d59eb7fe68f8af2b184ae0c01acea7b4c10c67cb47d3",
+      "bytes": 9695,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_comparison.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "d5b298a1a19f97d1b43f3b54cc4df6b42e725032303a0c1cc87593e78034eef1",
+      "bytes": 2018,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_stdout_tail.txt",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "cb5ab75ccac2d1875b8a78e5a31a73921791639601b82a44e5f90729d1c85ff7",
+      "bytes": 1860,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/bundled_pytest_stdout.txt",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "ac7e5f0921d22cc4d9b62802d700b3fb1e8d9909b7b898cbdfcdd274becadd58",
+      "bytes": 99,
+      "byte_identical_to_reviewer_original": true
+    },
+    {
+      "path": "docs/research/POWER_AUDIT.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3d8e802e78b086c000766ba7168f17f927c05db2bc3b2d30a2a8ff1144d2964d",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "docs/research/POWER_AUDIT_RESULTS.md",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "fb866c0928f5f882d4e57847c03088dde01780cf1791a3bf91e3b0be0e6a8e75",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "pyproject.toml",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3a2ec44dde3efd9857ed92cfe8bb49b4f69612fb093735908cb07639b55fe43f",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "research/governance/power/environment.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3659487e7ff66cbf60256250791fe8630f88b292a7972d6fd2aaec5de74deb98",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "research/governance/power/population.geometry.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "research/governance/power/surface.csv",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "research/governance/power/surface.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/__init__.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "20f6dbd65a85f029ca6ca178b7340c047463395a4c7a67b025f7cbcd09ed8135",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/models.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "96bd64fb6b7a89175413059474b975fc834a57fe8b52445bff7c242b377291e5",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/pit.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "7dc66e6d86f243d72514771ebdcacea21be035ff4d7517b4be831c7a0177e06d",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/research/__init__.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "c033eb49d740d057ea93b3e15eb64fb25a35d1e6cddc4a54289db75621939052",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/research/governance.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "cf67f38926a3c10329b9c3362df14382275b30cbe733efb343a5be150a52739b",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/research/policy.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "b4466f976a2c6ff008412b4b75f3649e7b71bff3eca0f65a538cf94a8b2e605a",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "rocket/research/power.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "4ee8c2a1c3c6e9049d335fae33cb10faa8ef8be773f292e11494b37060ac4de3",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "scripts/research/export_power_geometry.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "2df3c9912484816f6bea1fe70c318d18a946c301bf93086e3c5bb311647d31e3",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "scripts/research/power_audit.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "cb0b662c650102104978de48ce83d57c55e7aac6588d8d05e9d60aab85f664e0",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "tests/__init__.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "tests/research/test_power.py",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "90cc19c4c513c39f5cbdb761cdbd592ec77e75eba15fce068031e4611de966b9",
+      "byte_identical_to_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+    },
+    {
+      "path": "research/governance/human_decisions.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "d3813f59b241718688e77d75973668c025db69ea8a3fe68a8ac3eb152ce789d2",
+      "bytes": 963
+    },
+    {
+      "path": "research/governance/manifests/MOM-002.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "c1b4ec265edf263d12b9bb967567ead5442f0a34c9c2cc13373dcf9036a48276",
+      "bytes": 1665
+    },
+    {
+      "path": "research/governance/invocations.jsonl",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "empty": true
+    },
+    {
+      "path": "research/governance/invalidations.jsonl",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "empty": true
+    }
+  ],
+  "original_files_verified": [
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.json",
+      "original": "/private/tmp/rocket-independent-58-review.json",
+      "sha256": "7accd5121a7589822aa7dd6b203966206a72a826bcda1d0fc5b8be62c017a8f4",
+      "byte_identical": true,
+      "bytes": 43017
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.md",
+      "original": "/private/tmp/rocket-independent-58-review.md",
+      "sha256": "6c30edadd23e7bd807b3a7a60e33298995a0adca25a3c741f84d6071991f07a3",
+      "byte_identical": true,
+      "bytes": 19043
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probes.py",
+      "original": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probes.py",
+      "sha256": "3ff2b820b7314f2518b933e454002dc05ef7683b63018e3d98b2c9d8acd231c4",
+      "byte_identical": true,
+      "bytes": 19865
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probe_results.json",
+      "original": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probe_results.json",
+      "sha256": "74b8f4c5e6ebc2104a47d59eb7fe68f8af2b184ae0c01acea7b4c10c67cb47d3",
+      "byte_identical": true,
+      "bytes": 9695
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_comparison.json",
+      "original": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_comparison.json",
+      "sha256": "d5b298a1a19f97d1b43f3b54cc4df6b42e725032303a0c1cc87593e78034eef1",
+      "byte_identical": true,
+      "bytes": 2018
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_stdout_tail.txt",
+      "original": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_stdout_tail.txt",
+      "sha256": "cb5ab75ccac2d1875b8a78e5a31a73921791639601b82a44e5f90729d1c85ff7",
+      "byte_identical": true,
+      "bytes": 1860
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/bundled_pytest_stdout.txt",
+      "original": "/private/tmp/rocket-independent-58-15mzv1w9/bundled_pytest_stdout.txt",
+      "sha256": "ac7e5f0921d22cc4d9b62802d700b3fb1e8d9909b7b898cbdfcdd274becadd58",
+      "byte_identical": true,
+      "bytes": 99
+    }
+  ],
+  "accepted_power_artifact_checks": [
+    {
+      "path": "docs/research/POWER_AUDIT.md",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3d8e802e78b086c000766ba7168f17f927c05db2bc3b2d30a2a8ff1144d2964d",
+      "unchanged": true
+    },
+    {
+      "path": "docs/research/POWER_AUDIT_RESULTS.md",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "fb866c0928f5f882d4e57847c03088dde01780cf1791a3bf91e3b0be0e6a8e75",
+      "unchanged": true
+    },
+    {
+      "path": "pyproject.toml",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3a2ec44dde3efd9857ed92cfe8bb49b4f69612fb093735908cb07639b55fe43f",
+      "unchanged": true
+    },
+    {
+      "path": "research/governance/power/environment.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "3659487e7ff66cbf60256250791fe8630f88b292a7972d6fd2aaec5de74deb98",
+      "unchanged": true
+    },
+    {
+      "path": "research/governance/power/population.geometry.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+      "unchanged": true
+    },
+    {
+      "path": "research/governance/power/surface.csv",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+      "unchanged": true
+    },
+    {
+      "path": "research/governance/power/surface.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "20f6dbd65a85f029ca6ca178b7340c047463395a4c7a67b025f7cbcd09ed8135",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/models.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "96bd64fb6b7a89175413059474b975fc834a57fe8b52445bff7c242b377291e5",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/pit.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "7dc66e6d86f243d72514771ebdcacea21be035ff4d7517b4be831c7a0177e06d",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/research/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "c033eb49d740d057ea93b3e15eb64fb25a35d1e6cddc4a54289db75621939052",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/research/governance.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "cf67f38926a3c10329b9c3362df14382275b30cbe733efb343a5be150a52739b",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/research/policy.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "b4466f976a2c6ff008412b4b75f3649e7b71bff3eca0f65a538cf94a8b2e605a",
+      "unchanged": true
+    },
+    {
+      "path": "rocket/research/power.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "4ee8c2a1c3c6e9049d335fae33cb10faa8ef8be773f292e11494b37060ac4de3",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/research/export_power_geometry.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "2df3c9912484816f6bea1fe70c318d18a946c301bf93086e3c5bb311647d31e3",
+      "unchanged": true
+    },
+    {
+      "path": "scripts/research/power_audit.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "cb0b662c650102104978de48ce83d57c55e7aac6588d8d05e9d60aab85f664e0",
+      "unchanged": true
+    },
+    {
+      "path": "tests/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "unchanged": true
+    },
+    {
+      "path": "tests/research/test_power.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "publication_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "90cc19c4c513c39f5cbdb761cdbd592ec77e75eba15fce068031e4611de966b9",
+      "unchanged": true
+    }
+  ],
+  "fixture_diff": {
+    "path": "tests/research/test_policy.py",
+    "base_revision": "d908ae8f849182b5840ba0199c108bc8d22e6bf9",
+    "target_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+    "diff_sha256": "f2d0df186834b7e6634b29db72e87e6127a75ce2611fdc2d15f5c25eb5a0a38c",
+    "added_lines": [
+      "+    value['requirements']['power_audit']['status']='PENDING'"
+    ],
+    "removed_lines": [],
+    "mechanics_preserved": true
+  },
+  "checks": {
+    "publisher_not_scientific_reviewer": true,
+    "own_publication_scope_verbatim": true,
+    "conditional_acceptance_not_final_disposition": true,
+    "five_other_prerequisites_pending": true,
+    "mom002_metadata_draft_unauthorized_zero_consumed": true,
+    "project_58_done_passed_foundation_only": true,
+    "project_56_ready_draft_human_only": true,
+    "project_51_blocked": true,
+    "project_54_parked_draft": true,
+    "tie_note_matches_review": true,
+    "fixture_changes_only_synthetic_pending_status": true,
+    "source_code_geometry_surface_unchanged": true,
+    "documentation_line_references": {
+      "docs/research/CURRENT_HANDOFF.md": [
+        {
+          "line": 15,
+          "text": "#58 is Done/Passed for independently accepted exact conditional methodology"
+        },
+        {
+          "line": 24,
+          "text": "`pre_result_review_resolved=false` remains fail-closed until final disposition."
+        },
+        {
+          "line": 41,
+          "text": "#56 is Ready / Draft, Gate Source HUMAN, after its #57/#58 dependencies. Four"
+        },
+        {
+          "line": 66,
+          "text": "MOM-002 manifest remains byte-identical Draft/NEEDS_PRE_RESULT_GATE_REVIEW,"
+        }
+      ],
+      "docs/research/FOUNDATION_REVIEW_DECISIONS.md": [
+        {
+          "line": 54,
+          "text": "`pre_result_review_resolved=false` retains the separate unresolved final"
+        },
+        {
+          "line": 55,
+          "text": "gate disposition. The other five prerequisites remain PENDING. #56 is Ready"
+        },
+        {
+          "line": 59,
+          "text": "#59 capital/risk decisions remain downstream. Four human values remain null."
+        },
+        {
+          "line": 61,
+          "text": "MOM-002 remains Draft/NEEDS_PRE_RESULT_GATE_REVIEW, unadmitted/unscored,"
+        }
+      ],
+      "docs/research/FOUNDATION_58_REPORT_NOTES.md": [
+        {
+          "line": 5,
+          "text": "all 240 rows of the pinned synthetic surface. Eighteen rows also have zero"
+        }
+      ],
+      "research/governance/mom002_prerequisites.json": [
+        {
+          "line": 24,
+          "text": "\"status\": \"ACCEPTED\","
+        },
+        {
+          "line": 27,
+          "text": "\"pre_result_review_resolved\": false,"
+        }
+      ],
+      "research/governance/project.json": [
+        {
+          "line": 472,
+          "text": "\"Research State\": \"Blocked\","
+        },
+        {
+          "line": 495,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 615,
+          "text": "\"Gate Source\": \"HUMAN\","
+        },
+        {
+          "line": 617,
+          "text": "\"Disposition Blocker\": \"HUMAN after accepted #58: final scientific reviewer/process; 40bp appropriateness; minimum worthwhile effect; terminal/descriptive economic role. Four values remain null; STOP confirmed and canonical. #59 capital terms deferred.\""
+        },
+        {
+          "line": 658,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 687,
+          "text": "\"Research State\": \"Blocked\","
+        },
+        {
+          "line": 739,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 767,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 795,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 822,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 845,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 877,
+          "text": "\"Status\": \"Done\","
+        },
+        {
+          "line": 911,
+          "text": "\"Gate Source\": \"HUMAN\","
+        },
+        {
+          "line": 931,
+          "text": "\"Status\": \"Done\","
+        }
+      ]
+    }
+  },
+  "direct_governance_checks": {
+    "reviewed_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+    "authorization": "Root explicitly authorized read-only exact Git blob inspection of human_decisions.json and manifests/MOM-002.json at this revision, plus hash/length/empty journal metadata.",
+    "files": [
+      {
+        "path": "research/governance/human_decisions.json",
+        "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+        "sha256": "d3813f59b241718688e77d75973668c025db69ea8a3fe68a8ac3eb152ce789d2",
+        "bytes": 963
+      },
+      {
+        "path": "research/governance/manifests/MOM-002.json",
+        "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+        "sha256": "c1b4ec265edf263d12b9bb967567ead5442f0a34c9c2cc13373dcf9036a48276",
+        "bytes": 1665
+      }
+    ],
+    "four_human_values_null": {
+      "reviewer_identity_process": {
+        "status": "HUMAN_DECISION_REQUIRED",
+        "value": null
+      },
+      "cost_hurdle_40bp": {
+        "status": "HUMAN_DECISION_REQUIRED",
+        "value": null
+      },
+      "minimum_worthwhile_effect": {
+        "status": "HUMAN_DECISION_REQUIRED",
+        "value": null
+      },
+      "economic_gate_role": {
+        "status": "HUMAN_DECISION_REQUIRED",
+        "value": null
+      }
+    },
+    "stop_confirmed_but_human_gate_incomplete": true,
+    "mom002_manifest_draft_unauthorized_zero_consumed": true,
+    "manifest_approval_freeze_dataset_scorer_null": true,
+    "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+    "trial_budget": 1,
+    "trials_consumed": 0,
+    "journals": [
+      {
+        "path": "research/governance/invocations.jsonl",
+        "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "empty": true
+      },
+      {
+        "path": "research/governance/invalidations.jsonl",
+        "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "empty": true
+      }
+    ]
+  },
+  "findings": [
+    {
+      "id": "F58-PUB-01",
+      "severity": "INFO",
+      "blocks_publication": false,
+      "title": "Reviewer records are preserved verbatim and correctly attributed",
+      "sources": [
+        {
+          "path": "research/governance/review_decisions/foundation-58/publication.json",
+          "line": 7
+        },
+        {
+          "path": "research/governance/review_decisions/index.json",
+          "line": 5
+        }
+      ],
+      "evidence": "Canonical review.json and review.md are byte-identical to my original files, as are all five published probe/reproduction/test files. Publication file hashes and the index review/publication hashes agree. The publisher is explicitly not the scientific reviewer; my stable canonical agent identity and original acceptance scope are preserved."
+    },
+    {
+      "id": "F58-PUB-02",
+      "severity": "INFO",
+      "blocks_publication": false,
+      "title": "Exact accepted power source artifacts remain unchanged",
+      "sources": [
+        {
+          "path": "research/governance/mom002_prerequisites.json",
+          "line": 28
+        },
+        {
+          "path": "docs/research/CURRENT_HANDOFF.md",
+          "line": 15
+        }
+      ],
+      "evidence": "All 18 accepted power artifact bytes at the publication commit are identical to their b1bdc1bac5464793e63b6596138091f3c35a8dca Git blobs and my original reviewed SHA256 pins. This includes source, regression tests, geometry, environment and both surface outputs. The audited proposal remains separately referenced at 7c42582168e7538cfac00393bc3ffce54beb21b1 with its original SHA256; it has not become a final canonical admission contract. No original APPROVE record was rewritten."
+    },
+    {
+      "id": "F58-PUB-03",
+      "severity": "INFO",
+      "blocks_publication": false,
+      "title": "Prerequisite and Project changes preserve conditional acceptance",
+      "sources": [
+        {
+          "path": "research/governance/mom002_prerequisites.json",
+          "line": 24
+        },
+        {
+          "path": "research/governance/mom002_prerequisites.json",
+          "line": 27
+        },
+        {
+          "path": "docs/research/FOUNDATION_REVIEW_DECISIONS.md",
+          "line": 54
+        },
+        {
+          "path": "docs/research/CURRENT_HANDOFF.md",
+          "line": 41
+        }
+      ],
+      "evidence": "power_audit.status=ACCEPTED is paired with pre_result_review_resolved=false and verbatim conditional acceptance scope. Foundation, Tier-B readiness, overlap semantics, pre-result contract and near-term human decisions remain PENDING. #58 Done/Passed is a zero-trial FOUNDATION methodology completion, with explicit no-real-MOM-002-PASS/FAIL/scoring qualifier. #56 Ready/Draft uses Gate Source HUMAN and is not agent admission. #51 remains Blocked/Review-Gate, and #54 is Parked/Draft. Final scientific reviewer-process approval remains false."
+    },
+    {
+      "id": "F58-PUB-04",
+      "severity": "INFO",
+      "blocks_publication": false,
+      "title": "Human values, safety, manifest and journals remain fail-closed",
+      "sources": [
+        {
+          "path": "research/governance/human_decisions.json",
+          "line": 6
+        },
+        {
+          "path": "research/governance/manifests/MOM-002.json",
+          "line": 5
+        },
+        {
+          "path": "docs/research/CURRENT_HANDOFF.md",
+          "line": 66
+        }
+      ],
+      "evidence": "At the exact commit, reviewer identity/process, 40bp appropriateness, minimum worthwhile effect and economic-gate role are all null/HUMAN_DECISION_REQUIRED. STOP is confirmed without filling the other values. MOM-002 is DRAFT/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, budget 1/consumed 0, with approval, freeze revision, dataset and scorer null and artifact set empty. READ_ONLY_RESEARCH_ONLY_HUMAN_GATED remains. Both invocation and invalidation journals are zero bytes. No actual scientific PASS/FAIL receipt appears in this governance state."
+    },
+    {
+      "id": "F58-PUB-05",
+      "severity": "INFO",
+      "blocks_publication": false,
+      "title": "Tie interpretation note and one-line fixture preserve mechanics",
+      "sources": [
+        {
+          "path": "docs/research/FOUNDATION_58_REPORT_NOTES.md",
+          "line": 3
+        },
+        {
+          "path": "tests/research/test_policy.py",
+          "line": 114
+        }
+      ],
+      "evidence": "The separate tie note accurately preserves concentration at zero for all 240 rows and the 18 incremental-information ties selected by min() enumeration order; it makes no unique-bottleneck or unconditional real-power claim. The only test_policy.py diff versus d908ae8f849182b5840ba0199c108bc8d22e6bf9 adds a local synthetic power_audit.status=PENDING reset before the missing-power-acceptance scenario. There are no removed lines or gate/source edits. It keeps the missing-acceptance test meaningful after canonical conditional acceptance."
+    }
+  ],
+  "blockers": [],
+  "broader_claims_found": [],
+  "limitations": [
+    "This is exact-commit publication/integration review, not new scientific acceptance, final #54 admission, real feature/source/PIT readiness acceptance or approval of human values.",
+    "I reviewed only my own canonical #58 records, the specified publication/governance metadata/docs, the one-line fixture diff, accepted power artifact hashes, and subsequently authorized exact human-decisions/MOM-002 manifest blobs plus journal length/hash/empty metadata. No #51 outcome-bearing records/probes, raw caches or other research data were opened.",
+    "#51 bounded reconciliation/overlap/cache-review claims quoted in the allowed handoff documents were not independently reassessed; I verified only that full #51 acceptance remains blocked.",
+    "No tests or synthetic simulations were rerun during this bounded publication review. Mechanical source/geometry/surface identities are unchanged, and the fixture was reviewed statically. The root handoff\u2019s separate 675-test/CI/lint claims were not independently executed or checked over the network.",
+    "Local Git commit bytes were reviewed, not live GitHub Project/issues, canonical-main publication or current CI. Approval is limited to revision 5ca9bca7dbc5eeb68506a5bf49143809a12325b9. Later revisions require separate verification.",
+    "Shared filesystem/instruction-only limitations and known GPT-6 family remain disclosed. The reviewer reuses their prior independent #58 review context for this publication audit; this is not a new isolated final-admission reviewer process.",
+    "Empty official journals and unauthorized manifest prove the reviewed committed governance state; they cannot cryptographically prove that no unrecorded operation occurred elsewhere. No real MOM-002 outcomes or associations were accessed for this review.",
+    "The original audited proposal is preserved/reference-pinned at its original 7c42582 revision and in the immutable #58 bundle; its absence as a final current canonical proposal is consistent with Draft status and unresolved #49/#53/#54 admission work."
+  ],
+  "scoring_authorized": false,
+  "new_real_mom002_outcomes_accessed": false,
+  "predictive_trials_consumed_by_review": 0,
+  "human_values_supplied": false,
+  "repo_mutations": false,
+  "network_or_github_actions": false,
+  "evidence_directory": "/private/tmp/rocket-58-publication-uta_tlu9",
+  "verification_report": "/private/tmp/rocket-58-publication-uta_tlu9/verification.json",
+  "additional_governance_authorization": "Root explicitly authorized read-only exact Git blob inspection of human_decisions.json and manifests/MOM-002.json at this revision, plus hash/length/empty journal metadata.",
+  "reports": {
+    "json": "/private/tmp/rocket-independent-58-publication-review.json",
+    "markdown": "/private/tmp/rocket-independent-58-publication-review.md"
+  }
+}

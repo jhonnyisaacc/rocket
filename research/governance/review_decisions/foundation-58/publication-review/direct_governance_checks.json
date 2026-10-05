@@ -1,0 +1,58 @@
+{
+  "reviewed_revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+  "authorization": "Root explicitly authorized read-only exact Git blob inspection of human_decisions.json and manifests/MOM-002.json at this revision, plus hash/length/empty journal metadata.",
+  "files": [
+    {
+      "path": "research/governance/human_decisions.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "d3813f59b241718688e77d75973668c025db69ea8a3fe68a8ac3eb152ce789d2",
+      "bytes": 963
+    },
+    {
+      "path": "research/governance/manifests/MOM-002.json",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "sha256": "c1b4ec265edf263d12b9bb967567ead5442f0a34c9c2cc13373dcf9036a48276",
+      "bytes": 1665
+    }
+  ],
+  "four_human_values_null": {
+    "reviewer_identity_process": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "cost_hurdle_40bp": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "minimum_worthwhile_effect": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    },
+    "economic_gate_role": {
+      "status": "HUMAN_DECISION_REQUIRED",
+      "value": null
+    }
+  },
+  "stop_confirmed_but_human_gate_incomplete": true,
+  "mom002_manifest_draft_unauthorized_zero_consumed": true,
+  "manifest_approval_freeze_dataset_scorer_null": true,
+  "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+  "trial_budget": 1,
+  "trials_consumed": 0,
+  "journals": [
+    {
+      "path": "research/governance/invocations.jsonl",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "empty": true
+    },
+    {
+      "path": "research/governance/invalidations.jsonl",
+      "revision": "5ca9bca7dbc5eeb68506a5bf49143809a12325b9",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "empty": true
+    }
+  ]
+}

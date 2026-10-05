@@ -1,0 +1,81 @@
+{
+  "schema": "rocket.foundation-review-publication.v1",
+  "issue": 51,
+  "publisher": "Codex root implementer; publisher only, not scientific author",
+  "github_actor": "jhonnyisaacc",
+  "codex_thread_id": "01a10d76-dd0c-7002-9b10-e02fc4cacb8e",
+  "reviewer_record_preserved_verbatim": true,
+  "files": [
+    {
+      "path": "research/governance/review_decisions/foundation-51/review.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-review.json",
+      "sha256": "9116cbf01e5486ab803f2be287edcae5796db2a316cb441413db2f62194c2fd3"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/review.md",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-review.md",
+      "sha256": "90167661448df8d3520db597e5f83534c1ad94fafdbd64867055a2461012e1c3"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/independent_checks.py",
+      "reviewer_original_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/independent_checks.py",
+      "sha256": "21d06e2f574fbdcbd5e24efb229ccc99547babf532bc25a296a9cb8471c2a2e3"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/independent_checks_result.json",
+      "reviewer_original_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/independent_checks_result.json",
+      "sha256": "ddc6b18e23f693fae3217540e7a11307bdcc643a7973eab2a557ef2a22fbfa59"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/erratum-review.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-erratum-review.json",
+      "sha256": "08adf58d6b8bca9a4e0a24ed4b162a4fa70a610e1ffc5393dc2dc51626a166fe"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/erratum-review.md",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-erratum-review.md",
+      "sha256": "24023b0ee256d3a24363bee2b6914fbbcc94d21db45b7c148c9a789ee132b3a6"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/source-cache-review.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-source-cache-review.json",
+      "sha256": "e559500f46d1579567bdc51d0b5896cca2125fba117544b29b0bcba4147c670d"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/source-cache-review.md",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-source-cache-review.md",
+      "sha256": "02347e737cf9934e77a756c9bc8027269fa018d9f8d5cea0419a2ed718361926"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/source-cache-check.py",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-source-cache-check.py",
+      "sha256": "6d5eb5f89f2ed849be968a7d24bef2a02697b74dd1d24713f675d342f2da119d"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/source-cache-check-result.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-51-source-cache-check-result.json",
+      "sha256": "f9a6f4bc723d4005f9f9dc9df315da6907a86d745a021e8f72f5081c888d735d"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-51/erratum-check-result.json",
+      "reviewer_original_path": "/private/tmp/rocket-foundation-51-erratum-independent-kpj6k8r1/verification_result.json",
+      "sha256": "0551c6554466f4c15d1d0bbb745ab39bc044208bbc59d5dfee2f8d281ba18700"
+    }
+  ],
+  "reviewer": "/root/foundation_51_review",
+  "decision": "REQUEST_CHANGES",
+  "foundation_accepted": false,
+  "scoring_authorized": false,
+  "predictive_trials_consumed": 0,
+  "original_packet_path": "research/governance/review_packets/foundation-51.zip",
+  "original_packet_sha256": "98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603",
+  "documentation_correction_review": {
+    "path": "research/governance/review_decisions/foundation-51/erratum-review.json",
+    "overall_foundation_accepted": false
+  },
+  "source_cache_integrity_review": {
+    "path": "research/governance/review_decisions/foundation-51/source-cache-review.json",
+    "decision": "QUALIFIED_OFFLINE_SOURCE_CACHE_INTEGRITY_VERIFIED",
+    "full_source_pit_readiness_accepted": false
+  }
+}

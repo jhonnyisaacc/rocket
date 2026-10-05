@@ -1,0 +1,625 @@
+{
+  "schema": "rocket.foundation-review-decision.v1",
+  "issue": 51,
+  "decision": "REQUEST_CHANGES",
+  "reviewer": "/root/foundation_51_review",
+  "model_family": "GPT-6 family, as identified by runtime instructions; exact model variant unavailable",
+  "role": "Independent FOUNDATION technical/adversarial reviewer",
+  "isolated_context": "Fresh reviewer subagent with no prior root conversation, design or implementation context. Authority reads were limited to AGENTS.md and the four required governance documents. Review evidence was limited to the supplied foundation-51.json and exact foundation-51.zip extracted into /private/tmp/rocket-foundation-51-independent-2br1p126. No other working-tree research data, raw tapes, private databases, new MOM-002 outcomes, associations or predictions were inspected. Isolation is instruction-enforced on a shared filesystem, not a hermetic OS or cryptographic access boundary.",
+  "contribution_history": "No prior contribution to the experiment design, implementation, reconciliation artifacts or provider corrections. Only reviewer-owned temporary probes and this review record were authored. No repository mutation, GitHub comment, experiment approval on behalf of the implementer, delegation or market-data acquisition occurred.",
+  "designed_implementation": false,
+  "implemented_work": false,
+  "new_real_mom002_outcomes_accessed": false,
+  "reviewed_source_manifest_sha256": "ac1ba623d5ee761576e643e53ee999b42f1ac33fcae123b3e664277149509c4e",
+  "reviewed_revisions": [
+    "7c42582168e7538cfac00393bc3ffce54beb21b1"
+  ],
+  "timestamp": "2026-10-05T21:25:30Z",
+  "findings": [
+    {
+      "id": "F51-01",
+      "priority": "P2",
+      "disposition": "REQUEST_CHANGES",
+      "title": "14d cutoff-based overlap count is misstated in prose",
+      "locations": [
+        {
+          "path": "docs/research/momentum/REPLICATION_REPORT.md",
+          "start": 159,
+          "end": 162
+        },
+        {
+          "path": "docs/research/momentum/reconciliation/RECONCILIATION.json",
+          "start": 2584,
+          "end": 2585
+        },
+        {
+          "path": "rocket/momentum/core.py",
+          "start": 287,
+          "end": 294
+        },
+        {
+          "path": "rocket/momentum/reconcile.py",
+          "start": 412,
+          "end": 419
+        }
+      ],
+      "evidence": "Independent interval union over all 354 supplied event geometries gives canonical 7d=128 and 14d=47, cutoff-start 7d=117 and 14d=45. The two 14d exact boundary contacts are 2024-12-05T04:00:00+00:00 and 2025-12-15T16:00:00+00:00. The prose says both have 47, while RECONCILIATION.json correctly says cutoff=45.",
+      "impact": "The primary geometry and 107 causal cooldown remain intact, but #51 overlap reconciliation cannot be accepted with contradictory required-scope documentation.",
+      "required_action": "Preserve original evidence and add a reviewed canonical erratum with both geometries and boundary conventions."
+    },
+    {
+      "id": "F51-02",
+      "priority": "P1",
+      "disposition": "BLOCKED",
+      "title": "Tier-B feature completeness is not established",
+      "locations": [
+        {
+          "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+          "start": 24,
+          "end": 33
+        },
+        {
+          "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+          "start": 75,
+          "end": 81
+        },
+        {
+          "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+          "start": 104,
+          "end": 110
+        },
+        {
+          "path": "rocket/momentum/core.py",
+          "start": 183,
+          "end": 226
+        }
+      ],
+      "evidence": "Manifest reports 1948 daily metrics filenames with only 3 content-verified samples, including 288 identical duplicate rows on the first sample day. Full history gaps/conflicts and finite-value validity are unverified. Bundled spot-only snapshot initializes funding_24h, oi_change_24h and spot_perp_volume_ratio to None and never fills them. Complete source-aligned 24h quote-volume, realized-funding and OI endpoint windows have no accepted evidence in this packet.",
+      "impact": "No Tier-B readiness approval or MOM-002 prerequisite acceptance can follow from source catalog presence or #65 operational receipt correctness.",
+      "required_action": "Provide a separately scoped, exact-artifact full feature-window/source parser/readiness review with explicit missingness, conflicts, timestamp units and accepted availability policy; retain UNKNOWN wherever unsupported. This report grants no acquisition or scoring admission."
+    },
+    {
+      "id": "F51-03",
+      "priority": "P1",
+      "disposition": "BLOCKED",
+      "title": "Raw-source authenticity and historical publication remain unverified",
+      "locations": [
+        {
+          "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+          "start": 85,
+          "end": 102
+        },
+        {
+          "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+          "start": 114,
+          "end": 124
+        },
+        {
+          "path": "docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md",
+          "start": 8,
+          "end": 15
+        },
+        {
+          "path": "rocket/momentum/source.py",
+          "start": 53,
+          "end": 59
+        }
+      ],
+      "evidence": "The bundle contains digest claims, samples and descriptive artifacts rather than the authenticated original source ZIPs/catalogs/sidecars. Current corrected vintages, null historical receipts, and historical_pit=false are explicit. The retrospective spot end+5m clock is an assumption. Neither this reviewer nor a current provider fix can establish old publication/vintage completeness from those claims.",
+      "impact": "Mathematical artifact reconciliation is qualified; unconditional source/PIT foundation acceptance remains unsupported.",
+      "required_action": "Keep authenticity and publication acceptance separate and blocked until an authorized isolated review can verify source evidence and accept any explicitly declared historical reconstruction policy. Do not backdate receipt or promote event time to publication time."
+    },
+    {
+      "id": "F51-04",
+      "priority": "INFORMATIONAL",
+      "disposition": "SUPPORTED_WITH_LIMITATIONS",
+      "title": "DOWN orientation and full candidate/quarantine reconciliation are coherent",
+      "locations": [
+        {
+          "path": "rocket/momentum/core.py",
+          "start": 354,
+          "end": 385
+        },
+        {
+          "path": "rocket/momentum/reconcile.py",
+          "start": 85,
+          "end": 111
+        },
+        {
+          "path": "rocket/momentum/reconcile.py",
+          "start": 235,
+          "end": 337
+        },
+        {
+          "path": "tests/momentum/test_core.py",
+          "start": 134,
+          "end": 159
+        },
+        {
+          "path": "tests/momentum/test_reconciliation.py",
+          "start": 13,
+          "end": 83
+        }
+      ],
+      "evidence": "25 bundled tests pass. Independent full artifact check confirms 354 IDs/clocks/spacing records; UP 5/21/34/4 and DOWN 8/21/12/2 canonical counts; historical DOWN 7/19/15/2 retained; 13 outcome, 68 normalized resolution, 137 MFE and 123 MAE discrepancies; orientation-only leaves 12 MFE values and explicit zero floor removes all remaining compared differences. All 13 supplied touch traces satisfy barrier arithmetic. Nine supplied quarantined raw CSV rows match canonical field fingerprints and source-manifest exclusions. Derived missingness is 59 absent + 9 quarantined =68 unusable, 35 incomplete aggregates, 11943 eligible cutoffs.",
+      "limitations": "Authenticity of full raw tape, pre-touch absence, snapshot values and original external replication is not independently reproduced."
+    }
+  ],
+  "limitations": [
+    "Fresh-context independence is based on this reviewer contribution history and instruction-scoped access. Shared filesystem and shared installed virtual environment are not hermetic isolation; no cryptographic outcome secrecy is claimed.",
+    "Only GPT-6 family is known from runtime instructions. An exact model variant or a distinct family from the preparer cannot be asserted; different family is preferred but not proven here.",
+    "Old MOM-000 barrier labels and descriptive diagnostics were accessed as explicitly authorized for reconciliation. No new real MOM-002 outcomes, associations, forecasts, fitting or scoring were accessed. This context is not an isolated pre-result MOM-002 admission review.",
+    "No vendor spot/Tier-B raw ZIPs, catalog response bytes, checksum-sidecar bytes or private databases were inspected. Full raw-source replication, pre-touch absence, actual historical publication and vintage authenticity remain unverified.",
+    "Historical source revisions are declared packet identities, not independently fetched Git objects. All 42 bundled source/evidence byte hashes and the exact bundle hash were independently verified.",
+    "Tests use the existing shared Python 3.14.1 virtual environment with PYTHONPATH restricted to the extracted packet. The independent probe confirms rocket.momentum.core imports from the extracted directory.",
+    "Bundled CFTC/FRED lineage is historical context. No #65 current provider implementation was inspected, and operational correctness cannot be read as scientific Tier-B readiness.",
+    "No economic/risk values, gates, populations or trial budgets were selected or changed. MOM-000 STOP and MOM-001 non-admission remain preserved; MOM-002 is unauthorized and unscored.",
+    "This local review is not externally published approval evidence. Overall required #51 scope is not approved, and no foundation prerequisite or scoring permission is granted."
+  ],
+  "scoring_authorized": false,
+  "designed_experiment": false,
+  "implemented_experiment": false,
+  "old_mom000_labels_accessed": true,
+  "foundation_51_accepted": false,
+  "referenced_historical_revisions_not_independently_fetched": [
+    "c8f22be5a7f065382d01d4fa167a0b9eacdb67c3",
+    "b8ddbd0d1f477f82f96b26298885b97b0f95e063"
+  ],
+  "reviewed_artifacts": {
+    "outer_manifest_path": "research/governance/review_packets/foundation-51.json",
+    "outer_manifest_sha256": "4d2844fbe11d1f774cb47ad885f61c16e218f62507e13248a93fb126bcf7e3e2",
+    "bundle_path": "research/governance/review_packets/foundation-51.zip",
+    "bundle_sha256": "98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603",
+    "bundle_bytes": 334283,
+    "source_manifest_sha256": "ac1ba623d5ee761576e643e53ee999b42f1ac33fcae123b3e664277149509c4e",
+    "pinned_file_count": 42,
+    "files": [
+      {
+        "path": "docs/research/momentum/CFTC_LINEAGE_AUDIT.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "1d639f77d5510f2263151a4ba1f4d5b92a151154f440f13314c7d2bfcf492a01"
+      },
+      {
+        "path": "docs/research/momentum/EVIDENCE_AUDIT.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "68d099afaf9318db0225c40c5c8ebc7f9f4fb4477e11c19bd1959372374e9133"
+      },
+      {
+        "path": "docs/research/momentum/MOMENTUM_EVENT_CONTRACT.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "e751cfc9fddd34cb2c66a4ca406f81b7740ae2ffb51cb1d52ffc7a61a0127b37"
+      },
+      {
+        "path": "docs/research/momentum/REPLAY_MANIFEST.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "b1bdfc3e6e416787d41f1153152e1d9ed6dbe78675803866cd06ef7304062573"
+      },
+      {
+        "path": "docs/research/momentum/REPLICATION_REPORT.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "52150c3de972f4e94050f7ba7a7bde4d19cbf83ec6ed37072c359b1936f90b69"
+      },
+      {
+        "path": "docs/research/momentum/SOURCE_CONTRACT_V2_PROPOSAL.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "67e34204c04e3593cd994c00e0fb45a485e29972f3ff762f53ded456b287abd4"
+      },
+      {
+        "path": "docs/research/momentum/SOURCE_MANIFEST.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "7ee9bfb53c30de97e5ed4fd6faf495c9ab14723a833a8465020cd1a3943e068f"
+      },
+      {
+        "path": "docs/research/momentum/TIER_B_SOURCE_AUDIT.md",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "966e9a837ac6951a5be73d4ab495897aaae5b9cafb6341970cf74e01e8ab113c"
+      },
+      {
+        "path": "docs/research/momentum/TIER_B_SOURCE_MANIFEST.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "da303d3fd57ad41c84ade21118cbc3f766f11d7cc5d6710d745236a643afa989"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/CANDIDATE_DIFF.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "5020900ecbd3a7ab56d7e7a67868bea8030951a7b57c734d780018a5e81552b6"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/DISCREPANT_BARRIER_TRACES.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "b0c71b965ae51055146fd56ad9a0fda38fb3fea50590db8b16f57f0b4950459e"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/LEG_DIFF.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "cff211b0e04a55f2d85d1bf1f1e905a45f81637aea7d6881614592cc2a9326f3"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/PR49_FROZEN_CENSUS.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "49b59a617f0aeb73fd7423a0c8cb6638937dabf2f889b91fa87887b7b8673a64"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/PR50_FROZEN_CENSUS.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "c4b2e44b0301008552f62255f9094b9b9a681656d624f19180f125c009e7f4f0"
+      },
+      {
+        "path": "docs/research/momentum/reconciliation/RECONCILIATION.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "22692bd4106e85b227f7032bee6be652a942437dc0cf523d4553ef846f212be1"
+      },
+      {
+        "path": "docs/research/momentum/results/CENSUS.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "43424963168d5bac395d40a0367c5bef01feb5e0572477f54821d3693a682a1b"
+      },
+      {
+        "path": "docs/research/momentum/results/EPISODES_DIAGNOSTIC.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "9999d0ccde777d921f33bcce7fd085a4f2afce06c7bc58321474167fd9329295"
+      },
+      {
+        "path": "docs/research/momentum/results/EVENTS.json",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "91986617fe6bcf607693ed80e120ec9ce57d794426d8445d6477e1ee87b7fb15"
+      },
+      {
+        "path": "pyproject.toml",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "2b7cdf89b0d90e8a86cc3566c41d5deea198e8f4207220f225845a439ade96be"
+      },
+      {
+        "path": "rocket/__init__.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "20f6dbd65a85f029ca6ca178b7340c047463395a4c7a67b025f7cbcd09ed8135"
+      },
+      {
+        "path": "rocket/config.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "60b1cd12cbbaa195ccc7e969ee1cf3db4105c08578d53c3fb6e5d0abebac0505"
+      },
+      {
+        "path": "rocket/models.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "96bd64fb6b7a89175413059474b975fc834a57fe8b52445bff7c242b377291e5"
+      },
+      {
+        "path": "rocket/momentum/__init__.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "9c8f9f651216f0debe77b2ac13da0d7f9e33ca031761f1062e380aae5cfc54e4"
+      },
+      {
+        "path": "rocket/momentum/census.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "98f8dd1d18da1e93885579599d75fb45bc7a362e93ec43b3c6963b1c15fcc1f4"
+      },
+      {
+        "path": "rocket/momentum/collect.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "81824ee8bace05676f06c34a52873a693b299a597590ac09bbf9bd56b9ba2233"
+      },
+      {
+        "path": "rocket/momentum/core.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "5be7a7a5f610d7ec189dcd5c3b7629b3a348651ca97653ec84f720d13ca4c385"
+      },
+      {
+        "path": "rocket/momentum/enrich.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "44a536f3286016d2714ebea4061d4f38fedf08a6479cf509a3fa9c07bc71cacb"
+      },
+      {
+        "path": "rocket/momentum/reconcile.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "0543768c232100f31173bf2c2cd16a912738f1fda53dfc24b1bff18f732f80c1"
+      },
+      {
+        "path": "rocket/momentum/shadow.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "eeb122dd1f54ed0fa4fcada88a9d52666f7b2d00dd991241fb17b115109e3ec5"
+      },
+      {
+        "path": "rocket/momentum/source.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "1398acb0facd2e31750b5190fac4c261d7a799939aa60210cdab2551b29238a6"
+      },
+      {
+        "path": "rocket/pit.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "7dc66e6d86f243d72514771ebdcacea21be035ff4d7517b4be831c7a0177e06d"
+      },
+      {
+        "path": "rocket/providers/__init__.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "fb6574b43c4776f31c6e5fec477d27c25e69db70a681afcac26b172a290707c6"
+      },
+      {
+        "path": "rocket/providers/dispatch.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "7c7edf7b1e9d67e6c72425dce868e5e15fb8c4ee512e2a6da66509c905582b38"
+      },
+      {
+        "path": "rocket/providers/fred.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "8aee74b70a8c6e75de7363a82d11a582a705eb5aa3eeed7e3e58eeedf4826a6d"
+      },
+      {
+        "path": "rocket/providers/http.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "7390f222171905a2fc03828c1553bc0460aad7b569341a7f467b2488c4e01bab"
+      },
+      {
+        "path": "rocket/providers/protocols.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "f999b5332288639d6117e4cc080aeaa6f0d504bb681f5c2cb33c1d8f1f373768"
+      },
+      {
+        "path": "rocket/providers/registry.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "20936e71438a5a05a5354aea1777a0e9df92d17dd7c5af4840e6deeed8d64f3f"
+      },
+      {
+        "path": "tests/__init__.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "tests/momentum/test_census.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "89719d949234d5178220f464dece9324f57a80d1ac1606a67abb65fb2609ffee"
+      },
+      {
+        "path": "tests/momentum/test_core.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "2235522064a5d91f9709576ad323553145642de59d9f73bdc0bc17ae69de0b55"
+      },
+      {
+        "path": "tests/momentum/test_fred_contract.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "7ef48b9e517098c184eb4c1690567e34b8c4125278afe63946f8ee73778b170e"
+      },
+      {
+        "path": "tests/momentum/test_reconciliation.py",
+        "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+        "sha256": "b0fc0d362042b42446ad30d13a1617d6825df43c7f3d95262b82433586d0b600"
+      }
+    ],
+    "historical_revision_binding": "Source revision and historical commit identities are those declared by the packet. Pinned-byte hashes were independently verified; Git objects and external publication were not fetched."
+  },
+  "scope_decisions": {
+    "mom000_reconciliation": {
+      "decision": "APPROVE_WITH_LIMITATIONS",
+      "scope": "Bundled mathematical/code and artifact reconciliation only, conditional on the supplied historical source evidence. Correct DOWN low/high orientation, 5 UP/8 DOWN versus historical 5/7, full candidate/quarantine accounting and preserved STOP are supported. This is not independent raw-tape reproduction or unqualified foundation acceptance.",
+      "raw_source_replication_verified": false
+    },
+    "overlap_semantics": {
+      "decision": "REQUEST_CHANGES",
+      "reason": "Canonical decision-start counts 128/47 are correct. Cutoff-start counts 117/45 are correct. REPLICATION_REPORT.md line 162 incorrectly states both 14d conventions have 47, contradicting both independent recomputation and the pinned machine artifact.",
+      "required_correction": "Publish an exact-artifact, reviewable erratum preserving historical packet bytes and explicitly distinguishing 128/47 decision-start from 117/45 cutoff-start; include the two exact-14d boundary contacts. No relabeling, population change or rescore is required."
+    },
+    "tier_b_source_availability": {
+      "decision": "QUALIFIED",
+      "reason": "Internally coherent source inventory claims 72/72 perp and funding files, 1948 metrics names and 72 premium names. This reviewer did not authenticate catalog XML, checksum sidecars or vendor ZIP bytes because they are absent from the isolated packet."
+    },
+    "tier_b_readiness": {
+      "decision": "BLOCKED",
+      "reason": "OI metrics are content-sampled on only 3 of 1948 days; no complete candidate-level feature-window and duplicate/conflict/finite-value evidence or implemented Tier-B feature path is supplied. Spot-only snapshot fields remain UNKNOWN for funding, OI and spot/perp volume ratio. Source inventory and current #65 receipt correctness do not prove Tier-B feature readiness."
+    },
+    "raw_source_authenticity": {
+      "decision": "BLOCKED",
+      "reason": "All 84 source ZIP digest identities are internally consistent, but neither spot nor Tier-B vendor ZIPs, raw catalog responses or checksum-sidecar bytes are included for independent source verification. The packet hash establishes review-artifact identity rather than vendor-origin authenticity."
+    },
+    "historical_publication_authentication": {
+      "decision": "BLOCKED",
+      "reason": "Source manifest explicitly states current archive vintage and assumed end+5m availability; all Tier-B sources state historical_pit=false and actual_historical_receipts=null. Event/measurement times and October 2026 audit receipts cannot authenticate historical publication or original vintages. Any reconstruction alternative requires separately accepted clock/source policy and complete evidence before affected use."
+    },
+    "authentic_review_publication": {
+      "decision": "NOT_PUBLISHED",
+      "reason": "This reviewer authored exact local review evidence only and was not authorized to publish GitHub comments. A shared publishing actor may later publish this unchanged genuine review without becoming its scientific author; no approval or acceptance is inferred."
+    }
+  },
+  "tests": [
+    {
+      "name": "Outer ZIP verification",
+      "command": "SHA256 and byte-length comparison against foundation-51.json before safe extraction",
+      "result": "PASS",
+      "bundle_sha256": "98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603",
+      "bundle_bytes": 334283
+    },
+    {
+      "name": "Bundled pin verifier",
+      "command": "/Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python verify_packet.py",
+      "cwd": "/private/tmp/rocket-foundation-51-independent-2br1p126",
+      "result": "PASS",
+      "output": "VERIFIED 42 pinned files; no acceptance or scoring permission"
+    },
+    {
+      "name": "Bundled bounded offline regressions",
+      "command": "PYTHONPATH=/private/tmp/rocket-foundation-51-independent-2br1p126 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python -m pytest tests/momentum/test_core.py tests/momentum/test_census.py tests/momentum/test_reconciliation.py tests/momentum/test_fred_contract.py -o addopts=\"\" -q",
+      "cwd": "/private/tmp/rocket-foundation-51-independent-2br1p126",
+      "result": "PASS",
+      "passed": 25,
+      "duration_seconds": 0.18,
+      "boundary": "Synthetic primitive/FRED mocks and existing preserved MOM-000 artifact checks only; no acquisition, fitting or real outcome scoring executed."
+    },
+    {
+      "name": "Reviewer independent full artifact checks",
+      "command": "PYTHONPATH=/private/tmp/rocket-foundation-51-independent-2br1p126 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python independent_checks.py",
+      "cwd": "/private/tmp/rocket-foundation-51-independent-2br1p126",
+      "result": "PASS",
+      "probe_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/independent_checks.py",
+      "probe_sha256": "21d06e2f574fbdcbd5e24efb229ccc99547babf532bc25a296a9cb8471c2a2e3",
+      "result_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/independent_checks_result.json",
+      "result_sha256": "ddc6b18e23f693fae3217540e7a11307bdcc643a7973eab2a557ef2a22fbfa59",
+      "meaning": "Independent arithmetic/interval/identity checks over supplied historical artifacts; reproduces the prose-vs-machine discrepancy, does not acquire a new tape or rerun an experiment."
+    }
+  ],
+  "reproducible_check_results": {
+    "core_import_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/rocket/momentum/core.py",
+    "python_version": "3.14.1 (main, Dec  2 2025, 20:56:31) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "label_fingerprint": "cea8f41de55a5b65c432120db79aa58e2da06c8df7452741a9f8dca55802fbfb",
+    "candidate_count": 354,
+    "globally_spaced_count": 107,
+    "primary_counts": {
+      "UP": {
+        "canonical": {
+          "TIMEOUT": 34,
+          "FAILS": 21,
+          "UNKNOWN": 4,
+          "CONTINUES_UP": 5
+        },
+        "muse_original": {
+          "TIMEOUT": 34,
+          "FAILS": 21,
+          "UNKNOWN": 4,
+          "CONTINUES": 5
+        }
+      },
+      "DOWN": {
+        "canonical": {
+          "CONTINUES_DOWN": 8,
+          "FAILS": 21,
+          "UNKNOWN": 2,
+          "TIMEOUT": 12
+        },
+        "muse_original": {
+          "CONTINUES": 7,
+          "FAILS": 19,
+          "UNKNOWN": 2,
+          "TIMEOUT": 15
+        }
+      }
+    },
+    "original_discrepancy_counts": {
+      "mae": 123,
+      "mae_normalized": 123,
+      "mfe": 137,
+      "mfe_normalized": 137,
+      "barrier_time": 68,
+      "outcome": 13
+    },
+    "orientation_only_remaining_counts": {
+      "mfe": 12,
+      "mfe_normalized": 12
+    },
+    "orientation_plus_zero_floor_remaining_counts": {},
+    "maximum_geometry_absolute_error": {
+      "sigma": 3.469446951953614e-18,
+      "scale": 2.7755575615628914e-17,
+      "reference_price": 0.0
+    },
+    "trace_outcome_differences_verified": 13,
+    "overlap_geometry": {
+      "7": {
+        "canonical_decision_start_components": 128,
+        "cutoff_start_components": 117
+      },
+      "14": {
+        "canonical_decision_start_components": 47,
+        "cutoff_start_components": 45
+      }
+    },
+    "cutoff_boundary_contacts": {
+      "7": [
+        {
+          "cutoff_utc": "2019-10-16T16:00:00+00:00",
+          "event_id": "18392f39e17c585d977325be2e9cae8973d6ed19ee57574bc9630c565c1bd966"
+        },
+        {
+          "cutoff_utc": "2019-10-23T16:00:00+00:00",
+          "event_id": "bd37fbcca5f24e34b13293c7399f28913e48027777ee2ce08a038595a712ac72"
+        },
+        {
+          "cutoff_utc": "2020-10-19T16:00:00+00:00",
+          "event_id": "050872af29f7f83d7f5249a1d4b84a4a917eaa028fc4e9b0fdd72cd8ca6e4758"
+        },
+        {
+          "cutoff_utc": "2022-08-27T00:00:00+00:00",
+          "event_id": "297b6b3e88e3c333c5e60a80f304a2de46b55ab9e314d94908e17390b478e182"
+        },
+        {
+          "cutoff_utc": "2023-01-21T00:00:00+00:00",
+          "event_id": "98eefa99c4480097a31ca0100579792df71bc175d7ec4b43fa8c7689fcfb2ad2"
+        },
+        {
+          "cutoff_utc": "2024-09-13T16:00:00+00:00",
+          "event_id": "5111a62b7d5e250eda4ee43270c81c8ece45192c4967d26510b6866046f9818c"
+        },
+        {
+          "cutoff_utc": "2024-09-26T16:00:00+00:00",
+          "event_id": "6453accdf5791612aa7855ca0c94b9495f7e0db385ce3db7c0ebfb168ce3df70"
+        },
+        {
+          "cutoff_utc": "2024-11-20T16:00:00+00:00",
+          "event_id": "f4441dfcfe1c0821eb96756c61635bfede914c6f7db68c145c86314c47e289e9"
+        },
+        {
+          "cutoff_utc": "2025-01-27T08:00:00+00:00",
+          "event_id": "2777757198882034575c3f948359325a7f366992b91e27311882716bf974396c"
+        },
+        {
+          "cutoff_utc": "2025-06-05T20:00:00+00:00",
+          "event_id": "e5e1218d4f79bf50f5e813f2cdb8556bd6128f42e076f3c3707cacd458aad366"
+        },
+        {
+          "cutoff_utc": "2025-07-09T20:00:00+00:00",
+          "event_id": "5baebeb78b365a3d6da1549a6fc4488a94878fbce3cf34b86f833d178d21f7ec"
+        }
+      ],
+      "14": [
+        {
+          "cutoff_utc": "2024-12-05T04:00:00+00:00",
+          "event_id": "94ad996f62acde4733b5b3980db5c087091e8aed0be89c9c746a58ecc1efecc5"
+        },
+        {
+          "cutoff_utc": "2025-12-15T16:00:00+00:00",
+          "event_id": "1e36c2db5a5734639e2c4c0fa2ccaca5ab25c6907b9c208106f9bc08395d338e"
+        }
+      ]
+    },
+    "source_taxonomy_derived": {
+      "quarantined": 9,
+      "missing_vendor_hours": 59,
+      "unusable": 68,
+      "incomplete_four_hour_groups": 35,
+      "eligible_decisions": 11943,
+      "unknown_gap_including_missing_cutoffs": 3219,
+      "unknown_gap_existing_four_hour": 3184
+    },
+    "archives_manifest_consistency_count": 84,
+    "canonical_completed_legs": 156,
+    "canonical_large_legs": 65,
+    "gap_censored_legs": 14,
+    "tier_b_internal_manifest_checks": {
+      "perp_1h": {
+        "expected_files": 72,
+        "content_verified_files_reported": 72,
+        "historical_pit": false
+      },
+      "funding": {
+        "expected_files": 72,
+        "content_verified_files_reported": 72,
+        "historical_pit": false
+      },
+      "metrics": {
+        "expected_files": 1948,
+        "content_verified_files_reported": 3,
+        "historical_pit": false
+      },
+      "premium_1h": {
+        "expected_files": 72,
+        "content_verified_files_reported": 2,
+        "historical_pit": false
+      }
+    },
+    "raw_source_authenticity_independently_verified": false,
+    "historical_publication_authentication_verified": false,
+    "new_real_mom002_outcomes_accessed": false,
+    "scoring_authorized": false
+  },
+  "report_paths": {
+    "json": "/private/tmp/rocket-independent-51-review.json",
+    "markdown": "/private/tmp/rocket-independent-51-review.md"
+  }
+}

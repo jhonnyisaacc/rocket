@@ -1,0 +1,44 @@
+{
+  "schema": "rocket.foundation-review-current-decisions.v1",
+  "date": "2026-10-05",
+  "codex_thread_id": "01a10d76-dd0c-7002-9b10-e02fc4cacb8e",
+  "publisher_is_scientific_reviewer": false,
+  "delegation_authorization": {
+    "source": "Human continuation after explicit request to run fresh reviewer subagents",
+    "message": "go ahead with Next items please",
+    "scope": [
+      51,
+      58
+    ],
+    "final_mom002_reviewer_process_approved": false
+  },
+  "decisions": {
+    "51": {
+      "original_packet_path": "research/governance/review_packets/foundation-51.zip",
+      "original_packet_sha256": "98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603",
+      "review_path": "research/governance/review_decisions/foundation-51/review.json",
+      "review_sha256": "9116cbf01e5486ab803f2be287edcae5796db2a316cb441413db2f62194c2fd3",
+      "reviewer": "/root/foundation_51_review",
+      "decision": "REQUEST_CHANGES",
+      "publication_path": "research/governance/review_decisions/foundation-51/publication.json",
+      "publication_sha256": "f76d2df79561301a97da13c791b812cacd983a17624f345ae61dfc37d72abd99",
+      "full_foundation_accepted": false,
+      "exact_conditional_methodology_accepted": false
+    },
+    "58": {
+      "original_packet_path": "research/governance/review_packets/foundation-58.zip",
+      "original_packet_sha256": "d35d4fcb38eda93aa5eab5de9ca46fb94f0f5e3bbc0dc3ab64ee78667b80ed38",
+      "review_path": "research/governance/review_decisions/foundation-58/review.json",
+      "review_sha256": "7accd5121a7589822aa7dd6b203966206a72a826bcda1d0fc5b8be62c017a8f4",
+      "reviewer": "/root/foundation_58_review",
+      "decision": "APPROVE",
+      "publication_path": "research/governance/review_decisions/foundation-58/publication.json",
+      "publication_sha256": "3f0bac8aae290cd1796914437a8bcd0eb315465546c920a5731adc0160368441",
+      "full_foundation_accepted": null,
+      "exact_conditional_methodology_accepted": true
+    }
+  },
+  "mom002_scoring_authorized": false,
+  "predictive_trials_consumed": 0,
+  "program_outcome": "Active"
+}

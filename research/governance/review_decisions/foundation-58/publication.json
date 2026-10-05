@@ -1,0 +1,52 @@
+{
+  "schema": "rocket.foundation-review-publication.v1",
+  "issue": 58,
+  "publisher": "Codex root implementer; publisher only, not scientific author",
+  "github_actor": "jhonnyisaacc",
+  "codex_thread_id": "01a10d76-dd0c-7002-9b10-e02fc4cacb8e",
+  "reviewer_record_preserved_verbatim": true,
+  "files": [
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-review.json",
+      "sha256": "7accd5121a7589822aa7dd6b203966206a72a826bcda1d0fc5b8be62c017a8f4"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/review.md",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-review.md",
+      "sha256": "6c30edadd23e7bd807b3a7a60e33298995a0adca25a3c741f84d6071991f07a3"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probes.py",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probes.py",
+      "sha256": "3ff2b820b7314f2518b933e454002dc05ef7683b63018e3d98b2c9d8acd231c4"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/independent_probe_results.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probe_results.json",
+      "sha256": "74b8f4c5e6ebc2104a47d59eb7fe68f8af2b184ae0c01acea7b4c10c67cb47d3"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_comparison.json",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_comparison.json",
+      "sha256": "d5b298a1a19f97d1b43f3b54cc4df6b42e725032303a0c1cc87593e78034eef1"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/reproduction_stdout_tail.txt",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_stdout_tail.txt",
+      "sha256": "cb5ab75ccac2d1875b8a78e5a31a73921791639601b82a44e5f90729d1c85ff7"
+    },
+    {
+      "path": "research/governance/review_decisions/foundation-58/bundled_pytest_stdout.txt",
+      "reviewer_original_path": "/private/tmp/rocket-independent-58-15mzv1w9/bundled_pytest_stdout.txt",
+      "sha256": "ac7e5f0921d22cc4d9b62802d700b3fb1e8d9909b7b898cbdfcdd274becadd58"
+    }
+  ],
+  "reviewer": "/root/foundation_58_review",
+  "decision": "APPROVE",
+  "acceptance_scope": "Exact bundled conditional synthetic methodology, its mechanical evaluation of the existing proposal, and INDETERMINATE_ASSUMPTIONS_REQUIRED conclusion only. FOUNDATION acceptance for #58 does not approve actual feature/source/PIT readiness, #51 foundation/overlap evidence, MOM-002 admission/freeze/scoring, human economic values or capital.",
+  "scoring_authorized": false,
+  "predictive_trials_consumed": 0,
+  "original_packet_path": "research/governance/review_packets/foundation-58.zip",
+  "original_packet_sha256": "d35d4fcb38eda93aa5eab5de9ca46fb94f0f5e3bbc0dc3ab64ee78667b80ed38"
+}
