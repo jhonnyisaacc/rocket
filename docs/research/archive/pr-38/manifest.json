@@ -4,7 +4,7 @@
   "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
   "disposition": "CLOSE_EVIDENCE_ARCHIVE",
   "verification": "EXACT_BYTES_PRESERVED",
-  "closure_state": "READY_AFTER_CANONICAL_MERGE_AND_INDIVIDUAL_LABEL_NOTE",
+  "closure_state": "CLOSED_EVIDENCE_ARCHIVE",
   "summary": "Thirteen named FUT contracts plus unresolved earlier historical screens; related attempts are not thirteen independent tests. No validated directional futures edge. FUT-005 failure and current-reported annual vintage limits remain. Unscored conditional periods stay unread; no FUT-014/COT rescue or runtime merge.",
   "trial_accounting_changed": false,
   "predictive_trials_consumed_this_operation": 0,
@@ -233,5 +233,15 @@
       "sha256": "144a115ac56307f1c7223ca86d6e6c12ec76c62be0d39f9b080034bb4b753060",
       "source_url": "https://github.com/jhonnyisaacc/rocket/blob/dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f/docs/research/futures/experiments/FUT-013.md"
     }
-  ]
+  ],
+  "closure": {
+    "pr": 38,
+    "state": "CLOSED",
+    "runtime_merged": false,
+    "closed_at": "2026-10-05T20:59:10Z",
+    "source_revision": "dedb8e42794f47b70e68c4b7f6cec89fc48f1d6f",
+    "canonical_preservation_revision": "d0aedbc59017982173cdf7081384641941980609",
+    "closing_note": "https://github.com/jhonnyisaacc/rocket/pull/38#issuecomment-6002809950",
+    "archive_label": "evidence-archive"
+  }
 }

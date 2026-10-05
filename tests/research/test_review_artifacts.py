@@ -52,7 +52,7 @@ def test_synthetic_review_packet_has_only_structural_real_data():
         validate_geometry(json.loads(geometry))
 
 
-@pytest.mark.parametrize("number", [26, 38, 40, 46])
+@pytest.mark.parametrize("number", [26, 38, 40, 46, 50])
 def test_historical_archive_has_all_declared_exact_documents_and_no_runtime(number):
     folder = ROOT / f"docs/research/archive/pr-{number}"
     manifest = json.loads((folder / "manifest.json").read_bytes())
@@ -72,3 +72,9 @@ def test_historical_archive_has_all_declared_exact_documents_and_no_runtime(numb
         paths = {r["source_path"] for r in manifest["files"]}
         assert "docs/research/futures/experiments/FUT-001-OOS.md" in paths
         assert all(f"docs/research/futures/experiments/FUT-{i:03d}-RESULT.md" in paths for i in range(2, 14))
+    if number == 50:
+        assert manifest["closure_state"] == "BLOCKED_ON_INDEPENDENT_51_ACCEPTANCE"
+    else:
+        assert manifest["closure_state"] == "CLOSED_EVIDENCE_ARCHIVE"
+        assert manifest["closure"]["runtime_merged"] is False
+        assert manifest["closure"]["archive_label"] == "evidence-archive"
