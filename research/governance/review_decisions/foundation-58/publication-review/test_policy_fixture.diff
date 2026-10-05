@@ -1,0 +1,12 @@
+diff --git a/tests/research/test_policy.py b/tests/research/test_policy.py
+index 8f8af2d..0431c03 100644
+--- a/tests/research/test_policy.py
++++ b/tests/research/test_policy.py
+@@ -111,6 +111,7 @@ def test_wrong_or_spent_experiment_cannot_be_dispatched(tmp_path, monkeypatch):
+ def test_mom002_freeze_and_review_require_power_dependency(tmp_path):
+     folder=tmp_path/'research/governance';folder.mkdir(parents=True)
+     value=json.loads((ROOT/'research/governance/mom002_prerequisites.json').read_text())
++    value['requirements']['power_audit']['status']='PENDING'
+     # Isolate the missing power acceptance after making other acceptance records synthetic.
+     for name,record in value['requirements'].items():
+         if name=='power_audit':continue

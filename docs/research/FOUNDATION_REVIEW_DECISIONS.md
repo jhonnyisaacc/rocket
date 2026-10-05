@@ -64,3 +64,11 @@ is Active. Full #51 acceptance and the human decisions must precede a final
 versioned #53 contract and the separate exact isolated #54 admission packet.
 Foundation methodology approval is not a real MOM-002 PASS/FAIL or permission
 to fit, inspect associations, relax gates or score.
+
+The original #58 reviewer separately returned **APPROVE_PUBLICATION** for
+exact integration commit `5ca9bca7dbc5eeb68506a5bf49143809a12325b9`. Its
+[verbatim publication record](../../research/governance/review_decisions/foundation-58/publication-review/review.json)
+and [preserved file map](../../research/governance/review_decisions/foundation-58/publication-review/preservation.json)
+verify unchanged scientific artifacts, attribution, qualified acceptance and
+unresolved human/admission gates. This later preservation adds the review
+records and this link only; it does not extend scientific acceptance.
