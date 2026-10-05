@@ -19,6 +19,98 @@ STRUCTURED_SOURCE_INTERIM = (
     "Do not invent tickers from the filename."
 )
 _278T = re.compile(r"278-?t", re.IGNORECASE)
+_TICKER = re.compile(r"[A-Z][A-Z0-9.\-]{0,9}")
+_COUPON = re.compile(r"(?<!\d)\d{1,2}(?:\.\d+)?\s*%")
+_DUE = re.compile(r"\b(?:DUE|MATUR)")
+_BOOK_ENTRY = re.compile(r"\bB/E\b")
+_MUNI = re.compile(
+    r"\b(?:CNTY|COUNTY|CITY|TOWN|MUN|MUNI|MUNICIPAL|AUTH|AUTHORITY|BDS|BONDS?|"
+    r"DIST|DISTRICT|RFDG|HSG|HOUSING|FACS|SCH|SCHOOL|REV|REVENUE)\b"
+)
+_NOTE = re.compile(r"\b(?:NOTES?|NTS?|DEBENTURES?|SR NT|SENIOR NOTE)\b")
+_ETF = re.compile(r"\b(?:ETF|ETN|ISHARES|SPDR|SELECT SECTOR)\b")
+_FUND = re.compile(r"\b(?:MUTUAL FUND|MONEY MARKET|FUND)\b")
+_VERIFIED = {"checked", "human_verified"}
+
+
+def normalize_issuer_name(value):
+    """Exact-match key: case, punctuation, and spacing do not make a second name."""
+    return " ".join(re.sub(r"[^A-Z0-9]+", " ", str(value).upper()).split())
+
+
+def non_equity_type(description):
+    """Bond, note, fund, and ETF lines never receive a stock ticker.
+
+    ``PTC`` inside ``B/E PTC 5.00 % Due`` is a bond marker, not the issuer PTC.
+    A plain issuer name such as ``PTC INC`` returns None so a later exact
+    title lookup may run.
+    """
+    text = description.upper()
+    if _ETF.search(text):
+        return "etf"
+    if _FUND.search(text):
+        return "mutual_fund"
+    if _MUNI.search(text) or (_BOOK_ENTRY.search(text) and _DUE.search(text)):
+        return "municipal_bond"
+    if _NOTE.search(text) or _COUPON.search(text) or _DUE.search(text) or _BOOK_ENTRY.search(text):
+        return "corporate_note"
+    return None
+
+
+def _symbol(ticker):
+    if not isinstance(ticker, str):
+        return None
+    symbol = ticker.strip().upper()
+    return symbol if _TICKER.fullmatch(symbol) else None
+
+
+def prepare_issuer_tickers(raw):
+    """Normalized issuer title to one ticker. Ambiguous titles stay unresolved."""
+    if not isinstance(raw, dict):
+        return {}
+    ready = {}
+    for title, ticker in raw.items():
+        key = normalize_issuer_name(title)
+        if not key:
+            continue
+        symbol = _symbol(ticker)
+        if key in ready and ready[key] != symbol:
+            ready[key] = None
+        elif key not in ready:
+            ready[key] = symbol
+    return ready
+
+
+def issuer_tickers_from_company_file(payload):
+    """SEC ``company_tickers.json`` titles. A title with two tickers does not resolve."""
+    if not isinstance(payload, dict):
+        return {}
+    grouped = {}
+    for row in payload.values():
+        if not isinstance(row, dict):
+            continue
+        key = normalize_issuer_name(row.get("title", ""))
+        symbol = _symbol(row.get("ticker"))
+        if not key or symbol is None:
+            continue
+        grouped.setdefault(key, set()).add(symbol)
+    return {
+        key: next(iter(symbols)) if len(symbols) == 1 else None
+        for key, symbols in grouped.items()
+    }
+
+
+def load_issuer_tickers(now):
+    """Best-effort SEC title map. Any failure leaves names unresolved."""
+    try:
+        from rocket.providers.edgar import SECEDGAR, TICKERS_URL
+
+        cached = SECEDGAR()._get("company_tickers", TICKERS_URL, now)
+        if not isinstance(cached, dict) or cached.get("failure"):
+            return {}
+        return issuer_tickers_from_company_file(cached.get("payload"))
+    except Exception:
+        return {}
 
 
 class OpenCabinetExportError(ValueError):
@@ -110,8 +202,11 @@ def structured_coverage(official_records, *, exported_at=None, covered_urls=(), 
 
 
 class OpenCabinetProvider:
-    def __init__(self, *, http=None):
+    def __init__(self, *, http=None, issuer_tickers=None):
         self.http = http
+        # None loads SEC company_tickers when a row still needs a name.
+        # A dict, including an empty one, is used as given and does not fetch.
+        self.issuer_tickers = issuer_tickers
 
     def person_history(self, name="Donald Trump", *, official_records=(), now=None):
         if person_id(name) != "donald_trump":
@@ -134,8 +229,12 @@ class OpenCabinetProvider:
             return ProviderResult(OperationalStatus.UNAVAILABLE, source="open_cabinet",
                                   failure_kind=failure_kind(exc))
 
-    @staticmethod
-    def _normalize(payload, official_records, now):
+    def _issuer_names(self, now):
+        if self.issuer_tickers is not None:
+            return prepare_issuer_tickers(self.issuer_tickers)
+        return load_issuer_tickers(now)
+
+    def _normalize(self, payload, official_records, now):
         exported = parse_datetime(payload.get("exportedAt"))
         if exported is None or not timedelta(0) <= now - exported <= timedelta(days=14):
             raise OpenCabinetExportError(exported)
@@ -158,7 +257,7 @@ class OpenCabinetProvider:
             if added and added <= now.date():
                 key = document_key(filing["source_url"])
                 postings[key] = min(postings.get(key, added), added)
-        rows, ids = [], set()
+        rows, ids, pending = [], set(), []
         for row in transactions:
             record_id = row["recordId"]
             if not isinstance(record_id, str) or not record_id or record_id in ids:
@@ -172,18 +271,30 @@ class OpenCabinetProvider:
             if not isinstance(description, str) or not description.strip():
                 raise ValueError("missing instrument description")
             ticker = row.get("resolvedTicker")
+            instrument = row.get("instrumentType")
             # T1 is the source's strongest symbol resolution. Retain its secondary
             # provenance: trade-column checks alone do not verify the asset name.
-            eligible = bool(row.get("instrumentType") == "common_stock"
+            eligible = bool(instrument == "common_stock"
                             and row.get("resolutionTier") == "T1"
-                            and row.get("verificationState") in {"checked", "human_verified"}
+                            and row.get("verificationState") in _VERIFIED
                             and isinstance(ticker, str)
-                            and re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", ticker))
+                            and _TICKER.fullmatch(ticker))
+            # The 09.8.2026 batch left instrument type and ticker null on rows
+            # whose text was still checked. Classify before any name lookup so
+            # a bond token cannot become a stock ticker.
+            needs_name = not eligible and ticker is None and instrument is None
+            if needs_name:
+                kind = non_equity_type(description)
+                if kind:
+                    instrument = kind
+                    needs_name = False
+                elif row.get("verificationState") not in _VERIFIED:
+                    needs_name = False
             posted = postings.get(key)
             rows.append({
                 "subject": official["name"], "owner": None,
                 "asset": ticker if eligible else description,
-                "description": description, "asset_type": row.get("instrumentType"),
+                "description": description, "asset_type": instrument,
                 "eligible_equity_context": eligible,
                 "transaction_type": row["type"], "transaction_date": row["date"],
                 "amount_range": row.get("amount"), "source_record_id": record_id,
@@ -195,6 +306,19 @@ class OpenCabinetProvider:
                 "resolution_tier": row.get("resolutionTier"), "resolved_ticker": ticker,
                 "record_semantics": "SECONDARY_OGE_TRANSACTION_ROW",
             })
+            if needs_name:
+                pending.append(len(rows) - 1)
+        if pending:
+            names = self._issuer_names(now)
+            for index in pending:
+                symbol = names.get(normalize_issuer_name(rows[index]["description"]))
+                if not isinstance(symbol, str):
+                    continue
+                rows[index]["asset"] = symbol
+                rows[index]["asset_type"] = "common_stock"
+                rows[index]["eligible_equity_context"] = True
+                rows[index]["resolution_tier"] = "sec_exact_name"
+                rows[index]["resolved_ticker"] = symbol
         return ProviderResult(OperationalStatus.HEALTHY, tuple(rows), now, source="open_cabinet",
                               extras={"dataset_url": DATA_URL, "exported_at": exported.isoformat(),
                                       "attribution": "Open Cabinet — https://open-cabinet.org/download",
