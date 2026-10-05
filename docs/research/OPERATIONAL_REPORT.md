@@ -261,3 +261,22 @@ alone waits for accepted #51. Fifty documents are retained with exact-byte
 manifests. #51/#58 packets remain independently unaccepted, #55 holds only
 that #50 gate, WIP=3, and MOM-002 remains Draft/unauthorized/unscored, 1/0.
 See CURRENT_HANDOFF.md and machine-readable operational closure receipts.
+
+## Independent FOUNDATION review execution, 2026-10-05
+
+[Current decisions](FOUNDATION_REVIEW_DECISIONS.md) and the [current handoff](CURRENT_HANDOFF.md)
+supersede the earlier pending-external-review stop. #58 exact conditional
+methodology is independently APPROVE after byte-identical full synthetic
+reproduction; INDETERMINATE_ASSUMPTIONS_REQUIRED persists. #51 original
+REQUEST_CHANGES is preserved and its overlap prose correction independently
+accepted; overall historical source/publication and Tier-B readiness remain
+blocked. Fresh same-family/shared-filesystem limits are explicit.
+
+Canonical Project WIP=2 (#51/#55), #58 Done/Passed for methodology only, #56
+Ready/Draft HUMAN with four unresolved values and STOP canonical. #49/#50
+remain open; no archive/merge blocker is bypassed. The exact #58 methodology
+prerequisite is ACCEPTED with final pre-result resolution false; the other
+five remain pending. MOM-002 manifest, all original power artifacts and empty
+journals remain unchanged, Trial Budget 1 / Trials Consumed 0, Program Outcome
+Active. No real scientific PASS/FAIL, admission, fitting or scorer invocation
+is implied.

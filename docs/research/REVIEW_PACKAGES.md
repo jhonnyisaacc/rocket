@@ -1,9 +1,11 @@
-# Pending independent FOUNDATION reviews
+# Pinned FOUNDATION review request packets
 
-The implementer has prepared complete bounded review packets and cannot supply
-their independent acceptance. Publication by the existing GitHub actor is
-allowed; no second account/App is required. No packet grants scientific
-admission, human economic values or scorer permission.
+These pinned creation-time packets preserve the original requests and null
+decision templates. Actual separate [reviewer decisions](FOUNDATION_REVIEW_DECISIONS.md)
+now record #58 conditional methodology acceptance and #51 unresolved
+readiness/publication scope after an accepted overlap erratum. The implementer
+is a publisher, not the independent scientific author. Shared GitHub publication
+is allowed; no packet grants admission, human values or scorer permission.
 
 | Issue | Packet | Exact source/file hashes | Scope |
 | --- | --- | --- | --- |
@@ -41,7 +43,9 @@ contribution conflicts and reject claimed independence if the reviewer helped
 design or implement the work. Commit a real acceptance record only after that
 review. Do not mark prerequisites ACCEPTED from package creation or a Project edit.
 
-After accepted #51/#58, obtain only the required #56 values/process, finalize
-and version #53, then construct the separate exact final #54 admission packet.
+With #58 conditional methodology independently accepted, #56 is Ready for
+only its required human values/process. Full #51 acceptance remains blocked.
+After all prerequisites are resolved, finalize/version #53 and construct the
+separate exact final #54 admission packet.
 MOM-002 remains Draft/NEEDS_PRE_RESULT_GATE_REVIEW, unauthorized/unscored,
 Trial Budget 1 / Trials Consumed 0.

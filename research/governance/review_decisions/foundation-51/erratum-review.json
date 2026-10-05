@@ -1,0 +1,111 @@
+{
+  "schema": "rocket.foundation-documentation-erratum-review.v1",
+  "issue": 51,
+  "decision": "DOCUMENTATION_CORRECTION_ACCEPTED",
+  "timestamp": "2026-10-05T21:29:06Z",
+  "scope": "Only the additive overlap documentation correction at the exact named Git blob. Acceptance is limited to the erratum text and does not accept overall #51 scope or authenticate omitted source/publication/readiness evidence.",
+  "reviewer": "/root/foundation_51_review",
+  "model_family": "GPT-6 family, as identified by runtime instructions; exact variant unavailable; distinct family from the preparer/correction author is not established",
+  "role": "Independent FOUNDATION technical/adversarial reviewer, reviewing a documentation-only addendum",
+  "reviewer_only": true,
+  "implemented_original_work": false,
+  "designed_original_experiment": false,
+  "implemented_documentation_correction": false,
+  "contribution_history": "The initial independent review identified the 14d prose discrepancy and recommended an additive correction. This is reviewer feedback. This agent authored neither the original implementation/artifacts nor the erratum, and made no repository mutation or GitHub publication.",
+  "isolated_context": "Continuation of the same fresh-context initial reviewer, restricted for this addendum to the exact local Git blob 45a83e4777dabf9bbb689f128377c81a19028b56:docs/research/FOUNDATION_51_ERRATA.md, previously reviewed frozen packet/probes and initial reviewer-owned records. No other research data was inspected. Shared filesystem and shared runtime remain instruction-only isolation limits.",
+  "reviewed_revision": "45a83e4777dabf9bbb689f128377c81a19028b56",
+  "reviewed_file": "docs/research/FOUNDATION_51_ERRATA.md",
+  "reviewed_file_sha256": "84e77842c30078d6fc211979f086e5a0e60bdabce423951e1bda26ae0f6ca81b",
+  "reviewed_git_blob_id": "f65b1300adbcc6694555b50eb7b635e598e09943",
+  "isolated_reviewed_source_copy": "/private/tmp/rocket-foundation-51-erratum-independent-kpj6k8r1/FOUNDATION_51_ERRATA.md",
+  "original_review": {
+    "decision": "REQUEST_CHANGES",
+    "json_path": "/private/tmp/rocket-independent-51-review.json",
+    "json_sha256": "9116cbf01e5486ab803f2be287edcae5796db2a316cb441413db2f62194c2fd3",
+    "markdown_path": "/private/tmp/rocket-independent-51-review.md",
+    "markdown_sha256": "90167661448df8d3520db597e5f83534c1ad94fafdbd64867055a2461012e1c3",
+    "unchanged": true
+  },
+  "original_packet": {
+    "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+    "bundle_sha256": "98abe6107e8016c34724233aa97a0ac14090907f14fd92473f4d53d4285e7603",
+    "outer_manifest_sha256": "4d2844fbe11d1f774cb47ad885f61c16e218f62507e13248a93fb126bcf7e3e2",
+    "source_manifest_sha256": "ac1ba623d5ee761576e643e53ee999b42f1ac33fcae123b3e664277149509c4e",
+    "outer_packet_hashes_unchanged": true
+  },
+  "findings": [
+    {
+      "id": "F51-01-ERRATUM",
+      "decision": "DOCUMENTATION_CORRECTION_ACCEPTED",
+      "locations": [
+        {
+          "path": "docs/research/FOUNDATION_51_ERRATA.md",
+          "start": 10,
+          "end": 17
+        }
+      ],
+      "evidence": "Independent timestamp-only interval-union recomputation over all 354 original MOM-000 event geometries gives decision-start 7d=128 and 14d=47; cutoff-start 7d=117 and 14d=45. Cutoff-start connects 11 exact 7d contacts and two exact 14d contacts, at 2024-12-05T04:00:00Z and 2025-12-15T16:00:00Z. Global greedy 14d spacing reproduces 107 and exactly the preserved independent flags. All erratum counts/conventions/contacts match.",
+      "effect": "The separately verified additive text corrects the identified documentation defect. Original pinned report and initial REQUEST_CHANGES record remain untouched."
+    },
+    {
+      "id": "F51-LIMITS-PRESERVED",
+      "decision": "CONFIRMED",
+      "locations": [
+        {
+          "path": "docs/research/FOUNDATION_51_ERRATA.md",
+          "start": 19,
+          "end": 34
+        }
+      ],
+      "evidence": "The text preserves source revision/packet/hash identity and population/label/gate/trial history; treats the old packet as MOM-000 evidence rather than MOM-002 pre-result admission; retains historical publication and full OI/feature/Tier-B readiness limitations; explicitly grants no foundation acceptance, #50 closure, #49 merge or MOM-002 scoring. Hash checks confirm original temporary reviews/probes and outer packet files unchanged.",
+      "effect": "Existing F51-02 and F51-03 blockers remain unresolved. No source or publication evidence was added or authenticated by this review."
+    }
+  ],
+  "checks": {
+    "revision": "45a83e4777dabf9bbb689f128377c81a19028b56",
+    "path": "docs/research/FOUNDATION_51_ERRATA.md",
+    "file_sha256": "84e77842c30078d6fc211979f086e5a0e60bdabce423951e1bda26ae0f6ca81b",
+    "git_blob_id": "f65b1300adbcc6694555b50eb7b635e598e09943",
+    "isolated_source_copy": "/private/tmp/rocket-foundation-51-erratum-independent-kpj6k8r1/FOUNDATION_51_ERRATA.md",
+    "geometry": {
+      "7d_cutoff_start": 117,
+      "7d_decision_start": 128,
+      "14d_cutoff_start": 45,
+      "14d_decision_start": 47
+    },
+    "seven_day_exact_cutoff_contact_count": 11,
+    "fourteen_day_exact_cutoff_contacts": [
+      "2024-12-05T04:00:00+00:00",
+      "2025-12-15T16:00:00+00:00"
+    ],
+    "global_fourteen_day_spacing": 107,
+    "initial_review_and_probe_hashes_unchanged": true,
+    "original_outer_packet_hashes_unchanged": true,
+    "decision": "DOCUMENTATION_CORRECTION_ACCEPTED"
+  },
+  "verification_result_path": "/private/tmp/rocket-foundation-51-erratum-independent-kpj6k8r1/verification_result.json",
+  "verification_result_sha256": "0551c6554466f4c15d1d0bbb745ab39bc044208bbc59d5dfee2f8d281ba18700",
+  "remaining_blockers": "OI metrics are content-sampled on only 3 of 1948 days; no complete candidate-level feature-window and duplicate/conflict/finite-value evidence or implemented Tier-B feature path is supplied. Spot-only snapshot fields remain UNKNOWN for funding, OI and spot/perp volume ratio. Source inventory and current #65 receipt correctness do not prove Tier-B feature readiness. All 84 source ZIP digest identities are internally consistent, but neither spot nor Tier-B vendor ZIPs, raw catalog responses or checksum-sidecar bytes are included for independent source verification. The packet hash establishes review-artifact identity rather than vendor-origin authenticity. Source manifest explicitly states current archive vintage and assumed end+5m availability; all Tier-B sources state historical_pit=false and actual_historical_receipts=null. Event/measurement times and October 2026 audit receipts cannot authenticate historical publication or original vintages. Any reconstruction alternative requires separately accepted clock/source policy and complete evidence before affected use.",
+  "limitations": [
+    "Same GPT-6-family reviewer continues; exact variant and distinct model family from the implementer are unverified. No independence stronger than the disclosed fresh-context contribution history is claimed.",
+    "Shared filesystem/runtime and instruction-scoped access remain non-hermetic; no cryptographic secrecy or authentication of other actors is asserted.",
+    "Only the named documentation blob was reviewed at revision 45a83e4777dabf9bbb689f128377c81a19028b56. Other commit files, runtime changes or external publication were outside scope and were not inspected.",
+    "The full raw tape, vendor ZIP/catalog/sidecar authenticity and historical publication/vintage evidence remain absent. The preserved initial artifact limitations are unchanged.",
+    "This exact local review has not been published by the reviewer. Publication may preserve this genuine decision under a shared actor; publication does not broaden acceptance."
+  ],
+  "foundation_51_accepted": false,
+  "tier_b_readiness_accepted": false,
+  "raw_source_authenticity_accepted": false,
+  "historical_publication_accepted": false,
+  "pr50_closure_authorized": false,
+  "pr49_merge_authorized": false,
+  "mom002_admitted": false,
+  "scoring_authorized": false,
+  "new_real_mom002_outcomes_accessed": false,
+  "github_publication_performed": false,
+  "repository_mutations_performed": false,
+  "report_paths": {
+    "json": "/private/tmp/rocket-independent-51-erratum-review.json",
+    "markdown": "/private/tmp/rocket-independent-51-erratum-review.md"
+  }
+}

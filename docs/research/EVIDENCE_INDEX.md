@@ -44,3 +44,13 @@ without runtime merges or branch deletion. [Original #50 replication evidence](a
 adds seven exact historical documents, including 5 UP/7 DOWN and Tier-B findings.
 That source is preserved rather than accepted; its closure remains blocked on
 #51. Closing receipts and source revisions are in the dated operational record.
+
+## Independent FOUNDATION decisions, 2026-10-05
+
+[Current reviewer records and scope](FOUNDATION_REVIEW_DECISIONS.md) preserve
+actual #51 REQUEST_CHANGES, its separately accepted overlap erratum, and #58
+APPROVE for the exact conditional methodology with byte-identical full
+synthetic reproduction. Original packets and historical source documents
+remain unchanged. #51 source/publication/Tier-B readiness and human values
+remain unresolved; #49/#50 remain open for their explicit full-foundation
+prerequisites. No result, trial count or scoring authority is changed.

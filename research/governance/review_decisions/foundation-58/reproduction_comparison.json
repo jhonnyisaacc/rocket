@@ -1,0 +1,36 @@
+{
+  "exit_code": 0,
+  "command": "PYTHONPATH=/private/tmp/rocket-58-reproduction-iqigjlxi/packet OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python scripts/research/power_audit.py --draws 2000 --bootstrap-draws 2000",
+  "working_directory": "/private/tmp/rocket-58-reproduction-iqigjlxi/packet",
+  "regimes": 80,
+  "synthetic_trials": 160000,
+  "economic_rows": 240,
+  "bootstrap_draws_each_7d_and_14d": 2000,
+  "comparison_result": "BYTE-IDENTICAL original and independently reproduced surface.json and surface.csv; geometry unchanged",
+  "files": {
+    "population.geometry.json": {
+      "original_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+      "reproduced_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+      "byte_identical": true
+    },
+    "surface.json": {
+      "original_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+      "reproduced_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+      "byte_identical": true
+    },
+    "surface.csv": {
+      "original_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+      "reproduced_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+      "byte_identical": true
+    }
+  },
+  "structural_equality": true,
+  "wall_time_proxy_seconds": 447.66284942626953,
+  "wall_time_measurement": "Directory birth timestamp to last output mtime; includes copy/import/write overhead and is not separately instrumented process CPU time. Initial directory was created immediately before the runner.",
+  "copy_directory_birth_utc": "2026-10-05T21:23:08.070018+00:00",
+  "last_output_utc": "2026-10-05T21:30:35.732867+00:00",
+  "final_stdout_tail": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_stdout_tail.txt",
+  "differences": [],
+  "all_full_pass_counts_zero": true,
+  "all_full_without_adversity_counts_zero": true
+}

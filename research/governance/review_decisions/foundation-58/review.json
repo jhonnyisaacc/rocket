@@ -1,0 +1,960 @@
+{
+  "schema": "rocket.foundation-review-decision.v1",
+  "issue": 58,
+  "decision": "APPROVE",
+  "reviewer": "/root/foundation_58_review",
+  "model_family": "GPT-6 (Codex; known family from system instructions; exact variant not exposed)",
+  "role": "Fresh independent FOUNDATION methodological/adversarial reviewer for issue #58",
+  "isolated_context": "Fresh child-agent context without prior root conversation. Read only AGENTS.md and the four required authority documents plus foundation-58.json/ZIP, extracted into a fresh temporary directory. Imports/tests resolve only to packet source. No #51 packet, raw tape, private database, real MOM-002 outcome/association or fitted real forecast was inspected; no acquisition/export/official scorer was imported/run. Isolation is procedural on a shared filesystem, not an OS/cryptographic outcome vault. Authority/proposal legacy MOM-000 aggregate conclusions were not used to calibrate synthetic probes.",
+  "contribution_history": "No prior proposal/design/implementation/data-export/fitting/scoring/artifact-preparation contribution to issue #58. Performed only this independent review and temporary review-only synthetic probes. No repository edits or GitHub publication. Alternate numerical formulations and probe scripts were created after receipt of the frozen packet and do not change the implementation.",
+  "designed_implementation": false,
+  "implemented_work": false,
+  "new_real_mom002_outcomes_accessed": false,
+  "reviewed_source_manifest_sha256": "8d5b816cb40cb3c12ceba13be19fdf4ee171e357f99846b5c36ac5ceb71eacb2",
+  "reviewed_revisions": [
+    "7c42582168e7538cfac00393bc3ffce54beb21b1",
+    "b1bdc1bac5464793e63b6596138091f3c35a8dca"
+  ],
+  "timestamp": "2026-10-05T21:32:17.588092+00:00",
+  "findings": [
+    {
+      "id": "F58-01",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Exact artifact integrity and procedural isolation verified",
+      "sources": [
+        {
+          "path": "source_manifest.json",
+          "line": 1
+        },
+        {
+          "path": "verify_packet.py",
+          "line": 1
+        },
+        {
+          "path": "scripts/research/power_audit.py",
+          "line": 11
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 32
+        }
+      ],
+      "finding": "The outer ZIP SHA256 and 177,700-byte size match foundation-58.json. The template source-manifest hash matches, and all 19 pinned file hashes were verified before and after review. Imports of power/governance/policy/pit/models resolved only inside the extracted packet. The row schema rejects real target/feature columns. No acquisition, structural export or official scoring was imported/run. Git revision/source-export claims were reviewed as manifest provenance rather than independently rederived against Git/raw archives.",
+      "probes": [
+        "verify_packet.py",
+        "import_isolation.json"
+      ]
+    },
+    {
+      "id": "F58-02",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Model, causal folds, training weights and score budget match",
+      "sources": [
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 155
+        },
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 183
+        },
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 272
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 103
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 244
+        }
+      ],
+      "finding": "The source implements alpha=1 on weighted mean loss, training-only weighted standardization and two unpenalized direction intercepts. An independently formulated solver eliminates intercepts before solving residualized slopes: 180 fits matched, maximum absolute difference 6.106226635438361e-16. For 15 seeded trials covering every DGP, zero/medium/high signal and both missingness assumptions, independent reconstruction matches maturity/14d embargo, annual training/test masks, prefix-only admitted training components, readiness, training terciles, equal-spaced 75th-percentile thresholds, B0 fourth-event offset, and chronological caps.",
+      "probes": [
+        "independent_probes.py:alternate_ridge",
+        "independent_probes.py:independent_structure"
+      ]
+    },
+    {
+      "id": "F58-03",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Cluster bootstrap retains duplicate replicas and undefined tails",
+      "sources": [
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 222
+        },
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 247
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 120
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 143
+        }
+      ],
+      "finding": "Explicit reconstruction of 2,000 7d and 2,000 14d draws on a heterogeneous nested-component fixture assigns distinct replica IDs before recomputing 7d component weights. Correlation, paired MSE skill and per-alert means match the aggregated implementation. The fixed seed and shared metric/model draw identities are retained. Undefined statistics are placed at negative infinity and >5% undefined fails inference. At 3-5% undefined the lower-tail placement itself can correctly fail a positive lower-bound gate; undefined values are not discarded.",
+      "probes": [
+        "independent_probes.py:explicit replica reconstruction",
+        "independent_probe_results.json:bootstrap",
+        "independent_probe_results.json:undefined_rule"
+      ]
+    },
+    {
+      "id": "F58-04",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "All mechanical gates and FULL PASS conjunction independently audited",
+      "sources": [
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 311
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 288
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 312
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 317
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 355
+        }
+      ],
+      "finding": "Independent scalar/explicit-weight recomputation matches all 12 reported flags for 15 synthetic trials under all three economic drifts. This covers both bootstrap lower bounds, spaced/fold consistency, frozen score monotonicity, alert minima, mean economics and Tier A/B0 comparison, the adversity proxy, three leave-year-out checks, removal of five influence-ranked 14d components, and positive-contribution concentration. Every readiness and inferential gate enters full_pass. The version without adversity omits only adversity, so it is an upper bound under the remaining synthetic premises.",
+      "probes": [
+        "independent_probes.py:independent_gates",
+        "independent_probe_results.json:all_gate_recomputations"
+      ]
+    },
+    {
+      "id": "F58-05",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Oracle strength, economic drift, missingness and path assumptions remain distinct",
+      "sources": [
+        {
+          "path": "docs/research/POWER_AUDIT.md",
+          "line": 34
+        },
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 9
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 208
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 323
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 344
+        }
+      ],
+      "finding": "The independent/14d-cluster Gaussian, unit-variance t(3), UP-stronger and DOWN-stronger designs, fixed PCG64 seeds, Gaussian common-factor features, balanced Tier-A/Tier-B coefficient packet and exogenous 0/10% missingness are explicit assumptions. Nominal r is oracle signal strength, not fitted OOS r or a unique tradable-return expectation. Adding constant normalized drift is compatible with the normalized target: unpenalized intercepts translate forecasts and thresholds by that same drift without changing information metrics or selections; independent refits verify this. Economics uses furnished causal S and the proposed 0.004 cost. Hourly unit-S Brownian bridges cannot establish real high/low MAE or intrahour extremes.",
+      "probes": [
+        "independent_probes.py:independent_structure",
+        "independent_probe_results.json:causal_structure_and_DGP_probes"
+      ]
+    },
+    {
+      "id": "F58-06",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Annual cap and concentration warning are valid conditional constraints",
+      "sources": [
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 19
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 187
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 263
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 332
+        }
+      ],
+      "finding": "Independent structural reconstruction gives 354 candidates, 107 global cooldown identities, 128 7d and 47 14d components. Training counts are 91/143/216, spaced training 29/46/65, and trailing-12m spaced training 16/17/18. Thus caps are 4+4+4, at most 12 alerts, reduced by missingness. With K positive components, the five largest have at least min(1,5/K) of positive contributions, so K>=9 is necessary for <=60%; eight equal components give 62.5%, nine give 55.56%. Nine is not sufficient, and this is not a universal impossibility proof over all DGPs.",
+      "probes": [
+        "independent_probe_results.json:geometry",
+        "independent_probe_results.json:folds",
+        "independent_probe_results.json:concentration_bound"
+      ]
+    },
+    {
+      "id": "F58-07",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Full synthetic evidence reproduces exactly with qualified uncertainty",
+      "sources": [
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 9
+        },
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 42
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 178
+        },
+        {
+          "path": "rocket/research/power.py",
+          "line": 368
+        },
+        {
+          "path": "research/governance/power/surface.json",
+          "line": 1
+        }
+      ],
+      "finding": "Full independent reproduction covers 80 regimes, 160,000 synthetic experiments, 240 economic rows and 2,000 bootstrap draws under each component definition. surface.json and surface.csv are byte-identical; geometry is unchanged. Original CSV/JSON identifiers, budgets, every gate probability and label match. All full-pass and full-pass-without-adversity counts are zero. Per-regime 0/2,000 Wilson upper bound is 0.001917047281252934 (0.1917%); this is conditional Monte Carlo uncertainty, not real MOM-002 power or FAIL. At r=0 primary/incremental maxima are 1.70%/0.10%; economics reaches 4.70% including positive drift versus 1.15% at zero drift. Positive-drift economics is not a zero-return null. Common random numbers couple regimes; pooling them as independent trials would be invalid.",
+      "probes": [
+        "reproduction_comparison.json",
+        "independent_probe_results.json:surface",
+        "independent_probe_results.json:zero_oracle_signal_marginal_maxima"
+      ]
+    },
+    {
+      "id": "F58-08",
+      "severity": "LOW",
+      "blocks_approval": false,
+      "title": "Binding-gate labels include ties rather than uniquely identified minima",
+      "sources": [
+        {
+          "path": "rocket/research/power.py",
+          "line": 397
+        },
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 44
+        },
+        {
+          "path": "research/governance/power/surface.json",
+          "line": 1
+        }
+      ],
+      "finding": "Concentration has zero passes in all 240 rows. In 18 rows incremental information also has zero passes, so min(GATES[:10]) labels it by enumeration order, not because a uniquely binding bottleneck was identified. Labels total 222 concentration and 18 incremental information. Interpret the latter as tied minima. This does not affect the full-pass result or the accepted conditional conclusion. Preserve pinned originals and publish this current interpretation separately.",
+      "probes": [
+        "surface tie-count query"
+      ]
+    },
+    {
+      "id": "F58-09",
+      "severity": "INFO",
+      "blocks_approval": false,
+      "title": "Accepted conclusion does not resolve real readiness or human values",
+      "sources": [
+        {
+          "path": "docs/research/POWER_AUDIT.md",
+          "line": 55
+        },
+        {
+          "path": "docs/research/POWER_AUDIT.md",
+          "line": 68
+        },
+        {
+          "path": "docs/research/POWER_AUDIT_RESULTS.md",
+          "line": 79
+        },
+        {
+          "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+          "line": 341
+        }
+      ],
+      "finding": "The defensible conclusion is INDETERMINATE_ASSUMPTIONS_REQUIRED with a severe conditional feasibility warning. Complete-case/common-coverage and exogenous missingness are premises, not authentic historical source/PIT or exact six-feature readiness acceptance. This review does not accept #51, choose minimum worthwhile effect, approve 40bp appropriateness or decide terminal versus descriptive economics. It changes no gate, consumes no predictive trial and admits/scores/passes/fails no real experiment.",
+      "probes": [
+        "source and authority review"
+      ]
+    }
+  ],
+  "limitations": [
+    "The known reviewer family is GPT-6/Codex; a different-family preference was not achieved. Exact model variant is unavailable and has not been invented.",
+    "Fresh context and restricted imports/inspection are procedural on a shared filesystem, not cryptographic proof of zero undisclosed access.",
+    "Required authority documents/proposal contain legacy MOM-000 aggregate conclusions; no new real MOM-002 outcomes/associations were accessed and no legacy aggregate was used to calibrate DGPs.",
+    "No raw-source replay, structural export, #51 packet review, authentic publication-receipt verification or actual six-feature completeness audit was performed. Manifest revision/source-provenance claims are not independently rederived from Git/raw tapes.",
+    "The DGP grid is limited to nominal strengths through .40, five scenarios, 0/10% exogenous missingness and drifts 0/.10/.25 S. No universal minimum detectable or human worthwhile effect is inferred.",
+    "Hourly Brownian bridges are an adversity proxy without intrahour extremes or empirical real-path validation; full-pass-without-adversity is only an upper bound under the remaining synthetic assumptions.",
+    "Fixed bootstrap draws and common random numbers couple regimes. Per-regime Wilson intervals are not simultaneous familywise bounds; regimes must not be pooled as independent trials.",
+    "Aggregate surfaces do not retain every synthetic draw coefficient, upper bootstrap endpoint or undefined-draw fraction. Independent probes validate lower-tail/undefined mechanics; full reproduction validates aggregate evidence.",
+    "Runner progress was streamed to tool session 24598; final stdout tail and complete result files are retained. Wall time is a copy-creation-to-last-output timestamp proxy, including copy/import/write overhead, not separately instrumented process CPU time.",
+    "All recorded Python/dependency versions match. The original packet records only darwin for platform and does not pin the macOS build, BLAS library/configuration or pytest version. Review additionally sets OMP_NUM_THREADS=1; the full synthetic outputs are nevertheless byte-identical."
+  ],
+  "scoring_authorized": false,
+  "acceptance_scope": "Exact bundled conditional synthetic methodology, its mechanical evaluation of the existing proposal, and INDETERMINATE_ASSUMPTIONS_REQUIRED conclusion only. FOUNDATION acceptance for #58 does not approve actual feature/source/PIT readiness, #51 foundation/overlap evidence, MOM-002 admission/freeze/scoring, human economic values or capital.",
+  "reviewed_bundle_sha256": "d35d4fcb38eda93aa5eab5de9ca46fb94f0f5e3bbc0dc3ab64ee78667b80ed38",
+  "reviewed_bundle_bytes": 177700,
+  "reviewed_source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+  "reviewed_proposal_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+  "reviewed_source_files": [
+    {
+      "path": "docs/research/POWER_AUDIT.md",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "3d8e802e78b086c000766ba7168f17f927c05db2bc3b2d30a2a8ff1144d2964d"
+    },
+    {
+      "path": "docs/research/POWER_AUDIT_RESULTS.md",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "fb866c0928f5f882d4e57847c03088dde01780cf1791a3bf91e3b0be0e6a8e75"
+    },
+    {
+      "path": "docs/research/momentum/MOM_002_PROPOSAL.md",
+      "source_revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+      "sha256": "5c0ecbf5302145a98c620c7f44f7f027b9d376fd9c0e9289f0a304c961307df2"
+    },
+    {
+      "path": "pyproject.toml",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "3a2ec44dde3efd9857ed92cfe8bb49b4f69612fb093735908cb07639b55fe43f"
+    },
+    {
+      "path": "research/governance/power/environment.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "3659487e7ff66cbf60256250791fe8630f88b292a7972d6fd2aaec5de74deb98"
+    },
+    {
+      "path": "research/governance/power/population.geometry.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d"
+    },
+    {
+      "path": "research/governance/power/surface.csv",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3"
+    },
+    {
+      "path": "research/governance/power/surface.json",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e"
+    },
+    {
+      "path": "rocket/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "20f6dbd65a85f029ca6ca178b7340c047463395a4c7a67b025f7cbcd09ed8135"
+    },
+    {
+      "path": "rocket/models.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "96bd64fb6b7a89175413059474b975fc834a57fe8b52445bff7c242b377291e5"
+    },
+    {
+      "path": "rocket/pit.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "7dc66e6d86f243d72514771ebdcacea21be035ff4d7517b4be831c7a0177e06d"
+    },
+    {
+      "path": "rocket/research/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "c033eb49d740d057ea93b3e15eb64fb25a35d1e6cddc4a54289db75621939052"
+    },
+    {
+      "path": "rocket/research/governance.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "cf67f38926a3c10329b9c3362df14382275b30cbe733efb343a5be150a52739b"
+    },
+    {
+      "path": "rocket/research/policy.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "b4466f976a2c6ff008412b4b75f3649e7b71bff3eca0f65a538cf94a8b2e605a"
+    },
+    {
+      "path": "rocket/research/power.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "4ee8c2a1c3c6e9049d335fae33cb10faa8ef8be773f292e11494b37060ac4de3"
+    },
+    {
+      "path": "scripts/research/export_power_geometry.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "2df3c9912484816f6bea1fe70c318d18a946c301bf93086e3c5bb311647d31e3"
+    },
+    {
+      "path": "scripts/research/power_audit.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "cb0b662c650102104978de48ce83d57c55e7aac6588d8d05e9d60aab85f664e0"
+    },
+    {
+      "path": "tests/__init__.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/research/test_power.py",
+      "source_revision": "b1bdc1bac5464793e63b6596138091f3c35a8dca",
+      "sha256": "90cc19c4c513c39f5cbdb761cdbd592ec77e75eba15fce068031e4611de966b9"
+    }
+  ],
+  "packet_directory": "/private/tmp/rocket-independent-58-15mzv1w9",
+  "disposable_reproduction_directory": "/private/tmp/rocket-58-reproduction-iqigjlxi/packet",
+  "review_provenance": {
+    "reviewer_identity": "/root/foundation_58_review",
+    "model_family": "GPT-6",
+    "role": "Independent FOUNDATION reviewer",
+    "isolated_context": "Fresh child-agent context without prior root conversation. Read only AGENTS.md and the four required authority documents plus foundation-58.json/ZIP, extracted into a fresh temporary directory. Imports/tests resolve only to packet source. No #51 packet, raw tape, private database, real MOM-002 outcome/association or fitted real forecast was inspected; no acquisition/export/official scorer was imported/run. Isolation is procedural on a shared filesystem, not an OS/cryptographic outcome vault. Authority/proposal legacy MOM-000 aggregate conclusions were not used to calibrate synthetic probes.",
+    "contribution_history": "No prior proposal/design/implementation/data-export/fitting/scoring/artifact-preparation contribution to issue #58. Performed only this independent review and temporary review-only synthetic probes. No repository edits or GitHub publication. Alternate numerical formulations and probe scripts were created after receipt of the frozen packet and do not change the implementation.",
+    "designed_experiment": false,
+    "implemented_experiment": false,
+    "outcomes_accessed": false,
+    "outcomes_access_scope": "New real MOM-002 outcome/association/forecast access; legacy MOM-000 aggregates present in mandatory authority documents/proposal are disclosed in isolated_context and limitations."
+  },
+  "review_blockers": [],
+  "mom002_remaining_prerequisites": [
+    "Independent #51 foundation/Tier-B readiness/overlap acceptance",
+    "Human #56 reviewer identity/process, 40bp appropriateness, worthwhile effect and terminal/descriptive economics decisions, with reviewed STOP record",
+    "Finalized/versioned pre-result changes, then final exact #54 admission/freeze review"
+  ],
+  "review_runtime": {
+    "python_version": "3.14.1 (main, Dec  2 2025, 20:56:31) [Clang 16.0.0 (clang-1600.0.26.6)]",
+    "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "dependencies": {
+      "numpy": "2.5.3",
+      "orjson": "3.12.0",
+      "matplotlib": "3.11.2",
+      "pytest": "9.1.1"
+    },
+    "blas_thread_environment": {
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1"
+    },
+    "python_executable": "/Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python",
+    "copy_directory_birth_utc": "2026-10-05T21:23:08.070018+00:00",
+    "inspection_timestamp": "2026-10-05T21:27:17.193884+00:00",
+    "original_bundle_sha256": "d35d4fcb38eda93aa5eab5de9ca46fb94f0f5e3bbc0dc3ab64ee78667b80ed38",
+    "reviewed_source_manifest_sha256": "8d5b816cb40cb3c12ceba13be19fdf4ee171e357f99846b5c36ac5ceb71eacb2"
+  },
+  "reproduction": {
+    "exit_code": 0,
+    "command": "PYTHONPATH=/private/tmp/rocket-58-reproduction-iqigjlxi/packet OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python scripts/research/power_audit.py --draws 2000 --bootstrap-draws 2000",
+    "working_directory": "/private/tmp/rocket-58-reproduction-iqigjlxi/packet",
+    "regimes": 80,
+    "synthetic_trials": 160000,
+    "economic_rows": 240,
+    "bootstrap_draws_each_7d_and_14d": 2000,
+    "comparison_result": "BYTE-IDENTICAL original and independently reproduced surface.json and surface.csv; geometry unchanged",
+    "files": {
+      "population.geometry.json": {
+        "original_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+        "reproduced_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+        "byte_identical": true
+      },
+      "surface.json": {
+        "original_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+        "reproduced_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+        "byte_identical": true
+      },
+      "surface.csv": {
+        "original_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+        "reproduced_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+        "byte_identical": true
+      }
+    },
+    "structural_equality": true,
+    "wall_time_proxy_seconds": 447.66284942626953,
+    "wall_time_measurement": "Directory birth timestamp to last output mtime; includes copy/import/write overhead and is not separately instrumented process CPU time. Initial directory was created immediately before the runner.",
+    "copy_directory_birth_utc": "2026-10-05T21:23:08.070018+00:00",
+    "last_output_utc": "2026-10-05T21:30:35.732867+00:00",
+    "final_stdout_tail": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_stdout_tail.txt",
+    "differences": [],
+    "all_full_pass_counts_zero": true,
+    "all_full_without_adversity_counts_zero": true,
+    "environment_comparison": "All recorded Python/dependency versions match. The original packet records only darwin for platform and does not pin the macOS build, BLAS library/configuration or pytest version. Review additionally sets OMP_NUM_THREADS=1; the full synthetic outputs are nevertheless byte-identical."
+  },
+  "checks": {
+    "outer_zip": "SHA256/byte length match",
+    "packet_verifier": "All 19 pinned files verified before and after review",
+    "bundled_tests": {
+      "exit_code": 0,
+      "command": "PYTHONPATH=/private/tmp/rocket-independent-58-15mzv1w9 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python -m pytest tests/research/test_power.py -o addopts=\"\" -q",
+      "stdout": "..............                                                           [100%]\n14 passed in 0.29s\n"
+    },
+    "independent_probes": {
+      "exit_code": 0,
+      "command": "PYTHONPATH=/private/tmp/rocket-independent-58-15mzv1w9 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python independent_probes.py",
+      "script": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probes.py",
+      "script_sha256": "3ff2b820b7314f2518b933e454002dc05ef7683b63018e3d98b2c9d8acd231c4",
+      "results": "/private/tmp/rocket-independent-58-15mzv1w9/independent_probe_results.json",
+      "results_sha256": "74b8f4c5e6ebc2104a47d59eb7fe68f8af2b184ae0c01acea7b4c10c67cb47d3",
+      "summary": {
+        "geometry": {
+          "candidates": 354,
+          "spaced": 107,
+          "components_7d": 128,
+          "components_14d": 47
+        },
+        "folds": {
+          "2023": {
+            "train": 91,
+            "train_spaced": 29,
+            "test": 52,
+            "test_spaced": 18,
+            "trailing_train_spaced": 16,
+            "annual_cap": 4,
+            "distinct_spaced_14d_components": 8
+          },
+          "2024": {
+            "train": 143,
+            "train_spaced": 46,
+            "test": 74,
+            "test_spaced": 19,
+            "trailing_train_spaced": 17,
+            "annual_cap": 4,
+            "distinct_spaced_14d_components": 7
+          },
+          "2025": {
+            "train": 216,
+            "train_spaced": 65,
+            "test": 70,
+            "test_spaced": 21,
+            "trailing_train_spaced": 18,
+            "annual_cap": 4,
+            "distinct_spaced_14d_components": 6
+          }
+        },
+        "annual_maximum_alerts": 12,
+        "bootstrap": {
+          "7d": {
+            "explicit_duplicate_draws_compared": 2000,
+            "correlation_skill_economic_mean_match": true
+          },
+          "14d": {
+            "explicit_duplicate_draws_compared": 2000,
+            "correlation_skill_economic_mean_match": true
+          }
+        },
+        "undefined_rule": [
+          {
+            "undefined_of_100": 0,
+            "lower": 1.0
+          },
+          {
+            "undefined_of_100": 2,
+            "lower": 1.0
+          },
+          {
+            "undefined_of_100": 3,
+            "lower": "-Infinity"
+          },
+          {
+            "undefined_of_100": 5,
+            "lower": "-Infinity"
+          },
+          {
+            "undefined_of_100": 6,
+            "lower": "-Infinity"
+          }
+        ],
+        "wilson_0_of_2000": {
+          "probability": 0.0,
+          "passed": 0,
+          "draws": 2000,
+          "mc_95_interval": [
+            1.0842021724855044e-19,
+            0.001917047281252934
+          ]
+        },
+        "causal_structure_and_DGP_probes": [
+          {
+            "seed": 20261005,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 20261012,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 20261026,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 21261005,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 21261012,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 21261026,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 22261005,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 22261012,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 22261026,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 23261005,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 23261012,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 23261026,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 24261005,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 24261012,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          },
+          {
+            "seed": 24261026,
+            "DGP_reconstructed": true,
+            "constant_economic_drift_matches_intercept_translation": true,
+            "causal_folds_training_weights_thresholds_caps_bins_readiness_match": true
+          }
+        ],
+        "all_gate_recomputations": [
+          {
+            "scenario": "independent",
+            "effect": 0.0,
+            "missingness": 0.0,
+            "seed": 20261005,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 9,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "independent",
+            "effect": 0.4,
+            "missingness": 0.0,
+            "seed": 20261012,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 11,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "independent",
+            "effect": 0.2,
+            "missingness": 0.1,
+            "seed": 20261026,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 8,
+            "caps": [
+              3,
+              3,
+              4
+            ]
+          },
+          {
+            "scenario": "clustered",
+            "effect": 0.0,
+            "missingness": 0.0,
+            "seed": 21261005,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 11,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "clustered",
+            "effect": 0.4,
+            "missingness": 0.0,
+            "seed": 21261012,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 12,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "clustered",
+            "effect": 0.2,
+            "missingness": 0.1,
+            "seed": 21261026,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 10,
+            "caps": [
+              3,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "heavy_tailed",
+            "effect": 0.0,
+            "missingness": 0.0,
+            "seed": 22261005,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 12,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "heavy_tailed",
+            "effect": 0.4,
+            "missingness": 0.0,
+            "seed": 22261012,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 12,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "heavy_tailed",
+            "effect": 0.2,
+            "missingness": 0.1,
+            "seed": 22261026,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 10,
+            "caps": [
+              3,
+              4,
+              3
+            ]
+          },
+          {
+            "scenario": "up_stronger",
+            "effect": 0.0,
+            "missingness": 0.0,
+            "seed": 23261005,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 9,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "up_stronger",
+            "effect": 0.4,
+            "missingness": 0.0,
+            "seed": 23261012,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 11,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "up_stronger",
+            "effect": 0.2,
+            "missingness": 0.1,
+            "seed": 23261026,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 10,
+            "caps": [
+              3,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "down_stronger",
+            "effect": 0.0,
+            "missingness": 0.0,
+            "seed": 24261005,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 12,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "down_stronger",
+            "effect": 0.4,
+            "missingness": 0.0,
+            "seed": 24261012,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 12,
+            "caps": [
+              4,
+              4,
+              4
+            ]
+          },
+          {
+            "scenario": "down_stronger",
+            "effect": 0.2,
+            "missingness": 0.1,
+            "seed": 24261026,
+            "all_12_gates_all_3_drifts_match": true,
+            "alerts": 4,
+            "caps": [
+              4,
+              3,
+              3
+            ]
+          }
+        ],
+        "alternate_ridge": {
+          "fit_calls": 180,
+          "max_absolute_difference": 6.106226635438361e-16
+        },
+        "gate_probe_seconds": 0.4133806671015918,
+        "concentration_bound": {
+          "8": {
+            "equal_positive_top_5_share": 0.625,
+            "can_satisfy_60pct": false
+          },
+          "9": {
+            "equal_positive_top_5_share": 0.5555555555555556,
+            "can_satisfy_60pct": true
+          },
+          "12": {
+            "equal_positive_top_5_share": 0.4166666666666667,
+            "can_satisfy_60pct": true
+          }
+        },
+        "surface": {
+          "rows": 240,
+          "all_probability_counts_and_wilson_intervals_match": true,
+          "all_full_conjunction_inequalities_match": true,
+          "all_full_pass_counts_zero": true,
+          "all_without_adversity_counts_zero": true
+        },
+        "zero_oracle_signal_marginal_maxima": {
+          "readiness": 1.0,
+          "primary_information": 0.017,
+          "incremental_information": 0.001,
+          "spaced_consistency": 0.1985,
+          "fold_consistency": 0.022,
+          "score_monotonicity": 0.025,
+          "economic_evidence": 0.047,
+          "adversity": 0.9695,
+          "robustness": 0.022,
+          "concentration": 0.0,
+          "full_pass": 0.0,
+          "full_pass_without_adversity": 0.0
+        }
+      }
+    },
+    "csv_json_consistency": "All 240 rows: identifiers, budgets, every gate probability and binding label match",
+    "import_isolation": {
+      "rocket.research.power": "/private/tmp/rocket-independent-58-15mzv1w9/rocket/research/power.py",
+      "rocket.research.governance": "/private/tmp/rocket-independent-58-15mzv1w9/rocket/research/governance.py",
+      "rocket.research.policy": "/private/tmp/rocket-independent-58-15mzv1w9/rocket/research/policy.py",
+      "rocket.pit": "/private/tmp/rocket-independent-58-15mzv1w9/rocket/pit.py",
+      "rocket.models": "/private/tmp/rocket-independent-58-15mzv1w9/rocket/models.py"
+    },
+    "full_reproduction": {
+      "exit_code": 0,
+      "command": "PYTHONPATH=/private/tmp/rocket-58-reproduction-iqigjlxi/packet OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 /Users/jhonny/.codex/worktrees/f891/rocket/.venv/bin/python scripts/research/power_audit.py --draws 2000 --bootstrap-draws 2000",
+      "working_directory": "/private/tmp/rocket-58-reproduction-iqigjlxi/packet",
+      "regimes": 80,
+      "synthetic_trials": 160000,
+      "economic_rows": 240,
+      "bootstrap_draws_each_7d_and_14d": 2000,
+      "comparison_result": "BYTE-IDENTICAL original and independently reproduced surface.json and surface.csv; geometry unchanged",
+      "files": {
+        "population.geometry.json": {
+          "original_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+          "reproduced_sha256": "1f241800db0c0d072f601f6fbe449ac1bb09a3d887c7c448e041b5b1a3bcb75d",
+          "byte_identical": true
+        },
+        "surface.json": {
+          "original_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+          "reproduced_sha256": "e02ec24590e2ba68cdcfb6c9ead30530caa80678f71bf33c361468f48214235e",
+          "byte_identical": true
+        },
+        "surface.csv": {
+          "original_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+          "reproduced_sha256": "23ff068a49e8c65839d5cae19925b2b107a37d9026631c14dfef9b77504311f3",
+          "byte_identical": true
+        }
+      },
+      "structural_equality": true,
+      "wall_time_proxy_seconds": 447.66284942626953,
+      "wall_time_measurement": "Directory birth timestamp to last output mtime; includes copy/import/write overhead and is not separately instrumented process CPU time. Initial directory was created immediately before the runner.",
+      "copy_directory_birth_utc": "2026-10-05T21:23:08.070018+00:00",
+      "last_output_utc": "2026-10-05T21:30:35.732867+00:00",
+      "final_stdout_tail": "/private/tmp/rocket-independent-58-15mzv1w9/reproduction_stdout_tail.txt",
+      "differences": [],
+      "all_full_pass_counts_zero": true,
+      "all_full_without_adversity_counts_zero": true,
+      "environment_comparison": "All recorded Python/dependency versions match. The original packet records only darwin for platform and does not pin the macOS build, BLAS library/configuration or pytest version. Review additionally sets OMP_NUM_THREADS=1; the full synthetic outputs are nevertheless byte-identical."
+    }
+  },
+  "reports": {
+    "json": "/private/tmp/rocket-independent-58-review.json",
+    "markdown": "/private/tmp/rocket-independent-58-review.md"
+  }
+}
