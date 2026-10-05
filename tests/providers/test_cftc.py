@@ -71,6 +71,7 @@ def test_live_report_layout_uses_positions_not_the_percent_row():
     result = ProviderResult(
         status=OperationalStatus.HEALTHY,
         records=(markets["BTC"], markets["ETH"]),
+        retrieved_at=datetime(2026, 9, 23, tzinfo=UTC),
         source="cftc_direct",
     )
     context = cot_context_from_result(result, now=datetime(2026, 9, 23, tzinfo=UTC))
