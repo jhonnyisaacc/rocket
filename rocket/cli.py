@@ -11,6 +11,7 @@ import typer
 
 from rocket.config import rocket_home
 from rocket.models import OperationalStatus, ResearchResult, exit_code
+from rocket.research.cli import app as research_app
 from rocket.store import ResearchStore
 
 app = typer.Typer(add_completion=False, no_args_is_help=True, help="Rocket research engine")
@@ -24,6 +25,7 @@ app.add_typer(portfolio_app, name="portfolio")
 app.add_typer(crypto_app, name="crypto")
 app.add_typer(options_app, name="options")
 app.add_typer(memecoin_app, name="memecoin")
+app.add_typer(research_app, name="research")
 
 
 def _emit(payload: dict, *, human: bool, result: ResearchResult | None = None) -> None:

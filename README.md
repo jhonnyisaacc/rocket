@@ -32,3 +32,15 @@ dataset. Fetch what you need, for example:
 hf download jhonnyisaacc/rocket --repo-type=dataset \
   --include 'docs/research/memecoin/data/*'
 ```
+# Autonomous derivatives research governance
+
+The [Research Project](https://github.com/users/jhonnyisaacc/projects/4) is a gated
+decision tree with WIP 3. Start with the [charter](docs/research/RESEARCH_CHARTER.md),
+[protocol](docs/research/AUTONOMOUS_RESEARCH_PROTOCOL.md), and
+[trial ledger](docs/research/TRIAL_LEDGER.md). Minimal machine gates and the
+official scoring contract live in [research/governance](research/governance/README.md).
+Repository workflow is LIGHTWEIGHT; scientific research is STRICT / MACHINE-GATED.
+Ordinary engineering is outside research WIP/admission; independent scientific
+review is recorded in artifacts and may be published by the same GitHub actor.
+MOM-002 remains Draft/unapproved/unscored. Rocket remains
+`READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`; these controls authorize no execution.

@@ -1,0 +1,38 @@
+{
+  "schema": "rocket.research.manifest.v1",
+  "experiment_id": "MOM-002",
+  "family": "Momentum",
+  "state": "DRAFT",
+  "scoring_authorized": false,
+  "safety_boundary": "READ_ONLY_RESEARCH_ONLY_HUMAN_GATED",
+  "trial_number": 1,
+  "trial_budget": 1,
+  "trials_consumed": 0,
+  "proposer": "Human research mandate; Codex proposal in PR #49",
+  "implementer": "UNRESOLVED",
+  "approval": null,
+  "freeze_revision": null,
+  "artifacts": {},
+  "dataset": null,
+  "scorer": null,
+  "proposal_evidence": {
+    "revision": "7c42582168e7538cfac00393bc3ffce54beb21b1",
+    "url": "https://github.com/jhonnyisaacc/rocket/blob/7c42582168e7538cfac00393bc3ffce54beb21b1/docs/research/momentum/MOM_002_PROPOSAL.md",
+    "sha256": "5c0ecbf5302145a98c620c7f44f7f027b9d376fd9c0e9289f0a304c961307df2",
+    "status": "PENDING_INDEPENDENT_REVIEW"
+  },
+  "unlock_condition": "Accept #51 foundation/Tier-B/overlap and #58 audit; record #56 decisions; finalize pre-result changes; #54 exact final isolated approval; hash acceptance contract before official freeze",
+  "success_condition": "Every frozen predictive/incremental/economic/robustness gate PASS; provenance audit; human acknowledgment before downstream admission",
+  "failure_condition": "Any required gate FAIL or undefined; readiness gap BLOCKED before fitting",
+  "kill_condition": "MOM-002 FAIL rejects entire candidate-based BTC downstream branch; no MOM-003 rescue",
+  "depends_on": [
+    51,
+    58,
+    56,
+    54
+  ],
+  "review_tier": "SCIENTIFIC_ADMISSION",
+  "gate_source": "REVIEW",
+  "pre_result_state": "NEEDS_PRE_RESULT_GATE_REVIEW",
+  "prerequisite_contract": "research/governance/mom002_prerequisites.json"
+}

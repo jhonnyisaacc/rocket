@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rocket prospective collector operational receipt",
+  "type": "object",
+  "required": ["health", "audited_at", "last_expected_cutoff", "last_successful_cutoff", "missing_receipts", "unknown_rate", "source_fingerprint_status", "collector_version", "schedule_verified"],
+  "properties": {
+    "health": {"enum": ["HEALTHY", "DEGRADED", "UNHEALTHY", "UNKNOWN"]},
+    "audited_at": {"type": "string", "format": "date-time"},
+    "last_expected_cutoff": {"type": ["string", "null"], "format": "date-time"},
+    "last_successful_cutoff": {"type": ["string", "null"], "format": "date-time"},
+    "missing_receipts": {"type": "array", "items": {"type": "string", "format": "date-time"}},
+    "unknown_rate": {"type": "object", "required": ["unknown", "recorded", "window", "rate"], "properties": {"unknown": {"type": "integer", "minimum": 0}, "recorded": {"type": "integer", "minimum": 0}, "window": {"type": "string"}, "rate": {"type": ["number", "null"], "minimum": 0, "maximum": 1}}},
+    "source_fingerprint_status": {"enum": ["VERIFIED", "CONFLICT", "UNKNOWN"]},
+    "collector_version": {"type": "object", "required": ["commit", "code_tree_sha256", "schema"], "properties": {"commit": {"type": ["string", "null"]}, "code_tree_sha256": {"type": ["string", "null"]}, "schema": {"type": "string"}}},
+    "schedule_verified": {"type": "boolean"}
+  }
+}

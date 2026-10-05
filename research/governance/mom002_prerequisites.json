@@ -1,0 +1,14 @@
+{
+  "schema": "rocket.mom002.prerequisites.v1",
+  "experiment_id": "MOM-002",
+  "state": "NEEDS_PRE_RESULT_GATE_REVIEW",
+  "outcome_accessed": false,
+  "requirements": {
+    "foundation": {"issue": 51, "status": "PENDING", "evidence": "#49 implementation exists; independent foundation acceptance pending"},
+    "tier_b_readiness": {"issue": 51, "status": "PENDING", "evidence": "Source audit is not full feature completeness or authentic publication acceptance"},
+    "overlap_semantics": {"issue": 51, "status": "PENDING", "evidence": "[cutoff+5m,cutoff+horizon]; 128/47 components, 107 spaced; independent acceptance pending"},
+    "power_audit": {"issue": 58, "status": "PENDING", "predictive_trials_consumed": 0, "real_outcomes_accessed": false, "pre_result_review_resolved": false, "evidence": "Synthetic conditional surface; independent methodology acceptance and human review pending"},
+    "pre_result_contract": {"issue": 53, "status": "PENDING", "human_decision_recorded": false, "evidence": "Finalize any changes after #58/#56, version final proposal and give #54 that exact packet"},
+    "near_term_human_decisions": {"issue": 56, "status": "PENDING", "human_decision_recorded": false, "evidence": "Reviewer/process; 40bp hurdle; minimum worthwhile effect; economic terminal/descriptive role; STOP philosophy"}
+  }
+}

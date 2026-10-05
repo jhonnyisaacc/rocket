@@ -1,0 +1,32 @@
+name: Gated research work
+description: Research work requires explicit admission, trial impact and branch kill conditions.
+title: "research: "
+labels: [research]
+body:
+  - type: textarea
+    id: question
+    attributes: {label: Question and why now}
+    validations: {required: true}
+  - type: textarea
+    id: scope
+    attributes: {label: Scope and inherited evidence, description: Include source links and prior outcome access.}
+    validations: {required: true}
+  - type: textarea
+    id: conditions
+    attributes: {label: Unlock / success / failure / kill conditions, description: All four conditions are mandatory. Failed upstream work must be able to reject this branch.}
+    validations: {required: true}
+  - type: textarea
+    id: dependencies
+    attributes: {label: Dependencies and trial impact, description: Explicit count, inherited family history, contract/scorer freeze identity. A new PR does not reset trials.}
+    validations: {required: true}
+  - type: textarea
+    id: roles
+    attributes: {label: Proposer / implementer / independent reviewer, description: Leave unresolved identities explicit. The reviewer may not have designed or implemented the work.}
+    validations: {required: true}
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Research boundary
+      options:
+        - label: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED; no live execution or automatic rescue admission.
+          required: true

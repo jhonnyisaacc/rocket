@@ -1,0 +1,46 @@
+name: Research governance
+# Research validation is informational repository CI, not a global merge gate.
+on:
+  pull_request:
+    paths: [
+      "AGENTS.md", "docs/research/**", "research/**", "rocket/research/**",
+      "rocket/momentum/**", "scripts/research/**", "tests/research/**",
+      "tests/momentum/**", "tests/contract/**", "pyproject.toml", "rocket/cli.py",
+      ".github/workflows/research-governance.yml", ".github/ISSUE_TEMPLATE/research.yml"
+    ]
+  push:
+    branches: [main, chore/autonomous-research-project]
+    paths: [
+      "AGENTS.md", "docs/research/**", "research/**", "rocket/research/**",
+      "rocket/momentum/**", "scripts/research/**", "tests/research/**",
+      "tests/momentum/**", "tests/contract/**", "pyproject.toml", "rocket/cli.py",
+      ".github/workflows/research-governance.yml", ".github/ISSUE_TEMPLATE/research.yml"
+    ]
+permissions:
+  contents: read
+jobs:
+  governance:
+    name: Governance checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -e '.[dev]'
+      - name: Offline governance and safety tests
+        run: python -m pytest tests/research tests/contract -m 'not integration'
+      - name: Governance lint
+        run: ruff check rocket/research tests/research scripts/research
+      - name: Frozen hashes and append-only evidence
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA=origin/main
+          fi
+          rocket research verify --base "$BASE_SHA"
+      - name: Whitespace
+        run: git diff --check

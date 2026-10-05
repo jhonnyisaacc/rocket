@@ -1,0 +1,1460 @@
+{
+  "schema": "rocket.research.project.v1",
+  "project": {
+    "closed": false,
+    "fields": {
+      "totalCount": 32
+    },
+    "id": "PVT_kwHOA5rv284Blgkv",
+    "items": {
+      "totalCount": 18
+    },
+    "number": 4,
+    "owner": {
+      "login": "jhonnyisaacc",
+      "type": "User"
+    },
+    "public": true,
+    "readme": "Repository workflow: LIGHTWEIGHT. Scientific research: STRICT / MACHINE-GATED.\nSafety: READ_ONLY_RESEARCH_ONLY_HUMAN_GATED.\n\nMission: Determine whether a scientifically defensible BTC derivatives strategy can identify rare attractive directional momentum opportunities, enter efficiently, manage deterministically and express through futures/options, or terminate with preserved negative evidence.\n\nThis Project is a scientific decision tree. WIP=3 unique primary derivatives research items in In Progress + Review / Gate; linked PR evidence and healthy operational services are excluded. Ordinary Cursor/provider/disclosures/bugfix/refactor PRs are outside scientific dispatch/WIP/admission. No second GitHub account/App or globally required Governance check is needed for normal repository operations. Newly introduced ruleset 24519812 was removed under the human correction; no replacement/bypass exceptions. #63/#64 are ordinary engineering, not research work.\n\nIndependent scientific review records model/family, role, isolated pre-result context, contribution history, exact reviewed commit/artifact hashes and decision. Reviewer did not design/implement; same GitHub actor jhonnyisaacc may publish review evidence. GitHub identity or mergeability alone proves no scientific independence/admission. #60 mandatory technical identity rollout is retired; optional future identities are not blockers. #56 still records the scientific reviewer/process and human economic values.\n\nMOM-000 STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted. MOM-002 Draft/NEEDS_PRE_RESULT_GATE_REVIEW, scoring_authorized=false, Trial Budget 1/Trials Consumed 0. Accepted #51 foundation/Tier-B/overlap + independently accepted #58 synthetic audit + #56 human decisions + final versioned #53 contract -> #54 isolated exact final-packet approval -> official admitted/frozen manifest/all hashes -> one future authorized official scorer START. None is authorized now. #58 uses synthetic outcomes and consumes zero trials; its conditional INDETERMINATE_ASSUMPTIONS_REQUIRED finding changes no gate.\n\nFAIL rejects the entire candidate BTC downstream branch including #59; no MOM-003 or macro/COT/Cava/X/Pana rescue. PASS requires provenance audit and human acknowledgment before only the next separately admitted phase. #59 capital/risk terms stay Parked until that future acknowledgment. Terminal states: STRATEGY_VALIDATED -> READY_FOR_CAPITAL_REVIEW (human authorization only), or RESEARCH_LINE_REJECTED (preserve evidence and stop).\n\nReview tiers apply to Project research acceptance: MAINTENANCE tests/relevant CI/separate code review; FOUNDATION strong technical/adversarial review; SCIENTIFIC_ADMISSION isolated pre-result exact-artifact approval; PROSPECTIVE_VALIDATION separately frozen forward trial; CAPITAL human-only. Research review is a manifest/protocol requirement, not a repository permissions regime.\n\nPR dispositions: #57/#49 MERGE_WHEN_ACCEPTED (#57 governance on canonical main first; #51 acceptance and #49 update/review for research acceptance). #26/#38/#40/#46/#50 CLOSE_EVIDENCE_ARCHIVE only after individual pinned preservation/canonical index/ledger/label/note; #50 after #51. Merging is not scoring permission. Old open/closed branches grant no continuation. Current research WIP=3 (#51/#52/#58 all Review / Gate), Program Outcome Active. Remaining scientific/human acceptances are documented in issues and repository contracts.\n",
+    "shortDescription": "Gated BTC derivatives research. WIP 3. Preserve failures; no rescue; read-only and human-gated.",
+    "title": "Rocket \u2014 Derivatives Strategy Research",
+    "url": "https://github.com/users/jhonnyisaacc/projects/4"
+  },
+  "fields": [
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMgc",
+      "name": "Title",
+      "dataType": "TITLE"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMgg",
+      "name": "Assignees",
+      "dataType": "ASSIGNEES"
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMgk",
+      "name": "Status",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "c215f0b1",
+          "name": "Backlog"
+        },
+        {
+          "id": "0549973b",
+          "name": "Ready"
+        },
+        {
+          "id": "8c844df7",
+          "name": "In Progress"
+        },
+        {
+          "id": "c93c45ed",
+          "name": "Review / Gate"
+        },
+        {
+          "id": "449a8103",
+          "name": "Done"
+        },
+        {
+          "id": "62594574",
+          "name": "Rejected"
+        },
+        {
+          "id": "e33ae429",
+          "name": "Parked"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMgo",
+      "name": "Labels",
+      "dataType": "LABELS"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMgs",
+      "name": "Linked pull requests",
+      "dataType": "LINKED_PULL_REQUESTS"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMgw",
+      "name": "Milestone",
+      "dataType": "MILESTONE"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMg0",
+      "name": "Repository",
+      "dataType": "REPOSITORY"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMg8",
+      "name": "Reviewers",
+      "dataType": "REVIEWERS"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMhA",
+      "name": "Parent issue",
+      "dataType": "PARENT_ISSUE"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMhE",
+      "name": "Sub-issues progress",
+      "dataType": "SUB_ISSUES_PROGRESS"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMhI",
+      "name": "Created",
+      "dataType": "CREATED"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMhM",
+      "name": "Updated",
+      "dataType": "UPDATED"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMhQ",
+      "name": "Closed",
+      "dataType": "CLOSED"
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMhU",
+      "name": "Priority",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "b2fc83d6",
+          "name": "P0"
+        },
+        {
+          "id": "9fa86cb6",
+          "name": "P1"
+        },
+        {
+          "id": "caaaede7",
+          "name": "P2"
+        },
+        {
+          "id": "13073c5b",
+          "name": "P3"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMiQ",
+      "name": "Research Family",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "9e259f59",
+          "name": "Momentum"
+        },
+        {
+          "id": "dc73168b",
+          "name": "Data / PIT"
+        },
+        {
+          "id": "02738a5c",
+          "name": "Futures"
+        },
+        {
+          "id": "745878bb",
+          "name": "Options"
+        },
+        {
+          "id": "6994736b",
+          "name": "Macro"
+        },
+        {
+          "id": "8fde4509",
+          "name": "COT"
+        },
+        {
+          "id": "41e13c68",
+          "name": "Equity"
+        },
+        {
+          "id": "8779ee80",
+          "name": "Memecoin"
+        },
+        {
+          "id": "89d693a3",
+          "name": "Cross-cutting"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMiU",
+      "name": "Work Type",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "91358557",
+          "name": "Experiment"
+        },
+        {
+          "id": "3f6d4473",
+          "name": "Replication"
+        },
+        {
+          "id": "79631ef1",
+          "name": "Review"
+        },
+        {
+          "id": "b27dd49c",
+          "name": "Bug"
+        },
+        {
+          "id": "95891ae7",
+          "name": "Data"
+        },
+        {
+          "id": "137b078a",
+          "name": "Infrastructure"
+        },
+        {
+          "id": "17afd4d3",
+          "name": "Operations"
+        },
+        {
+          "id": "c08d21d0",
+          "name": "Governance"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMic",
+      "name": "Research State",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "cf4e9304",
+          "name": "Draft"
+        },
+        {
+          "id": "16d3d68b",
+          "name": "Admission Review"
+        },
+        {
+          "id": "715a61b8",
+          "name": "Admitted"
+        },
+        {
+          "id": "d6d30708",
+          "name": "Running"
+        },
+        {
+          "id": "3b643b4f",
+          "name": "Passed"
+        },
+        {
+          "id": "63189738",
+          "name": "Failed"
+        },
+        {
+          "id": "7b7bb66a",
+          "name": "Blocked"
+        },
+        {
+          "id": "20276d78",
+          "name": "Historical"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkNMig",
+      "name": "Phase",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "45892ea3",
+          "name": "Foundation"
+        },
+        {
+          "id": "382c3d04",
+          "name": "Momentum Quality"
+        },
+        {
+          "id": "d32895f7",
+          "name": "Pre-Ignition"
+        },
+        {
+          "id": "b8f64c25",
+          "name": "Setup"
+        },
+        {
+          "id": "985e9d20",
+          "name": "Trade Management"
+        },
+        {
+          "id": "d2c06cdd",
+          "name": "Derivative Expression"
+        },
+        {
+          "id": "e85303c3",
+          "name": "Prospective Validation"
+        },
+        {
+          "id": "60337fe7",
+          "name": "Capital Review"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMio",
+      "name": "Trials Consumed",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMjg",
+      "name": "Proposer",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkNMjk",
+      "name": "Implementer",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284Blgkvzhkfy1c",
+      "name": "Research Reviewer",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284Blgkvzhkfy3Q",
+      "name": "Unlock Condition",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284Blgkvzhkfy3U",
+      "name": "Kill Condition",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284Blgkvzhkfy5I",
+      "name": "Evidence",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTF_lAHOA5rv284Blgkvzhkfy5M",
+      "name": "Depends On",
+      "dataType": "TEXT"
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284Blgkvzhkfy5Q",
+      "name": "Program Outcome",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "b2bf0e92",
+          "name": "Active"
+        },
+        {
+          "id": "ef4262f3",
+          "name": "Strategy Validated"
+        },
+        {
+          "id": "86818538",
+          "name": "Research Line Rejected"
+        },
+        {
+          "id": "dfb8c13d",
+          "name": "Ready for Capital Review"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkgXv8",
+      "name": "Trial Budget",
+      "dataType": "NUMBER"
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkgXwU",
+      "name": "Gate Source",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "1ccb26a4",
+          "name": "CODE"
+        },
+        {
+          "id": "dc23a29b",
+          "name": "HUMAN"
+        },
+        {
+          "id": "cc8737b8",
+          "name": "DATA"
+        },
+        {
+          "id": "784330bc",
+          "name": "REVIEW"
+        },
+        {
+          "id": "5a95b973",
+          "name": "NONE"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkgXyI",
+      "name": "Review Tier",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "4c92f4e5",
+          "name": "MAINTENANCE"
+        },
+        {
+          "id": "e5c4163d",
+          "name": "FOUNDATION"
+        },
+        {
+          "id": "d0f7797d",
+          "name": "SCIENTIFIC_ADMISSION"
+        },
+        {
+          "id": "9b09d065",
+          "name": "PROSPECTIVE_VALIDATION"
+        },
+        {
+          "id": "c79da3a1",
+          "name": "CAPITAL"
+        }
+      ]
+    },
+    {
+      "id": "PVTSSF_lAHOA5rv284BlgkvzhkgXyM",
+      "name": "PR Disposition",
+      "dataType": "SINGLE_SELECT",
+      "options": [
+        {
+          "id": "f921fae5",
+          "name": "CONTINUE_ACTIVE"
+        },
+        {
+          "id": "944c6b83",
+          "name": "MERGE_WHEN_ACCEPTED"
+        },
+        {
+          "id": "e9ddb646",
+          "name": "CLOSE_EVIDENCE_ARCHIVE"
+        },
+        {
+          "id": "ae2db0db",
+          "name": "SUPERSEDED"
+        },
+        {
+          "id": "6a73902f",
+          "name": "BLOCKED"
+        }
+      ]
+    },
+    {
+      "id": "PVTF_lAHOA5rv284BlgkvzhkgXyQ",
+      "name": "Disposition Blocker",
+      "dataType": "TEXT"
+    }
+  ],
+  "items": {
+    "reconcile": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTcs",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/51",
+      "title": "research(momentum): reconcile MOM-000 implementations",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Momentum",
+        "Work Type": "Replication",
+        "Research State": "Admitted",
+        "Phase": "Foundation",
+        "Unlock Condition": "Already admitted; accept existing #49 reconciliation independently",
+        "Kill Condition": "Invalid MOM-000 blocks MOM-002 freeze; irreparable foundation kills branch",
+        "Evidence": "PR #49 reconciliation + #50 original; pinned evidence index; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
+        "Depends On": "#49, #50; independent acceptance",
+        "Review Tier": "FOUNDATION",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0
+      },
+      "primary_work_item": true
+    },
+    "cftc": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTfA",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/52",
+      "title": "fix(data): make CFTC publication availability point-in-time safe",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "Different agent/person code review; no MOM-002 isolated scientific packet",
+        "Program Outcome": "Active",
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Data / PIT",
+        "Work Type": "Bug",
+        "Research State": "Admitted",
+        "Phase": "Foundation",
+        "Unlock Condition": "Existing PIT correctness bug; tests/CI and separate code review; zero alpha; no #54 prerequisite",
+        "Kill Condition": "Disable unsafe historical CFTC eligibility until corrected; no COT rescue",
+        "Evidence": "#49 CFTC_LINEAGE_AUDIT.md and regression tests; #38 FUT-005; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
+        "Depends On": "#49 provider fix, #38 lineage",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0,
+        "Disposition Blocker": "Research correctness acceptance: tests/relevant CI and separate code review pending; no #54 scientific packet. Ordinary provider-fix merges are outside research WIP/admission."
+      },
+      "primary_work_item": true
+    },
+    "mom002": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTiU",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/53",
+      "title": "research(momentum): MOM-002 continuous breakout-quality experiment",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Backlog",
+        "Priority": "P1",
+        "Research Family": "Momentum",
+        "Work Type": "Experiment",
+        "Research State": "Draft",
+        "Phase": "Momentum Quality",
+        "Unlock Condition": "Accept #51 foundation/Tier-B/overlap + #58 audit; finalize pre-result changes/#56; then final isolated #54 approval; official freeze",
+        "Kill Condition": "MOM-002 FAIL rejects downstream candidate-based BTC line; no MOM-003 rescue",
+        "Evidence": "#49 MOM_002_PROPOSAL.md; review state null approval/unscored",
+        "Depends On": "#51 foundation + Tier-B + overlap; #58 audit; finalized pre-result contract; #56 decisions; #54 final exact review",
+        "Review Tier": "SCIENTIFIC_ADMISSION",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 1,
+        "Disposition Blocker": "NEEDS_PRE_RESULT_GATE_REVIEW; #58 conditional audit and #56 decisions/independent acceptance unresolved"
+      },
+      "primary_work_item": true,
+      "experiment_id": "MOM-002"
+    },
+    "review": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTlU",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/54",
+      "title": "review(momentum): independent admission review for MOM-002",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P1",
+        "Research Family": "Momentum",
+        "Work Type": "Review",
+        "Research State": "Draft",
+        "Phase": "Momentum Quality",
+        "Unlock Condition": "All pre-result prerequisites accepted; final post-power-audit contract only; isolated exact-commit review packet",
+        "Kill Condition": "No independent APPROVE => no MOM-002 scoring; rejection closes proposal",
+        "Evidence": "#49 exact proposal commit + review state; #53 draft",
+        "Depends On": "#51 accepted foundation/Tier-B/overlap; #58 accepted audit; final post-audit #53 contract; #56 decisions/process",
+        "Review Tier": "SCIENTIFIC_ADMISSION",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0
+      },
+      "primary_work_item": true
+    },
+    "history": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sToc",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/55",
+      "title": "research: consolidate historical evidence and close stale research PRs",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Backlog",
+        "Priority": "P2",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Admitted",
+        "Phase": "Foundation",
+        "Unlock Condition": "Governance evidence index available; individual canonical replacement accepted before closure",
+        "Kill Condition": "Missing provenance pauses affected closure; no runtime merge to retain docs",
+        "Evidence": "#38, #40, #46, #26, #50 pinned heads",
+        "Depends On": "Governance PR; #51 before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0
+      },
+      "primary_work_item": true
+    },
+    "charter": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTr4",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/56",
+      "title": "governance: freeze near-term human decisions before MOM-002 admission",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Human jhonnyisaacc supplies decisions",
+        "Research Reviewer": "Human charter decision; scientific reviewer UNRESOLVED",
+        "Program Outcome": "Active",
+        "Status": "Backlog",
+        "Priority": "P0",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Draft",
+        "Phase": "Foundation",
+        "Unlock Condition": "Record reviewer/process, 40bp hurdle, minimum worthwhile effect, post-#58 terminal/descriptive economic gate, STOP philosophy",
+        "Kill Condition": "Missing near-term decisions blocks #53/#54; downstream risk/capital values deferred to #59",
+        "Evidence": "RESEARCH_CHARTER.md; #58 power; #59 deferred capital; scientific model/role/context/contribution provenance",
+        "Depends On": "#57 governance; #58 audit informs economic-gate choice",
+        "Review Tier": "SCIENTIFIC_ADMISSION",
+        "Gate Source": "HUMAN",
+        "Trial Budget": 0
+      },
+      "primary_work_item": true
+    },
+    "downstream": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTvs",
+      "url": null,
+      "title": "Parked \u2014 downstream derivatives research after MOM-002",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "UNASSIGNED \u2014 not admitted",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Experiment",
+        "Research State": "Draft",
+        "Phase": "Pre-Ignition",
+        "Unlock Condition": "MOM-002 PASS + independent audit + human acknowledgment; only next phase/new admission",
+        "Kill Condition": "MOM-002 FAIL => Rejected entire branch; no MOM-003 rescue",
+        "Evidence": "#49/#50 census, #38/#40/#46/#26 inherited failures; #53/#54",
+        "Depends On": "#51, #53, #54, #56",
+        "Review Tier": "SCIENTIFIC_ADMISSION",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0
+      },
+      "kill_on_mom002_fail": true,
+      "primary_work_item": true
+    },
+    "census": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTxk",
+      "url": null,
+      "title": "MOM-000 \u2014 BTC momentum census",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex or equivalent",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Done",
+        "Priority": "P1",
+        "Research Family": "Momentum",
+        "Work Type": "Data",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Completed non-predictive census; independent reconciliation acceptance #51 pending",
+        "Kill Condition": "STOP_INSUFFICIENT_FEASIBILITY; MOM-001 not admitted; no automatic rescue",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/blob/7c42582168e7538cfac00393bc3ffce54beb21b1/docs/research/momentum/REPLICATION_REPORT.md",
+        "Depends On": "#49/#50 descriptive evidence; #51 acceptance",
+        "Review Tier": "FOUNDATION",
+        "Gate Source": "NONE",
+        "Trial Budget": 0
+      }
+    },
+    "pr49": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sTzQ",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/49",
+      "title": "feat/momentum-refactor-codex",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Momentum",
+        "Work Type": "Review",
+        "Research State": "Admission Review",
+        "Phase": "Foundation",
+        "Unlock Condition": "Independent acceptance of exact pinned evidence",
+        "Kill Condition": "Invalid foundation blocks MOM-002",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/49; EVIDENCE_INDEX.md pins revision",
+        "Depends On": "#51 and #52",
+        "Review Tier": "FOUNDATION",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0,
+        "PR Disposition": "MERGE_WHEN_ACCEPTED",
+        "Disposition Blocker": "#57 canonical governance first; update onto canonical main; #51 foundation acceptance and relevant research validation; MOM-002 remains unscored/unadmitted until prerequisites and #54; no distinct GitHub actor requirement"
+      },
+      "primary_work_item": false
+    },
+    "pr50": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sT2A",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/50",
+      "title": "feat/momentum-refactor-muse",
+      "fields": {
+        "Trials Consumed": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P0",
+        "Research Family": "Momentum",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Historical evidence only; no experiment admission",
+        "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/50; EVIDENCE_INDEX.md pins revision",
+        "Depends On": "#55; #51 also before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0,
+        "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
+        "Disposition Blocker": "#51 reconciliation complete; Preserve useful Tier-B/source findings, original 5 UP/7 DOWN and DOWN-orientation bug; Individual closing note points to #49 and #51; Evidence archive label present"
+      },
+      "primary_work_item": false
+    },
+    "pr38": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sT4s",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/38",
+      "title": "research: establish canonical crypto futures strategy line",
+      "fields": {
+        "Trials Consumed": 13,
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Futures",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Historical evidence only; no experiment admission",
+        "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/38; EVIDENCE_INDEX.md pins revision; 13 named FUT trials plus older unresolved historical screens",
+        "Depends On": "#55; #51 also before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0,
+        "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
+        "Disposition Blocker": "#55 verifies FUT-001..FUT-013, older findings, canonical evidence index/trial ledger and SHA-pinned evidence; Individual closing note cites canonical evidence; Evidence archive label present"
+      },
+      "primary_work_item": false
+    },
+    "pr40": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sT8o",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/40",
+      "title": "Add daily macro market check and 2024-10 to 2026-09 backtest",
+      "fields": {
+        "Trials Consumed": 43,
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Macro",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Historical evidence only; no experiment admission",
+        "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/40; EVIDENCE_INDEX.md pins revision",
+        "Depends On": "#55; #51 also before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0,
+        "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
+        "Disposition Blocker": "Preserve 43-variant history, final holdout failure, deflated-Sharpe conclusion and documents/links; Individual closing note cites canonical evidence; Evidence archive label present"
+      },
+      "primary_work_item": false
+    },
+    "pr46": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sUBQ",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/46",
+      "title": "BTC derivatives research: puts insurance, capitulation longs, funding carry",
+      "fields": {
+        "Trials Consumed": 34,
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Options",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Historical evidence only; no experiment admission",
+        "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/46; EVIDENCE_INDEX.md pins revision; 34 reported A18/B10/C6 counts including sensitivities; exact deduplication unresolved",
+        "Depends On": "#55; #51 also before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0,
+        "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
+        "Disposition Blocker": "Preserve puts/capitulation/carry conclusions, approximation/options-data limitations and trial accounting; Record dependency on #40 branch; future expression inherits this evidence; Individual closing note cites canonical evidence; Evidence archive label present"
+      },
+      "primary_work_item": false
+    },
+    "pr26": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sUFI",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/26",
+      "title": "feat(shorts): add ISM-driven Shorts v2 research and backtesting",
+      "fields": {
+        "Proposer": "Human research mandate",
+        "Implementer": "PR authors; see pinned evidence",
+        "Research Reviewer": "UNRESOLVED \u2014 independent reviewer",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Equity",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Unlock Condition": "Historical evidence only; no experiment admission",
+        "Kill Condition": "Preserve failed gates; no automatic reopening; no blind closure",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/26; EVIDENCE_INDEX.md pins revision; trial total UNKNOWN (A0\u2013A6 ablations, not zero trials)",
+        "Depends On": "#55; #51 also before #50 closure",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "CODE",
+        "Trial Budget": 0,
+        "PR Disposition": "CLOSE_EVIDENCE_ARCHIVE",
+        "Disposition Blocker": "Preserve EDGE_NOT_VALIDATED, strict-PIT limitations, borrow/funding UNKNOWN and useful architecture findings; Future admitted component needs focused infrastructure port, never whole strategy merge; Individual closing note cites canonical evidence; Evidence archive label present"
+      },
+      "primary_work_item": false
+    },
+    "governance_pr": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sbLw",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/57",
+      "title": "chore: restore lightweight GitHub workflow and preserve research gates",
+      "fields": {
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Admitted",
+        "Phase": "Foundation",
+        "Trials Consumed": 0,
+        "Program Outcome": "Active",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "REVIEW",
+        "Trial Budget": 0,
+        "PR Disposition": "MERGE_WHEN_ACCEPTED",
+        "Disposition Blocker": "Iteration acceptance and relevant research validation; no mandatory GitHub review, second identity or globally required check",
+        "Depends On": "Normal repository workflow acceptance; no second GitHub identity requirement",
+        "Unlock Condition": "Tested governance correction through ordinary PR workflow",
+        "Kill Condition": "GitHub merge never grants scientific scoring authority",
+        "Research Reviewer": "Technical review evidence; publishing GitHub actor may be shared",
+        "Evidence": "PR #57 operational report; lightweight permissions / strict scientific gates"
+      },
+      "primary_work_item": false
+    },
+    "power": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-tZKg",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/58",
+      "title": "research(momentum): MOM-002 pre-outcome power and gate feasibility audit",
+      "fields": {
+        "Trials Consumed": 0,
+        "Trial Budget": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex",
+        "Research Reviewer": "UNRESOLVED; independent technical acceptance",
+        "Program Outcome": "Active",
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Momentum",
+        "Work Type": "Review",
+        "Research State": "Admitted",
+        "Phase": "Momentum Quality",
+        "Review Tier": "FOUNDATION",
+        "Gate Source": "CODE",
+        "Unlock Condition": "Zero-alpha synthetic methodology; strict structural geometry only; assumed readiness explicit",
+        "Kill Condition": "No MOM-002 review/freeze until accepted audit, pre-result changes and human decisions; no automatic changes",
+        "Evidence": "#58 POWER_AUDIT_RESULTS.md; SHA-pinned structural manifest and 2,000-draw synthetic surface; INDETERMINATE_ASSUMPTIONS_REQUIRED; independent acceptance pending; current operational report: https://github.com/jhonnyisaacc/rocket/blob/chore/autonomous-research-project/docs/research/OPERATIONAL_REPORT.md",
+        "Depends On": "#49 frozen causal structural provenance; #51 accepts source/overlap separately; #56 decisions follow audit"
+      },
+      "primary_work_item": true
+    },
+    "risk_charter": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-tZM4",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/59",
+      "title": "governance: finalize strategy risk and capital charter after MOM-002 PASS",
+      "fields": {
+        "Trials Consumed": 0,
+        "Trial Budget": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Human owner",
+        "Research Reviewer": "Human owner capital/value decisions; scientific process separate",
+        "Program Outcome": "Active",
+        "Status": "Parked",
+        "Priority": "P2",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Draft",
+        "Phase": "Capital Review",
+        "Review Tier": "CAPITAL",
+        "Gate Source": "HUMAN",
+        "Unlock Condition": "MOM-002 historical PASS acknowledged by human after canonical receipt and audit",
+        "Kill Condition": "MOM-002 FAIL => automatically Rejected with downstream branch; no capital authorization",
+        "Evidence": "RESEARCH_CHARTER.md; #53/#54 future audited PASS; human acknowledgment",
+        "Depends On": "#53 audited historical PASS + human acknowledgment; downstream only"
+      },
+      "primary_work_item": true,
+      "kill_on_mom002_fail": true
+    },
+    "identities": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-tZPw",
+      "url": "https://github.com/jhonnyisaacc/rocket/issues/60",
+      "title": "governance: retire mandatory GitHub identity separation",
+      "fields": {
+        "Trials Consumed": 0,
+        "Trial Budget": 0,
+        "Proposer": "Human research mandate",
+        "Implementer": "Codex; human workflow correction",
+        "Research Reviewer": "Scientific independence documented in artifacts; technical identities optional",
+        "Program Outcome": "Active",
+        "Status": "Done",
+        "Priority": "P1",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Historical",
+        "Phase": "Foundation",
+        "Review Tier": "MAINTENANCE",
+        "Gate Source": "NONE",
+        "Unlock Condition": "Resolved by human correction; no mandatory account/App rollout",
+        "Kill Condition": "No identity or repository merge grants scientific approval",
+        "Evidence": "#60 resolution; AGENT_ROLES.md; ruleset 24519812 removed; #56 scientific process retained",
+        "Depends On": "None; optional technical identities are not a program prerequisite",
+        "Disposition Blocker": "Resolved: second GitHub account/App/collaborator requirement retired"
+      },
+      "primary_work_item": false
+    }
+  },
+  "primary_work_item_keys": [
+    "reconcile",
+    "cftc",
+    "mom002",
+    "review",
+    "history",
+    "charter",
+    "downstream",
+    "power",
+    "risk_charter"
+  ],
+  "wip_limit": 3,
+  "reviewer_field_alias": "Research Reviewer",
+  "views": [
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T68",
+      "number": 8,
+      "name": "Research Board",
+      "layout": "board",
+      "filter": "",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [
+        420295177
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T-0",
+      "number": 9,
+      "name": "Active Research",
+      "layout": "table",
+      "filter": "status:Ready,\"In Progress\",\"Review / Gate\" -research-state:Historical",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_A",
+      "number": 10,
+      "name": "Research Gates",
+      "layout": "table",
+      "filter": "research-state:\"Admission Review\",Admitted,Running,Passed,Blocked",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [
+        420295207
+      ],
+      "vertical_group_by": [],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_E",
+      "number": 11,
+      "name": "Rejected / Historical",
+      "layout": "table",
+      "filter": "research-state:Historical,Failed",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [
+        420295204
+      ],
+      "vertical_group_by": [],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_I",
+      "number": 12,
+      "name": "Data / PIT",
+      "layout": "table",
+      "filter": "research-family:\"Data / PIT\"",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_M",
+      "number": 13,
+      "name": "Program Roadmap",
+      "layout": "table",
+      "filter": "",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295204,
+        420295207,
+        420295208,
+        420295210,
+        421514071,
+        421514100,
+        421514101,
+        421514130,
+        421514131,
+        421514132,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [
+        420295208
+      ],
+      "vertical_group_by": [],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7YMw",
+      "number": 14,
+      "name": "PR Dispositions",
+      "layout": "table",
+      "filter": "is:pr",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295210,
+        421514071,
+        421514130,
+        421514131,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [],
+      "sort_by": []
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7YM8",
+      "number": 15,
+      "name": "Review Tiers",
+      "layout": "table",
+      "filter": "is:issue",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295210,
+        421514071,
+        421514130,
+        421514131,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [],
+      "sort_by": []
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7YNI",
+      "number": 16,
+      "name": "Human Decisions",
+      "layout": "table",
+      "filter": "is:issue gate-source:HUMAN",
+      "visible_fields": [
+        420295175,
+        420295177,
+        420295189,
+        420295210,
+        421514071,
+        421514130,
+        421514131,
+        421551871,
+        421551877,
+        421551906,
+        421551907,
+        421551908
+      ],
+      "group_by": [],
+      "vertical_group_by": [],
+      "sort_by": []
+    }
+  ],
+  "pr_dispositions": {
+    "57": {
+      "disposition": "MERGE_WHEN_ACCEPTED",
+      "blockers": [
+        {
+          "id": "technical_acceptance",
+          "description": "Technical review/iteration acceptance in normal repository workflow; publishing GitHub actor may be shared",
+          "accepted": false
+        },
+        {
+          "id": "governance_checks",
+          "description": "Relevant research validation tests/checks; not globally required GitHub status",
+          "accepted": false
+        },
+        {
+          "id": "iteration_accepted",
+          "description": "Changes from this iteration accepted",
+          "accepted": false
+        }
+      ],
+      "rationale": "Governance canonical on main before research branches",
+      "research_admitted": false
+    },
+    "49": {
+      "disposition": "MERGE_WHEN_ACCEPTED",
+      "blockers": [
+        {
+          "id": "governance_merged",
+          "description": "Merge #57 governance first",
+          "accepted": false
+        },
+        {
+          "id": "governed_rebase",
+          "description": "Update/rebase onto governed main",
+          "accepted": false
+        },
+        {
+          "id": "foundation_accepted",
+          "description": "#51 reconciliation/foundation accepted",
+          "accepted": false
+        },
+        {
+          "id": "governance_checks",
+          "description": "Research correctness validation and independent technical acceptance recorded in evidence; no separate GitHub account requirement",
+          "accepted": false
+        },
+        {
+          "id": "mom002_locked",
+          "description": "MOM-002 stays unscored/unadmitted until #58 + #54",
+          "accepted": false
+        }
+      ],
+      "rationale": "Intended canonical momentum foundation if #51 confirms validity; merging does not score MOM-002",
+      "research_admitted": false
+    },
+    "50": {
+      "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+      "blockers": [
+        {
+          "id": "reconciliation_accepted",
+          "description": "#51 reconciliation complete",
+          "accepted": false
+        },
+        {
+          "id": "replication_preserved",
+          "description": "Preserve useful Tier-B/source findings, original 5 UP/7 DOWN and DOWN-orientation bug",
+          "accepted": false
+        },
+        {
+          "id": "closing_note",
+          "description": "Individual closing note points to #49 and #51",
+          "accepted": false
+        },
+        {
+          "id": "archive_label",
+          "description": "Evidence archive label present",
+          "accepted": false
+        }
+      ],
+      "rationale": "Do not merge independent replication",
+      "research_admitted": false
+    },
+    "38": {
+      "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+      "blockers": [
+        {
+          "id": "futures_preserved",
+          "description": "#55 verifies FUT-001..FUT-013, older findings, canonical evidence index/trial ledger and SHA-pinned evidence",
+          "accepted": false
+        },
+        {
+          "id": "closing_note",
+          "description": "Individual closing note cites canonical evidence",
+          "accepted": false
+        },
+        {
+          "id": "archive_label",
+          "description": "Evidence archive label present",
+          "accepted": false
+        }
+      ],
+      "rationale": "No validated directional futures edge; no runtime merge to preserve research",
+      "research_admitted": false
+    },
+    "40": {
+      "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+      "blockers": [
+        {
+          "id": "macro_preserved",
+          "description": "Preserve 43-variant history, final holdout failure, deflated-Sharpe conclusion and documents/links",
+          "accepted": false
+        },
+        {
+          "id": "closing_note",
+          "description": "Individual closing note cites canonical evidence",
+          "accepted": false
+        },
+        {
+          "id": "archive_label",
+          "description": "Evidence archive label present",
+          "accepted": false
+        }
+      ],
+      "rationale": "Do not merge macro strategy runtime",
+      "research_admitted": false
+    },
+    "46": {
+      "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+      "blockers": [
+        {
+          "id": "derivatives_preserved",
+          "description": "Preserve puts/capitulation/carry conclusions, approximation/options-data limitations and trial accounting",
+          "accepted": false
+        },
+        {
+          "id": "macro_dependency",
+          "description": "Record dependency on #40 branch; future expression inherits this evidence",
+          "accepted": false
+        },
+        {
+          "id": "closing_note",
+          "description": "Individual closing note cites canonical evidence",
+          "accepted": false
+        },
+        {
+          "id": "archive_label",
+          "description": "Evidence archive label present",
+          "accepted": false
+        }
+      ],
+      "rationale": "Do not merge as active derivatives strategy",
+      "research_admitted": false
+    },
+    "26": {
+      "disposition": "CLOSE_EVIDENCE_ARCHIVE",
+      "blockers": [
+        {
+          "id": "equity_preserved",
+          "description": "Preserve EDGE_NOT_VALIDATED, strict-PIT limitations, borrow/funding UNKNOWN and useful architecture findings",
+          "accepted": false
+        },
+        {
+          "id": "focused_ports_only",
+          "description": "Future admitted component needs focused infrastructure port, never whole strategy merge",
+          "accepted": false
+        },
+        {
+          "id": "closing_note",
+          "description": "Individual closing note cites canonical evidence",
+          "accepted": false
+        },
+        {
+          "id": "archive_label",
+          "description": "Evidence archive label present",
+          "accepted": false
+        }
+      ],
+      "rationale": "Historical ISM/equity research only",
+      "research_admitted": false
+    }
+  },
+  "view_api_limitations": "GraphQL supports filter/visible fields, but does not expose new-view grouping/sorting input. Existing Status/Phase grouping/sort preserved. REST create endpoint is used only when available; no unsupported limit or grouping is claimed for the three new tables.",
+  "repository_workflow": {
+    "mode": "LIGHTWEIGHT",
+    "scientific_workflow": "STRICT / MACHINE-GATED",
+    "removed_ruleset_id": 24519812,
+    "required_github_review": false,
+    "required_governance_check": false,
+    "separate_github_identity_required": false,
+    "ordinary_engineering_uses_research_wip": false,
+    "correction_date": "2026-10-05"
+  }
+}
