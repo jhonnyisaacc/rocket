@@ -4,30 +4,24 @@ Project: [Rocket — Derivatives Strategy Research](https://github.com/users/jho
 
 Status: Backlog, Ready, In Progress, Review / Gate, Done, Rejected, Parked. Program Outcome: Active, Strategy Validated, Research Line Rejected, Ready for Capital Review. Priority/Family/Type/State/Phase options match the request. Trials Consumed is numeric; unknown historical totals stay blank with evidence annotations. Program outcome is synchronized across linked items by audited code-gate disposition; it is not an LLM's subjective decision.
 
-API-created views have these persisted layouts/filters:
+API-created views have these persisted layouts/filters/grouping:
 
-| View | Layout | Filter |
+| View | Layout / grouping | Filter |
 | --- | --- | --- |
-| Research Board | Board | all items |
-| Active Research | Table | `status:Ready,"In Progress","Review / Gate" -"Research State":Historical` |
-| Research Gates | Table | `"Research State":"Admission Review",Admitted,Running` |
-| Rejected / Historical | Table | `"Research State":Historical,Failed` |
-| Data / PIT | Table | `"Research Family":"Data / PIT"` |
-| Program Roadmap | Table | all items; Phase visible |
+| Research Board | Board, Status columns; Priority ascending | all items |
+| Active Research | Table, Priority/Phase ascending | `status:Ready,"In Progress","Review / Gate" -research-state:Historical` |
+| Research Gates | Table, Research State groups; Priority/Phase ascending | `research-state:"Admission Review",Admitted,Running,Passed,Blocked` |
+| Rejected / Historical | Table, Research Family groups | `research-state:Historical,Failed` |
+| Data / PIT | Table | `research-family:"Data / PIT"` |
+| Program Roadmap | Table, Phase groups | all items; phases are conditional, no invented dates |
 
-All six display Status, Priority, Family, Research State, Phase, Research Reviewer, Trials Consumed, Unlock/Kill, Evidence, Depends On and Program Outcome. Rejected items must be Research State Failed; this makes the archive view a union of historical/failed evidence without unsupported cross-field OR. Research Gates includes admitted/running review work; after a future scored gate, also inspect Active Research for Passed/Blocked items waiting in Review / Gate. The extra GitHub default View 1 is an unfiltered table, not a research admission.
+All six display Title, Priority, Research Reviewer, Trials Consumed, Unlock/Kill, Status, Family, Research State, Phase, Evidence, Depends On and Program Outcome, with gate fields early in the visible-field order. Rejected items must have Research State Failed; the archive view thus includes historical/failed evidence without unsupported cross-field OR. Review / Gate items use Admission Review, Admitted, Running, Passed or Blocked states, all included by Research Gates. BLOCKED must always retain its kill condition.
 
-## Exact UI follow-up
+GitHub's [REST view creation API](https://docs.github.com/en/rest/projects/views) supports sort_by/group_by/vertical_group_by. These controls were configured programmatically and read back through GraphQL. Views were recreated through REST because the GraphQL configuration input exposes visible fields only; the initial redundant views were deleted without deleting items. Research Board is the first retained view. Actual REST view item lists were checked, including Data / PIT selecting only #52 and the archive excluding active/draft work. Custom filter field names use lowercase hyphenated slugs; quoting a field name is not a valid substitute. [Filter semantics](https://docs.github.com/en/issues/planning-and-tracking-with-projects/customizing-views-in-your-project/filtering-projects) support OR within one field and AND across fields.
 
-The live GraphQL schema supports create/update views, layout, filter and visibleFieldIds. Its ProjectV2ViewConfigurationInput has only visibleFieldIds; group-by, sorting, tab order and WIP limits have no mutation fields. Live reads confirmed empty groupByFields even for the new Board. Do not claim Kanban grouping is already configured.
+## Remaining optional UI affordance
 
-1. Open Research Board. In the view menu beside its name select **Group by → Status**, show all seven groups, and save the view. Drag its tab to the first position if desired; delete the empty default View 1 through its tab menu.
-2. Open Program Roadmap. Choose **Group by → Phase** and save. Keep Table layout until actual dates are independently admitted; phase grouping must not imply every phase will be reached.
-3. In Research Gates use Fields to place **Research Reviewer, Trials Consumed, Unlock Condition, Kill Condition** near the title, then save. Their visibility is already configured through the API. Add Status Review / Gate items to this view using the UI's supported filter builder if its filter capabilities permit the union; otherwise Active Research is the companion review queue.
-4. Sort active/gate tables by Priority ascending, then Phase; save. This does not override the committed Ready/unlock/WIP policy.
-5. Optional view-level WIP affordance: if the current UI offers a board limit, set 3 for program research. The authoritative limit is three unique primary work items across In Progress/Review / Gate, not three per column. The `research next` dispatch check enforces the program count from a verified snapshot.
-
-[GitHub Projects GraphQL reference](https://docs.github.com/en/graphql/reference/projects) documents view mutation/configuration. The schema inspected in this account is authoritative for the recorded UI limitations.
+No mandatory view grouping/sorting action remains. If the current UI offers a WIP display, set the program research limit to 3; no available view API parameter exposes that limit. The authoritative limit is three unique primary work items across In Progress/Review / Gate, not three per column. The `research next` dispatch check enforces the count from a verified current snapshot. Do not mistake linked PR evidence rows for separate admissions. Optional tab/layout preferences do not affect authority.
 
 ## Main protection and review rollout
 

@@ -30,7 +30,7 @@ def commit(root: Path, message: str) -> str:
 
 
 @pytest.fixture
-def synthetic_repo(tmp_path):
+def synthetic_repo(tmp_path, request):
     root = tmp_path
     subprocess.run(["git", "init", "-q", "-b", "main", str(root)], check=True)
     git(root, "config", "user.name", "Synthetic test")
@@ -48,7 +48,7 @@ def synthetic_repo(tmp_path):
         p.write_text("Synthetic artifact: " + role)
         artifacts[role] = [{"path": p.name, "sha256": digest(p.read_bytes())}]
     scorer = root / "scorer.py"
-    scorer.write_text("import json\nprint(json.dumps({'experiment_id': 'SYN-001', 'result': 'FAIL'}))\n")
+    scorer.write_text(getattr(request, "param", "import json\nprint(json.dumps({'experiment_id': 'SYN-001', 'result': 'FAIL'}))\n"))
     artifacts["gate"] = [{"path": scorer.name, "sha256": digest(scorer.read_bytes())}]
     dataset = root / "synthetic.json"
     dataset.write_text('{"synthetic": true}')
@@ -104,7 +104,23 @@ def test_deleting_registry_does_not_evade_freeze(synthetic_repo):
 def test_self_approval_rejected(synthetic_repo, reviewer):
     root, manifest, _ = synthetic_repo
     manifest["approval"]["reviewer"] = reviewer
-    with pytest.raises(GateError, match="Independent reviewer"):
+    with pytest.raises(GateError, match="identities required|Independent reviewer"):
+        verify_manifest(root, manifest)
+
+
+@pytest.mark.parametrize("synthetic_repo", ["print('[]')\n", "print('{\"experiment_id\":\"SYN-001\",\"result\":\"PASS\",\"invalid\":NaN}')\n"], indirect=True)
+def test_malformed_scorer_output_is_blocked_with_consumed_trial(synthetic_repo):
+    root, _, _ = synthetic_repo
+    result = score(root, "SYN-001")
+    assert result["result"] == "BLOCKED" and result["trial_consumed"]
+    assert result["phase"] == "FINISH"
+    assert len(read_chain((root / JOURNAL).read_bytes())) == 2
+
+
+def test_unresolved_reviewer_cannot_be_an_approval(synthetic_repo):
+    root, manifest, _ = synthetic_repo
+    manifest["approval"]["reviewer"] = "UNRESOLVED"
+    with pytest.raises(GateError, match="Resolved contributor/reviewer identities"):
         verify_manifest(root, manifest)
 
 

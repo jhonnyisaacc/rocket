@@ -62,6 +62,8 @@ def manifest_path(root: Path, experiment_id: str) -> Path:
 
 
 def verify_manifest(root: Path, manifest: dict) -> None:
+    if not isinstance(manifest, dict):
+        raise GateError("Manifest must be a JSON object")
     if manifest.get("schema") != "rocket.research.manifest.v1":
         raise GateError("Unknown manifest schema")
     if manifest.get("safety_boundary") != BOUNDARY:
@@ -73,7 +75,7 @@ def verify_manifest(root: Path, manifest: dict) -> None:
     if manifest.get("state") not in FROZEN:
         raise GateError("Unknown manifest state")
     artifacts = manifest.get("artifacts", {})
-    if not ROLES <= artifacts.keys() or not all(artifacts[r] for r in ROLES):
+    if not isinstance(artifacts, dict) or not ROLES <= artifacts.keys() or not all(artifacts[r] for r in ROLES):
         raise GateError("All six frozen artifact roles required")
     revision = manifest["freeze_revision"]
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
@@ -94,13 +96,20 @@ def verify_manifest(root: Path, manifest: dict) -> None:
         raise GateError("Frozen Python version required")
     if type(manifest["scorer"].get("timeout_seconds")) is not int or not 1 <= manifest["scorer"]["timeout_seconds"] <= 86400:
         raise GateError("Explicit bounded scorer timeout required")
-    if manifest.get("trial_budget") != 1 or type(manifest.get("trial_number")) is not int:
+    if type(manifest.get("trial_budget")) is not int or manifest["trial_budget"] != 1 or type(manifest.get("trial_number")) is not int:
         raise GateError("Explicit single-trial budget/number required")
     if manifest["trial_number"] < 1:
         raise GateError("Trial number must be positive")
     if manifest.get("state") == "ADMITTED":
         approval = manifest.get("approval", {})
+        if not isinstance(approval, dict):
+            raise GateError("Independent approval object required")
         reviewer = approval.get("reviewer")
+        identities = [manifest.get("proposer"), manifest.get("implementer"), reviewer]
+        if any(not isinstance(i, str) or not i.strip() or any(
+            placeholder in i.upper() for placeholder in ("UNRESOLVED", "UNASSIGNED", "HUMAN_DECISION_REQUIRED")
+        ) for i in identities):
+            raise GateError("Resolved contributor/reviewer identities required")
         if not reviewer or reviewer == manifest.get("proposer") or reviewer == manifest.get("implementer"):
             raise GateError("Independent reviewer required")
         if approval.get("decision") != "APPROVE" or approval.get("reviewed_revision") != revision:
@@ -109,6 +118,9 @@ def verify_manifest(root: Path, manifest: dict) -> None:
             raise GateError("Approval does not match frozen artifacts")
         if not approval.get("evidence") or not approval.get("timestamp"):
             raise GateError("Approval provenance required")
+        approved_at = datetime.fromisoformat(approval["timestamp"])
+        if approved_at.tzinfo is None or approved_at > datetime.now(UTC):
+            raise GateError("Approval must precede scoring with an aware timestamp")
         if manifest.get("scoring_authorized") is not True:
             raise GateError("Admitted scoring authority absent")
 
@@ -202,6 +214,8 @@ def score(root: Path, experiment_id: str) -> dict:
         try:
             receipt["commit_sha"] = git(root, "rev-parse", "HEAD").decode().strip()
             manifest = json.loads(manifest_path(root, experiment_id).read_bytes())
+            if not isinstance(manifest, dict):
+                raise GateError("Manifest must be a JSON object")
             receipt.update(frozen_hashes=manifest.get("artifacts", {}),
                            trial_number=manifest.get("trial_number"), scorer=manifest.get("scorer"))
             verify_manifest(root, manifest)
@@ -238,6 +252,9 @@ def score(root: Path, experiment_id: str) -> dict:
             if completed.returncode:
                 raise GateError("Frozen scorer failed; reserved trial consumed")
             result = json.loads(completed.stdout)
+            if not isinstance(result, dict):
+                raise GateError("Scorer must emit one JSON gate object")
+            canonical(result)
             verify_manifest(root, manifest)
             if digest(data_path.read_bytes()) != receipt["dataset_fingerprint"]:
                 raise GateError("Dataset mutated during scoring; trial consumed")
@@ -272,7 +289,8 @@ def disposition(root: Path, receipt: dict, *, audit: dict) -> dict:
     verify_manifest(root, manifest)
     if manifest.get("state") != "ADMITTED":
         raise GateError("Admitted experiment required for disposition")
-    if audit.get("auditor") in {None, manifest.get("proposer"), manifest.get("implementer")}:
+    auditor = audit.get("auditor")
+    if not isinstance(auditor, str) or not auditor.strip() or auditor in {manifest.get("proposer"), manifest.get("implementer")} or "UNRESOLVED" in auditor.upper():
         raise GateError("Independent provenance audit required")
     records = read_chain((root / JOURNAL).read_bytes())
     if receipt not in records or not receipt.get("trial_consumed"):

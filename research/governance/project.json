@@ -670,6 +670,28 @@
         "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/26; EVIDENCE_INDEX.md pins revision; trial total UNKNOWN (A0\u2013A6 ablations, not zero trials)",
         "Depends On": "#55; #51 also before #50 closure"
       }
+    },
+    "governance_pr": {
+      "id": "PVTI_lAHOA5rv284Blgkvzg-sbLw",
+      "url": "https://github.com/jhonnyisaacc/rocket/pull/57",
+      "title": "chore: establish autonomous derivatives research governance",
+      "fields": {
+        "Status": "Review / Gate",
+        "Priority": "P0",
+        "Research Family": "Cross-cutting",
+        "Work Type": "Governance",
+        "Research State": "Admitted",
+        "Phase": "Foundation",
+        "Trials Consumed": 0,
+        "Proposer": "Human program mandate",
+        "Implementer": "Codex",
+        "Research Reviewer": "UNRESOLVED \u2014 independent PR reviewer",
+        "Unlock Condition": "Created governance infrastructure; independent last-push PR review before merge",
+        "Kill Condition": "Do not merge until required CI/independent approval pass; no self-merge or main push",
+        "Evidence": "https://github.com/jhonnyisaacc/rocket/pull/57; OPERATIONAL_REPORT.md",
+        "Depends On": "Real independent collaborator access; #56 identity process",
+        "Program Outcome": "Active"
+      }
     }
   },
   "primary_work_item_keys": [
@@ -682,5 +704,219 @@
     "downstream"
   ],
   "wip_limit": 3,
-  "reviewer_field_alias": "Research Reviewer"
+  "reviewer_field_alias": "Research Reviewer",
+  "views": [
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T68",
+      "number": 8,
+      "name": "Research Board",
+      "layout": "board",
+      "filter": "",
+      "group_by": [],
+      "vertical_group_by": [
+        420295177
+      ],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T-0",
+      "number": 9,
+      "name": "Active Research",
+      "layout": "table",
+      "filter": "status:Ready,\"In Progress\",\"Review / Gate\" -research-state:Historical",
+      "group_by": [],
+      "vertical_group_by": [],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_A",
+      "number": 10,
+      "name": "Research Gates",
+      "layout": "table",
+      "filter": "research-state:\"Admission Review\",Admitted,Running,Passed,Blocked",
+      "group_by": [
+        420295207
+      ],
+      "vertical_group_by": [],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_E",
+      "number": 11,
+      "name": "Rejected / Historical",
+      "layout": "table",
+      "filter": "research-state:Historical,Failed",
+      "group_by": [
+        420295204
+      ],
+      "vertical_group_by": [],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_I",
+      "number": 12,
+      "name": "Data / PIT",
+      "layout": "table",
+      "filter": "research-family:\"Data / PIT\"",
+      "group_by": [],
+      "vertical_group_by": [],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    },
+    {
+      "id": "PVTV_lAHOA5rv284BlgkvzgL7T_M",
+      "number": 13,
+      "name": "Program Roadmap",
+      "layout": "table",
+      "filter": "",
+      "group_by": [
+        420295208
+      ],
+      "vertical_group_by": [],
+      "visible_fields": [
+        420295175,
+        420295189,
+        421514071,
+        420295210,
+        421514100,
+        421514101,
+        420295177,
+        420295204,
+        420295207,
+        420295208,
+        421514130,
+        421514131,
+        421514132
+      ],
+      "sort_by": [
+        [
+          420295189,
+          "asc"
+        ],
+        [
+          420295208,
+          "asc"
+        ]
+      ]
+    }
+  ]
 }
