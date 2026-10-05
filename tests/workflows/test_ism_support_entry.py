@@ -108,6 +108,27 @@ def test_guard_and_zone_boundaries(contexts, price, condition, expected):
     assert evaluate(c)['classification'] == expected
 
 
+@pytest.mark.parametrize('eps', [-.136, .39])
+def test_opposite_eps_sign_forces_review(contexts, eps):
+    c = contexts['NUE']
+    c['fundamentals'].update(
+        eps_growth=eps, pe_ttm=25,
+        eps_provider_disagreement={'flagged': True, 'reason': 'opposite_sign', 'threshold': .25},
+    )
+    row = evaluate(c)
+    assert row['classification'] == 'NEEDS_REVIEW'
+    assert 'EPS providers disagree on sign' in row['missing']
+    assert row['entry'] is None
+
+
+def test_same_sign_large_gap_keeps_classification(contexts):
+    c = contexts['NUE']
+    c['fundamentals']['eps_provider_disagreement'] = {
+        'flagged': True, 'reason': 'large_gap', 'threshold': .25,
+    }
+    assert evaluate(c)['classification'] == 'BUY_CANDIDATE'
+
+
 @pytest.mark.parametrize('eps,pe', [(-.01, 20), (.1, 0), (.1, 40.01)])
 def test_failing_fundamentals_have_no_support_entry(contexts, eps, pe):
     c = contexts['NUE']

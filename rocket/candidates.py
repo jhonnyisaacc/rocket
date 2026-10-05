@@ -2,6 +2,7 @@
 
 import hashlib
 import math
+from collections.abc import Mapping
 from datetime import timedelta
 
 from rocket.pit import parse_datetime
@@ -111,6 +112,9 @@ def evaluate_long(ticker, context, *, thesis, source_reference, now, entry_polic
     if any(not isinstance(fundamental.get(k), (int, float)) or isinstance(fundamental.get(k), bool)
            or not math.isfinite(fundamental[k]) for k in ("eps_growth", "pe_ttm")):
         missing.append("EPS growth and valuation")
+    disagreement = fundamental.get("eps_provider_disagreement")
+    if isinstance(disagreement, Mapping) and disagreement.get("reason") == "opposite_sign":
+        missing.append("EPS providers disagree on sign")
     row = {"candidate_id": candidate_id(ticker), "ticker": ticker, "direction": "long",
            "thesis": thesis, "source_reference": source_reference, "context": context,
            "classification": "NEEDS_REVIEW", "missing": missing, "watch_proposal": None,

@@ -56,6 +56,7 @@ def reported_factors(rows, symbol, retrieved):
         "symbol": symbol, "cik": latest[4]["cik"],
         "company_fundamentals": growth < 0, "eps_growth": growth,
         "eps_growth_basis": "reported annual diluted EPS growth; comparable consecutive fiscal years",
+        "eps_accounting": "UNSPECIFIED", "eps_window": "ANNUAL",
         "eps_kind": "REPORTED", "earnings_revision_deterioration": None,
         "valuation_support": None, "pe_ttm": None,
         "fundamentals_source": "massive", "citation": ENDPOINT,

@@ -76,6 +76,8 @@ def test_fmp_retains_ratios_when_estimates_fail_and_acquires_growth():
     assert row["pe_ttm"] == 30
     assert row["company_fundamentals"] is True
     assert row["eps_growth_basis"] == "reported annual EPS growth"
+    assert row["eps_accounting"] == "UNSPECIFIED"
+    assert row["eps_window"] == "ANNUAL"
     assert row["earnings_revision_deterioration"] is None
     assert len(requests) == 4
     assert any(p["name"] == "fmp:analyst_estimates" and p["status"] == "UNAVAILABLE" for p in row["provider_attempts"])
