@@ -1,5 +1,9 @@
 # Memecoin strategy — NO EDGE VALIDATED; primitives only
 
+Historical V1 issue context. The current research authority is
+`docs/research/RESEARCH_CONSTITUTION.md` → `docs/research/memecoin/MEMECOIN_PILLAR.md`
+→ `docs/research/memecoin/MEMECOIN_FRONTIER.md`. This issue does not prescribe the next experiment.
+
 Status: open tracking issue. Not a V1 live agent job.
 
 ## Why it is not live

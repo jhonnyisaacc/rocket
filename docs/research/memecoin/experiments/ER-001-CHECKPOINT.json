@@ -1,0 +1,31 @@
+{
+  "schema": "rocket.research-checkpoint.v1",
+  "domain": "memecoin",
+  "experiment": "ER-001",
+  "proposer": "rocket_research_author",
+  "hypothesis_family": "extreme_runner_actor_confluence",
+  "previous_result": "WORKFLOW-AUDIT-20260929",
+  "economic_gate_status": "UNTESTED",
+  "category": "retrospective_discovery",
+  "work_kind": "alpha_research",
+  "new_information": "Leakage-safe conditional reachable-20x base-rate lift for at least two credible actors without strong observed links versus launch-period controls",
+  "can_change_decision": true,
+  "decision_change": "Fail: stop actor-watch investment. Pass: propose independent ER-002 temporal replication, never strategy acceptance.",
+  "materially_different": true,
+  "mechanism_difference": "Prior completed extreme-runner histories and common-control-aware confluence, rather than five-second curve progress, raw net flow or first-three size dispersion",
+  "stop_rule_status": "CLEAR",
+  "operator_review_required": false,
+  "design": "docs/research/memecoin/experiments/ER-001-FROZEN.md",
+  "operator_authorization": {
+    "evidence": "docs/research/memecoin/experiments/ER-001-OPERATOR-AUTHORIZATION.md",
+    "sha256": "b6f1c1530a8edff85a650cdbc5f059cf8e6eb984513efae147acb7dbcf2eb665",
+    "scope": "ER-001 and bounded internal acquisition/reconstruction/analysis only"
+  },
+  "allowed_steps": [
+    "source_semantics",
+    "dataset_acquisition",
+    "historical_reconstruction",
+    "deterministic_analysis"
+  ],
+  "design_version": "1.1"
+}

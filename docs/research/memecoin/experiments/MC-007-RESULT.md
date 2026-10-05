@@ -1,0 +1,21 @@
+# MC-007 result — paired public websocket acquisition benchmark
+
+Status: `REJECTED` as a replacement acquisition source. The [design](MC-007-FROZEN.md) froze a simultaneous, read-only 120-second comparison before capture. Both public Solana websocket aliases used the same bounded v2 collector and were checked against independent `solana-rpc.publicnode.com` signature pages. Neither met the frozen exact-coverage gate, despite low receipt age in this short window.
+
+## Capture and independent coverage
+
+The `api.mainnet-beta.solana.com` arm ran from 16:00:29.002 to 16:02:29.007 UTC after subscription acknowledgment, recorded 12,157 notifications in 12,194 frames, and ended normally with no collector errors. Raw segment SHA-256: `01528cafcd3907b61fb12e54b60a02495ba115f03583cc5738fae587e851c3eb` (38,098,200 bytes). The `api.mainnet.solana.com` arm ran from 16:00:30.421 to 16:02:30.427 UTC, recorded 11,995 notifications in 12,032 frames, and likewise had no collector errors. Raw SHA-256: `220dd5e294bf78c3023853ce0241df1f2c2153432f480e9a74b1db32bec4d5ad` (37,809,752 bytes).
+
+Independent indexing found 12,087 signatures in the beta arm's fully observed interior slots versus 12,088 stream signatures, and 11,925 versus 11,926 in the mainnet alias. Each difference is the **same all-ones signature** (`1111111111111111111111111111111111111111111111111111111111111111`) at slot 450077121. Both streams recorded the exact same 5,903-byte notification frame, one millisecond apart, including a nonnative CreateEvent. Neither independent program-signature index included it. A later independent `getSignatureStatuses` returned null for that signature, and `getSignaturesForAddress` returned no history for the emitted mint. The two recorded `getTransaction` attempts for the beta arm also returned null. Its origin is unresolved; treat it as an uncorroborated feed record, not a transaction-confirmed launch. The exact-coverage gate fails for **both** arms. No other interior signature was missing and no shared signature had a slot disagreement.
+
+## Paired timing
+
+The overlap of fully observed interior slots was 450076687–450077130. All 11,831 signatures in that overlap appeared in both feeds. For `mainnet` receipt time minus `mainnet-beta` receipt time, the median was 0 milliseconds, p90 13 milliseconds, p99 108 milliseconds, minimum −505 milliseconds and maximum 197 milliseconds. Neither feed was more than five seconds later on any paired signature. The close timing and identical anomalous packet are consistent with shared upstream behavior, but do not prove the hosts have the same backend.
+
+Within the overlapping slots, the 31 CreateEvents in each arm had integer-event-timestamp-to-receipt p90 of 1.533 seconds (beta) and 1.537 seconds (mainnet). Independent whole-second block-time-to-receipt p90 was 1.666 seconds across the beta arm's 12,087 indexed inner signatures and 1.662 seconds across the mainnet arm's 11,925. Neither clock measures exact wire latency. This window had no burst resembling MC-005/MC-006's 10–45-second receipt-age episodes; two minutes cannot exclude a future burst.
+
+## Decision and evidence
+
+Neither public alias is eligible for a longer strategy validation under the frozen exact-coverage rule. The mainnet alias supplies no material paired timing improvement and shares the same uncorroborated frame. Investigate a dedicated independently indexed stream or Geyser feed, including malformed/uncorroborated notification handling, before committing another strategy holdout. Keep all received frames and the failed coverage result; do not waive the gate after seeing the data. No trading or order submission occurred.
+
+[Paired raw capture, manifests, second-provider index pages, decoded observations, audits, and comparison](../data/mc007-paired-ws-20260924.tar.gz), archive SHA-256 `c5e020d921b3cdfb2b0fbdcb339e10fd583ec1f8c0030d4713a669da6c516610`. The deterministic comparison is `scripts/research/memecoin_ws_compare.py`; the archive's independent indexes permit offline audit replay. Capture manifest hashes are `53f1c93ec171bc8743a3c31e4bde862866b1db717ba018428653a1efa8314b5f` (beta) and `d755529b7c54d53d821b63dae68815ec066221b2611f4ec985214b9f5914716e` (mainnet).

@@ -1,0 +1,108 @@
+[
+  {
+    "name": "slinky_tokens",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "tokens.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "mint",
+      "detected_at",
+      "is_mayhem_mode",
+      "creator",
+      "bonding_curve_key",
+      "initial_market_cap_sol",
+      "graduated_at",
+      "trade_count",
+      "is_zombie"
+    ]
+  },
+  {
+    "name": "slinky_trades",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "trades/trades-00000.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "mint",
+      "tx_signature",
+      "event_time",
+      "seconds_since_launch",
+      "is_buy",
+      "sol_amount",
+      "token_amount",
+      "user_wallet",
+      "v_tokens_bonding_curve",
+      "v_sol_bonding_curve",
+      "source"
+    ]
+  },
+  {
+    "name": "slinky_postgrad",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "postgard_snapshots.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "mint",
+      "snapshot_time",
+      "pair_address",
+      "dex_id",
+      "incomplete_data",
+      "liquidity_base",
+      "liquidity_quote",
+      "price_usd"
+    ]
+  },
+  {
+    "name": "slinky_v2_trade",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "block_time",
+      "slot",
+      "signature",
+      "mint",
+      "trade_user",
+      "is_buy",
+      "sol_amount",
+      "token_amount",
+      "virtual_sol_reserves",
+      "virtual_token_reserves",
+      "real_sol_reserves",
+      "real_token_reserves",
+      "fee",
+      "fee_basis_points",
+      "creator_fee_basis_points"
+    ]
+  },
+  {
+    "name": "slinky_v2_txmeta",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "block_time",
+      "slot",
+      "signature",
+      "first_signer",
+      "num_signers",
+      "unique_programs",
+      "ix_iix",
+      "ix_iix_programs"
+    ]
+  }
+]

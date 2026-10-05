@@ -1,0 +1,43 @@
+{
+  "schema": "rocket.er001-feasibility.v1",
+  "mode": "METADATA_ONLY_NO_OUTCOME_ROWS",
+  "acquired_at": "2026-09-29T21:16:11.969101+00:00",
+  "repository": "https://github.com/ian05012/solana-memecoin-dataset",
+  "revision": "7070d00e1e4492f8604d988549d91785cc5f43f7",
+  "requests": [
+    {
+      "url": "https://raw.githubusercontent.com/ian05012/solana-memecoin-dataset/7070d00e1e4492f8604d988549d91785cc5f43f7/README.md",
+      "received_at": "2026-09-29T21:16:12.257302+00:00",
+      "bytes": 10189,
+      "sha256": "405df3a29c04d5d94f78a8e9d19942e581cf09d246296e3218a2c4264cdb4b03"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ian05012/solana-memecoin-dataset/7070d00e1e4492f8604d988549d91785cc5f43f7/scripts/collect.py",
+      "received_at": "2026-09-29T21:16:12.678805+00:00",
+      "bytes": 5943,
+      "sha256": "d0f22fa2af2126ebd0f084f20150f102d2795f16b4003965864b667c9cf8b731"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ian05012/solana-memecoin-dataset/7070d00e1e4492f8604d988549d91785cc5f43f7/scripts/gmgn_client.py",
+      "received_at": "2026-09-29T21:16:12.991204+00:00",
+      "bytes": 10267,
+      "sha256": "88ef98048e3bf563b1ce01301173b5074bebca406c5da4987cc98c81df77b0a0"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/ian05012/solana-memecoin-dataset/7070d00e1e4492f8604d988549d91785cc5f43f7/LICENSE",
+      "received_at": "2026-09-29T21:17:36.374600+00:00",
+      "bytes": 1056,
+      "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685"
+    }
+  ],
+  "design_sha256": "d1678dfed8bcbab267e198648aef61c99fe59cbb4e63715342a042285fc4762c",
+  "outcome_rows_read": 0,
+  "coverage_period_claim": "2026-06-10 through 2026-06-30; publisher claim, not independently audited",
+  "field_obtainability": "DATA_INSUFFICIENT_FOR_PRIMARY_ER001",
+  "probe_limits": {
+    "files": 4,
+    "maximum_bytes_per_file": 256000,
+    "no_dataset_download": true,
+    "no_source_execution": true
+  }
+}

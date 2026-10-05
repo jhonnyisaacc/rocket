@@ -19,6 +19,10 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
 ]
+research = [
+    "websockets>=15.0,<16",
+    "pyarrow>=21,<24",
+]
 
 [project.scripts]
 rocket = "rocket.cli:app"

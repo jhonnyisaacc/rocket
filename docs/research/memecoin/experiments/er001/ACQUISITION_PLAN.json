@@ -1,0 +1,125 @@
+[
+  {
+    "name": "rocket_aug28",
+    "repo": "jhonnyisaacc/memecoins",
+    "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+    "path": "pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+    "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "*"
+    ]
+  },
+  {
+    "name": "rocket_aug29_manifest",
+    "repo": "jhonnyisaacc/memecoins",
+    "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+    "path": "pumpapi/day/date=2026-08-29/launch_manifest.json",
+    "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/launch_manifest.json",
+    "format": "json",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "rocket_aug29_checkpoint",
+    "repo": "jhonnyisaacc/memecoins",
+    "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+    "path": "pumpapi/day/date=2026-08-29/checkpoint.json",
+    "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/checkpoint.json",
+    "format": "json",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_issues",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "KNOWN_ISSUES.md",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/KNOWN_ISSUES.md",
+    "format": "text",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_tokens",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "tokens.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_trades",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "trades/trades-00000.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_snapshots",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "snapshots.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/snapshots.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_postgrad",
+    "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+    "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+    "path": "postgard_snapshots.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_v2_create",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864,
+    "sample_columns": [
+      "*"
+    ]
+  },
+  {
+    "name": "slinky_v2_trade",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_v2_swap",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "slinky_v2_txmeta",
+    "repo": "Slinky21/Pumpfun_v2_dataset",
+    "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+    "path": "p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+    "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+    "format": "parquet",
+    "maximum_bytes": 67108864
+  },
+  {
+    "name": "trenches_datasheet",
+    "repo": "Tr4m0ryp/trenches-pumpfun-forward-2026-08",
+    "revision": "0a38dff884ba41f63da325d04fc85521b1cb34fe",
+    "path": "DATASHEET.md",
+    "url": "https://huggingface.co/datasets/Tr4m0ryp/trenches-pumpfun-forward-2026-08/resolve/0a38dff884ba41f63da325d04fc85521b1cb34fe/DATASHEET.md",
+    "format": "text",
+    "maximum_bytes": 67108864
+  }
+]

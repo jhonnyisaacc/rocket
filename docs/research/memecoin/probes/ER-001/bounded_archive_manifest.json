@@ -1,0 +1,2337 @@
+{
+  "schema": "rocket.er001-feasibility.v1",
+  "recorded_at": "2026-09-29T21:39:12.380542+00:00",
+  "purpose": "Source semantics and coverage only; no primary labels, wallet scores or effect estimates",
+  "primary_interval": [
+    "2026-03-01",
+    "2026-08-31"
+  ],
+  "sources": [
+    {
+      "name": "rocket_aug28",
+      "repo": "jhonnyisaacc/memecoins",
+      "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+      "path": "pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+      "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "*"
+      ],
+      "file_bytes": 37737696,
+      "rows": 254522,
+      "row_groups": 26,
+      "schema": "provider: string\nvenue: string\nevent_type: string\nmint: string\nevent_time: string\nevent_time_ms: int64\nprovider_received_at: string\nprovider_received_at_ms: int64\navailable_at: string\nslot: int64\ntx_signature: string\ntransaction_index: null\ninstruction_index: null\nwallet: string\nis_buy: bool\nside: string\ntoken_amount: double\nquote_amount: double\nquote_mint: string\nprice: double\nvirtual_token_reserves: null\nvirtual_quote_reserves: null\nreal_token_reserves: double\nreal_quote_reserves: double\npool_id: string\ncreator: null\nraw_schema: string\nprotocol_state_json: string\nquality_flags_json: string",
+      "columns": [
+        "provider",
+        "venue",
+        "event_type",
+        "mint",
+        "event_time",
+        "event_time_ms",
+        "provider_received_at",
+        "provider_received_at_ms",
+        "available_at",
+        "slot",
+        "tx_signature",
+        "transaction_index",
+        "instruction_index",
+        "wallet",
+        "is_buy",
+        "side",
+        "token_amount",
+        "quote_amount",
+        "quote_mint",
+        "price",
+        "virtual_token_reserves",
+        "virtual_quote_reserves",
+        "real_token_reserves",
+        "real_quote_reserves",
+        "pool_id",
+        "creator",
+        "raw_schema",
+        "protocol_state_json",
+        "quality_flags_json"
+      ],
+      "sample_rows": 10000,
+      "sampled_columns": [
+        "provider",
+        "venue",
+        "event_type",
+        "mint",
+        "event_time",
+        "event_time_ms",
+        "provider_received_at",
+        "provider_received_at_ms",
+        "available_at",
+        "slot",
+        "tx_signature",
+        "transaction_index",
+        "instruction_index",
+        "wallet",
+        "is_buy",
+        "side",
+        "token_amount",
+        "quote_amount",
+        "quote_mint",
+        "price",
+        "virtual_token_reserves",
+        "virtual_quote_reserves",
+        "real_token_reserves",
+        "real_quote_reserves",
+        "pool_id",
+        "creator",
+        "raw_schema",
+        "protocol_state_json",
+        "quality_flags_json"
+      ],
+      "transferred_bytes": 1746020,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            37672160,
+            37737696
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:34:47.570522+00:00",
+          "received_at": "2026-09-29T21:34:48.596144+00:00",
+          "sha256": "dee3d496834b1ff859a4a21ff2b01f76cd344f3c4dd625896aa90385a5b54ec4",
+          "raw_file": "37672160-37737696-dee3d496834b1ff859a4a21ff2b01f76cd344f3c4dd625896aa90385a5b54ec4.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            37635974,
+            37737688
+          ],
+          "bytes": 101714,
+          "dispatch_at": "2026-09-29T21:34:48.596877+00:00",
+          "received_at": "2026-09-29T21:34:49.274279+00:00",
+          "sha256": "b45a8b09a9b3bd94abc8fa5c7307ebdefb60ab27228cf5192713f3d3ad1adc84",
+          "raw_file": "37635974-37737688-b45a8b09a9b3bd94abc8fa5c7307ebdefb60ab27228cf5192713f3d3ad1adc84.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            4,
+            103
+          ],
+          "bytes": 99,
+          "dispatch_at": "2026-09-29T21:34:49.283168+00:00",
+          "received_at": "2026-09-29T21:34:49.807307+00:00",
+          "sha256": "76db76b5a121e2cdbb20ac5719d877fe3baa877b7ebf6b2257dfc14dfbf9b83a",
+          "raw_file": "4-103-76db76b5a121e2cdbb20ac5719d877fe3baa877b7ebf6b2257dfc14dfbf9b83a.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            103,
+            947
+          ],
+          "bytes": 844,
+          "dispatch_at": "2026-09-29T21:34:49.809282+00:00",
+          "received_at": "2026-09-29T21:34:50.339341+00:00",
+          "sha256": "d078be834f9d7174b119d8f83e22b27c39849e5e0c204f3d415123cd4989065f",
+          "raw_file": "103-947-d078be834f9d7174b119d8f83e22b27c39849e5e0c204f3d415123cd4989065f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            947,
+            2491
+          ],
+          "bytes": 1544,
+          "dispatch_at": "2026-09-29T21:34:50.339818+00:00",
+          "received_at": "2026-09-29T21:34:50.817693+00:00",
+          "sha256": "1900dc6f1f2b6ed0f968a659b7791b61355f66ad3bb6d703fef882fdc2def3e3",
+          "raw_file": "947-2491-1900dc6f1f2b6ed0f968a659b7791b61355f66ad3bb6d703fef882fdc2def3e3.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            2491,
+            8764
+          ],
+          "bytes": 6273,
+          "dispatch_at": "2026-09-29T21:34:50.818486+00:00",
+          "received_at": "2026-09-29T21:34:51.336979+00:00",
+          "sha256": "ddd1a799e91a71a15f964c2bc3495c8e14f0152546be682c2d5e127d0a978b3b",
+          "raw_file": "2491-8764-ddd1a799e91a71a15f964c2bc3495c8e14f0152546be682c2d5e127d0a978b3b.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            8764,
+            64365
+          ],
+          "bytes": 55601,
+          "dispatch_at": "2026-09-29T21:34:51.337734+00:00",
+          "received_at": "2026-09-29T21:34:51.856374+00:00",
+          "sha256": "2f8a1753d3a81a04e39397a9e442707a1771cd40409dfa9544c88027fdc537cc",
+          "raw_file": "8764-64365-2f8a1753d3a81a04e39397a9e442707a1771cd40409dfa9544c88027fdc537cc.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            64365,
+            100373
+          ],
+          "bytes": 36008,
+          "dispatch_at": "2026-09-29T21:34:51.857063+00:00",
+          "received_at": "2026-09-29T21:34:52.387301+00:00",
+          "sha256": "e7099577686d10f661465dad18ac85ea61999f2eeb82c5a26dfcf882d8e3f8a8",
+          "raw_file": "64365-100373-e7099577686d10f661465dad18ac85ea61999f2eeb82c5a26dfcf882d8e3f8a8.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            100373,
+            155934
+          ],
+          "bytes": 55561,
+          "dispatch_at": "2026-09-29T21:34:52.388275+00:00",
+          "received_at": "2026-09-29T21:34:52.933417+00:00",
+          "sha256": "8c56583487250e8fcdfd137eb9e9569f453ee4be382aba53580d56ff5a749dc9",
+          "raw_file": "100373-155934-8c56583487250e8fcdfd137eb9e9569f453ee4be382aba53580d56ff5a749dc9.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            155934,
+            191957
+          ],
+          "bytes": 36023,
+          "dispatch_at": "2026-09-29T21:34:52.934292+00:00",
+          "received_at": "2026-09-29T21:34:53.444370+00:00",
+          "sha256": "22e18031578e8568bf5d12e9d4f059eaab48e30f83024a07f575224b62bf2d61",
+          "raw_file": "155934-191957-22e18031578e8568bf5d12e9d4f059eaab48e30f83024a07f575224b62bf2d61.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            191957,
+            247518
+          ],
+          "bytes": 55561,
+          "dispatch_at": "2026-09-29T21:34:53.445429+00:00",
+          "received_at": "2026-09-29T21:34:54.015372+00:00",
+          "sha256": "8c56583487250e8fcdfd137eb9e9569f453ee4be382aba53580d56ff5a749dc9",
+          "raw_file": "191957-247518-8c56583487250e8fcdfd137eb9e9569f453ee4be382aba53580d56ff5a749dc9.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            247518,
+            269743
+          ],
+          "bytes": 22225,
+          "dispatch_at": "2026-09-29T21:34:54.016062+00:00",
+          "received_at": "2026-09-29T21:34:54.474696+00:00",
+          "sha256": "bd03595ffd2a8dc6280c9560adb165235cb22c6b57c8055ac70c9a498a702faf",
+          "raw_file": "247518-269743-bd03595ffd2a8dc6280c9560adb165235cb22c6b57c8055ac70c9a498a702faf.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            269743,
+            962691
+          ],
+          "bytes": 692948,
+          "dispatch_at": "2026-09-29T21:34:54.475814+00:00",
+          "received_at": "2026-09-29T21:34:55.419494+00:00",
+          "sha256": "a214050f8fc47fac3b772ff5081b18a0463a260de52707cb177184ae970207c9",
+          "raw_file": "269743-962691-a214050f8fc47fac3b772ff5081b18a0463a260de52707cb177184ae970207c9.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            962691,
+            962753
+          ],
+          "bytes": 62,
+          "dispatch_at": "2026-09-29T21:34:55.420076+00:00",
+          "received_at": "2026-09-29T21:34:55.828301+00:00",
+          "sha256": "7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e",
+          "raw_file": "962691-962753-7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            962753,
+            962815
+          ],
+          "bytes": 62,
+          "dispatch_at": "2026-09-29T21:34:55.829359+00:00",
+          "received_at": "2026-09-29T21:34:56.303146+00:00",
+          "sha256": "7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e",
+          "raw_file": "962753-962815-7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            962815,
+            1121648
+          ],
+          "bytes": 158833,
+          "dispatch_at": "2026-09-29T21:34:56.304156+00:00",
+          "received_at": "2026-09-29T21:34:56.829585+00:00",
+          "sha256": "a420a66e852475720653990111eb8875a75881383a1a7fa280726f3703e4081e",
+          "raw_file": "962815-1121648-a420a66e852475720653990111eb8875a75881383a1a7fa280726f3703e4081e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1121648,
+            1122845
+          ],
+          "bytes": 1197,
+          "dispatch_at": "2026-09-29T21:34:56.830043+00:00",
+          "received_at": "2026-09-29T21:34:57.349397+00:00",
+          "sha256": "868a61a79aced3350a8ed6fdc84ede045db7b13db2728ebf885820f91cd798d5",
+          "raw_file": "1121648-1122845-868a61a79aced3350a8ed6fdc84ede045db7b13db2728ebf885820f91cd798d5.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1122845,
+            1124364
+          ],
+          "bytes": 1519,
+          "dispatch_at": "2026-09-29T21:34:57.350803+00:00",
+          "received_at": "2026-09-29T21:34:57.755916+00:00",
+          "sha256": "c3b4f77a1a6dfac110987bef6b70389523fa067d776cb35f21bdd81e64e0e88f",
+          "raw_file": "1122845-1124364-c3b4f77a1a6dfac110987bef6b70389523fa067d776cb35f21bdd81e64e0e88f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1124364,
+            1208906
+          ],
+          "bytes": 84542,
+          "dispatch_at": "2026-09-29T21:34:57.756467+00:00",
+          "received_at": "2026-09-29T21:34:58.169841+00:00",
+          "sha256": "1a8a0c75a969ab52cad3044000c51f9916fd2b043e97b6a04cb33c6a042b0431",
+          "raw_file": "1124364-1208906-1a8a0c75a969ab52cad3044000c51f9916fd2b043e97b6a04cb33c6a042b0431.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1208906,
+            1295777
+          ],
+          "bytes": 86871,
+          "dispatch_at": "2026-09-29T21:34:58.171068+00:00",
+          "received_at": "2026-09-29T21:34:58.673372+00:00",
+          "sha256": "702a3fc5b40648f136b07c99e94dffd117326cd4fd13a97bb642b5316ee177a6",
+          "raw_file": "1208906-1295777-702a3fc5b40648f136b07c99e94dffd117326cd4fd13a97bb642b5316ee177a6.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1295777,
+            1296027
+          ],
+          "bytes": 250,
+          "dispatch_at": "2026-09-29T21:34:58.674455+00:00",
+          "received_at": "2026-09-29T21:34:59.197646+00:00",
+          "sha256": "0d8995beb83f3fc85a484fcdd9e666cb849335f80822bbc74d793bdeb6f25bec",
+          "raw_file": "1295777-1296027-0d8995beb83f3fc85a484fcdd9e666cb849335f80822bbc74d793bdeb6f25bec.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1296027,
+            1387828
+          ],
+          "bytes": 91801,
+          "dispatch_at": "2026-09-29T21:34:59.198854+00:00",
+          "received_at": "2026-09-29T21:34:59.739117+00:00",
+          "sha256": "d887706afa81afd0811b3d3084ecc755c696638e392793a23ff77247822ed467",
+          "raw_file": "1296027-1387828-d887706afa81afd0811b3d3084ecc755c696638e392793a23ff77247822ed467.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1387828,
+            1387890
+          ],
+          "bytes": 62,
+          "dispatch_at": "2026-09-29T21:34:59.740157+00:00",
+          "received_at": "2026-09-29T21:35:00.225856+00:00",
+          "sha256": "7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e",
+          "raw_file": "1387828-1387890-7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1387890,
+            1387952
+          ],
+          "bytes": 62,
+          "dispatch_at": "2026-09-29T21:35:00.226558+00:00",
+          "received_at": "2026-09-29T21:35:00.681961+00:00",
+          "sha256": "7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e",
+          "raw_file": "1387890-1387952-7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1387952,
+            1478591
+          ],
+          "bytes": 90639,
+          "dispatch_at": "2026-09-29T21:35:00.682591+00:00",
+          "received_at": "2026-09-29T21:35:01.147287+00:00",
+          "sha256": "2fa0f29a764e6a6d6b2fed7ce7a4fc034baceeabedf2e43248be3d11b49d10f7",
+          "raw_file": "1387952-1478591-2fa0f29a764e6a6d6b2fed7ce7a4fc034baceeabedf2e43248be3d11b49d10f7.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1478591,
+            1570656
+          ],
+          "bytes": 92065,
+          "dispatch_at": "2026-09-29T21:35:01.148480+00:00",
+          "received_at": "2026-09-29T21:35:01.602172+00:00",
+          "sha256": "452991b0bddfc2a86db3005364b19a5ad0f2c485a511c67c9c468da6ed2d2a69",
+          "raw_file": "1478591-1570656-452991b0bddfc2a86db3005364b19a5ad0f2c485a511c67c9c468da6ed2d2a69.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1570656,
+            1577272
+          ],
+          "bytes": 6616,
+          "dispatch_at": "2026-09-29T21:35:01.602593+00:00",
+          "received_at": "2026-09-29T21:35:02.069474+00:00",
+          "sha256": "ccb0bf2f174d08533f65909b2de81451022218368740520224e30734d8bc991f",
+          "raw_file": "1570656-1577272-ccb0bf2f174d08533f65909b2de81451022218368740520224e30734d8bc991f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1577272,
+            1577334
+          ],
+          "bytes": 62,
+          "dispatch_at": "2026-09-29T21:35:02.070519+00:00",
+          "received_at": "2026-09-29T21:35:02.592428+00:00",
+          "sha256": "7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e",
+          "raw_file": "1577272-1577334-7e8ef2e921aa98953724e0e71d48cac655bb0e426a501500f3ed8cfc111aac9e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1577334,
+            1577433
+          ],
+          "bytes": 99,
+          "dispatch_at": "2026-09-29T21:35:02.593310+00:00",
+          "received_at": "2026-09-29T21:35:03.116690+00:00",
+          "sha256": "97ab44f4cb0792a6c22e9b027f8385dbee23fc8e755f9bf42bd5c70df01419b5",
+          "raw_file": "1577334-1577433-97ab44f4cb0792a6c22e9b027f8385dbee23fc8e755f9bf42bd5c70df01419b5.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1577433,
+            1578597
+          ],
+          "bytes": 1164,
+          "dispatch_at": "2026-09-29T21:35:03.118280+00:00",
+          "received_at": "2026-09-29T21:35:03.642005+00:00",
+          "sha256": "3b971e62e37935e8c947f8dafec996749ea26484b8bcc696f0e74313c221c98c",
+          "raw_file": "1577433-1578597-3b971e62e37935e8c947f8dafec996749ea26484b8bcc696f0e74313c221c98c.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-28/pumpapi_events_recovered_full.parquet",
+          "range": [
+            1578597,
+            1578774
+          ],
+          "bytes": 177,
+          "dispatch_at": "2026-09-29T21:35:03.643175+00:00",
+          "received_at": "2026-09-29T21:35:04.077489+00:00",
+          "sha256": "b115334bbc264f9e50f757a7d7a0600c27af4dacf9530015bcf18e940860d870",
+          "raw_file": "1578597-1578774-b115334bbc264f9e50f757a7d7a0600c27af4dacf9530015bcf18e940860d870.range"
+        }
+      ],
+      "stage": "semantic",
+      "sample_sha256": "ef4b82ea8e05974b1499c91af88e426e17f4190e2136c83bb1ae214feb4875c0",
+      "sample_path": ".rocket/er001/semantic/rocket_aug28/sample.parquet"
+    },
+    {
+      "name": "rocket_aug29_manifest",
+      "repo": "jhonnyisaacc/memecoins",
+      "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+      "path": "pumpapi/day/date=2026-08-29/launch_manifest.json",
+      "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/launch_manifest.json",
+      "format": "json",
+      "maximum_bytes": 67108864,
+      "acquisition": {
+        "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/launch_manifest.json",
+        "dispatch_at": "2026-09-29T21:35:04.126297+00:00",
+        "received_at": "2026-09-29T21:35:04.598607+00:00",
+        "bytes": 1016511,
+        "sha256": "40263cc7d9ffb3df9bc23b4c8795e7653652c863090fdf6d4506553e70fd8644",
+        "raw_file": ".rocket/er001/semantic/rocket_aug29_manifest/source.txt"
+      },
+      "stage": "semantic"
+    },
+    {
+      "name": "rocket_aug29_checkpoint",
+      "repo": "jhonnyisaacc/memecoins",
+      "revision": "f8ffbc41889b33e7b0deca05e337f5aaa9a9a012",
+      "path": "pumpapi/day/date=2026-08-29/checkpoint.json",
+      "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/checkpoint.json",
+      "format": "json",
+      "maximum_bytes": 67108864,
+      "acquisition": {
+        "url": "https://huggingface.co/datasets/jhonnyisaacc/memecoins/resolve/f8ffbc41889b33e7b0deca05e337f5aaa9a9a012/pumpapi/day/date=2026-08-29/checkpoint.json",
+        "dispatch_at": "2026-09-29T21:35:04.600142+00:00",
+        "received_at": "2026-09-29T21:35:05.025251+00:00",
+        "bytes": 28169,
+        "sha256": "231ace1d6ff74c7dc8c381c5ce36b0b6569932be334c096fb034696378fd2a1c",
+        "raw_file": ".rocket/er001/semantic/rocket_aug29_checkpoint/source.txt"
+      },
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_issues",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "KNOWN_ISSUES.md",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/KNOWN_ISSUES.md",
+      "format": "text",
+      "maximum_bytes": 67108864,
+      "acquisition": {
+        "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/KNOWN_ISSUES.md",
+        "dispatch_at": "2026-09-29T21:35:05.027173+00:00",
+        "received_at": "2026-09-29T21:35:05.381264+00:00",
+        "bytes": 14974,
+        "sha256": "82534ee226e1447e5ab0c0eb4b1b5453f0241aa5426d561b8f4b00314d1da299",
+        "raw_file": ".rocket/er001/semantic/slinky_issues/source.txt"
+      },
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_tokens",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "tokens.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 214405469,
+      "rows": 798430,
+      "row_groups": 7,
+      "schema": "mint: string\ndetected_at: timestamp[us, tz=UTC]\ntracking_expires_at: timestamp[us, tz=UTC]\nname: string\nsymbol: string\nuri: string\nis_mayhem_mode: bool\ncreator: string\ncreator_past_tokens: double\ncreator_past_rugs: double\ninitial_buy_tokens: double\ninitial_buy_sol: double\nv_tokens_bonding_curve: double\nv_sol_bonding_curve: double\ninitial_market_cap_sol: double\ninitial_price_sol: double\ndev_buy_pct: double\nbonding_curve_key: string\ninitial_holder_count: double\ninitial_top1_pct: double\ninitial_top5_pct: double\ninitial_top10_pct: double\ninitial_gini: double\ngraduated_at: timestamp[us, tz=UTC]\nseconds_to_graduation: double\npeak_market_cap_sol: double\npeak_market_cap_at: timestamp[us, tz=UTC]\ntrade_count: int64\ndata_quality_score: double\nis_training_ready: bool\nis_zombie: bool\nentry_price_usd: double\nentry_price_20s_usd: double\nentry_price_30s_usd: double\nentry_price_1m_usd: double\nlaunch_snipe_delta_sol: double\nfirst_trade_price_sol: double\nis_cashback_enabled: bool\ninitial_top1_pct_corrected: double\ninitial_top5_pct_corrected: double\ninitial_top10_pct_corrected: double\ndev_buy_pct_corrected: double\nsupply_bug_corrected: bool\ntop10_pct_suspect: bool",
+      "columns": [
+        "mint",
+        "detected_at",
+        "tracking_expires_at",
+        "name",
+        "symbol",
+        "uri",
+        "is_mayhem_mode",
+        "creator",
+        "creator_past_tokens",
+        "creator_past_rugs",
+        "initial_buy_tokens",
+        "initial_buy_sol",
+        "v_tokens_bonding_curve",
+        "v_sol_bonding_curve",
+        "initial_market_cap_sol",
+        "initial_price_sol",
+        "dev_buy_pct",
+        "bonding_curve_key",
+        "initial_holder_count",
+        "initial_top1_pct",
+        "initial_top5_pct",
+        "initial_top10_pct",
+        "initial_gini",
+        "graduated_at",
+        "seconds_to_graduation",
+        "peak_market_cap_sol",
+        "peak_market_cap_at",
+        "trade_count",
+        "data_quality_score",
+        "is_training_ready",
+        "is_zombie",
+        "entry_price_usd",
+        "entry_price_20s_usd",
+        "entry_price_30s_usd",
+        "entry_price_1m_usd",
+        "launch_snipe_delta_sol",
+        "first_trade_price_sol",
+        "is_cashback_enabled",
+        "initial_top1_pct_corrected",
+        "initial_top5_pct_corrected",
+        "initial_top10_pct_corrected",
+        "dev_buy_pct_corrected",
+        "supply_bug_corrected",
+        "top10_pct_suspect"
+      ],
+      "transferred_bytes": 65536,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            214339933,
+            214405469
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:05.741970+00:00",
+          "received_at": "2026-09-29T21:35:06.286733+00:00",
+          "sha256": "1edeb6a154d03f9c97c7c50982088063b21df18daac045abd75917e1665a8740",
+          "raw_file": "214339933-214405469-1edeb6a154d03f9c97c7c50982088063b21df18daac045abd75917e1665a8740.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_trades",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "trades/trades-00000.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 309225003,
+      "rows": 1966080,
+      "row_groups": 2,
+      "schema": "id: int64\nmint: large_string\ntx_signature: large_string\nevent_time: timestamp[us, tz=+01:00]\nseconds_since_launch: double\nis_buy: bool\nsol_amount: double\ntoken_amount: double\nuser_wallet: large_string\nv_tokens_bonding_curve: double\nv_sol_bonding_curve: double\nmarket_cap_sol: double\nprice_sol: double\ncurve_pct_depleted: double\nsource: large_string",
+      "columns": [
+        "id",
+        "mint",
+        "tx_signature",
+        "event_time",
+        "seconds_since_launch",
+        "is_buy",
+        "sol_amount",
+        "token_amount",
+        "user_wallet",
+        "v_tokens_bonding_curve",
+        "v_sol_bonding_curve",
+        "market_cap_sol",
+        "price_sol",
+        "curve_pct_depleted",
+        "source"
+      ],
+      "transferred_bytes": 65536,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+          "range": [
+            309159467,
+            309225003
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:06.617908+00:00",
+          "received_at": "2026-09-29T21:35:07.372382+00:00",
+          "sha256": "108e6d868834e7a9410ffed88c3fbd2a4d4c394c19c3909c296baec0475d1bfd",
+          "raw_file": "309159467-309225003-108e6d868834e7a9410ffed88c3fbd2a4d4c394c19c3909c296baec0475d1bfd.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_snapshots",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "snapshots.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/snapshots.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 570740794,
+      "rows": 26934864,
+      "row_groups": 270,
+      "schema": "mint: large_string\nbucket_start: timestamp[us, tz=+01:00]\nbucket_seconds: int64\nphase: int64\nv_tokens_eob: double\nv_sol_eob: double\nmarket_cap_sol_eob: double\nprice_sol_eob: double\ncurve_pct_depleted_eob: double\ndelta_v_sol: double\ndelta_v_tokens: double\ndelta_curve_pct: double\ntrade_count: int64\nbuy_count: int64\nsell_count: int64\nbuy_volume_sol: double\nsell_volume_sol: double\nnet_flow_sol: double\nbuy_pressure: double\navg_trade_sol: double\nmedian_trade_sol: double\nlargest_buy_sol: double\nlargest_sell_sol: double\nprice_open: double\nprice_close: double\nprice_high: double\nprice_low: double\nprice_return_pct: double\nunique_wallets: int64\n-- schema metadata --\npandas: '{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"' + 3931",
+      "columns": [
+        "mint",
+        "bucket_start",
+        "bucket_seconds",
+        "phase",
+        "v_tokens_eob",
+        "v_sol_eob",
+        "market_cap_sol_eob",
+        "price_sol_eob",
+        "curve_pct_depleted_eob",
+        "delta_v_sol",
+        "delta_v_tokens",
+        "delta_curve_pct",
+        "trade_count",
+        "buy_count",
+        "sell_count",
+        "buy_volume_sol",
+        "sell_volume_sol",
+        "net_flow_sol",
+        "buy_pressure",
+        "avg_trade_sol",
+        "median_trade_sol",
+        "largest_buy_sol",
+        "largest_sell_sol",
+        "price_open",
+        "price_close",
+        "price_high",
+        "price_low",
+        "price_return_pct",
+        "unique_wallets"
+      ],
+      "transferred_bytes": 1087431,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/snapshots.parquet",
+          "range": [
+            570675258,
+            570740794
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:07.707325+00:00",
+          "received_at": "2026-09-29T21:35:08.359745+00:00",
+          "sha256": "df7d631a3235c1cad5b66fee37e1c169b1088fd1bdfe303da35a567ee8d4b85e",
+          "raw_file": "570675258-570740794-df7d631a3235c1cad5b66fee37e1c169b1088fd1bdfe303da35a567ee8d4b85e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/snapshots.parquet",
+          "range": [
+            569718891,
+            570740786
+          ],
+          "bytes": 1021895,
+          "dispatch_at": "2026-09-29T21:35:08.360233+00:00",
+          "received_at": "2026-09-29T21:35:09.089177+00:00",
+          "sha256": "d165cea7267159006c4094a8199cba33e759a1d4c44a3a4a9f5d13ea7a668e80",
+          "raw_file": "569718891-570740786-d165cea7267159006c4094a8199cba33e759a1d4c44a3a4a9f5d13ea7a668e80.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_postgrad",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "postgard_snapshots.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 89336038,
+      "rows": 1392133,
+      "row_groups": 14,
+      "schema": "mint: large_string\nsnapshot_time: timestamp[us, tz=+01:00]\nseconds_since_graduation: double\nphase: int64\npair_address: large_string\ndex_id: large_string\nincomplete_data: bool\nprice_native: double\nprice_usd: double\nprice_change_5m: double\nprice_change_1h: double\nprice_change_6h: double\nprice_change_24h: double\nmarket_cap_usd: double\nfdv_usd: double\nliquidity_usd: double\nliquidity_base: double\nliquidity_quote: double\nvolume_5m: double\nvolume_1h: double\nvolume_6h: double\nvolume_24h: double\nbuys_5m: int64\nsells_5m: int64\nbuys_1h: int64\nsells_1h: int64\nbuy_pressure_1h: double\n-- schema metadata --\npandas: '{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"' + 3605",
+      "columns": [
+        "mint",
+        "snapshot_time",
+        "seconds_since_graduation",
+        "phase",
+        "pair_address",
+        "dex_id",
+        "incomplete_data",
+        "price_native",
+        "price_usd",
+        "price_change_5m",
+        "price_change_1h",
+        "price_change_6h",
+        "price_change_24h",
+        "market_cap_usd",
+        "fdv_usd",
+        "liquidity_usd",
+        "liquidity_base",
+        "liquidity_quote",
+        "volume_5m",
+        "volume_1h",
+        "volume_6h",
+        "volume_24h",
+        "buys_5m",
+        "sells_5m",
+        "buys_1h",
+        "sells_1h",
+        "buy_pressure_1h"
+      ],
+      "transferred_bytes": 65536,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            89270502,
+            89336038
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:09.431576+00:00",
+          "received_at": "2026-09-29T21:35:09.963628+00:00",
+          "sha256": "31dcbc70ffeba97df26964a254090ce536616e2c2f2c37e68ebe660d812edc7f",
+          "raw_file": "89270502-89336038-31dcbc70ffeba97df26964a254090ce536616e2c2f2c37e68ebe660d812edc7f.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_v2_create",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "*"
+      ],
+      "file_bytes": 10073629,
+      "rows": 43699,
+      "row_groups": 1,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\nmint: string\nbonding_curve: string\ncreator: string\ntx_signer: string\ntoken_name: string\nsymbol: string\nuri: string\ntoken_program: string\nis_mayhem_mode: bool\ntoken_total_supply: int64\nreal_token_reserves: int64\nvirtual_sol_reserves: int64\nvirtual_token_reserves: int64\nevent_ts: timestamp[us, tz=UTC]\ningested_at: timestamp[us, tz=UTC]\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "mint",
+        "bonding_curve",
+        "creator",
+        "tx_signer",
+        "token_name",
+        "symbol",
+        "uri",
+        "token_program",
+        "is_mayhem_mode",
+        "token_total_supply",
+        "real_token_reserves",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "event_ts",
+        "ingested_at",
+        "source_topic"
+      ],
+      "sample_rows": 43699,
+      "sampled_columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "mint",
+        "bonding_curve",
+        "creator",
+        "tx_signer",
+        "token_name",
+        "symbol",
+        "uri",
+        "token_program",
+        "is_mayhem_mode",
+        "token_total_supply",
+        "real_token_reserves",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "event_ts",
+        "ingested_at",
+        "source_topic"
+      ],
+      "transferred_bytes": 10133756,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            10008093,
+            10073629
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:10.303749+00:00",
+          "received_at": "2026-09-29T21:35:10.868272+00:00",
+          "sha256": "5f59be71b69dde60707a9f60337057c0295b6843cf0cc57f33af8c02ee895f2e",
+          "raw_file": "10008093-10073629-5f59be71b69dde60707a9f60337057c0295b6843cf0cc57f33af8c02ee895f2e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            4,
+            170106
+          ],
+          "bytes": 170102,
+          "dispatch_at": "2026-09-29T21:35:10.871530+00:00",
+          "received_at": "2026-09-29T21:35:11.370303+00:00",
+          "sha256": "61e6a068d115a09cb11db49cc855612a7cacbbd1184a345de3411a911b7a4742",
+          "raw_file": "4-170106-61e6a068d115a09cb11db49cc855612a7cacbbd1184a345de3411a911b7a4742.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            170106,
+            285584
+          ],
+          "bytes": 115478,
+          "dispatch_at": "2026-09-29T21:35:11.371115+00:00",
+          "received_at": "2026-09-29T21:35:11.811169+00:00",
+          "sha256": "0a195181d29d2b93b1c2f723bdfc62ab061f4c5ad2e2cc94d8ffdf73028e0de4",
+          "raw_file": "170106-285584-0a195181d29d2b93b1c2f723bdfc62ab061f4c5ad2e2cc94d8ffdf73028e0de4.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            285584,
+            352724
+          ],
+          "bytes": 67140,
+          "dispatch_at": "2026-09-29T21:35:11.811730+00:00",
+          "received_at": "2026-09-29T21:35:12.342978+00:00",
+          "sha256": "cdf54c407a849d7bbe489c9fb83160581430eee67e2f0a51fcbec8b187d4767a",
+          "raw_file": "285584-352724-cdf54c407a849d7bbe489c9fb83160581430eee67e2f0a51fcbec8b187d4767a.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            352724,
+            3249538
+          ],
+          "bytes": 2896814,
+          "dispatch_at": "2026-09-29T21:35:12.343414+00:00",
+          "received_at": "2026-09-29T21:35:13.120651+00:00",
+          "sha256": "b4a58725e6aa5c07cdf21edb0bb95e1f8442e9287fe26a822a80b67894afa525",
+          "raw_file": "352724-3249538-b4a58725e6aa5c07cdf21edb0bb95e1f8442e9287fe26a822a80b67894afa525.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            3249538,
+            4717730
+          ],
+          "bytes": 1468192,
+          "dispatch_at": "2026-09-29T21:35:13.120954+00:00",
+          "received_at": "2026-09-29T21:35:13.713453+00:00",
+          "sha256": "c9043e4c09deaaa730c052811a75c18b34e69c4e98d4a84a37598d918a5cd70b",
+          "raw_file": "3249538-4717730-c9043e4c09deaaa730c052811a75c18b34e69c4e98d4a84a37598d918a5cd70b.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            4717730,
+            6088336
+          ],
+          "bytes": 1370606,
+          "dispatch_at": "2026-09-29T21:35:13.714343+00:00",
+          "received_at": "2026-09-29T21:35:14.222168+00:00",
+          "sha256": "60f42f3b0ea020721df4b864d6d919c14647fc623d7e45392fdcdf47b0e28a05",
+          "raw_file": "4717730-6088336-60f42f3b0ea020721df4b864d6d919c14647fc623d7e45392fdcdf47b0e28a05.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            6088336,
+            7570116
+          ],
+          "bytes": 1481780,
+          "dispatch_at": "2026-09-29T21:35:14.223177+00:00",
+          "received_at": "2026-09-29T21:35:14.713632+00:00",
+          "sha256": "9474ea9d04085c85d08a84800899ff8ef3a2f1db0ba6d330f2a66aba18519b55",
+          "raw_file": "6088336-7570116-9474ea9d04085c85d08a84800899ff8ef3a2f1db0ba6d330f2a66aba18519b55.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            7570116,
+            8012590
+          ],
+          "bytes": 442474,
+          "dispatch_at": "2026-09-29T21:35:14.714853+00:00",
+          "received_at": "2026-09-29T21:35:15.187954+00:00",
+          "sha256": "4c7341b9710d854b5388d183600973d0b4e8566eb9ca0acf980960a1810b82d8",
+          "raw_file": "7570116-8012590-4c7341b9710d854b5388d183600973d0b4e8566eb9ca0acf980960a1810b82d8.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            8012590,
+            8453062
+          ],
+          "bytes": 440472,
+          "dispatch_at": "2026-09-29T21:35:15.188711+00:00",
+          "received_at": "2026-09-29T21:35:15.615860+00:00",
+          "sha256": "df027e776fddb9ca106f1844b2787eca900e85268014770b96e02a2e07184187",
+          "raw_file": "8012590-8453062-df027e776fddb9ca106f1844b2787eca900e85268014770b96e02a2e07184187.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            8453062,
+            8652273
+          ],
+          "bytes": 199211,
+          "dispatch_at": "2026-09-29T21:35:15.616485+00:00",
+          "received_at": "2026-09-29T21:35:16.127686+00:00",
+          "sha256": "0ece6224c9b63a138319aa0f2617d9ddb10fbeb59dcc5d1e640c7d58d33e7cdf",
+          "raw_file": "8453062-8652273-0ece6224c9b63a138319aa0f2617d9ddb10fbeb59dcc5d1e640c7d58d33e7cdf.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            8652273,
+            8783830
+          ],
+          "bytes": 131557,
+          "dispatch_at": "2026-09-29T21:35:16.128294+00:00",
+          "received_at": "2026-09-29T21:35:16.549600+00:00",
+          "sha256": "41bbc6273c686191c43d3d81e23a7415ff8298be0da20a7ba957b0ed2f1b1a96",
+          "raw_file": "8652273-8783830-41bbc6273c686191c43d3d81e23a7415ff8298be0da20a7ba957b0ed2f1b1a96.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            8783830,
+            9712122
+          ],
+          "bytes": 928292,
+          "dispatch_at": "2026-09-29T21:35:16.550435+00:00",
+          "received_at": "2026-09-29T21:35:17.049628+00:00",
+          "sha256": "6cc10c07934b495a7745dbefc3be65ff668e1631fef0761c299f62ea20c47d22",
+          "raw_file": "8783830-9712122-6cc10c07934b495a7745dbefc3be65ff668e1631fef0761c299f62ea20c47d22.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9712122,
+            9712917
+          ],
+          "bytes": 795,
+          "dispatch_at": "2026-09-29T21:35:17.050268+00:00",
+          "received_at": "2026-09-29T21:35:17.518165+00:00",
+          "sha256": "970871f8d5aa76ad422288c81f927aeda383b548e8dabedcd8990287b9c13e74",
+          "raw_file": "9712122-9712917-970871f8d5aa76ad422288c81f927aeda383b548e8dabedcd8990287b9c13e74.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9712917,
+            9716819
+          ],
+          "bytes": 3902,
+          "dispatch_at": "2026-09-29T21:35:17.519023+00:00",
+          "received_at": "2026-09-29T21:35:18.074883+00:00",
+          "sha256": "d8da2ea46f06d4d3a228745b52595ef8fddc3e7c8f8e529fa16fdb8d7419f540",
+          "raw_file": "9712917-9716819-d8da2ea46f06d4d3a228745b52595ef8fddc3e7c8f8e529fa16fdb8d7419f540.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9716819,
+            9717108
+          ],
+          "bytes": 289,
+          "dispatch_at": "2026-09-29T21:35:18.075930+00:00",
+          "received_at": "2026-09-29T21:35:18.609685+00:00",
+          "sha256": "2b3a26155151de9c1bc8c253b9b9402655dff3edd0055e92efa063b3b5fc542d",
+          "raw_file": "9716819-9717108-2b3a26155151de9c1bc8c253b9b9402655dff3edd0055e92efa063b3b5fc542d.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9717108,
+            9717397
+          ],
+          "bytes": 289,
+          "dispatch_at": "2026-09-29T21:35:18.610326+00:00",
+          "received_at": "2026-09-29T21:35:19.101428+00:00",
+          "sha256": "bed08cfaada4ef652aaa11fd50ff58eaa598b326d557ed851646f0ba887023b1",
+          "raw_file": "9717108-9717397-bed08cfaada4ef652aaa11fd50ff58eaa598b326d557ed851646f0ba887023b1.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9717397,
+            9718897
+          ],
+          "bytes": 1500,
+          "dispatch_at": "2026-09-29T21:35:19.102315+00:00",
+          "received_at": "2026-09-29T21:35:19.611169+00:00",
+          "sha256": "3e278b2988012882c00aecf9913da2af7b0f2f88cd86a80a427962eeb6a390a7",
+          "raw_file": "9717397-9718897-3e278b2988012882c00aecf9913da2af7b0f2f88cd86a80a427962eeb6a390a7.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9718897,
+            9719186
+          ],
+          "bytes": 289,
+          "dispatch_at": "2026-09-29T21:35:19.612467+00:00",
+          "received_at": "2026-09-29T21:35:20.047838+00:00",
+          "sha256": "6efa4b39a4ad33c36e7e33bf78455d73ffd43fad1faa3676be847705dccd33d0",
+          "raw_file": "9718897-9719186-6efa4b39a4ad33c36e7e33bf78455d73ffd43fad1faa3676be847705dccd33d0.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9719186,
+            9889288
+          ],
+          "bytes": 170102,
+          "dispatch_at": "2026-09-29T21:35:20.049013+00:00",
+          "received_at": "2026-09-29T21:35:20.470700+00:00",
+          "sha256": "61e6a068d115a09cb11db49cc855612a7cacbbd1184a345de3411a911b7a4742",
+          "raw_file": "9719186-9889288-61e6a068d115a09cb11db49cc855612a7cacbbd1184a345de3411a911b7a4742.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            9889288,
+            10067837
+          ],
+          "bytes": 178549,
+          "dispatch_at": "2026-09-29T21:35:20.471639+00:00",
+          "received_at": "2026-09-29T21:35:20.948585+00:00",
+          "sha256": "f2eb068c169e9b45668f9439148768c9300702c18fa9e477273920e8bdf1f5e0",
+          "raw_file": "9889288-10067837-f2eb068c169e9b45668f9439148768c9300702c18fa9e477273920e8bdf1f5e0.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/create/create_20260810T013618.parquet",
+          "range": [
+            10067837,
+            10068224
+          ],
+          "bytes": 387,
+          "dispatch_at": "2026-09-29T21:35:20.949301+00:00",
+          "received_at": "2026-09-29T21:35:21.473166+00:00",
+          "sha256": "d0df5c0105eabe0309420bd7e57f2c6ad57c4b8128998da56efbce43bf69489a",
+          "raw_file": "10067837-10068224-d0df5c0105eabe0309420bd7e57f2c6ad57c4b8128998da56efbce43bf69489a.range"
+        }
+      ],
+      "stage": "semantic",
+      "sample_sha256": "c873b8a570c490d42b2599f9a2de90977c2c089834263739bc76bc5203340ef9",
+      "sample_path": ".rocket/er001/semantic/slinky_v2_create/sample.parquet"
+    },
+    {
+      "name": "slinky_v2_trade",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 618999212,
+      "rows": 3806287,
+      "row_groups": 77,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\nmint: string\ntrade_user: string\ncreator: string\nis_buy: bool\nix_name: string\nsol_amount: int64\ntoken_amount: int64\nvirtual_sol_reserves: int64\nvirtual_token_reserves: int64\nreal_sol_reserves: int64\nreal_token_reserves: int64\nfee: int64\nfee_basis_points: int64\nfee_recipient: string\ncreator_fee: int64\ncreator_fee_basis_points: int64\ntrack_volume: bool\ntotal_unclaimed_tokens: int64\ntotal_claimed_tokens: int64\ncurrent_sol_volume: int64\nlast_update_timestamp: int64\nevent_ts: timestamp[us, tz=UTC]\ningested_at: timestamp[us, tz=UTC]\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "mint",
+        "trade_user",
+        "creator",
+        "is_buy",
+        "ix_name",
+        "sol_amount",
+        "token_amount",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "real_sol_reserves",
+        "real_token_reserves",
+        "fee",
+        "fee_basis_points",
+        "fee_recipient",
+        "creator_fee",
+        "creator_fee_basis_points",
+        "track_volume",
+        "total_unclaimed_tokens",
+        "total_claimed_tokens",
+        "current_sol_volume",
+        "last_update_timestamp",
+        "event_ts",
+        "ingested_at",
+        "source_topic"
+      ],
+      "transferred_bytes": 374364,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            618933676,
+            618999212
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:21.994535+00:00",
+          "received_at": "2026-09-29T21:35:22.610188+00:00",
+          "sha256": "6c914c107d83593d152ff15e61ce916ddbfbfb91f244403c74eaf7317ca76055",
+          "raw_file": "618933676-618999212-6c914c107d83593d152ff15e61ce916ddbfbfb91f244403c74eaf7317ca76055.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            618690376,
+            618999204
+          ],
+          "bytes": 308828,
+          "dispatch_at": "2026-09-29T21:35:22.610758+00:00",
+          "received_at": "2026-09-29T21:35:23.100528+00:00",
+          "sha256": "58dd25f01e42acd17d89037c0332bf4a16de189c5c2599410d2958481c22b556",
+          "raw_file": "618690376-618999204-58dd25f01e42acd17d89037c0332bf4a16de189c5c2599410d2958481c22b556.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_v2_swap",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 4289720397,
+      "rows": 30435190,
+      "row_groups": 609,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\ndex: string\ntrader: string\npool: string\ninput_mint: string\noutput_mint: string\ninput_amount: int64\noutput_amount: int64\ninput_decimals: int64\noutput_decimals: int64\ndirection: bool\nis_atomic: bool\nnet_sol: double\nevent_ts: timestamp[us, tz=UTC]\ningested_at: timestamp[us, tz=UTC]\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "dex",
+        "trader",
+        "pool",
+        "input_mint",
+        "output_mint",
+        "input_amount",
+        "output_amount",
+        "input_decimals",
+        "output_decimals",
+        "direction",
+        "is_atomic",
+        "net_sol",
+        "event_ts",
+        "ingested_at",
+        "source_topic"
+      ],
+      "transferred_bytes": 1782392,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+          "range": [
+            4289654861,
+            4289720397
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:23.441319+00:00",
+          "received_at": "2026-09-29T21:35:24.148960+00:00",
+          "sha256": "d6ed7f07f5f6c75559f5fb9fee9048cc45e4bdfbcbff8f7a378030319f152354",
+          "raw_file": "4289654861-4289720397-d6ed7f07f5f6c75559f5fb9fee9048cc45e4bdfbcbff8f7a378030319f152354.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/swap/swap_20260810T013618.parquet",
+          "range": [
+            4288003533,
+            4289720389
+          ],
+          "bytes": 1716856,
+          "dispatch_at": "2026-09-29T21:35:24.149397+00:00",
+          "received_at": "2026-09-29T21:35:24.680313+00:00",
+          "sha256": "6be7981ec1d35584af01b682b5fa4b0f918ddadd8cbbde94a95baf08f594d218",
+          "raw_file": "4288003533-4289720389-6be7981ec1d35584af01b682b5fa4b0f918ddadd8cbbde94a95baf08f594d218.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_v2_txmeta",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "file_bytes": 571574257,
+      "rows": 3949196,
+      "row_groups": 79,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\nfirst_signer: string\nnum_signers: int64\nsigners_hashed: string\ncompute_unit_limit: int64\ncompute_unit_price: int64\npriority_fee: int64\ntip_provider: int64\ntip_wallet: string\ntip_amount: int64\nis_inner_instruction: bool\nix_count: int64\niix_count: int64\nunique_programs: string\nix_iix: string\nix_iix_hash: string\nix_iix_programs: string\nparent_program_discriminants: string\nfirst_parent_program_discriminant: string\nordered_unique_parent_program_discriminants: string\nordered_unique_parent_program_discriminants_hash: string\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "first_signer",
+        "num_signers",
+        "signers_hashed",
+        "compute_unit_limit",
+        "compute_unit_price",
+        "priority_fee",
+        "tip_provider",
+        "tip_wallet",
+        "tip_amount",
+        "is_inner_instruction",
+        "ix_count",
+        "iix_count",
+        "unique_programs",
+        "ix_iix",
+        "ix_iix_hash",
+        "ix_iix_programs",
+        "parent_program_discriminants",
+        "first_parent_program_discriminant",
+        "ordered_unique_parent_program_discriminants",
+        "ordered_unique_parent_program_discriminants_hash",
+        "source_topic"
+      ],
+      "transferred_bytes": 565331,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            571508721,
+            571574257
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:35:25.022368+00:00",
+          "received_at": "2026-09-29T21:35:25.666176+00:00",
+          "sha256": "3b6d9b000eccb554f6d035bff412346be1188435e056fa814de7da05417f3b9c",
+          "raw_file": "571508721-571574257-3b6d9b000eccb554f6d035bff412346be1188435e056fa814de7da05417f3b9c.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            571074454,
+            571574249
+          ],
+          "bytes": 499795,
+          "dispatch_at": "2026-09-29T21:35:25.666905+00:00",
+          "received_at": "2026-09-29T21:35:26.210683+00:00",
+          "sha256": "ba98a75eceedd2f18c924bcbfdc91062e0ea2358628c4e7f96866308084b1302",
+          "raw_file": "571074454-571574249-ba98a75eceedd2f18c924bcbfdc91062e0ea2358628c4e7f96866308084b1302.range"
+        }
+      ],
+      "stage": "semantic"
+    },
+    {
+      "name": "trenches_datasheet",
+      "repo": "Tr4m0ryp/trenches-pumpfun-forward-2026-08",
+      "revision": "0a38dff884ba41f63da325d04fc85521b1cb34fe",
+      "path": "DATASHEET.md",
+      "url": "https://huggingface.co/datasets/Tr4m0ryp/trenches-pumpfun-forward-2026-08/resolve/0a38dff884ba41f63da325d04fc85521b1cb34fe/DATASHEET.md",
+      "format": "text",
+      "maximum_bytes": 67108864,
+      "acquisition": {
+        "url": "https://huggingface.co/datasets/Tr4m0ryp/trenches-pumpfun-forward-2026-08/resolve/0a38dff884ba41f63da325d04fc85521b1cb34fe/DATASHEET.md",
+        "dispatch_at": "2026-09-29T21:35:26.216457+00:00",
+        "received_at": "2026-09-29T21:35:26.553002+00:00",
+        "bytes": 30835,
+        "sha256": "b516da81224c05a611bcba452eaf02419d5e671dda0dfe63a0737222bc473b94",
+        "raw_file": ".rocket/er001/semantic/trenches_datasheet/source.txt"
+      },
+      "stage": "semantic"
+    },
+    {
+      "name": "slinky_tokens",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "tokens.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "mint",
+        "detected_at",
+        "is_mayhem_mode",
+        "creator",
+        "bonding_curve_key",
+        "initial_market_cap_sol",
+        "graduated_at",
+        "trade_count",
+        "is_zombie"
+      ],
+      "file_bytes": 214405469,
+      "rows": 798430,
+      "row_groups": 7,
+      "schema": "mint: string\ndetected_at: timestamp[us, tz=UTC]\ntracking_expires_at: timestamp[us, tz=UTC]\nname: string\nsymbol: string\nuri: string\nis_mayhem_mode: bool\ncreator: string\ncreator_past_tokens: double\ncreator_past_rugs: double\ninitial_buy_tokens: double\ninitial_buy_sol: double\nv_tokens_bonding_curve: double\nv_sol_bonding_curve: double\ninitial_market_cap_sol: double\ninitial_price_sol: double\ndev_buy_pct: double\nbonding_curve_key: string\ninitial_holder_count: double\ninitial_top1_pct: double\ninitial_top5_pct: double\ninitial_top10_pct: double\ninitial_gini: double\ngraduated_at: timestamp[us, tz=UTC]\nseconds_to_graduation: double\npeak_market_cap_sol: double\npeak_market_cap_at: timestamp[us, tz=UTC]\ntrade_count: int64\ndata_quality_score: double\nis_training_ready: bool\nis_zombie: bool\nentry_price_usd: double\nentry_price_20s_usd: double\nentry_price_30s_usd: double\nentry_price_1m_usd: double\nlaunch_snipe_delta_sol: double\nfirst_trade_price_sol: double\nis_cashback_enabled: bool\ninitial_top1_pct_corrected: double\ninitial_top5_pct_corrected: double\ninitial_top10_pct_corrected: double\ndev_buy_pct_corrected: double\nsupply_bug_corrected: bool\ntop10_pct_suspect: bool",
+      "columns": [
+        "mint",
+        "detected_at",
+        "tracking_expires_at",
+        "name",
+        "symbol",
+        "uri",
+        "is_mayhem_mode",
+        "creator",
+        "creator_past_tokens",
+        "creator_past_rugs",
+        "initial_buy_tokens",
+        "initial_buy_sol",
+        "v_tokens_bonding_curve",
+        "v_sol_bonding_curve",
+        "initial_market_cap_sol",
+        "initial_price_sol",
+        "dev_buy_pct",
+        "bonding_curve_key",
+        "initial_holder_count",
+        "initial_top1_pct",
+        "initial_top5_pct",
+        "initial_top10_pct",
+        "initial_gini",
+        "graduated_at",
+        "seconds_to_graduation",
+        "peak_market_cap_sol",
+        "peak_market_cap_at",
+        "trade_count",
+        "data_quality_score",
+        "is_training_ready",
+        "is_zombie",
+        "entry_price_usd",
+        "entry_price_20s_usd",
+        "entry_price_30s_usd",
+        "entry_price_1m_usd",
+        "launch_snipe_delta_sol",
+        "first_trade_price_sol",
+        "is_cashback_enabled",
+        "initial_top1_pct_corrected",
+        "initial_top5_pct_corrected",
+        "initial_top10_pct_corrected",
+        "dev_buy_pct_corrected",
+        "supply_bug_corrected",
+        "top10_pct_suspect"
+      ],
+      "sample_rows": 122880,
+      "sampled_columns": [
+        "mint",
+        "detected_at",
+        "is_mayhem_mode",
+        "creator",
+        "bonding_curve_key",
+        "initial_market_cap_sol",
+        "graduated_at",
+        "trade_count",
+        "is_zombie"
+      ],
+      "transferred_bytes": 16007243,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            214339933,
+            214405469
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:36:16.869271+00:00",
+          "received_at": "2026-09-29T21:36:17.758864+00:00",
+          "sha256": "1edeb6a154d03f9c97c7c50982088063b21df18daac045abd75917e1665a8740",
+          "raw_file": "214339933-214405469-1edeb6a154d03f9c97c7c50982088063b21df18daac045abd75917e1665a8740.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            4,
+            5331594
+          ],
+          "bytes": 5331590,
+          "dispatch_at": "2026-09-29T21:36:17.767432+00:00",
+          "received_at": "2026-09-29T21:36:19.699861+00:00",
+          "sha256": "a45c6fa49ae294eae6ef06fbeb6efe2ace7fcd1fe7c351899e7f9600e3e0f18f",
+          "raw_file": "4-5331594-a45c6fa49ae294eae6ef06fbeb6efe2ace7fcd1fe7c351899e7f9600e3e0f18f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            5331594,
+            6186011
+          ],
+          "bytes": 854417,
+          "dispatch_at": "2026-09-29T21:36:19.701803+00:00",
+          "received_at": "2026-09-29T21:36:20.312553+00:00",
+          "sha256": "05afe7d801d4af18f806ea54bbe7419e75a24264a0b2694c35eae5af8ad1d2df",
+          "raw_file": "5331594-6186011-05afe7d801d4af18f806ea54bbe7419e75a24264a0b2694c35eae5af8ad1d2df.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            14168317,
+            14178651
+          ],
+          "bytes": 10334,
+          "dispatch_at": "2026-09-29T21:36:20.313427+00:00",
+          "received_at": "2026-09-29T21:36:20.785386+00:00",
+          "sha256": "7255cf170da75486e43845250dc3f68bbb3c0b52558f4abfea4a0787fad21780",
+          "raw_file": "14168317-14178651-7255cf170da75486e43845250dc3f68bbb3c0b52558f4abfea4a0787fad21780.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            14178651,
+            17966499
+          ],
+          "bytes": 3787848,
+          "dispatch_at": "2026-09-29T21:36:20.785948+00:00",
+          "received_at": "2026-09-29T21:36:21.426727+00:00",
+          "sha256": "3e48949468e6b7c3422bdad705c1b25163182bd838f196c6ff3a313387ff7263",
+          "raw_file": "14178651-17966499-3e48949468e6b7c3422bdad705c1b25163182bd838f196c6ff3a313387ff7263.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            19120742,
+            24885782
+          ],
+          "bytes": 5765040,
+          "dispatch_at": "2026-09-29T21:36:21.427165+00:00",
+          "received_at": "2026-09-29T21:36:22.128122+00:00",
+          "sha256": "a51e8c3cbf8f2adc032e5fc1ece99978024450112d098ee8db34fc90ea5f1158",
+          "raw_file": "19120742-24885782-a51e8c3cbf8f2adc032e5fc1ece99978024450112d098ee8db34fc90ea5f1158.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            18861162,
+            18869144
+          ],
+          "bytes": 7982,
+          "dispatch_at": "2026-09-29T21:36:22.128596+00:00",
+          "received_at": "2026-09-29T21:36:22.522657+00:00",
+          "sha256": "63ab0e43ea6f17d6f8fb76dc107a3fcf4e5c7a5597a69671083f0be539dacedf",
+          "raw_file": "18861162-18869144-63ab0e43ea6f17d6f8fb76dc107a3fcf4e5c7a5597a69671083f0be539dacedf.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            27131581,
+            27133427
+          ],
+          "bytes": 1846,
+          "dispatch_at": "2026-09-29T21:36:22.523544+00:00",
+          "received_at": "2026-09-29T21:36:22.954697+00:00",
+          "sha256": "729c9f21f090e338f8a922ef46c6a12bcd0cbbbc3b30594030f00d29e7b0b081",
+          "raw_file": "27131581-27133427-729c9f21f090e338f8a922ef46c6a12bcd0cbbbc3b30594030f00d29e7b0b081.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            28780075,
+            28954538
+          ],
+          "bytes": 174463,
+          "dispatch_at": "2026-09-29T21:36:22.955787+00:00",
+          "received_at": "2026-09-29T21:36:23.499427+00:00",
+          "sha256": "86a5d904c3799093422ec2f99028decb94774bfb63edee1badc721ba3190f5c6",
+          "raw_file": "28780075-28954538-86a5d904c3799093422ec2f99028decb94774bfb63edee1badc721ba3190f5c6.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/tokens.parquet",
+          "range": [
+            28997099,
+            29005286
+          ],
+          "bytes": 8187,
+          "dispatch_at": "2026-09-29T21:36:23.500520+00:00",
+          "received_at": "2026-09-29T21:36:23.926077+00:00",
+          "sha256": "81baeb4c1fb39b220271f96a0052a593206903c3536f053e9486f6519009a217",
+          "raw_file": "28997099-29005286-81baeb4c1fb39b220271f96a0052a593206903c3536f053e9486f6519009a217.range"
+        }
+      ],
+      "stage": "projected",
+      "sample_sha256": "020fe23a4950f0f736588d96f9c7e89c17b01b9514b9d14bbc28079b98f7de05",
+      "sample_path": ".rocket/er001/projected/slinky_tokens/sample.parquet"
+    },
+    {
+      "name": "slinky_trades",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "trades/trades-00000.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "mint",
+        "tx_signature",
+        "event_time",
+        "seconds_since_launch",
+        "is_buy",
+        "sol_amount",
+        "token_amount",
+        "user_wallet",
+        "v_tokens_bonding_curve",
+        "v_sol_bonding_curve",
+        "source"
+      ],
+      "file_bytes": 309225003,
+      "rows": 1966080,
+      "row_groups": 2,
+      "schema": "id: int64\nmint: large_string\ntx_signature: large_string\nevent_time: timestamp[us, tz=+01:00]\nseconds_since_launch: double\nis_buy: bool\nsol_amount: double\ntoken_amount: double\nuser_wallet: large_string\nv_tokens_bonding_curve: double\nv_sol_bonding_curve: double\nmarket_cap_sol: double\nprice_sol: double\ncurve_pct_depleted: double\nsource: large_string",
+      "columns": [
+        "id",
+        "mint",
+        "tx_signature",
+        "event_time",
+        "seconds_since_launch",
+        "is_buy",
+        "sol_amount",
+        "token_amount",
+        "user_wallet",
+        "v_tokens_bonding_curve",
+        "v_sol_bonding_curve",
+        "market_cap_sol",
+        "price_sol",
+        "curve_pct_depleted",
+        "source"
+      ],
+      "error": {
+        "kind": "ValueError",
+        "detail": "ARCHIVE_TRANSFER_BOUND"
+      },
+      "stage": "projected",
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+          "range": [
+            309159467,
+            309225003
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:36:24.390819+00:00",
+          "received_at": "2026-09-29T21:36:25.047928+00:00",
+          "sha256": "108e6d868834e7a9410ffed88c3fbd2a4d4c394c19c3909c296baec0475d1bfd",
+          "raw_file": "309159467-309225003-108e6d868834e7a9410ffed88c3fbd2a4d4c394c19c3909c296baec0475d1bfd.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/trades/trades-00000.parquet",
+          "range": [
+            4630984,
+            5480358
+          ],
+          "bytes": 849374,
+          "dispatch_at": "2026-09-29T21:36:25.051533+00:00",
+          "received_at": "2026-09-29T21:36:25.772507+00:00",
+          "sha256": "28b223a6538c4c2d416827146fce9638acf308c0405ed7cbb5960d5ee7dd825b",
+          "raw_file": "4630984-5480358-28b223a6538c4c2d416827146fce9638acf308c0405ed7cbb5960d5ee7dd825b.range"
+        }
+      ],
+      "transferred_bytes": 914910
+    },
+    {
+      "name": "slinky_postgrad",
+      "repo": "Slinky21/Pumpfun_Memecoin_Corpus",
+      "revision": "13bec2bf3089d56d50c35e602616d1b993bb37f5",
+      "path": "postgard_snapshots.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "mint",
+        "snapshot_time",
+        "pair_address",
+        "dex_id",
+        "incomplete_data",
+        "liquidity_base",
+        "liquidity_quote",
+        "price_usd"
+      ],
+      "file_bytes": 89336038,
+      "rows": 1392133,
+      "row_groups": 14,
+      "schema": "mint: large_string\nsnapshot_time: timestamp[us, tz=+01:00]\nseconds_since_graduation: double\nphase: int64\npair_address: large_string\ndex_id: large_string\nincomplete_data: bool\nprice_native: double\nprice_usd: double\nprice_change_5m: double\nprice_change_1h: double\nprice_change_6h: double\nprice_change_24h: double\nmarket_cap_usd: double\nfdv_usd: double\nliquidity_usd: double\nliquidity_base: double\nliquidity_quote: double\nvolume_5m: double\nvolume_1h: double\nvolume_6h: double\nvolume_24h: double\nbuys_5m: int64\nsells_5m: int64\nbuys_1h: int64\nsells_1h: int64\nbuy_pressure_1h: double\n-- schema metadata --\npandas: '{\"index_columns\": [{\"kind\": \"range\", \"name\": null, \"start\": 0, \"' + 3605",
+      "columns": [
+        "mint",
+        "snapshot_time",
+        "seconds_since_graduation",
+        "phase",
+        "pair_address",
+        "dex_id",
+        "incomplete_data",
+        "price_native",
+        "price_usd",
+        "price_change_5m",
+        "price_change_1h",
+        "price_change_6h",
+        "price_change_24h",
+        "market_cap_usd",
+        "fdv_usd",
+        "liquidity_usd",
+        "liquidity_base",
+        "liquidity_quote",
+        "volume_5m",
+        "volume_1h",
+        "volume_6h",
+        "volume_24h",
+        "buys_5m",
+        "sells_5m",
+        "buys_1h",
+        "sells_1h",
+        "buy_pressure_1h"
+      ],
+      "sample_rows": 100000,
+      "sampled_columns": [
+        "mint",
+        "snapshot_time",
+        "pair_address",
+        "dex_id",
+        "incomplete_data",
+        "liquidity_base",
+        "liquidity_quote",
+        "price_usd"
+      ],
+      "transferred_bytes": 2237143,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            89270502,
+            89336038
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:36:26.122119+00:00",
+          "received_at": "2026-09-29T21:36:26.647999+00:00",
+          "sha256": "31dcbc70ffeba97df26964a254090ce536616e2c2f2c37e68ebe660d812edc7f",
+          "raw_file": "89270502-89336038-31dcbc70ffeba97df26964a254090ce536616e2c2f2c37e68ebe660d812edc7f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            4,
+            249855
+          ],
+          "bytes": 249851,
+          "dispatch_at": "2026-09-29T21:36:26.652174+00:00",
+          "received_at": "2026-09-29T21:36:27.279160+00:00",
+          "sha256": "3f9a0b96784ce7390695419fef008e57aa6792320533536f2f83c85042cb7942",
+          "raw_file": "4-249855-3f9a0b96784ce7390695419fef008e57aa6792320533536f2f83c85042cb7942.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            249855,
+            874778
+          ],
+          "bytes": 624923,
+          "dispatch_at": "2026-09-29T21:36:27.279991+00:00",
+          "received_at": "2026-09-29T21:36:27.888282+00:00",
+          "sha256": "fd10e964e0eb5dcbf34ae1606696303f4f04f53b2a4b6c4e9f7071d69d0270ab",
+          "raw_file": "249855-874778-fd10e964e0eb5dcbf34ae1606696303f4f04f53b2a4b6c4e9f7071d69d0270ab.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            1667597,
+            1941119
+          ],
+          "bytes": 273522,
+          "dispatch_at": "2026-09-29T21:36:27.888590+00:00",
+          "received_at": "2026-09-29T21:36:28.332508+00:00",
+          "sha256": "3469ee09892309e133fad968309e796d1b394355722adf1404cb3735d45ba800",
+          "raw_file": "1667597-1941119-3469ee09892309e133fad968309e796d1b394355722adf1404cb3735d45ba800.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            1941119,
+            1959371
+          ],
+          "bytes": 18252,
+          "dispatch_at": "2026-09-29T21:36:28.333270+00:00",
+          "received_at": "2026-09-29T21:36:28.869951+00:00",
+          "sha256": "ea2ffed24d0f01443a1da306de874fe3c25e73a42257cc5ac4b98b90d3c419f0",
+          "raw_file": "1941119-1959371-ea2ffed24d0f01443a1da306de874fe3c25e73a42257cc5ac4b98b90d3c419f0.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            1959371,
+            1960221
+          ],
+          "bytes": 850,
+          "dispatch_at": "2026-09-29T21:36:28.870699+00:00",
+          "received_at": "2026-09-29T21:36:29.346871+00:00",
+          "sha256": "6e52d73f63efbd561bc97566cb3b59cc9e06a5f4c4375b1205d8f8b8ac5aa582",
+          "raw_file": "1959371-1960221-6e52d73f63efbd561bc97566cb3b59cc9e06a5f4c4375b1205d8f8b8ac5aa582.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            4137977,
+            4480672
+          ],
+          "bytes": 342695,
+          "dispatch_at": "2026-09-29T21:36:29.347451+00:00",
+          "received_at": "2026-09-29T21:36:29.753926+00:00",
+          "sha256": "fa13799089faf1a8d38cb2b31df9da988822406684c282c6eb8b0a7b3581294e",
+          "raw_file": "4137977-4480672-fa13799089faf1a8d38cb2b31df9da988822406684c282c6eb8b0a7b3581294e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            4480672,
+            4841325
+          ],
+          "bytes": 360653,
+          "dispatch_at": "2026-09-29T21:36:29.754440+00:00",
+          "received_at": "2026-09-29T21:36:30.190357+00:00",
+          "sha256": "03744a08c86334af738dca3f44229bff07ca6f57e0888e2a1ca01771b03f2be2",
+          "raw_file": "4480672-4841325-03744a08c86334af738dca3f44229bff07ca6f57e0888e2a1ca01771b03f2be2.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_Memecoin_Corpus/resolve/13bec2bf3089d56d50c35e602616d1b993bb37f5/postgard_snapshots.parquet",
+          "range": [
+            2263754,
+            2564615
+          ],
+          "bytes": 300861,
+          "dispatch_at": "2026-09-29T21:36:30.191090+00:00",
+          "received_at": "2026-09-29T21:36:30.693781+00:00",
+          "sha256": "277c961289bff594ad53e10d15479ba575563e30b5ce68842bc0958a116d62c0",
+          "raw_file": "2263754-2564615-277c961289bff594ad53e10d15479ba575563e30b5ce68842bc0958a116d62c0.range"
+        }
+      ],
+      "stage": "projected",
+      "sample_sha256": "68b21b8a7c4414ad0dc1a583a7454cdc8d18911b0f0752c8b9c6e3e2503538af",
+      "sample_path": ".rocket/er001/projected/slinky_postgrad/sample.parquet"
+    },
+    {
+      "name": "slinky_v2_trade",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "block_time",
+        "slot",
+        "signature",
+        "mint",
+        "trade_user",
+        "is_buy",
+        "sol_amount",
+        "token_amount",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "real_sol_reserves",
+        "real_token_reserves",
+        "fee",
+        "fee_basis_points",
+        "creator_fee_basis_points"
+      ],
+      "file_bytes": 618999212,
+      "rows": 3806287,
+      "row_groups": 77,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\nmint: string\ntrade_user: string\ncreator: string\nis_buy: bool\nix_name: string\nsol_amount: int64\ntoken_amount: int64\nvirtual_sol_reserves: int64\nvirtual_token_reserves: int64\nreal_sol_reserves: int64\nreal_token_reserves: int64\nfee: int64\nfee_basis_points: int64\nfee_recipient: string\ncreator_fee: int64\ncreator_fee_basis_points: int64\ntrack_volume: bool\ntotal_unclaimed_tokens: int64\ntotal_claimed_tokens: int64\ncurrent_sol_volume: int64\nlast_update_timestamp: int64\nevent_ts: timestamp[us, tz=UTC]\ningested_at: timestamp[us, tz=UTC]\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "mint",
+        "trade_user",
+        "creator",
+        "is_buy",
+        "ix_name",
+        "sol_amount",
+        "token_amount",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "real_sol_reserves",
+        "real_token_reserves",
+        "fee",
+        "fee_basis_points",
+        "fee_recipient",
+        "creator_fee",
+        "creator_fee_basis_points",
+        "track_volume",
+        "total_unclaimed_tokens",
+        "total_claimed_tokens",
+        "current_sol_volume",
+        "last_update_timestamp",
+        "event_ts",
+        "ingested_at",
+        "source_topic"
+      ],
+      "sample_rows": 50000,
+      "sampled_columns": [
+        "block_time",
+        "slot",
+        "signature",
+        "mint",
+        "trade_user",
+        "is_buy",
+        "sol_amount",
+        "token_amount",
+        "virtual_sol_reserves",
+        "virtual_token_reserves",
+        "real_sol_reserves",
+        "real_token_reserves",
+        "fee",
+        "fee_basis_points",
+        "creator_fee_basis_points"
+      ],
+      "transferred_bytes": 6446129,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            618933676,
+            618999212
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:36:31.067713+00:00",
+          "received_at": "2026-09-29T21:36:31.731003+00:00",
+          "sha256": "6c914c107d83593d152ff15e61ce916ddbfbfb91f244403c74eaf7317ca76055",
+          "raw_file": "618933676-618999212-6c914c107d83593d152ff15e61ce916ddbfbfb91f244403c74eaf7317ca76055.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            618690376,
+            618999204
+          ],
+          "bytes": 308828,
+          "dispatch_at": "2026-09-29T21:36:31.731429+00:00",
+          "received_at": "2026-09-29T21:36:32.267088+00:00",
+          "sha256": "58dd25f01e42acd17d89037c0332bf4a16de189c5c2599410d2958481c22b556",
+          "raw_file": "618690376-618999204-58dd25f01e42acd17d89037c0332bf4a16de189c5c2599410d2958481c22b556.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            4,
+            5651
+          ],
+          "bytes": 5647,
+          "dispatch_at": "2026-09-29T21:36:32.274451+00:00",
+          "received_at": "2026-09-29T21:36:32.982052+00:00",
+          "sha256": "1f35d22c2a8e744e2db2f46dfe4fc0e700fbb9496c5b91dd2ae9cc815aa37796",
+          "raw_file": "4-5651-1f35d22c2a8e744e2db2f46dfe4fc0e700fbb9496c5b91dd2ae9cc815aa37796.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            5651,
+            41632
+          ],
+          "bytes": 35981,
+          "dispatch_at": "2026-09-29T21:36:32.982580+00:00",
+          "received_at": "2026-09-29T21:36:33.496170+00:00",
+          "sha256": "0f8726d8244072ee91562a00eec1fe5222f20dd87f7733c58e09eb9642876d63",
+          "raw_file": "5651-41632-0f8726d8244072ee91562a00eec1fe5222f20dd87f7733c58e09eb9642876d63.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            121682,
+            3287764
+          ],
+          "bytes": 3166082,
+          "dispatch_at": "2026-09-29T21:36:33.496705+00:00",
+          "received_at": "2026-09-29T21:36:34.060928+00:00",
+          "sha256": "a50051a8933b1c4baeafa1e13ec0c3029e132e149adf006fa946fb37cac0342f",
+          "raw_file": "121682-3287764-a50051a8933b1c4baeafa1e13ec0c3029e132e149adf006fa946fb37cac0342f.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            4959853,
+            5061564
+          ],
+          "bytes": 101711,
+          "dispatch_at": "2026-09-29T21:36:34.061247+00:00",
+          "received_at": "2026-09-29T21:36:34.468518+00:00",
+          "sha256": "86ad8b3ecd75fb25e0fd6a8daf70a01ae627017e3c281d514477e31aa6244647",
+          "raw_file": "4959853-5061564-86ad8b3ecd75fb25e0fd6a8daf70a01ae627017e3c281d514477e31aa6244647.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            5061564,
+            5439901
+          ],
+          "bytes": 378337,
+          "dispatch_at": "2026-09-29T21:36:34.471639+00:00",
+          "received_at": "2026-09-29T21:36:34.904409+00:00",
+          "sha256": "03833db3214d8c33f36688c7c05a00489212fbce6b84728e8283755d8b5cd3c3",
+          "raw_file": "5061564-5439901-03833db3214d8c33f36688c7c05a00489212fbce6b84728e8283755d8b5cd3c3.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            5524853,
+            5531609
+          ],
+          "bytes": 6756,
+          "dispatch_at": "2026-09-29T21:36:34.904723+00:00",
+          "received_at": "2026-09-29T21:36:35.401974+00:00",
+          "sha256": "5080e1caafbd21d4e9d617b9fcdeb4a603098a603b2eb37b9111e3856315222e",
+          "raw_file": "5524853-5531609-5080e1caafbd21d4e9d617b9fcdeb4a603098a603b2eb37b9111e3856315222e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            5542213,
+            5815981
+          ],
+          "bytes": 273768,
+          "dispatch_at": "2026-09-29T21:36:35.403263+00:00",
+          "received_at": "2026-09-29T21:36:35.935597+00:00",
+          "sha256": "2bd4df6501b1919f3de800928436fc1949a07fcf599e3add133d3f8cc64ce54d",
+          "raw_file": "5542213-5815981-2bd4df6501b1919f3de800928436fc1949a07fcf599e3add133d3f8cc64ce54d.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            5815981,
+            6152199
+          ],
+          "bytes": 336218,
+          "dispatch_at": "2026-09-29T21:36:35.936549+00:00",
+          "received_at": "2026-09-29T21:36:36.458493+00:00",
+          "sha256": "b9c83962bfe91228861d518e883ad06d2142fa815c1011d3e34439948a24a564",
+          "raw_file": "5815981-6152199-b9c83962bfe91228861d518e883ad06d2142fa815c1011d3e34439948a24a564.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            6152199,
+            6507189
+          ],
+          "bytes": 354990,
+          "dispatch_at": "2026-09-29T21:36:36.459229+00:00",
+          "received_at": "2026-09-29T21:36:37.151850+00:00",
+          "sha256": "9e31d8822c7c3948a65d6b2bb39ded9bd8931bc9b587d306fa130d76f6fb2247",
+          "raw_file": "6152199-6507189-9e31d8822c7c3948a65d6b2bb39ded9bd8931bc9b587d306fa130d76f6fb2247.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            6507189,
+            6947237
+          ],
+          "bytes": 440048,
+          "dispatch_at": "2026-09-29T21:36:37.152976+00:00",
+          "received_at": "2026-09-29T21:36:37.580851+00:00",
+          "sha256": "32afb7ee32cda21396d174c72fa8226af0c39af133b925e9e517c4c02898d7d0",
+          "raw_file": "6507189-6947237-32afb7ee32cda21396d174c72fa8226af0c39af133b925e9e517c4c02898d7d0.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            6947237,
+            7276421
+          ],
+          "bytes": 329184,
+          "dispatch_at": "2026-09-29T21:36:37.581522+00:00",
+          "received_at": "2026-09-29T21:36:38.028247+00:00",
+          "sha256": "6880660f2beb475b97c88cda63a83b2a8c31d93bc6470e227adbe376eb4c0250",
+          "raw_file": "6947237-7276421-6880660f2beb475b97c88cda63a83b2a8c31d93bc6470e227adbe376eb4c0250.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            7276421,
+            7714582
+          ],
+          "bytes": 438161,
+          "dispatch_at": "2026-09-29T21:36:38.028955+00:00",
+          "received_at": "2026-09-29T21:36:38.563006+00:00",
+          "sha256": "92e1536ceda53d5b284c7de84a628f1274d06c92cde724ba3d3bcd6e691616c9",
+          "raw_file": "7276421-7714582-92e1536ceda53d5b284c7de84a628f1274d06c92cde724ba3d3bcd6e691616c9.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            7714582,
+            7906812
+          ],
+          "bytes": 192230,
+          "dispatch_at": "2026-09-29T21:36:38.563628+00:00",
+          "received_at": "2026-09-29T21:36:38.980079+00:00",
+          "sha256": "665690b526503f521ba5a79daed63566848543c3de50ad54698e306ab827e57e",
+          "raw_file": "7714582-7906812-665690b526503f521ba5a79daed63566848543c3de50ad54698e306ab827e57e.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            7906812,
+            7912598
+          ],
+          "bytes": 5786,
+          "dispatch_at": "2026-09-29T21:36:38.980802+00:00",
+          "received_at": "2026-09-29T21:36:39.500837+00:00",
+          "sha256": "66043faed4df59940ea4133d0e17b17d86d031340b57914f1935f0fb7aa6efb6",
+          "raw_file": "7906812-7912598-66043faed4df59940ea4133d0e17b17d86d031340b57914f1935f0fb7aa6efb6.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/trade/trade_20260810T013618.parquet",
+          "range": [
+            8053680,
+            8060546
+          ],
+          "bytes": 6866,
+          "dispatch_at": "2026-09-29T21:36:39.501481+00:00",
+          "received_at": "2026-09-29T21:36:40.000601+00:00",
+          "sha256": "31603a9580d42b14c04d3573e59700b0a1a0c3a82f5a4672f02c61c2fc15ca72",
+          "raw_file": "8053680-8060546-31603a9580d42b14c04d3573e59700b0a1a0c3a82f5a4672f02c61c2fc15ca72.range"
+        }
+      ],
+      "stage": "projected",
+      "sample_sha256": "c8cb6b2760b9f08502e6e718a3eca6fad95b3f1f7f339e5037b639b99d56357a",
+      "sample_path": ".rocket/er001/projected/slinky_v2_trade/sample.parquet"
+    },
+    {
+      "name": "slinky_v2_txmeta",
+      "repo": "Slinky21/Pumpfun_v2_dataset",
+      "revision": "68276cd008872d3ca623ace95865d487af5ca143",
+      "path": "p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+      "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+      "format": "parquet",
+      "maximum_bytes": 67108864,
+      "sample_columns": [
+        "block_time",
+        "slot",
+        "signature",
+        "first_signer",
+        "num_signers",
+        "unique_programs",
+        "ix_iix",
+        "ix_iix_programs"
+      ],
+      "file_bytes": 571574257,
+      "rows": 3949196,
+      "row_groups": 79,
+      "schema": "block_time: timestamp[us, tz=UTC]\nslot: int64\ntx_index: int64\nsignature: string\npayload_hash: binary\nfirst_signer: string\nnum_signers: int64\nsigners_hashed: string\ncompute_unit_limit: int64\ncompute_unit_price: int64\npriority_fee: int64\ntip_provider: int64\ntip_wallet: string\ntip_amount: int64\nis_inner_instruction: bool\nix_count: int64\niix_count: int64\nunique_programs: string\nix_iix: string\nix_iix_hash: string\nix_iix_programs: string\nparent_program_discriminants: string\nfirst_parent_program_discriminant: string\nordered_unique_parent_program_discriminants: string\nordered_unique_parent_program_discriminants_hash: string\nsource_topic: string",
+      "columns": [
+        "block_time",
+        "slot",
+        "tx_index",
+        "signature",
+        "payload_hash",
+        "first_signer",
+        "num_signers",
+        "signers_hashed",
+        "compute_unit_limit",
+        "compute_unit_price",
+        "priority_fee",
+        "tip_provider",
+        "tip_wallet",
+        "tip_amount",
+        "is_inner_instruction",
+        "ix_count",
+        "iix_count",
+        "unique_programs",
+        "ix_iix",
+        "ix_iix_hash",
+        "ix_iix_programs",
+        "parent_program_discriminants",
+        "first_parent_program_discriminant",
+        "ordered_unique_parent_program_discriminants",
+        "ordered_unique_parent_program_discriminants_hash",
+        "source_topic"
+      ],
+      "sample_rows": 50000,
+      "sampled_columns": [
+        "block_time",
+        "slot",
+        "signature",
+        "first_signer",
+        "num_signers",
+        "unique_programs",
+        "ix_iix",
+        "ix_iix_programs"
+      ],
+      "transferred_bytes": 4455439,
+      "ranges": [
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            571508721,
+            571574257
+          ],
+          "bytes": 65536,
+          "dispatch_at": "2026-09-29T21:36:40.454134+00:00",
+          "received_at": "2026-09-29T21:36:41.388740+00:00",
+          "sha256": "3b6d9b000eccb554f6d035bff412346be1188435e056fa814de7da05417f3b9c",
+          "raw_file": "571508721-571574257-3b6d9b000eccb554f6d035bff412346be1188435e056fa814de7da05417f3b9c.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            571074454,
+            571574249
+          ],
+          "bytes": 499795,
+          "dispatch_at": "2026-09-29T21:36:41.389559+00:00",
+          "received_at": "2026-09-29T21:36:41.890081+00:00",
+          "sha256": "ba98a75eceedd2f18c924bcbfdc91062e0ea2358628c4e7f96866308084b1302",
+          "raw_file": "571074454-571574249-ba98a75eceedd2f18c924bcbfdc91062e0ea2358628c4e7f96866308084b1302.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            4,
+            215744
+          ],
+          "bytes": 215740,
+          "dispatch_at": "2026-09-29T21:36:41.894293+00:00",
+          "received_at": "2026-09-29T21:36:42.533323+00:00",
+          "sha256": "dbcd6b483335164d77544e0d5a59b581751746b3af1101c0575a1bff7899caa7",
+          "raw_file": "4-215744-dbcd6b483335164d77544e0d5a59b581751746b3af1101c0575a1bff7899caa7.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            215744,
+            224427
+          ],
+          "bytes": 8683,
+          "dispatch_at": "2026-09-29T21:36:42.534647+00:00",
+          "received_at": "2026-09-29T21:36:43.028146+00:00",
+          "sha256": "16f5122a7e2915cee2efa0121bd6a868e13d21b2d3b7e5d9987372968ae3c478",
+          "raw_file": "215744-224427-16f5122a7e2915cee2efa0121bd6a868e13d21b2d3b7e5d9987372968ae3c478.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            299818,
+            3541462
+          ],
+          "bytes": 3241644,
+          "dispatch_at": "2026-09-29T21:36:43.028520+00:00",
+          "received_at": "2026-09-29T21:36:43.649791+00:00",
+          "sha256": "374d2f9dc5ecb425ef6f1be67f2f86de77523d8b8cb64ef01105d88700e0c693",
+          "raw_file": "299818-3541462-374d2f9dc5ecb425ef6f1be67f2f86de77523d8b8cb64ef01105d88700e0c693.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            5180689,
+            5549151
+          ],
+          "bytes": 368462,
+          "dispatch_at": "2026-09-29T21:36:43.650492+00:00",
+          "received_at": "2026-09-29T21:36:44.118139+00:00",
+          "sha256": "afd024c6bbc2baa3cc0e806539e8a21dcd5614a9db14bfe1b22791e515fc8739",
+          "raw_file": "5180689-5549151-afd024c6bbc2baa3cc0e806539e8a21dcd5614a9db14bfe1b22791e515fc8739.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            5549151,
+            5553653
+          ],
+          "bytes": 4502,
+          "dispatch_at": "2026-09-29T21:36:44.118913+00:00",
+          "received_at": "2026-09-29T21:36:44.553391+00:00",
+          "sha256": "9c92f7d4e29d17328dff4502e62ec4eb54efcbba7e3192ce4da143677b916e94",
+          "raw_file": "5549151-5553653-9c92f7d4e29d17328dff4502e62ec4eb54efcbba7e3192ce4da143677b916e94.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            6119821,
+            6170594
+          ],
+          "bytes": 50773,
+          "dispatch_at": "2026-09-29T21:36:44.554045+00:00",
+          "received_at": "2026-09-29T21:36:44.991661+00:00",
+          "sha256": "aad1b199832046900649121986991cc6c5f0d0e0a4afd8448932cc7b0b8d3b22",
+          "raw_file": "6119821-6170594-aad1b199832046900649121986991cc6c5f0d0e0a4afd8448932cc7b0b8d3b22.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            6170594,
+            6170746
+          ],
+          "bytes": 152,
+          "dispatch_at": "2026-09-29T21:36:44.992601+00:00",
+          "received_at": "2026-09-29T21:36:45.412116+00:00",
+          "sha256": "1f21bb3fcb65136b84add4124e910188e822e3508fdbf969c6fd50c484a8fca6",
+          "raw_file": "6170594-6170746-1f21bb3fcb65136b84add4124e910188e822e3508fdbf969c6fd50c484a8fca6.range"
+        },
+        {
+          "url": "https://huggingface.co/datasets/Slinky21/Pumpfun_v2_dataset/resolve/68276cd008872d3ca623ace95865d487af5ca143/p01_2026-08_to_2026-11/2026-08_d01-12/txmeta/txmeta_20260810T013618.parquet",
+          "range": [
+            6170898,
+            6171050
+          ],
+          "bytes": 152,
+          "dispatch_at": "2026-09-29T21:36:45.412387+00:00",
+          "received_at": "2026-09-29T21:36:45.879133+00:00",
+          "sha256": "1f21bb3fcb65136b84add4124e910188e822e3508fdbf969c6fd50c484a8fca6",
+          "raw_file": "6170898-6171050-1f21bb3fcb65136b84add4124e910188e822e3508fdbf969c6fd50c484a8fca6.range"
+        }
+      ],
+      "stage": "projected",
+      "sample_sha256": "fa0bb974d80d5493cca75a931e17c31f4088f02b7024cc6119ad5a197de76704",
+      "sample_path": ".rocket/er001/projected/slinky_v2_txmeta/sample.parquet"
+    }
+  ],
+  "archive_access": [
+    {
+      "url": "https://replay.pumpapi.io/2026/03/01/00.jsonl.zst",
+      "dispatch_at": "2026-09-29T21:36:44.378656+00:00",
+      "status": 404,
+      "content_range": null,
+      "content_length": "9",
+      "bytes": 9,
+      "sha256": "0019dfc4b32d63c1392aa264aed2253c1e0c2fb09216f8e2cc269bbfb8bb49b5",
+      "received_at": "2026-09-29T21:36:44.838840+00:00"
+    },
+    {
+      "url": "https://replay.pumpapi.io/2026/04/18/01.jsonl.zst",
+      "dispatch_at": "2026-09-29T21:36:44.839707+00:00",
+      "status": 200,
+      "content_range": null,
+      "content_length": "340130956",
+      "bytes": 65536,
+      "sha256": "d840e92da9ede8bcc192909e790d48f017e3c4b124554a13548657ae7e23530f",
+      "received_at": "2026-09-29T21:36:45.156431+00:00"
+    },
+    {
+      "url": "https://replay.pumpapi.io/2026/06/05/00.jsonl.zst",
+      "dispatch_at": "2026-09-29T21:36:45.157962+00:00",
+      "status": 200,
+      "content_range": null,
+      "content_length": "320686434",
+      "bytes": 65536,
+      "sha256": "032ecbc8ec12b7264098c489872226cba19a2ce738e17cf5563f12ddac51a098",
+      "received_at": "2026-09-29T21:36:45.703193+00:00"
+    },
+    {
+      "url": "https://replay.pumpapi.io/2026/08/28/00.jsonl.zst",
+      "dispatch_at": "2026-09-29T21:36:45.705753+00:00",
+      "status": 200,
+      "content_range": null,
+      "content_length": "544071744",
+      "bytes": 65536,
+      "sha256": "a24313208baa49a44fc0fab89e85fc4926e4f46e4d523736d10cd6c883ad0532",
+      "received_at": "2026-09-29T21:36:46.298771+00:00"
+    },
+    {
+      "url": "https://data.solarchive.org/transactions/2026-03/index.json",
+      "dispatch_at": "2026-09-29T21:36:46.301037+00:00",
+      "status": 404,
+      "content_range": null,
+      "content_length": null,
+      "bytes": 27623,
+      "sha256": "66aef31227b11f87e1c5bfd07f8d0d2e368aeb1626ce0ab938cc4590df756343",
+      "received_at": "2026-09-29T21:36:46.761067+00:00"
+    },
+    {
+      "url": "https://data.solarchive.org/transactions/2026-08/index.json",
+      "dispatch_at": "2026-09-29T21:36:46.762089+00:00",
+      "status": 404,
+      "content_range": null,
+      "content_length": null,
+      "bytes": 28088,
+      "sha256": "1ce5aa4ae44fe75291f01e6333b70f5f766ebeaaf6e3fe26655f96ea876510d6",
+      "received_at": "2026-09-29T21:36:47.084734+00:00"
+    },
+    {
+      "url": "https://huggingface.co/api/datasets/solarchive/solarchive",
+      "dispatch_at": "2026-09-29T21:36:47.085859+00:00",
+      "status": 200,
+      "content_range": null,
+      "content_length": "2003495",
+      "bytes": 65536,
+      "sha256": "1be3274b5da65a0f253206cfd1261ea05cb8fa94a343dbc69002e871ec7a935d",
+      "received_at": "2026-09-29T21:36:47.479893+00:00"
+    }
+  ]
+}
