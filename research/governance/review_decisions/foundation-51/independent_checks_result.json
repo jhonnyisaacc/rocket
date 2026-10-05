@@ -1,0 +1,163 @@
+{
+  "core_import_path": "/private/tmp/rocket-foundation-51-independent-2br1p126/rocket/momentum/core.py",
+  "python_version": "3.14.1 (main, Dec  2 2025, 20:56:31) [Clang 16.0.0 (clang-1600.0.26.6)]",
+  "label_fingerprint": "cea8f41de55a5b65c432120db79aa58e2da06c8df7452741a9f8dca55802fbfb",
+  "candidate_count": 354,
+  "globally_spaced_count": 107,
+  "primary_counts": {
+    "UP": {
+      "canonical": {
+        "TIMEOUT": 34,
+        "FAILS": 21,
+        "UNKNOWN": 4,
+        "CONTINUES_UP": 5
+      },
+      "muse_original": {
+        "TIMEOUT": 34,
+        "FAILS": 21,
+        "UNKNOWN": 4,
+        "CONTINUES": 5
+      }
+    },
+    "DOWN": {
+      "canonical": {
+        "CONTINUES_DOWN": 8,
+        "FAILS": 21,
+        "UNKNOWN": 2,
+        "TIMEOUT": 12
+      },
+      "muse_original": {
+        "CONTINUES": 7,
+        "FAILS": 19,
+        "UNKNOWN": 2,
+        "TIMEOUT": 15
+      }
+    }
+  },
+  "original_discrepancy_counts": {
+    "mae": 123,
+    "mae_normalized": 123,
+    "mfe": 137,
+    "mfe_normalized": 137,
+    "barrier_time": 68,
+    "outcome": 13
+  },
+  "orientation_only_remaining_counts": {
+    "mfe": 12,
+    "mfe_normalized": 12
+  },
+  "orientation_plus_zero_floor_remaining_counts": {},
+  "maximum_geometry_absolute_error": {
+    "sigma": 3.469446951953614e-18,
+    "scale": 2.7755575615628914e-17,
+    "reference_price": 0.0
+  },
+  "trace_outcome_differences_verified": 13,
+  "overlap_geometry": {
+    "7": {
+      "canonical_decision_start_components": 128,
+      "cutoff_start_components": 117
+    },
+    "14": {
+      "canonical_decision_start_components": 47,
+      "cutoff_start_components": 45
+    }
+  },
+  "cutoff_boundary_contacts": {
+    "7": [
+      {
+        "cutoff_utc": "2019-10-16T16:00:00+00:00",
+        "event_id": "18392f39e17c585d977325be2e9cae8973d6ed19ee57574bc9630c565c1bd966"
+      },
+      {
+        "cutoff_utc": "2019-10-23T16:00:00+00:00",
+        "event_id": "bd37fbcca5f24e34b13293c7399f28913e48027777ee2ce08a038595a712ac72"
+      },
+      {
+        "cutoff_utc": "2020-10-19T16:00:00+00:00",
+        "event_id": "050872af29f7f83d7f5249a1d4b84a4a917eaa028fc4e9b0fdd72cd8ca6e4758"
+      },
+      {
+        "cutoff_utc": "2022-08-27T00:00:00+00:00",
+        "event_id": "297b6b3e88e3c333c5e60a80f304a2de46b55ab9e314d94908e17390b478e182"
+      },
+      {
+        "cutoff_utc": "2023-01-21T00:00:00+00:00",
+        "event_id": "98eefa99c4480097a31ca0100579792df71bc175d7ec4b43fa8c7689fcfb2ad2"
+      },
+      {
+        "cutoff_utc": "2024-09-13T16:00:00+00:00",
+        "event_id": "5111a62b7d5e250eda4ee43270c81c8ece45192c4967d26510b6866046f9818c"
+      },
+      {
+        "cutoff_utc": "2024-09-26T16:00:00+00:00",
+        "event_id": "6453accdf5791612aa7855ca0c94b9495f7e0db385ce3db7c0ebfb168ce3df70"
+      },
+      {
+        "cutoff_utc": "2024-11-20T16:00:00+00:00",
+        "event_id": "f4441dfcfe1c0821eb96756c61635bfede914c6f7db68c145c86314c47e289e9"
+      },
+      {
+        "cutoff_utc": "2025-01-27T08:00:00+00:00",
+        "event_id": "2777757198882034575c3f948359325a7f366992b91e27311882716bf974396c"
+      },
+      {
+        "cutoff_utc": "2025-06-05T20:00:00+00:00",
+        "event_id": "e5e1218d4f79bf50f5e813f2cdb8556bd6128f42e076f3c3707cacd458aad366"
+      },
+      {
+        "cutoff_utc": "2025-07-09T20:00:00+00:00",
+        "event_id": "5baebeb78b365a3d6da1549a6fc4488a94878fbce3cf34b86f833d178d21f7ec"
+      }
+    ],
+    "14": [
+      {
+        "cutoff_utc": "2024-12-05T04:00:00+00:00",
+        "event_id": "94ad996f62acde4733b5b3980db5c087091e8aed0be89c9c746a58ecc1efecc5"
+      },
+      {
+        "cutoff_utc": "2025-12-15T16:00:00+00:00",
+        "event_id": "1e36c2db5a5734639e2c4c0fa2ccaca5ab25c6907b9c208106f9bc08395d338e"
+      }
+    ]
+  },
+  "source_taxonomy_derived": {
+    "quarantined": 9,
+    "missing_vendor_hours": 59,
+    "unusable": 68,
+    "incomplete_four_hour_groups": 35,
+    "eligible_decisions": 11943,
+    "unknown_gap_including_missing_cutoffs": 3219,
+    "unknown_gap_existing_four_hour": 3184
+  },
+  "archives_manifest_consistency_count": 84,
+  "canonical_completed_legs": 156,
+  "canonical_large_legs": 65,
+  "gap_censored_legs": 14,
+  "tier_b_internal_manifest_checks": {
+    "perp_1h": {
+      "expected_files": 72,
+      "content_verified_files_reported": 72,
+      "historical_pit": false
+    },
+    "funding": {
+      "expected_files": 72,
+      "content_verified_files_reported": 72,
+      "historical_pit": false
+    },
+    "metrics": {
+      "expected_files": 1948,
+      "content_verified_files_reported": 3,
+      "historical_pit": false
+    },
+    "premium_1h": {
+      "expected_files": 72,
+      "content_verified_files_reported": 2,
+      "historical_pit": false
+    }
+  },
+  "raw_source_authenticity_independently_verified": false,
+  "historical_publication_authentication_verified": false,
+  "new_real_mom002_outcomes_accessed": false,
+  "scoring_authorized": false
+}
