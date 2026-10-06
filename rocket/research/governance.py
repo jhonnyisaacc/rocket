@@ -138,6 +138,30 @@ def verify_manifest(root: Path, manifest: dict) -> None:
             raise GateError("Admitted scoring authority absent")
 
 
+def require_real_outcome_authority(root: Path, experiment_id: str) -> dict:
+    """Mandatory choke point before loading real experiment outcomes (y).
+
+    Synthetic geometry/provenance paths never call this function. Raises
+    GateError unless the admission manifest verifies, the experiment is
+    ADMITTED, and scoring authority is True. Nothing here inspects
+    outcomes, fits models, or scores.
+    """
+    try:
+        raw = manifest_path(root, experiment_id).read_bytes()
+    except (OSError, GateError) as exc:
+        raise GateError(f"No admission manifest for {experiment_id}") from exc
+    try:
+        manifest = json.loads(raw)
+    except ValueError as exc:
+        raise GateError(f"Admission manifest is not JSON for {experiment_id}") from exc
+    verify_manifest(root, manifest)
+    if manifest.get("state") != "ADMITTED":
+        raise GateError(f"Real outcomes are locked: {experiment_id} is not admitted")
+    if manifest.get("scoring_authorized") is not True:
+        raise GateError(f"Real outcomes are locked: {experiment_id} scoring is not authorized")
+    return manifest
+
+
 def read_chain(raw: bytes) -> list[dict]:
     previous = None
     records = []
