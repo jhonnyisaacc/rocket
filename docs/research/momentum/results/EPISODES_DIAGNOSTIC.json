@@ -1,0 +1,1172 @@
+[
+  {
+    "start": 1549612800000,
+    "end": 1550980800000,
+    "reversal_observed_at": 1551024000000,
+    "direction": 1,
+    "magnitude": 0.20560513304391584,
+    "normalized_magnitude": 3.793588387097353,
+    "duration_hours": 380,
+    "consumed_oracle": {
+      "0": 0.3768844707829984,
+      "4": 0.3645913848714848,
+      "8": 0.3478275701496289,
+      "12": 0.36700997508767425
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3768844707829984,
+    "candidate_lead_hours": 368.0
+  },
+  {
+    "start": 1555041600000,
+    "end": 1557648000000,
+    "reversal_observed_at": 1557676800000,
+    "direction": 1,
+    "magnitude": 0.4058862933295864,
+    "normalized_magnitude": 5.194159522099625,
+    "duration_hours": 724,
+    "consumed_oracle": {
+      "0": 0.20368071190754752,
+      "4": 0.24605938218448795,
+      "8": 0.24853152875766463,
+      "12": 0.2584932890670646
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.24605938218448795,
+    "candidate_lead_hours": 456.0
+  },
+  {
+    "start": 1562760000000,
+    "end": 1563364800000,
+    "reversal_observed_at": 1563652800000,
+    "direction": -1,
+    "magnitude": 0.3481359331570055,
+    "normalized_magnitude": 2.4965416658416753,
+    "duration_hours": 168,
+    "consumed_oracle": {
+      "0": 0.4248953112624053,
+      "4": 0.30802530868539757,
+      "8": 0.30720200676909604,
+      "12": 0.35183376316343645
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5576602913078169,
+    "candidate_lead_hours": 72.0
+  },
+  {
+    "start": 1568491200000,
+    "end": 1569830400000,
+    "reversal_observed_at": 1570636800000,
+    "direction": -1,
+    "magnitude": 0.2849041175725447,
+    "normalized_magnitude": 3.7631049157385457,
+    "duration_hours": 372,
+    "consumed_oracle": {
+      "0": 0.2953618223048044,
+      "4": 0.7508617148805148,
+      "8": 0.6986681467209922,
+      "12": 0.66884558547219
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.1877936348270757,
+    "candidate_lead_hours": 268.0
+  },
+  {
+    "start": 1571889600000,
+    "end": 1572206400000,
+    "reversal_observed_at": 1573243200000,
+    "direction": 1,
+    "magnitude": 0.27048820554574154,
+    "normalized_magnitude": 2.790252910304324,
+    "duration_hours": 88,
+    "consumed_oracle": {
+      "0": 0.4024496744616015,
+      "4": 0.5651243294579074,
+      "8": 0.5737414998338779,
+      "12": 0.9391017887835078
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5651243294579074,
+    "candidate_lead_hours": 48.0
+  },
+  {
+    "start": 1578024000000,
+    "end": 1578484800000,
+    "reversal_observed_at": 1578643200000,
+    "direction": 1,
+    "magnitude": 0.18112478914677105,
+    "normalized_magnitude": 2.9601260258613378,
+    "duration_hours": 128,
+    "consumed_oracle": {
+      "0": 0.4011676735942289,
+      "4": 0.39203219884431606,
+      "8": 0.3613965966829902,
+      "12": 0.3955743590165985
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.448897122190672,
+    "candidate_lead_hours": 56.0
+  },
+  {
+    "start": 1578643200000,
+    "end": 1579406400000,
+    "reversal_observed_at": 1579636800000,
+    "direction": 1,
+    "magnitude": 0.16650794202379457,
+    "normalized_magnitude": 2.412752346660434,
+    "duration_hours": 212,
+    "consumed_oracle": {
+      "0": 0.5254365492076472,
+      "4": 0.5595137431717292,
+      "8": 0.571414595665548,
+      "12": 0.6751832300667596
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6751832300667596,
+    "candidate_lead_hours": 108.0
+  },
+  {
+    "start": 1596412800000,
+    "end": 1597680000000,
+    "reversal_observed_at": 1598054400000,
+    "direction": 1,
+    "magnitude": 0.11507217692576431,
+    "normalized_magnitude": 2.010669399633841,
+    "duration_hours": 352,
+    "consumed_oracle": {
+      "0": 0.5132367034279336,
+      "4": 0.4397719667086862,
+      "8": 0.4266813420155312,
+      "12": 0.4743637108651347
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.7067649899745935,
+    "candidate_lead_hours": 180.0
+  },
+  {
+    "start": 1598976000000,
+    "end": 1599336000000,
+    "reversal_observed_at": 1600099200000,
+    "direction": -1,
+    "magnitude": 0.18993711650018885,
+    "normalized_magnitude": 3.566465116366025,
+    "duration_hours": 100,
+    "consumed_oracle": {
+      "0": 0.2845020778010585,
+      "4": 0.31986292731541044,
+      "8": 0.29226712265567123,
+      "12": 0.29257685327144867
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6355602630349244,
+    "candidate_lead_hours": 52.0
+  },
+  {
+    "start": 1600905600000,
+    "end": 1603857600000,
+    "reversal_observed_at": 1603972800000,
+    "direction": 1,
+    "magnitude": 0.2967733523227775,
+    "normalized_magnitude": 4.456376714070027,
+    "duration_hours": 820,
+    "consumed_oracle": {
+      "0": 0.25617243955928537,
+      "4": 0.2671775605007035,
+      "8": 0.25124426597544713,
+      "12": 0.25623647362654417
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.25617243955928537,
+    "candidate_lead_hours": 448.0
+  },
+  {
+    "start": 1603972800000,
+    "end": 1604649600000,
+    "reversal_observed_at": 1604779200000,
+    "direction": 1,
+    "magnitude": 0.18683350955995104,
+    "normalized_magnitude": 3.528361173377743,
+    "duration_hours": 188,
+    "consumed_oracle": {
+      "0": 0.35227315362355766,
+      "4": 0.3183855765324271,
+      "8": 0.2912110611651073,
+      "12": 0.29475563513617353
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.35227315362355766,
+    "candidate_lead_hours": 140.0
+  },
+  {
+    "start": 1604779200000,
+    "end": 1606233600000,
+    "reversal_observed_at": 1606377600000,
+    "direction": 1,
+    "magnitude": 0.2791372986927603,
+    "normalized_magnitude": 4.12673084472931,
+    "duration_hours": 404,
+    "consumed_oracle": {
+      "0": 0.27285238476410734,
+      "4": 0.08639577145721149,
+      "8": 0.17113016122166358,
+      "12": 0.16375472832839622
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4876839617518785,
+    "candidate_lead_hours": 188.0
+  },
+  {
+    "start": 1626753600000,
+    "end": 1627790400000,
+    "reversal_observed_at": 1628006400000,
+    "direction": 1,
+    "magnitude": 0.36018665517604126,
+    "normalized_magnitude": 3.2653744976465733,
+    "duration_hours": 288,
+    "consumed_oracle": {
+      "0": 0.3546778659760371,
+      "4": 0.3576388396717568,
+      "8": 0.36887316071659504,
+      "12": 0.373837245946568
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3546778659760371,
+    "candidate_lead_hours": 196.0
+  },
+  {
+    "start": 1631952000000,
+    "end": 1632268800000,
+    "reversal_observed_at": 1632427200000,
+    "direction": -1,
+    "magnitude": 0.17700385572511643,
+    "normalized_magnitude": 2.1454069372395854,
+    "duration_hours": 88,
+    "consumed_oracle": {
+      "0": 0.597834487682421,
+      "4": 0.5842717849748593,
+      "8": 0.5835798805964493,
+      "12": 0.6921487839765177
+    },
+    "candidate_detected": false,
+    "candidate_consumed": 1.0,
+    "candidate_lead_hours": null
+  },
+  {
+    "start": 1636430400000,
+    "end": 1637928000000,
+    "reversal_observed_at": 1638374400000,
+    "direction": -1,
+    "magnitude": 0.24291540816834215,
+    "normalized_magnitude": 2.99159834266613,
+    "duration_hours": 416,
+    "consumed_oracle": {
+      "0": 0.4830196153616985,
+      "4": 0.48992893147365446,
+      "8": 0.505583004320809,
+      "12": 0.4991555838951664
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4830196153616985,
+    "candidate_lead_hours": 248.0
+  },
+  {
+    "start": 1638374400000,
+    "end": 1638619200000,
+    "reversal_observed_at": 1638878400000,
+    "direction": -1,
+    "magnitude": 0.23175179826485487,
+    "normalized_magnitude": 2.8078282073966614,
+    "duration_hours": 68,
+    "consumed_oracle": {
+      "0": 0.3667299479437612,
+      "4": 0.38581481944808,
+      "8": 0.5166657517072488,
+      "12": 0.9306635198331713
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.9306635198331713,
+    "candidate_lead_hours": 4.0
+  },
+  {
+    "start": 1643025600000,
+    "end": 1644508800000,
+    "reversal_observed_at": 1645142400000,
+    "direction": 1,
+    "magnitude": 0.28807416570289784,
+    "normalized_magnitude": 3.2458177275855395,
+    "duration_hours": 412,
+    "consumed_oracle": {
+      "0": 0.3308818610416783,
+      "4": 0.32067684363536203,
+      "8": 0.36096535377162997,
+      "12": 0.356211391020422
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6578220207591309,
+    "candidate_lead_hours": 140.0
+  },
+  {
+    "start": 1644508800000,
+    "end": 1645675200000,
+    "reversal_observed_at": 1645747200000,
+    "direction": -1,
+    "magnitude": 0.2519429516940001,
+    "normalized_magnitude": 2.6752108249029867,
+    "duration_hours": 324,
+    "consumed_oracle": {
+      "0": 0.4119848906051237,
+      "4": 0.3947529415065972,
+      "8": 0.3973064210163882,
+      "12": 0.44511372197056576
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.34535066828229916,
+    "candidate_lead_hours": 152.0
+  },
+  {
+    "start": 1645675200000,
+    "end": 1646179200000,
+    "reversal_observed_at": 1646424000000,
+    "direction": 1,
+    "magnitude": 0.24017354194621665,
+    "normalized_magnitude": 2.7299083389317635,
+    "duration_hours": 140,
+    "consumed_oracle": {
+      "0": 0.3856244782052222,
+      "4": 0.4498884125113577,
+      "8": 0.4007006004773169,
+      "12": 0.4307663594498908
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6484909486232695,
+    "candidate_lead_hours": 32.0
+  },
+  {
+    "start": 1647216000000,
+    "end": 1648497600000,
+    "reversal_observed_at": 1649275200000,
+    "direction": 1,
+    "magnitude": 0.23858031054227447,
+    "normalized_magnitude": 2.298224681714669,
+    "duration_hours": 356,
+    "consumed_oracle": {
+      "0": 0.4483890224910864,
+      "4": 0.4198580476345571,
+      "8": 0.4234850779790096,
+      "12": 0.4050253384433343
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6391156456827355,
+    "candidate_lead_hours": 100.0
+  },
+  {
+    "start": 1648497600000,
+    "end": 1650268800000,
+    "reversal_observed_at": 1650456000000,
+    "direction": -1,
+    "magnitude": 0.2087853592630558,
+    "normalized_magnitude": 2.294734926900595,
+    "duration_hours": 492,
+    "consumed_oracle": {
+      "0": 0.43917685773686166,
+      "4": 0.5035461594941792,
+      "8": 0.48985609758284465,
+      "12": 0.473148101904228
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.742722301567413,
+    "candidate_lead_hours": 164.0
+  },
+  {
+    "start": 1650542400000,
+    "end": 1652342400000,
+    "reversal_observed_at": 1652659200000,
+    "direction": -1,
+    "magnitude": 0.40900340574713834,
+    "normalized_magnitude": 6.171879543230972,
+    "duration_hours": 500,
+    "consumed_oracle": {
+      "0": 0.1796392596044526,
+      "4": 0.17534504483969843,
+      "8": 0.16261213865624685,
+      "12": 0.17781583688478225
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3413608186349585,
+    "candidate_lead_hours": 160.0
+  },
+  {
+    "start": 1654012800000,
+    "end": 1655582400000,
+    "reversal_observed_at": 1655668800000,
+    "direction": -1,
+    "magnitude": 0.5734430156420718,
+    "normalized_magnitude": 5.822088071405107,
+    "duration_hours": 436,
+    "consumed_oracle": {
+      "0": 0.17605353073373295,
+      "4": 0.1693353908140548,
+      "8": 0.15854614095359001,
+      "12": 0.1553083662855908
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.17605353073373295,
+    "candidate_lead_hours": 192.0
+  },
+  {
+    "start": 1660464000000,
+    "end": 1662552000000,
+    "reversal_observed_at": 1662710400000,
+    "direction": -1,
+    "magnitude": 0.28315734483961197,
+    "normalized_magnitude": 3.0909496981099633,
+    "duration_hours": 580,
+    "consumed_oracle": {
+      "0": 0.4486574388953132,
+      "4": 0.5199811473696341,
+      "8": 0.5240220867931645,
+      "12": 0.5427976830228701
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3121712611187661,
+    "candidate_lead_hours": 464.0
+  },
+  {
+    "start": 1662552000000,
+    "end": 1663070400000,
+    "reversal_observed_at": 1663084800000,
+    "direction": 1,
+    "magnitude": 0.18388706726150933,
+    "normalized_magnitude": 2.590849299746442,
+    "duration_hours": 144,
+    "consumed_oracle": {
+      "0": 0.5231104029904047,
+      "4": 0.6031632371362262,
+      "8": 0.6879673741444762,
+      "12": 0.6943129374897027
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5231104029904047,
+    "candidate_lead_hours": 100.0
+  },
+  {
+    "start": 1663070400000,
+    "end": 1663804800000,
+    "reversal_observed_at": 1664251200000,
+    "direction": -1,
+    "magnitude": 0.19884556633027373,
+    "normalized_magnitude": 2.7763723708018544,
+    "duration_hours": 204,
+    "consumed_oracle": {
+      "0": 0.39297960469639615,
+      "4": 0.526608541928292,
+      "8": 0.5539582083122515,
+      "12": 0.5168344940970664
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.9147625477178383,
+    "candidate_lead_hours": 68.0
+  },
+  {
+    "start": 1667620800000,
+    "end": 1668038400000,
+    "reversal_observed_at": 1668096000000,
+    "direction": -1,
+    "magnitude": 0.29772065936781666,
+    "normalized_magnitude": 6.773989013959626,
+    "duration_hours": 116,
+    "consumed_oracle": {
+      "0": 0.20937595307558343,
+      "4": 0.2685335042910349,
+      "8": 0.2851781543622821,
+      "12": 0.31567866191223154
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.2685335042910349,
+    "candidate_lead_hours": 40.0
+  },
+  {
+    "start": 1671033600000,
+    "end": 1671494400000,
+    "reversal_observed_at": 1673265600000,
+    "direction": -1,
+    "magnitude": 0.09415161097243155,
+    "normalized_magnitude": 2.035394608716563,
+    "duration_hours": 128,
+    "consumed_oracle": {
+      "0": 0.6265985892597046,
+      "4": 0.6608055983486254,
+      "8": 0.7283111625605895,
+      "12": 0.875875679347804
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.875875679347804,
+    "candidate_lead_hours": 72.0
+  },
+  {
+    "start": 1671494400000,
+    "end": 1675022400000,
+    "reversal_observed_at": 1675915200000,
+    "direction": 1,
+    "magnitude": 0.3741388174975834,
+    "normalized_magnitude": 8.239346590123862,
+    "duration_hours": 980,
+    "consumed_oracle": {
+      "0": 0.12701418654029725,
+      "4": 0.1315933829600134,
+      "8": 0.13549097802251236,
+      "12": 0.11759103312434618
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.0679279818706045,
+    "candidate_lead_hours": 616.0
+  },
+  {
+    "start": 1676304000000,
+    "end": 1676563200000,
+    "reversal_observed_at": 1676592000000,
+    "direction": 1,
+    "magnitude": 0.15079859785143968,
+    "normalized_magnitude": 2.8190008788864476,
+    "duration_hours": 72,
+    "consumed_oracle": {
+      "0": 0.37265301233992304,
+      "4": 0.5191320160200685,
+      "8": 0.7989846332297362,
+      "12": 0.9093925614080006
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5191320160200685,
+    "candidate_lead_hours": 20.0
+  },
+  {
+    "start": 1676563200000,
+    "end": 1678449600000,
+    "reversal_observed_at": 1678665600000,
+    "direction": -1,
+    "magnitude": 0.23807924306939565,
+    "normalized_magnitude": 4.030920902943274,
+    "duration_hours": 524,
+    "consumed_oracle": {
+      "0": 0.26891982649470786,
+      "4": 0.21199082311223946,
+      "8": 0.24766306521192794,
+      "12": 0.2206015507072106
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.2987464259897738,
+    "candidate_lead_hours": 332.0
+  },
+  {
+    "start": 1682625600000,
+    "end": 1685001600000,
+    "reversal_observed_at": 1685318400000,
+    "direction": -1,
+    "magnitude": 0.1271378860480935,
+    "normalized_magnitude": 2.0081562665203587,
+    "duration_hours": 660,
+    "consumed_oracle": {
+      "0": 0.5008424449861288,
+      "4": 0.4375656124374557,
+      "8": 0.44443416487605164,
+      "12": 0.4405898399286703
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6441305899755224,
+    "candidate_lead_hours": 396.0
+  },
+  {
+    "start": 1686844800000,
+    "end": 1689278400000,
+    "reversal_observed_at": 1689624000000,
+    "direction": 1,
+    "magnitude": 0.23607475208839065,
+    "normalized_magnitude": 4.718628765948916,
+    "duration_hours": 676,
+    "consumed_oracle": {
+      "0": 0.23478037147654388,
+      "4": 0.22876636696386748,
+      "8": 0.21542574598614525,
+      "12": 0.268545943131071
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4842382436794366,
+    "candidate_lead_hours": 552.0
+  },
+  {
+    "start": 1689278400000,
+    "end": 1692734400000,
+    "reversal_observed_at": 1693324800000,
+    "direction": -1,
+    "magnitude": 0.20374868276911184,
+    "normalized_magnitude": 3.864903576043373,
+    "duration_hours": 960,
+    "consumed_oracle": {
+      "0": 0.27490249817109685,
+      "4": 0.23342707172451208,
+      "8": 0.24386715369385858,
+      "12": 0.26116884784952865
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3768590416483645,
+    "candidate_lead_hours": 704.0
+  },
+  {
+    "start": 1692734400000,
+    "end": 1693339200000,
+    "reversal_observed_at": 1693512000000,
+    "direction": 1,
+    "magnitude": 0.0765637549370248,
+    "normalized_magnitude": 2.0324662582972155,
+    "duration_hours": 168,
+    "consumed_oracle": {
+      "0": 0.8071640761914721,
+      "4": 1.0,
+      "8": 1.0,
+      "12": 1.0
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.8071640761914721,
+    "candidate_lead_hours": 4.0
+  },
+  {
+    "start": 1693339200000,
+    "end": 1694462400000,
+    "reversal_observed_at": 1694678400000,
+    "direction": -1,
+    "magnitude": 0.1064604809626654,
+    "normalized_magnitude": 2.2368088208049293,
+    "duration_hours": 312,
+    "consumed_oracle": {
+      "0": 0.5807243374542519,
+      "4": 0.6607721108073976,
+      "8": 0.6101315780334343,
+      "12": 0.6426339396062255
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.9642870746842078,
+    "candidate_lead_hours": 4.0
+  },
+  {
+    "start": 1697126400000,
+    "end": 1702108800000,
+    "reversal_observed_at": 1702310400000,
+    "direction": 1,
+    "magnitude": 0.5045503804205471,
+    "normalized_magnitude": 13.150068752903055,
+    "duration_hours": 1384,
+    "consumed_oracle": {
+      "0": 0.08536791972248593,
+      "4": 0.07827687782814532,
+      "8": 0.10061734607684777,
+      "12": 0.12899348095920218
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.10061734607684777,
+    "candidate_lead_hours": 1288.0
+  },
+  {
+    "start": 1704974400000,
+    "end": 1706011200000,
+    "reversal_observed_at": 1706299200000,
+    "direction": -1,
+    "magnitude": 0.19182959873095562,
+    "normalized_magnitude": 3.20603347114379,
+    "duration_hours": 288,
+    "consumed_oracle": {
+      "0": 0.41335476588577186,
+      "4": 0.49673703872947644,
+      "8": 0.5178336636561853,
+      "12": 0.45786197558641545
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.49673703872947644,
+    "candidate_lead_hours": 252.0
+  },
+  {
+    "start": 1706011200000,
+    "end": 1709596800000,
+    "reversal_observed_at": 1709668800000,
+    "direction": 1,
+    "magnitude": 0.5635207903783582,
+    "normalized_magnitude": 8.642493685981789,
+    "duration_hours": 996,
+    "consumed_oracle": {
+      "0": 0.14127275093772912,
+      "4": 0.13107739466726878,
+      "8": 0.13071670588120238,
+      "12": 0.12626061249030168
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.23514643513322353,
+    "candidate_lead_hours": 624.0
+  },
+  {
+    "start": 1709668800000,
+    "end": 1710360000000,
+    "reversal_observed_at": 1710619200000,
+    "direction": 1,
+    "magnitude": 0.1776434967268317,
+    "normalized_magnitude": 2.3583732727591573,
+    "duration_hours": 192,
+    "consumed_oracle": {
+      "0": 0.4630809575355516,
+      "4": 0.5155891248687384,
+      "8": 0.4465649039345144,
+      "12": 0.46839899500765225
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.8183397808596155,
+    "candidate_lead_hours": 60.0
+  },
+  {
+    "start": 1710360000000,
+    "end": 1710907200000,
+    "reversal_observed_at": 1710979200000,
+    "direction": -1,
+    "magnitude": 0.17034528199917456,
+    "normalized_magnitude": 2.1349542352122337,
+    "duration_hours": 152,
+    "consumed_oracle": {
+      "0": 0.5392635038455927,
+      "4": 0.6823227381138944,
+      "8": 0.5720384531631597,
+      "12": 0.6521907051158224
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.8853027025374463,
+    "candidate_lead_hours": 16.0
+  },
+  {
+    "start": 1712577600000,
+    "end": 1713369600000,
+    "reversal_observed_at": 1713758400000,
+    "direction": -1,
+    "magnitude": 0.18284735656809087,
+    "normalized_magnitude": 2.2028720546226217,
+    "duration_hours": 220,
+    "consumed_oracle": {
+      "0": 0.6078348257072516,
+      "4": 0.6812167969338078,
+      "8": 0.7230380113367313,
+      "12": 0.6352291138682781
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.43697814858798883,
+    "candidate_lead_hours": 116.0
+  },
+  {
+    "start": 1713830400000,
+    "end": 1714579200000,
+    "reversal_observed_at": 1714766400000,
+    "direction": -1,
+    "magnitude": 0.1609429951191175,
+    "normalized_magnitude": 2.0262612315741446,
+    "duration_hours": 208,
+    "consumed_oracle": {
+      "0": 0.5453660849633652,
+      "4": 0.5868803534669861,
+      "8": 0.7425104042190045,
+      "12": 0.5996530236001182
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5453660849633652,
+    "candidate_lead_hours": 28.0
+  },
+  {
+    "start": 1714579200000,
+    "end": 1717761600000,
+    "reversal_observed_at": 1718092800000,
+    "direction": 1,
+    "magnitude": 0.23144134297167404,
+    "normalized_magnitude": 2.8474576441634754,
+    "duration_hours": 884,
+    "consumed_oracle": {
+      "0": 0.37664116597369035,
+      "4": 0.43298594282398073,
+      "8": 0.4221150944793162,
+      "12": 0.4382749033375276
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5578085501601856,
+    "candidate_lead_hours": 548.0
+  },
+  {
+    "start": 1717761600000,
+    "end": 1719259200000,
+    "reversal_observed_at": 1719792000000,
+    "direction": -1,
+    "magnitude": 0.18976798646127202,
+    "normalized_magnitude": 3.299909987931152,
+    "duration_hours": 416,
+    "consumed_oracle": {
+      "0": 0.31261251055653433,
+      "4": 0.3659256800948324,
+      "8": 0.41702749220798696,
+      "12": 0.32535303157371204
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.31261251055653433,
+    "candidate_lead_hours": 324.0
+  },
+  {
+    "start": 1719806400000,
+    "end": 1720166400000,
+    "reversal_observed_at": 1720296000000,
+    "direction": -1,
+    "magnitude": 0.15341739429362636,
+    "normalized_magnitude": 2.9846294573950303,
+    "duration_hours": 100,
+    "consumed_oracle": {
+      "0": 0.34294835756446324,
+      "4": 0.39897919332388077,
+      "8": 0.3405304689865631,
+      "12": 0.4614431097885416
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4614431097885416,
+    "candidate_lead_hours": 28.0
+  },
+  {
+    "start": 1720166400000,
+    "end": 1722254400000,
+    "reversal_observed_at": 1722470400000,
+    "direction": 1,
+    "magnitude": 0.2458365434313585,
+    "normalized_magnitude": 4.376454637423964,
+    "duration_hours": 580,
+    "consumed_oracle": {
+      "0": 0.24955927646527937,
+      "4": 0.27563903809833423,
+      "8": 0.2569669610420863,
+      "12": 0.2151046120184074
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4511723188963971,
+    "candidate_lead_hours": 348.0
+  },
+  {
+    "start": 1722254400000,
+    "end": 1722859200000,
+    "reversal_observed_at": 1722916800000,
+    "direction": -1,
+    "magnitude": 0.30400713800025086,
+    "normalized_magnitude": 4.656715744729465,
+    "duration_hours": 168,
+    "consumed_oracle": {
+      "0": 0.2428546925388317,
+      "4": 0.27826509129760274,
+      "8": 0.25812928936749147,
+      "12": 0.24050153020449325
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3316574322787879,
+    "candidate_lead_hours": 92.0
+  },
+  {
+    "start": 1722859200000,
+    "end": 1724486400000,
+    "reversal_observed_at": 1725033600000,
+    "direction": 1,
+    "magnitude": 0.22532271008768434,
+    "normalized_magnitude": 2.853256476120295,
+    "duration_hours": 452,
+    "consumed_oracle": {
+      "0": 0.3590162828473927,
+      "4": 0.38558624067188135,
+      "8": 0.3225334097538104,
+      "12": 0.41764624195551925
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.9523969029022966,
+    "candidate_lead_hours": 12.0
+  },
+  {
+    "start": 1725652800000,
+    "end": 1727496000000,
+    "reversal_observed_at": 1727812800000,
+    "direction": 1,
+    "magnitude": 0.21029813992188004,
+    "normalized_magnitude": 2.6504739656363983,
+    "duration_hours": 512,
+    "consumed_oracle": {
+      "0": 0.4000282633605588,
+      "4": 0.3923004289975363,
+      "8": 0.38573875305647715,
+      "12": 0.34081113111106526
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5157595596155103,
+    "candidate_lead_hours": 348.0
+  },
+  {
+    "start": 1728590400000,
+    "end": 1730246400000,
+    "reversal_observed_at": 1730448000000,
+    "direction": 1,
+    "magnitude": 0.19705335450871087,
+    "normalized_magnitude": 3.596080444403536,
+    "duration_hours": 460,
+    "consumed_oracle": {
+      "0": 0.28338812573465777,
+      "4": 0.2707186477634258,
+      "8": 0.28730212038733977,
+      "12": 0.24749080154719655
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4967905034899593,
+    "candidate_lead_hours": 368.0
+  },
+  {
+    "start": 1730764800000,
+    "end": 1732262400000,
+    "reversal_observed_at": 1732651200000,
+    "direction": 1,
+    "magnitude": 0.37957332450750614,
+    "normalized_magnitude": 8.512212550847792,
+    "duration_hours": 416,
+    "consumed_oracle": {
+      "0": 0.2409662686725037,
+      "4": 0.206093853901657,
+      "8": 0.23825338934129411,
+      "12": 0.2391751314821886
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.2409662686725037,
+    "candidate_lead_hours": 388.0
+  },
+  {
+    "start": 1734408000000,
+    "end": 1735574400000,
+    "reversal_observed_at": 1736179200000,
+    "direction": -1,
+    "magnitude": 0.14837739584956883,
+    "normalized_magnitude": 2.3514521051748196,
+    "duration_hours": 324,
+    "consumed_oracle": {
+      "0": 0.4338402771998336,
+      "4": 0.3676384211212808,
+      "8": 0.3368446152952049,
+      "12": 0.28444710892559777
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.6389953605059229,
+    "candidate_lead_hours": 260.0
+  },
+  {
+    "start": 1736769600000,
+    "end": 1737374400000,
+    "reversal_observed_at": 1737964800000,
+    "direction": 1,
+    "magnitude": 0.17512027698355448,
+    "normalized_magnitude": 2.364033401624605,
+    "duration_hours": 168,
+    "consumed_oracle": {
+      "0": 0.49006351259994146,
+      "4": 0.5390281473265505,
+      "8": 0.5762218816103604,
+      "12": 0.5180073595445468
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.49006351259994146,
+    "candidate_lead_hours": 116.0
+  },
+  {
+    "start": 1738612800000,
+    "end": 1740729600000,
+    "reversal_observed_at": 1740801600000,
+    "direction": -1,
+    "magnitude": 0.25176139842472145,
+    "normalized_magnitude": 3.1275507659743633,
+    "duration_hours": 588,
+    "consumed_oracle": {
+      "0": 0.3221383676879094,
+      "4": 0.4245246568168448,
+      "8": 0.39853337197784805,
+      "12": 0.5225984285340606
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4245246568168448,
+    "candidate_lead_hours": 80.0
+  },
+  {
+    "start": 1740729600000,
+    "end": 1740960000000,
+    "reversal_observed_at": 1741032000000,
+    "direction": 1,
+    "magnitude": 0.17412875372152406,
+    "normalized_magnitude": 2.5106505595290876,
+    "duration_hours": 64,
+    "consumed_oracle": {
+      "0": 0.4278540066231041,
+      "4": 0.38796156399716564,
+      "8": 0.3806811170948631,
+      "12": 0.3920161929171651
+    },
+    "candidate_detected": false,
+    "candidate_consumed": 1.0,
+    "candidate_lead_hours": null
+  },
+  {
+    "start": 1744171200000,
+    "end": 1747886400000,
+    "reversal_observed_at": 1748548800000,
+    "direction": 1,
+    "magnitude": 0.3980747993747156,
+    "normalized_magnitude": 5.655925397352125,
+    "duration_hours": 1032,
+    "consumed_oracle": {
+      "0": 0.2318545562722707,
+      "4": 0.2404788145461774,
+      "8": 0.21480548402280614,
+      "12": 0.20928866520467043
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.3122144534958979,
+    "candidate_lead_hours": 948.0
+  },
+  {
+    "start": 1749600000000,
+    "end": 1750622400000,
+    "reversal_observed_at": 1750723200000,
+    "direction": -1,
+    "magnitude": 0.10903599937045325,
+    "normalized_magnitude": 2.1982349058151187,
+    "duration_hours": 284,
+    "consumed_oracle": {
+      "0": 0.5128469951039393,
+      "4": 0.45867295952748044,
+      "8": 0.4460493336493787,
+      "12": 0.41141759991770793
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.9978327123456198,
+    "candidate_lead_hours": 4.0
+  },
+  {
+    "start": 1750622400000,
+    "end": 1752480000000,
+    "reversal_observed_at": 1752552000000,
+    "direction": 1,
+    "magnitude": 0.21610031813986913,
+    "normalized_magnitude": 4.538058475161317,
+    "duration_hours": 516,
+    "consumed_oracle": {
+      "0": 0.2924561843497442,
+      "4": 0.27421814133917716,
+      "8": 0.27484174422136287,
+      "12": 0.2852488792370529
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.37363232054496137,
+    "candidate_lead_hours": 452.0
+  },
+  {
+    "start": 1754164800000,
+    "end": 1755144000000,
+    "reversal_observed_at": 1755187200000,
+    "direction": 1,
+    "magnitude": 0.09437641230256093,
+    "normalized_magnitude": 2.2573348622450085,
+    "duration_hours": 272,
+    "consumed_oracle": {
+      "0": 0.4828488028594417,
+      "4": 0.48375353831600965,
+      "8": 0.41727979994044345,
+      "12": 0.42452413891232654
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.5760739383134662,
+    "candidate_lead_hours": 96.0
+  },
+  {
+    "start": 1755144000000,
+    "end": 1755806400000,
+    "reversal_observed_at": 1755907200000,
+    "direction": -1,
+    "magnitude": 0.09469465044763423,
+    "normalized_magnitude": 2.421623298119121,
+    "duration_hours": 184,
+    "consumed_oracle": {
+      "0": 0.44415650604380796,
+      "4": 0.47199463560390786,
+      "8": 0.4407779709582909,
+      "12": 0.3807964094634802
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.7098540396007164,
+    "candidate_lead_hours": 88.0
+  },
+  {
+    "start": 1758844800000,
+    "end": 1759780800000,
+    "reversal_observed_at": 1760040000000,
+    "direction": 1,
+    "magnitude": 0.14029749813747625,
+    "normalized_magnitude": 3.8045931733727776,
+    "duration_hours": 260,
+    "consumed_oracle": {
+      "0": 0.30850158695569185,
+      "4": 0.3366260673208754,
+      "8": 0.33952046463225355,
+      "12": 0.3435367463742223
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.4923574868406055,
+    "candidate_lead_hours": 128.0
+  },
+  {
+    "start": 1759780800000,
+    "end": 1760169600000,
+    "reversal_observed_at": 1760342400000,
+    "direction": -1,
+    "magnitude": 0.12762410667849103,
+    "normalized_magnitude": 3.5824061108680505,
+    "duration_hours": 108,
+    "consumed_oracle": {
+      "0": 0.28367188507803287,
+      "4": 0.23776724957075762,
+      "8": 0.27886069789089507,
+      "12": 0.2849462532389856
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.40989005760662434,
+    "candidate_lead_hours": 16.0
+  },
+  {
+    "start": 1760385600000,
+    "end": 1760688000000,
+    "reversal_observed_at": 1761062400000,
+    "direction": -1,
+    "magnitude": 0.09182481000167451,
+    "normalized_magnitude": 2.00846687253524,
+    "duration_hours": 84,
+    "consumed_oracle": {
+      "0": 0.5012317558127575,
+      "4": 0.4207254667872868,
+      "8": 0.7035039216288915,
+      "12": 0.7388307465297386
+    },
+    "candidate_detected": false,
+    "candidate_consumed": 1.0,
+    "candidate_lead_hours": null
+  },
+  {
+    "start": 1761552000000,
+    "end": 1763726400000,
+    "reversal_observed_at": 1764014400000,
+    "direction": -1,
+    "magnitude": 0.3392546692835251,
+    "normalized_magnitude": 5.764881366137304,
+    "duration_hours": 604,
+    "consumed_oracle": {
+      "0": 0.20717837750030274,
+      "4": 0.23951484228147216,
+      "8": 0.19049626928487667,
+      "12": 0.16597262073618027
+    },
+    "candidate_detected": true,
+    "candidate_consumed": 0.23951484228147216,
+    "candidate_lead_hours": 520.0
+  }
+]
