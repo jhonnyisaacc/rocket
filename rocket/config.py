@@ -57,16 +57,25 @@ def contains_runtime_path(text: str) -> bool:
     return any(marker in text for marker in FORBIDDEN_PATH_MARKERS)
 
 
-def env(name: str, default: str | None = None) -> str | None:
-    """Read a name or its alias. Never pop or rewrite os.environ."""
+def env_source(name: str) -> tuple[str | None, str | None]:
+    """Return the env name that supplied a non-empty value, and that value.
+
+    The primary name wins. An alias is used only when the primary is unset or empty.
+    """
     value = os.environ.get(name)
     if value not in (None, ""):
-        return value
+        return name, value
     for alias in ALIASES.get(name, ()):
         value = os.environ.get(alias)
         if value not in (None, ""):
-            return value
-    return default
+            return alias, value
+    return None, None
+
+
+def env(name: str, default: str | None = None) -> str | None:
+    """Read a name or its alias. Never pop or rewrite os.environ."""
+    _chosen, value = env_source(name)
+    return default if value is None else value
 
 
 def rocket_home() -> Path:

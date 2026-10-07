@@ -62,11 +62,22 @@ limit or `page>=1` returns HTTP 402 on the current plan and maps to `Entitlement
 The cap stays in place for this plan. Broader chamber coverage stays on official
 House search. `rocket disclosures` does not ingest those pages.
 
-Caller portfolio/watch coverage must be known before proposing an entry or watch.
-Absent, unreadable or malformed caller reference files leave listed opportunities
-`NEEDS_REVIEW`, clear `watch_proposal`, and expose `missing_reference_coverage`.
-Only an explicitly supplied, valid empty list establishes an empty book/watch
-list. Known matches may still be shown, but do not imply complete overlap coverage.
+## Caller portfolio and watch overlap
+
+`rocket disclosures` has no portfolio or watch flag. Overlap coverage is read from the process environment. `config/env.toml` names these variables and does not store paths.
+
+| Book | Primary | Alias, only when the primary is unset or empty |
+|---|---|---|
+| portfolio | `ROCKET_PORTFOLIO_STATE` | `NAVE_PORTFOLIO_STATE_FILE` |
+| watch | `ROCKET_WATCH_STATE` | `NAVE_QUANT_WATCH_STATE_FILE` |
+
+A usable file is JSON. It is either a list of objects, or an object whose `positions` (portfolio) or `watches` (watch) value is that list. Every object needs a non-empty `ticker`. An explicit empty list is a known empty book and is `AVAILABLE`, for example `{"positions":[]}` or `{"watches":[]}`.
+
+Unset or empty primary and alias is `NOT_CONFIGURED`. The warning names both variables. A non-empty path that cannot be read is `INVALID_CONFIGURATION` with reason `missing_file`. Invalid JSON, including a file that is not UTF-8 text, is `malformed_json`. A readable file with the wrong shape, including a missing `positions` or `watches` key or a row without `ticker`, is `schema`. The warning names the env var that supplied the path and the reason token. It does not include the path or the file contents. `cross_system_coverage.sources` records the same status, variable, alias, and reason.
+
+Listed opportunities stay `NEEDS_REVIEW`, with `watch_proposal` cleared, while either book is not `AVAILABLE`. `missing_reference_coverage` names those books. Unknown coverage does not by itself set overall status to `ACTION_REQUIRED`.
+
+On a healthy `NO_NEW_RECORDS` run, unchanged ticker historical opportunities leave status `NO_SETUP`. A ticker historical opportunity that is new, or whose stored fingerprint changed since `disclosure_material` in `--state-dir`, sets `ACTION_REQUIRED`. Company-name and other non-ticker review rows stay in `opportunities` and do not raise status on their own. New filings, an executive `ExternalOutage`, an Open Cabinet structured-source gap, and an executive recovery rescan still require action.
 
 Healthy `NO_NEW_RECORDS` is success. All providers down is `PROVIDER_FAILURE`, not “no news”.
 
