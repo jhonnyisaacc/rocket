@@ -158,3 +158,126 @@ def test_optional_pelosi_secondary_does_not_force_action(tmp_path, kind):
     assert by_name["congress:2026"].status is OperationalStatus.HEALTHY
     assert by_name["pelosi_secondary_history"].status is OperationalStatus.UNAVAILABLE
     assert by_name["pelosi_secondary_history"].failure_kind == kind
+
+
+def _trade(asset="CAT", **kwargs):
+    return {
+        "subject": "Nancy Pelosi",
+        "asset": asset,
+        "transaction_type": "Purchase",
+        "transaction_date": "2026-08-04",
+        "disclosure_date": "2026-08-14",
+        "source_url": f"https://official.test/{asset.replace(' ', '-')}",
+        **kwargs,
+    }
+
+
+def _research_args(**kwargs):
+    args = {
+        "now": NOW,
+        "provider_status": {"congress": {"status": "OK"}, "executive": {"status": "OK"}},
+        "research_opportunities": True,
+        "context_fetcher": lambda tickers: {},
+    }
+    args.update(kwargs)
+    return args
+
+
+def test_unchanged_history_and_unknown_coverage_stay_no_setup(tmp_path):
+    store = ResearchStore(tmp_path)
+    workflow = DisclosureWorkflow(store=store)
+    args = _research_args(historical_records=[_trade()])
+    first = workflow.run(**args)
+    assert_research_result(first)
+    assert first.status is ResearchStatus.ACTION_REQUIRED
+    assert first.payload["material_change"] is True
+    candidate = first.payload["opportunities"][0]
+    assert candidate["ticker"] == "CAT"
+    assert candidate["disposition"] == "CALLER_REFERENCE_COVERAGE_UNKNOWN"
+    assert candidate["watch_proposal"] is None
+    assert "portfolio" in candidate["missing_reference_coverage"]
+    assert first.payload["cross_system_coverage"]["portfolio"] == "NOT_CONFIGURED"
+    second = workflow.run(**args)
+    assert_research_result(second)
+    assert second.status is ResearchStatus.NO_SETUP
+    assert second.payload["research_result"] == "NO_NEW_RECORDS"
+    assert second.payload["material_change"] is False
+    assert second.payload["opportunities"][0]["ticker"] == "CAT"
+    assert second.payload["opportunities"][0]["watch_proposal"] is None
+    saved = store.load_state("disclosure_material")
+    store.save_state("disclosure_material", {"id": saved["id"]})
+    legacy = workflow.run(**args)
+    assert_research_result(legacy)
+    assert legacy.status is ResearchStatus.NO_SETUP
+    assert legacy.payload["material_change"] is False
+
+
+def test_new_historical_opportunity_requires_action(tmp_path):
+    store = ResearchStore(tmp_path)
+    workflow = DisclosureWorkflow(store=store)
+    first = workflow.run(**_research_args(
+        historical_records=[_trade("CAT")], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert_research_result(first)
+    assert first.status is ResearchStatus.ACTION_REQUIRED
+    assert first.payload["material_change"] is True
+    unchanged = workflow.run(**_research_args(
+        historical_records=[_trade("CAT")], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert_research_result(unchanged)
+    assert unchanged.status is ResearchStatus.NO_SETUP
+    assert unchanged.payload["material_change"] is False
+    added = workflow.run(**_research_args(
+        historical_records=[_trade("CAT"), _trade("AAPL")], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert_research_result(added)
+    assert added.status is ResearchStatus.ACTION_REQUIRED
+    assert added.payload["material_change"] is True
+    assert {row["ticker"] for row in added.payload["opportunities"]} == {"CAT", "AAPL"}
+
+
+def test_nonticker_rows_stay_listed_without_raising_status(tmp_path):
+    store = ResearchStore(tmp_path)
+    workflow = DisclosureWorkflow(store=store)
+    abbott = _trade("ABBOTT LABS", eligible_equity_context=False)
+    first = workflow.run(**_research_args(
+        historical_records=[abbott], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert_research_result(first)
+    assert first.status is ResearchStatus.NO_SETUP
+    assert first.payload["opportunities"][0]["ticker"] is None
+    assert first.payload["opportunities"][0]["asset"] == "ABBOTT LABS"
+    second = workflow.run(**_research_args(
+        historical_records=[abbott], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert second.status is ResearchStatus.NO_SETUP
+    abbvie = _trade("ABBVIE INC", eligible_equity_context=False)
+    extra = workflow.run(**_research_args(
+        historical_records=[abbott, abbvie], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert_research_result(extra)
+    assert extra.status is ResearchStatus.NO_SETUP
+    assert {row["asset"] for row in extra.payload["opportunities"]} == {"ABBOTT LABS", "ABBVIE INC"}
+    assert all(row["ticker"] is None for row in extra.payload["opportunities"])
+    listed = workflow.run(**_research_args(
+        historical_records=[abbott, abbvie, _trade("CAT")], portfolio_tickers=(), watch_tickers=(),
+    ))
+    assert listed.status is ResearchStatus.ACTION_REQUIRED
+    assert listed.payload["material_change"] is True
+    assert any(row.get("ticker") == "CAT" for row in listed.payload["opportunities"])
+
+
+def test_new_filing_still_requires_action(tmp_path):
+    result = DisclosureWorkflow(store=ResearchStore(tmp_path)).run(
+        congress_records=[{
+            "subject": "A",
+            "asset": "FILING",
+            "transaction_type": "FILING",
+            "source_url": "https://house.test/new.pdf",
+        }],
+        now=NOW,
+        provider_status={"congress": {"status": "OK"}, "executive": {"status": "OK"}},
+    )
+    assert_research_result(result)
+    assert result.status is ResearchStatus.ACTION_REQUIRED
+    assert result.payload["research_result"] == "NEW_RECORDS"

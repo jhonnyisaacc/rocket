@@ -313,8 +313,6 @@ class DisclosureWorkflow:
                 opportunities.append(candidate)
             self.store.save_state("disclosure_history", history)
             persist_candidates(self.store, "disclosures", [r for r in opportunities if r.get("ticker")], now=decided)
-            if opportunities and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
-                research = ResearchStatus.ACTION_REQUIRED
         coverage_gap = bool(coverage.get("needs_structured_source"))
         if executive_outage:
             research = ResearchStatus.ACTION_REQUIRED
@@ -324,10 +322,34 @@ class DisclosureWorkflow:
         attention = executive_outage or coverage_gap or recovery_rescan
         import json
 
-        from rocket.candidates import content_id
-        material_id = content_id(json.dumps([(r.get("ticker"), r.get("asset"), r["classification"], r["original_transaction"]["unique_id"]) for r in opportunities], sort_keys=True))
+        from rocket.candidates import content_id, reference_coverage_warnings
+
+        def fingerprint(rows: list[dict[str, Any]]) -> str:
+            return content_id(json.dumps(
+                [(row.get("ticker"), row.get("asset"), row["classification"], row["original_transaction"]["unique_id"])
+                 for row in rows],
+                sort_keys=True,
+            ))
+
+        material_id = fingerprint(opportunities)
+        ticker_rows = [row for row in opportunities if row.get("ticker")]
+        ticker_material_id = fingerprint(ticker_rows)
         previous_material = self.store.load_state("disclosure_material") or {}
         material_change = bool(new_records) or bool(opportunities and material_id != previous_material.get("id"))
+        stored_ticker_id = previous_material.get("ticker_id")
+        if not ticker_rows:
+            ticker_changed = False
+        elif stored_ticker_id is not None:
+            ticker_changed = ticker_material_id != stored_ticker_id
+        elif previous_material.get("id") == material_id:
+            # Older state stored only the full fingerprint. A match means ticker rows are unchanged.
+            ticker_changed = False
+        else:
+            ticker_changed = True
+        # Unknown reference coverage and non-ticker review rows stay visible, but they do not
+        # raise status. A new or changed ticker historical opportunity still does.
+        if research is ResearchStatus.NO_SETUP and research_result == "NO_NEW_RECORDS" and ticker_changed:
+            research = ResearchStatus.ACTION_REQUIRED
         result = ResearchResult(
             workflow=WORKFLOW,
             status=research,
@@ -361,6 +383,7 @@ class DisclosureWorkflow:
                                     tuple(health), True),) if operational is OperationalStatus.UNAVAILABLE else (),
             warnings=(
                 *warnings,
+                *reference_coverage_warnings(reference_coverage),
                 *(
                     ("disclosures are delayed context and require independent portfolio evidence",)
                     if new_records or coverage_gap or executive_outage
@@ -376,5 +399,5 @@ class DisclosureWorkflow:
             "disclosures_seen",
             {"unique_ids": sorted(seen | set(unique)), "updated_at": decided.isoformat()},
         )
-        self.store.save_state("disclosure_material", {"id": material_id})
+        self.store.save_state("disclosure_material", {"id": material_id, "ticker_id": ticker_material_id})
         return result

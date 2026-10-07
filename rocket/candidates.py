@@ -219,26 +219,83 @@ def content_id(value):
     return hashlib.sha256(value.encode()).hexdigest()[:20]
 
 
-def caller_references():
-    """Explicit caller files only; absent configuration is not an empty book."""
+def _reference_rows(path: str, field: str) -> tuple[tuple[str, ...] | None, str | None]:
+    """Load ticker rows. The reason token is None when the file is a valid reference."""
     import json
     from pathlib import Path
 
-    from rocket.config import env
-    values, coverage = {}, {}
-    for name, variable, field in (("portfolio", "ROCKET_PORTFOLIO_STATE", "positions"), ("watch", "ROCKET_WATCH_STATE", "watches")):
-        path = env(variable)
+    try:
+        text = Path(path).expanduser().read_text(encoding="utf-8")
+    except OSError:
+        return None, "missing_file"
+    except UnicodeDecodeError:
+        return None, "malformed_json"
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        return None, "malformed_json"
+    try:
+        rows = data if isinstance(data, list) else data[field]
+        invalid_row = not isinstance(rows, list) or any(
+            not isinstance(row, dict) or not row.get("ticker") for row in rows
+        )
+        if invalid_row:
+            raise ValueError("invalid caller reference file")
+        return tuple(str(row["ticker"]).upper() for row in rows), None
+    except (ValueError, KeyError, TypeError):
+        return None, "schema"
+
+
+def caller_references():
+    """Explicit caller files only; absent configuration is not an empty book.
+
+    ``coverage`` keeps ``portfolio`` and ``watch`` status strings. ``coverage["sources"]``
+    names the env var that was consulted and, for an invalid path, a reason token.
+    Paths and file contents are not included.
+    """
+    from rocket.config import ALIASES, env_source
+
+    values, coverage, sources = {}, {}, {}
+    for name, variable, field in (
+        ("portfolio", "ROCKET_PORTFOLIO_STATE", "positions"),
+        ("watch", "ROCKET_WATCH_STATE", "watches"),
+    ):
+        chosen, path = env_source(variable)
         values[name] = None
-        coverage[name] = "NOT_CONFIGURED"
-        if not path:
+        if not chosen or not path:
+            alias = next(iter(ALIASES.get(variable, ())), None)
+            coverage[name] = "NOT_CONFIGURED"
+            sources[name] = {"status": "NOT_CONFIGURED", "variable": variable, "alias": alias}
             continue
-        try:
-            data = json.loads(Path(path).expanduser().read_text())
-            rows = data if isinstance(data, list) else data[field]
-            if not isinstance(rows, list) or any(not isinstance(r, dict) or not r.get("ticker") for r in rows):
-                raise ValueError("invalid caller reference file")
-            values[name] = tuple(str(r["ticker"]).upper() for r in rows)
-            coverage[name] = "AVAILABLE"
-        except (OSError, ValueError, KeyError, TypeError):
+        tickers, reason = _reference_rows(path, field)
+        if reason:
             coverage[name] = "INVALID_CONFIGURATION"
+            sources[name] = {"status": "INVALID_CONFIGURATION", "variable": chosen, "reason": reason}
+            continue
+        values[name] = tickers
+        coverage[name] = "AVAILABLE"
+        sources[name] = {"status": "AVAILABLE", "variable": chosen}
+    coverage["sources"] = sources
     return values, coverage
+
+
+def reference_coverage_warnings(coverage: Mapping) -> tuple[str, ...]:
+    """Name the unset or invalid reference setting. Never include a path or file body."""
+    sources = coverage.get("sources") if isinstance(coverage, Mapping) else None
+    if not isinstance(sources, Mapping):
+        return ()
+    messages = []
+    for name in ("portfolio", "watch"):
+        info = sources.get(name)
+        if not isinstance(info, Mapping):
+            continue
+        variable = info.get("variable")
+        if info.get("status") == "NOT_CONFIGURED":
+            messages.append(
+                f"{name} reference coverage NOT_CONFIGURED: set {variable} or {info.get('alias')}"
+            )
+        elif info.get("status") == "INVALID_CONFIGURATION":
+            messages.append(
+                f"{name} reference coverage INVALID_CONFIGURATION: {variable} {info.get('reason')}"
+            )
+    return tuple(messages)
