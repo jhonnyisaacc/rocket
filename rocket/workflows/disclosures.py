@@ -25,6 +25,11 @@ from rocket.people import person_id
 from rocket.store import ResearchStore
 
 WORKFLOW = "disclosures"
+_DEGRADED_PROVIDER_STATUS = {"UNAVAILABLE", "BLOCKED", "RateLimit"}
+
+
+def _provider_degraded(info: Any) -> bool:
+    return isinstance(info, dict) and info.get("status") in _DEGRADED_PROVIDER_STATUS
 
 
 class SourceFamily(StrEnum):
@@ -65,7 +70,7 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
     identity = ({"provider": record.get("provider"), "subject": person_id(subject) or subject,
                  "source_record_id": record["source_record_id"]}
                 if record.get("source_record_id") else {**fields, "provider": record.get("provider")})
-    return {
+    normalized = {
         "subject_filer": subject,
         "owner": _clean(record.get("owner")),
         "asset": asset,
@@ -94,6 +99,12 @@ def normalize_record(record: Mapping[str, Any], *, family: SourceFamily) -> dict
         if family is SourceFamily.SECONDARY
         else "FILING_NOT_TRADE_ROW"),
     }
+    if record.get("amendment"):
+        normalized["amendment"] = True
+        label = _clean(record.get("amendment_label"))
+        if label:
+            normalized["amendment_label"] = label
+    return normalized
 
 
 class DisclosureWorkflow:
@@ -142,7 +153,10 @@ class DisclosureWorkflow:
         from rocket.people import person_id
         selected_people = {person_id(s) or s for s in subjects} if subjects is not None else None
         if selected_people is not None:
-            unique = {key: row for key, row in unique.items() if row["person_id"] in selected_people}
+            unique = {
+                key: row for key, row in unique.items()
+                if row["person_id"] in selected_people or row.get("provider") == "official_senate_efd"
+            }
         coverage = dict(structured_coverage or {})
         uncovered = {
             row["source_url"]: row
@@ -159,7 +173,7 @@ class DisclosureWorkflow:
         new_records = [record for record in unique.values() if record["unique_id"] not in seen]
         health = dict(provider_status or {})
         for family, info in health.items():
-            if isinstance(info, dict) and info.get("status") != "UNAVAILABLE":
+            if isinstance(info, dict) and not _provider_degraded(info):
                 info["research_result"] = (
                     "NEW_RECORDS"
                     if any(record["source_family"] == info.get("source_family", family.split(":")[0])
@@ -168,7 +182,7 @@ class DisclosureWorkflow:
                     else "NO_NEW_RECORDS"
                 )
         required = [value for value in health.values() if isinstance(value, dict) and not value.get("optional")]
-        failed = sum(1 for value in required if value.get("status") == "UNAVAILABLE")
+        failed = sum(1 for value in required if _provider_degraded(value))
         if required and failed == len(required):
             operational = OperationalStatus.UNAVAILABLE
             research = ResearchStatus.INSUFFICIENT_EVIDENCE
@@ -218,7 +232,7 @@ class DisclosureWorkflow:
             ProviderHealth(
                 name=str(name),
                 status=OperationalStatus.UNAVAILABLE
-                if isinstance(info, dict) and info.get("status") == "UNAVAILABLE"
+                if _provider_degraded(info)
                 else OperationalStatus.HEALTHY,
                 retrieved_at=decided,
                 failure_kind=info.get("failure_kind") if isinstance(info, dict) else None,
@@ -240,7 +254,8 @@ class DisclosureWorkflow:
                 normalized = normalize_record(raw, family=family)
                 if normalized and (selected_people is None or normalized["person_id"] in selected_people):
                     history[normalized["unique_id"]] = normalized
-            trades = [r for r in history.values() if r["transaction_type"].lower() in {"purchase", "sale", "sale (full)", "sale (partial)"}
+            trades = [r for r in history.values() if not r.get("amendment")
+                      and r["transaction_type"].lower() in {"purchase", "sale", "sale (full)", "sale (partial)"}
                       and r["asset"] not in {"UNKNOWN", "FINANCIAL_DISCLOSURE_FILING", "PUBLIC_FINANCIAL_DISCLOSURE"}
                       and (selected_people is None or r["person_id"] in selected_people)]
             # Bound fresh research to 30 distinct assets, newest disclosed first.
@@ -316,12 +331,16 @@ class DisclosureWorkflow:
             if opportunities and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
                 research = ResearchStatus.ACTION_REQUIRED
         coverage_gap = bool(coverage.get("needs_structured_source"))
+        source_degraded = any(
+            isinstance(info, dict) and info.get("status") in {"BLOCKED", "RateLimit"}
+            for info in health.values()
+        )
         if executive_outage:
             research = ResearchStatus.ACTION_REQUIRED
             research_result = "PROVIDER_FAILURE"
         elif coverage_gap and research is not ResearchStatus.INSUFFICIENT_EVIDENCE:
             research = ResearchStatus.ACTION_REQUIRED
-        attention = executive_outage or coverage_gap or recovery_rescan
+        attention = executive_outage or coverage_gap or recovery_rescan or source_degraded
         import json
 
         from rocket.candidates import content_id

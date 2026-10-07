@@ -294,20 +294,24 @@ def disclosures(
     human: bool = typer.Option(False, "--human"),
     json_out: bool = typer.Option(True, "--json/--no-json"),
 ) -> None:
-    """Official House + OGE filings. Healthy no-new is not a provider failure.
+    """Official House, Senate eFD, and OGE filings. Healthy no-new is not a provider failure.
 
+    Senate periodic transactions come from efdsearch.senate.gov over the same
+    filing-year lookback as House search. A Senate BLOCKED or RateLimit status
+    degrades that leg and leaves House and OGE rows in the result.
     FMP house-latest and senate-latest stay at page 0 and limit 25. This command
     does not ingest them. Larger limits and page 1+ are paywalled (HTTP 402
-    Entitlement); broader chamber coverage stays on official House search.
-    Pelosi FMP history is optional: Entitlement or RateLimit does not make the
-    job ACTION_REQUIRED when official House filings succeed.
+    Entitlement). Pelosi FMP history is optional: Entitlement or RateLimit does
+    not make the job ACTION_REQUIRED when official House filings succeed.
     """
     del json_out
     from rocket.providers.disclosures import (
+        HOUSE_FILING_YEAR_LOOKBACK,
         OfficialHouseDisclosureProvider,
         OfficialOGEExecutiveDisclosureProvider,
         executive_failure_status,
     )
+    from rocket.providers.senate_efd import OfficialSenateEFDProvider
     from rocket.workflows.disclosures import DisclosureWorkflow
 
     store = ResearchStore(state_dir or rocket_home())
@@ -325,7 +329,7 @@ def disclosures(
     if None in selected:
         status["person_filter"] = {"status": "UNAVAILABLE", "failure_kind": "UnsupportedPersonIdentity"}
     if "nancy_pelosi" in selected:
-        for year in range(datetime.now(UTC).year, datetime.now(UTC).year - 3, -1):
+        for year in range(datetime.now(UTC).year, datetime.now(UTC).year - HOUSE_FILING_YEAR_LOOKBACK, -1):
             try:
                 congress.extend(OfficialHouseDisclosureProvider(filing_year=year).fetch())
                 status[f"congress:{year}"] = {"status": "OK"}
@@ -346,6 +350,27 @@ def disclosures(
             "failure_kind": trump_history.failure_kind,
             "source_family": "secondary", "record_provider": "open_cabinet",
         }
+    try:
+        senate = OfficialSenateEFDProvider(lookback_years=HOUSE_FILING_YEAR_LOOKBACK).fetch()
+    except Exception as exc:
+        status["senate_efd"] = {
+            "status": "UNAVAILABLE",
+            "failure_kind": failure_kind(exc),
+            "source_family": "congress",
+            "record_provider": "official_senate_efd",
+        }
+    else:
+        senate_status = {
+            "status": senate.status,
+            "source_family": "congress",
+            "record_provider": "official_senate_efd",
+        }
+        if senate.failure_kind:
+            senate_status["failure_kind"] = senate.failure_kind
+        if senate.edge_reference:
+            senate_status["edge_reference"] = senate.edge_reference
+        status["senate_efd"] = senate_status
+        congress.extend(senate.records)
     fmp = FMPClient()
     history = fmp.person_history() if "nancy_pelosi" in selected else None
     if history is not None:

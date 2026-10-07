@@ -13,6 +13,8 @@ import httpx
 
 HOUSE_SEARCH_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure"
 HOUSE_SEARCH_RESULT_URL = "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult"
+# Current filing year and the two years before it. Senate eFD uses this same span.
+HOUSE_FILING_YEAR_LOOKBACK = 3
 OGE_INDEX_URL = "https://www.oge.gov/web/oge.nsf/Officials%20Individual%20Disclosures%20Search%20Collection?OpenForm"
 # Public records API advertised by the index page. Version is discovered, not pinned.
 OGE_API_URL_RE = re.compile(r"https://extapps2\.oge\.gov/201/Presiden\.nsf/API\.xsp/v(\d+)/rest")
