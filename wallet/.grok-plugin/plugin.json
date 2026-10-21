@@ -1,0 +1,17 @@
+{
+  "name": "rocket",
+  "displayName": "Rocket",
+  "version": "0.1.0",
+  "description": "Rocket: a secure, multichain agentic wallet. Resolve a listing, quote across EVM L1 and L2 chains and Solana, and swap under a Turnkey policy with screening, simulation, and spend caps. Dry-run is the default.",
+  "author": {
+    "name": "Rocket"
+  },
+  "repository": "https://github.com/jhonnyisaacc/rocket",
+  "license": "MIT",
+  "keywords": [
+    "rocket",
+    "rocket wallet",
+    "agentic wallet",
+    "multichain wallet"
+  ]
+}
