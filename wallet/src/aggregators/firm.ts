@@ -2,10 +2,10 @@ import { z } from "zod";
 import type { AppConfig } from "../config.js";
 import type { QuoteHop } from "../quote-hop.js";
 import type { HopQuote } from "../executor.js";
-import { KYBER_SLUG, callProvider, empty, firmSignal, jupiterHeaders, jupiterQuote, jupiterQuoteUrl, kyberBuildSchema, kyberRoutesUrl, kyberRouteQuote, kyberSchema, lifiHeaders, lifiQuote, lifiUrl, zeroExHeaders, zeroExQuote, zeroExUrl, type Reference } from "./shared.js";
+import { KYBER_SLUG, callFirm, empty, jupiterHeaders, jupiterQuote, jupiterQuoteUrl, kyberBuildSchema, kyberRoutesUrl, kyberRouteQuote, kyberSchema, lifiHeaders, lifiQuote, lifiUrl, zeroExHeaders, zeroExQuote, zeroExUrl, type Reference } from "./shared.js";
 
 export async function firmJupiter(config: AppConfig, hop: QuoteHop, slippageBps: number, reference: Reference | null, fetchImpl: typeof fetch): Promise<HopQuote> {
-  const body = await callProvider(config, "jupiter", jupiterQuoteUrl(config, hop, slippageBps), { headers: jupiterHeaders(config) }, fetchImpl, firmSignal(config));
+  const body = await callFirm(config, "jupiter", jupiterQuoteUrl(config, hop, slippageBps), { headers: jupiterHeaders(config) }, fetchImpl);
   if (!body) return empty();
   return jupiterQuote(config, body);
 }
@@ -23,7 +23,7 @@ export async function jupiterSwap(
   owner: string,
   fetchImpl: typeof fetch,
 ): Promise<{ swapTransaction: string; lastValidBlockHeight?: number } | null> {
-  const body = await callProvider(
+  const body = await callFirm(
     config,
     "jupiter",
     `${config.jupiterBase}/swap`,
@@ -39,7 +39,6 @@ export async function jupiterSwap(
       }),
     },
     fetchImpl,
-    firmSignal(config),
   );
   const parsed = jupiterSwapSchema.safeParse(body);
   return parsed.success ? parsed.data : null;
@@ -55,7 +54,7 @@ export async function firmZeroEx(
   slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
   if (!config.keys.zeroEx) return empty();
-  const body = await callProvider(config, "zeroex", zeroExUrl(config, hop, chainId, taker, slippageBps), { headers: zeroExHeaders(config) }, fetchImpl, firmSignal(config));
+  const body = await callFirm(config, "zeroex", zeroExUrl(config, hop, chainId, taker, slippageBps), { headers: zeroExHeaders(config) }, fetchImpl);
   if (!body) return empty();
   return zeroExQuote(body, reference);
 }
@@ -69,9 +68,9 @@ export async function firmLifi(
   fetchImpl: typeof fetch,
   slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
-  const body = await callProvider(config, "lifi", lifiUrl(config, hop, chainId, taker, slippageBps), { headers: lifiHeaders(config) }, fetchImpl, firmSignal(config));
+  const body = await callFirm(config, "lifi", lifiUrl(config, hop, chainId, taker, slippageBps), { headers: lifiHeaders(config) }, fetchImpl);
   if (!body) return empty();
-  return lifiQuote(body, reference, chainId);
+  return lifiQuote(config, body, reference, chainId);
 }
 
 export async function firmKyber(
@@ -85,7 +84,7 @@ export async function firmKyber(
 ): Promise<HopQuote> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return empty();
-  const body = await callProvider(config, "kyberswap", kyberRoutesUrl(config, slug, hop), { headers: { "x-client-id": config.keys.kyberClientId } }, fetchImpl, firmSignal(config));
+  const body = await callFirm(config, "kyberswap", kyberRoutesUrl(config, slug, hop), { headers: { "x-client-id": config.keys.kyberClientId } }, fetchImpl);
   if (!body) return empty();
   return kyberFromRoute(config, body, chainId, sender, reference, fetchImpl, slippageBps);
 }
@@ -117,7 +116,7 @@ export async function buildKyberSwap(
 ): Promise<{ to: string; data: string; value: string; amountOut: string | null; slippageBps: number } | null> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return null;
-  const body = await callProvider(
+  const body = await callFirm(
     config,
     "kyberswap",
     `${config.kyberBase}/${slug}/api/v1/route/build`,
@@ -127,7 +126,6 @@ export async function buildKyberSwap(
       body: JSON.stringify({ routeSummary, sender, recipient: sender, slippageTolerance: slippageBps, source: config.keys.kyberClientId }),
     },
     fetchImpl,
-    firmSignal(config),
   );
   const parsed = kyberBuildSchema.safeParse(body);
   if (!parsed.success) return null;

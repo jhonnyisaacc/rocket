@@ -1,4 +1,4 @@
-import { PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction, type Connection } from "@solana/web3.js";
 import bs58 from "bs58";
 import { TransactionReceiptNotFoundError, createPublicClient, defineChain, encodeFunctionData, erc20Abi, keccak256, parseUnits, type Hex } from "viem";
 import { z } from "zod";
@@ -36,6 +36,7 @@ export type EvmReceipt = { status: "success" | "reverted"; gasUsed: bigint; effe
 export type EvmRpc = {
   fees(): Promise<{ maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }>;
   pendingNonce(address: Hex): Promise<number>;
+  latestNonce(address: Hex): Promise<number>;
   estimateGas(call: EvmCall): Promise<bigint>;
   simulate(call: EvmCall): Promise<void>;
   sendRaw(signed: Hex): Promise<void>;
@@ -115,6 +116,7 @@ export function createViemRpc(chainId: number, rpcs: readonly string[]): EvmRpc 
       return { maxFeePerGas: fees.maxFeePerGas, maxPriorityFeePerGas: fees.maxPriorityFeePerGas };
     },
     pendingNonce: (address) => client.getTransactionCount({ address, blockTag: "pending" }),
+    latestNonce: (address) => client.getTransactionCount({ address, blockTag: "latest" }),
     estimateGas: (call) => client.estimateGas({ account: call.from, to: call.to, data: call.data, value: call.value }),
     async simulate(call) {
       if (typeof client.simulateCalls === "function") {
@@ -163,9 +165,25 @@ export const TOKEN_PROGRAM = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss6
 export const TOKEN_2022_PROGRAM = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
 export const ATA_PROGRAM = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
-export function web3Rpc(rpcs: readonly string[]): SolanaRpc {
-  const connections = rpcs.map(solanaConnection);
-  const read = <T>(call: (connection: (typeof connections)[number]) => Promise<T>) => firstOk(connections.map((connection) => () => call(connection)));
+type SolanaConnection = Pick<
+  Connection,
+  "simulateTransaction" | "sendRawTransaction" | "getLatestBlockhash" | "getBlockHeight" | "getSignatureStatuses" | "getTransaction" | "getBalance" | "getParsedTokenAccountsByOwner"
+>;
+
+// A history lookup asks every RPC: one lagging node must not report a landed signature as unknown.
+async function historyStatus(connections: readonly SolanaConnection[], signature: string): Promise<SolanaStatus> {
+  const settled = await Promise.allSettled(
+    connections.map(async (connection) => (await connection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0] ?? null),
+  );
+  const found = settled.find((result) => result.status === "fulfilled" && result.value !== null);
+  if (found?.status === "fulfilled") return found.value;
+  const failed = settled.find((result) => result.status === "rejected");
+  if (failed?.status === "rejected") throw failed.reason;
+  return null;
+}
+
+export function solanaRpcOver(connections: readonly SolanaConnection[]): SolanaRpc {
+  const read = <T>(call: (connection: SolanaConnection) => Promise<T>) => firstOk(connections.map((connection) => () => call(connection)));
   return {
     simulate: (tx) => read(async (connection) => (await connection.simulateTransaction(tx, { sigVerify: false, replaceRecentBlockhash: true })).value.err),
     async sendRaw(signed) {
@@ -174,7 +192,7 @@ export function web3Rpc(rpcs: readonly string[]): SolanaRpc {
     latestBlockhash: () => read((connection) => connection.getLatestBlockhash()),
     blockHeight: () => read((connection) => connection.getBlockHeight()),
     status: (signature, searchHistory = false) =>
-      read(async (connection) => (await connection.getSignatureStatuses([signature], { searchTransactionHistory: searchHistory })).value[0] ?? null),
+      searchHistory ? historyStatus(connections, signature) : read(async (connection) => (await connection.getSignatureStatuses([signature])).value[0] ?? null),
     received: (signature, owner, mint) =>
       read(async (connection) => {
         const tx = await connection.getTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
@@ -196,7 +214,7 @@ export function web3Rpc(rpcs: readonly string[]): SolanaRpc {
 export function defaultIo(config: AppConfig): SendIo {
   return {
     evm: viemRpc,
-    solana: web3Rpc,
+    solana: (rpcs) => solanaRpcOver(rpcs.map(solanaConnection)),
     nonces: evmNonces,
     sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
     now: Date.now,

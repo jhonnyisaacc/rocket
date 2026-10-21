@@ -1,5 +1,5 @@
 import { createHmac } from "node:crypto";
-import { timeoutSignal, anySignal } from "../timeout.js";
+import { withTimeout } from "../timeout.js";
 import { z } from "zod";
 import type { AppConfig } from "../config.js";
 import type { ChainRef } from "../domain.js";
@@ -35,7 +35,11 @@ export function kyberSupports(chainId: number): boolean {
   return KYBER_SLUG[chainId] !== undefined;
 }
 
-export const SIGNABLE_PROVIDERS: ReadonlySet<string> = new Set(["jupiter", "zeroex", "kyberswap", "lifi"]);
+const SIGNABLE_PROVIDERS: ReadonlySet<string> = new Set(["jupiter", "zeroex", "kyberswap"]);
+
+export function signableProvider(config: AppConfig, id: string): boolean {
+  return SIGNABLE_PROVIDERS.has(id) || (id === "lifi" && config.lifiLive);
+}
 
 export type QuoteProviderId = "jupiter" | "zeroex" | "oneinch" | "kyberswap" | "velora" | "okx" | "lifi";
 
@@ -177,8 +181,8 @@ export async function callProvider(config: AppConfig, id: string, url: string, i
   }
 }
 
-export function firmSignal(config: AppConfig): AbortSignal {
-  return timeoutSignal(config.firmTimeoutMs);
+export function callFirm(config: AppConfig, id: string, url: string, init: RequestInit, fetchImpl: typeof fetch): Promise<unknown | null> {
+  return withTimeout(config.firmTimeoutMs, (signal) => callProvider(config, id, url, init, fetchImpl, signal));
 }
 
 export function jupiterHeaders(config: AppConfig, json = false): Record<string, string> {
@@ -240,10 +244,12 @@ export function lifiHeaders(config: AppConfig): Record<string, string> {
   return config.keys.lifi ? { "x-lifi-api-key": config.keys.lifi } : {};
 }
 
-export function lifiQuote(body: unknown, reference: Reference | null, chainId: number): HopQuote {
+// LI.FI calldata targets its diamond with facet-specific encodings, so the signer cannot read the swap recipient.
+// It stays quote-only unless the operator opts in with LIFI_LIVE=true.
+export function lifiQuote(config: AppConfig, body: unknown, reference: Reference | null, chainId: number): HopQuote {
   const parsed = readLifi(body as Parameters<typeof readLifi>[0], reference, chainId);
   if (!parsed.sameChain) return empty();
-  return { priceImpactPct: parsed.priceImpactPct, feeUsd: parsed.feeUsd, buyAmount: parsed.buyAmount, raw: body, provider: "lifi", signable: true };
+  return { priceImpactPct: parsed.priceImpactPct, feeUsd: parsed.feeUsd, buyAmount: parsed.buyAmount, raw: body, provider: "lifi", signable: config.lifiLive };
 }
 
 export function kyberRoutesUrl(config: AppConfig, slug: string, hop: QuoteHop): string {

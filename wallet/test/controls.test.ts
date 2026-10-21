@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { QUOTE_ASSETS } from "../src/chains.js";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { landedSend } from "./fixtures.js";
+import { landedSend, zeroExData } from "./fixtures.js";
 import { Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { resetApprovals, rememberApproval } from "../src/approvals.js";
 import { PROVIDER_REGISTRY, providersFor, raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
@@ -230,7 +230,7 @@ test("an uncached erc-20 sell is not signed", async () => {
               buyAmount: "5000000",
               minBuyAmount: "4975000",
               liquidityAvailable: true,
-              transaction: { to: router, data: "0x", value: "0", gas: "21000" },
+              transaction: { to: router, data: zeroExData("0x01", { recipient: "0x2222222222222222222222222222222222222222", buyToken: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", minOut: 4_975_000n }), value: "0", gas: "21000" },
               issues: { allowance: { spender: router, actual: "0" } },
             }),
             { status: 200 },
@@ -260,7 +260,7 @@ test("an uncached erc-20 sell is not signed", async () => {
               buyAmount: "5000000",
               minBuyAmount: "4975000",
               liquidityAvailable: true,
-              transaction: { to: router, data: "0x", value: "0", gas: "21000" },
+              transaction: { to: router, data: zeroExData("0x01", { recipient: "0x2222222222222222222222222222222222222222", buyToken: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", minOut: 4_975_000n }), value: "0", gas: "21000" },
               issues: { allowance: { spender: router, actual: "0" } },
             }),
             { status: 200 },
@@ -272,7 +272,7 @@ test("an uncached erc-20 sell is not signed", async () => {
 
 test("signing policy denies an empty router list, a foreign router, and a hyperliquid withdraw", () => {
   assert.throws(
-    () => assertEvmSigning({ chainId: 8453, to: "0x1111111111111111111111111111111111111111", data: "0x", value: 0n, purpose: "swap", routers: [], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false }),
+    () => assertEvmSigning({ chainId: 8453, to: "0x1111111111111111111111111111111111111111", data: "0x", value: 0n, purpose: "swap", routers: [], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false, owner: "0x2222222222222222222222222222222222222222", allowOpaqueSwap: false }),
     /router allowlist is empty/,
   );
   assert.throws(
@@ -287,6 +287,8 @@ test("signing policy denies an empty router list, a foreign router, and a hyperl
         withdrawAllowlist: [],
         maxValueWei: DEFAULT_MAX_VALUE_WEI,
         allowHotApproval: false,
+        owner: "0x2222222222222222222222222222222222222222",
+        allowOpaqueSwap: false,
       }),
     /not an allowlisted router/,
   );

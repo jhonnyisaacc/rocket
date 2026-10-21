@@ -43,7 +43,7 @@ test("spend journal records tx hashes and boot reconciliation settles aged reser
     ]);
     const outcomes: Record<string, TxOutcome> = { [`${run}:a`]: "landed", [`${run}:b`]: "expired", [`${run}:c`]: "pending", [`${run}:e2`]: "landed" };
     const seen: string[] = [];
-    await reconcileReserved(databaseUrl, 10, async (_chain, hash) => outcomes[hash] ?? null, (entry) => {
+    await reconcileReserved(databaseUrl, 10, async (aged) => outcomes[aged.txHash] ?? null, (entry) => {
       if (entry.idempotencyKey.startsWith(run)) seen.push(entry.idempotencyKey);
     });
     const rows = await client.query<{ idempotency_key: string; status: string }>("SELECT idempotency_key, status FROM spend_journal WHERE idempotency_key LIKE $1", [`${run}:%`]);
@@ -68,6 +68,29 @@ test("spend journal records tx hashes and boot reconciliation settles aged reser
   } finally {
     await client.query("DELETE FROM spend_journal WHERE idempotency_key LIKE $1", [`${run}:%`]);
     await client.query("DELETE FROM signed_tx WHERE tx_hash LIKE $1", [`${run}:%`]);
+    await client.end();
+    await closeSpendPools();
+  }
+});
+
+test("strategy reservations share the global cap and scope by exact strategy id", { skip: !url }, async () => {
+  const databaseUrl = url as string;
+  const run = randomUUID();
+  const year = 2100 + Math.floor(Math.random() * 800);
+  const shared = `${year}-01-01`;
+  const scoped = `${year}-01-02`;
+  try {
+    assert.equal(await recordSpend(databaseUrl, `${run}:l1`, 20, shared, 25), "reserved");
+    assert.equal(await recordSpend(databaseUrl, `a_c:${run}:1`, 10, shared, 25, { strategyId: "a_c", capUsd: 50 }), "cap", "listing spend counts against a strategy's global cap");
+    assert.equal(await recordSpend(databaseUrl, `a_c:${run}:2`, 5, shared, 25, { strategyId: "a_c", capUsd: 50 }), "reserved");
+    assert.equal(await recordSpend(databaseUrl, `${run}:l2`, 1, shared, 25), "cap", "strategy spend counts against the listing cap");
+    assert.equal(await recordSpend(databaseUrl, `abc:${run}:1`, 5, scoped, 100, { strategyId: "abc", capUsd: 100 }), "reserved");
+    assert.equal(await recordSpend(databaseUrl, `a_c:${run}:3`, 5, scoped, 100, { strategyId: "a_c", capUsd: 5 }), "reserved", "'_' does not match another strategy's rows");
+    assert.equal(await recordSpend(databaseUrl, `a_c:${run}:4`, 1, scoped, 100, { strategyId: "a_c", capUsd: 5 }), "cap");
+  } finally {
+    const client = new pg.Client({ connectionString: databaseUrl });
+    await client.connect();
+    await client.query("DELETE FROM spend_journal WHERE idempotency_key LIKE $1", [`%${run}%`]);
     await client.end();
     await closeSpendPools();
   }

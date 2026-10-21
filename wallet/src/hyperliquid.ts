@@ -1,5 +1,5 @@
 import { encode } from "@msgpack/msgpack";
-import { timeoutSignal } from "./timeout.js";
+import { withTimeout } from "./timeout.js";
 import { keccak256 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { Hex } from "viem";
@@ -99,14 +99,16 @@ export function cappedLimitPx(mark: number, isBuy: boolean, capBps: number): num
 }
 
 export async function assertApprovedAgent(url: string, master: string, agent: string, fetchImpl: typeof fetch, nowMs = Date.now()): Promise<void> {
-  const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ type: "extraAgents", user: master }),
-    signal: timeoutSignal(1500),
+  const body: unknown = await withTimeout(1500, async (signal) => {
+    const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ type: "extraAgents", user: master }),
+      signal,
+    });
+    if (!response.ok) throw new Error("hyperliquid agent check failed");
+    return response.json() as Promise<unknown>;
   });
-  if (!response.ok) throw new Error("hyperliquid agent check failed");
-  const body: unknown = await response.json();
   if (!Array.isArray(body)) throw new Error("hyperliquid agent is not approved");
   const agents = body.flatMap((row) => {
     if (typeof row !== "object" || row === null || typeof (row as { address?: unknown }).address !== "string") return [];
@@ -213,17 +215,20 @@ export async function fetchSzDecimals(url: string, market: { market: "perp" | "s
   const key = `${url}|${market.market}|${market.assetIndex}`;
   const cached = szCache.get(key);
   if (cached !== undefined) return cached;
-  const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ type: market.market === "spot" ? "spotMeta" : "meta" }),
-    signal: timeoutSignal(1500),
-  });
-  if (!response.ok) return null;
-  const body = (await response.json()) as {
+  type Meta = {
     universe?: Array<{ szDecimals?: number; tokens?: number[]; index?: number }>;
     tokens?: Array<{ szDecimals?: number; index?: number }>;
   };
+  const body = await withTimeout(1500, async (signal) => {
+    const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ type: market.market === "spot" ? "spotMeta" : "meta" }),
+      signal,
+    });
+    return response.ok ? ((await response.json()) as Meta) : null;
+  });
+  if (!body) return null;
   let value: number | undefined;
   if (market.market === "perp") {
     value = body.universe?.[market.assetIndex]?.szDecimals;

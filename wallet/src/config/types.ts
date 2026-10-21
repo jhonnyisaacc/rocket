@@ -20,6 +20,7 @@ export type AppConfig = LimitConfig & {
   zeroExBase: string;
   jupiterBase: string;
   lifiBase: string;
+  lifiLive: boolean;
   hyperliquidUrl: string;
   jupiterImpactUnit: "fraction" | "percent";
   liveLookupTimeoutMs: number;

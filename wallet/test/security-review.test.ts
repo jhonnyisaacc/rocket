@@ -391,6 +391,8 @@ test("a router allowed on one chain is denied on another, and a token sell canno
     withdrawAllowlist: [],
     maxValueWei: DEFAULT_MAX_VALUE_WEI,
     allowHotApproval: false,
+    owner,
+    allowOpaqueSwap: true,
   };
   assert.throws(() => assertEvmSigning({ ...base, chainId: 1, to: router, value: 0n, purpose: "swap", routers: config.routerAllowlist[1] ?? [] }), /router allowlist is empty/);
   assert.doesNotThrow(() => assertEvmSigning({ ...base, chainId: 8453, to: router, value: 0n, purpose: "swap", routers: config.routerAllowlist[8453] ?? [] }));
@@ -460,7 +462,6 @@ test("the kill switch skips a live buy and a missing balance read does not trade
     [],
     [holding],
     false,
-    null,
     async () => new Response(JSON.stringify({ kind: "unlisted" }), { status: 200 }),
   );
   const response = await app.inject({
@@ -477,7 +478,6 @@ test("the kill switch skips a live buy and a missing balance read does not trade
     [],
     [holding],
     false,
-    null,
     async () =>
       new Response(
         JSON.stringify({

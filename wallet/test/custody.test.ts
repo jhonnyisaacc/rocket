@@ -3,14 +3,15 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
-import { Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { ComputeBudgetProgram, Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { encodeFunctionData, erc20Abi, maxUint256, parseSignature } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { configSecrets, loadConfig } from "../src/config.js";
 import { readHiddenLine, writeKeystoreFile } from "../src/create-wallet.js";
 import { buildLeverage } from "../src/hyperliquid.js";
+import { kyberData, zeroExData } from "./fixtures.js";
 import { loadManagedSigner, turnkeySigner, withPolicy, type TransactionSigner, type TurnkeyApi } from "../src/managed-signer.js";
-import { assertEvmSigning, associatedTokenAddress, DEFAULT_MAX_VALUE_WEI, JUPITER_PROGRAM_ID, turnkeyPolicyDocument, wrappedSolAccount } from "../src/signing-policy.js";
+import { assertEvmSigning, associatedTokenAddress, DEFAULT_MAX_VALUE_WEI, JITO_TIP_ACCOUNTS, JUPITER_PROGRAM_ID, turnkeyPolicyDocument, wrappedSolAccount } from "../src/signing-policy.js";
 
 const tokenAuth = "0123456789abcdef";
 const SYSTEM = SystemProgram.programId;
@@ -116,6 +117,58 @@ test("each banned solana instruction is denied before the backend signs", async 
   }
 });
 
+test("jito tips and compute-unit priority fees are capped by the signing policy", async () => {
+  const payer = Keypair.generate().publicKey;
+  const config = loadConfig({ SOLANA_MAX_PRIORITY_LAMPORTS: "1000000", JITO_TIP_LAMPORTS: "10000" });
+  const tip = (lamports: number) => SystemProgram.transfer({ fromPubkey: payer, toPubkey: new PublicKey(JITO_TIP_ACCOUNTS[0]), lamports });
+  const limit = (units: number) => ComputeBudgetProgram.setComputeUnitLimit({ units });
+  const price = (microLamports: number) => ComputeBudgetProgram.setComputeUnitPrice({ microLamports });
+  const cases: Array<[string, TransactionInstruction[], RegExp | null]> = [
+    ["tip at the cap", [tip(10_000)], null],
+    ["tip above the cap", [tip(10_001)], /jito tip exceeds/],
+    ["priority exactly at the cap", [limit(200_000), price(5_000_000)], null],
+    ["priority one lamport over", [limit(200_000), price(5_000_001)], /priority fee exceeds/],
+    ["price with the default limit", [price(1_000_000)], /priority fee exceeds/],
+    ["priority plus tip over the cap", [limit(200_000), price(4_990_000), tip(10_000)], /priority fee exceeds/],
+  ];
+  for (const [name, instructions, reason] of cases) {
+    const calls: string[] = [];
+    const policy = withPolicy(solanaSigner(payer, calls), config);
+    if (reason) {
+      await assert.rejects(() => policy.signSolana(serialize(payer, instructions)), reason, name);
+      assert.deepEqual(calls, [], name);
+    } else {
+      await policy.signSolana(serialize(payer, instructions));
+      assert.deepEqual(calls, ["solana"], name);
+    }
+  }
+});
+
+test("jupiter exact-out routes are denied because quotes are always exactIn", async () => {
+  const payer = Keypair.generate().publicKey;
+  const mint = Keypair.generate().publicKey;
+  const ownAta = new PublicKey(associatedTokenAddress(payer.toBase58(), mint.toBase58(), TOKEN.toBase58()));
+  const exactOut = sharedRoute(payer, ownAta, mint);
+  exactOut.data = Buffer.concat([Buffer.from("b0d169a89a7d453e", "hex"), Buffer.alloc(24)]);
+  const calls: string[] = [];
+  await assert.rejects(() => withPolicy(solanaSigner(payer, calls), loadConfig({})).signSolana(serialize(payer, [exactOut])), /instruction is not allowed JUP6\S+ b0d169a89a7d453e/);
+  assert.deepEqual(calls, []);
+});
+
+test("swap calldata must pay the hot wallet unless opaque swaps are opted in", () => {
+  const owner = "0x2222222222222222222222222222222222222222";
+  const router = "0x1111111111111111111111111111111111111111";
+  const base = { chainId: 8453, to: router, value: 0n, purpose: "swap" as const, routers: [router], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false, owner, allowOpaqueSwap: false };
+  const terms = (recipient: string) => ({ recipient, buyToken: "0xdddddddddddddddddddddddddddddddddddddddd", minOut: 1n });
+  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms(owner)) }));
+  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms(owner)) }));
+  assert.throws(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms("0x9999999999999999999999999999999999999999")) }), /recipient is not the hot wallet/);
+  assert.throws(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms("0x9999999999999999999999999999999999999999")) }), /recipient is not the hot wallet/);
+  assert.throws(() => assertEvmSigning({ ...base, data: "0x12345678" }), /does not name a checkable recipient/);
+  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: "0x12345678", allowOpaqueSwap: true }));
+  assert.throws(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms("0x9999999999999999999999999999999999999999")), allowOpaqueSwap: true }), /recipient/);
+});
+
 test("an approval must be exact, carry no value, target the sold token, and pay an allowlisted router", () => {
   const router = "0x1111111111111111111111111111111111111111" as const;
   const token = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -130,6 +183,8 @@ test("an approval must be exact, carry no value, target the sold token, and pay 
     withdrawAllowlist: [],
     maxValueWei: DEFAULT_MAX_VALUE_WEI,
     allowHotApproval: true,
+    owner: "0x2222222222222222222222222222222222222222",
+    allowOpaqueSwap: false,
     approval: { token, amount: 1000n },
   };
   assert.doesNotThrow(() => assertEvmSigning(base));

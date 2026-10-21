@@ -356,12 +356,11 @@ test("an untagged holding funds an alternate chain", async () => {
   };
   const app = await createExecutorApp(
     config,
-    runtime,
+    { ...runtime, readBalance: async () => 20 },
     null,
     [],
     [holding, solHolding],
     false,
-    async () => 20,
     async () => new Response(JSON.stringify(resolution), { status: 200 }),
   );
   const response = await app.inject({
@@ -394,12 +393,12 @@ test("an untagged holding funds an alternate chain", async () => {
         taggedKinds.push(hop.chain.kind);
         return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
       },
+      readBalance: async (row) => (row.chainKey === "base" ? 20 : null),
     },
     null,
     [],
     [tagged],
     false,
-    async (row) => (row.chainKey === "base" ? 20 : null),
     async () => new Response(JSON.stringify(resolution), { status: 200 }),
   );
   const taggedResponse = await taggedApp.inject({
@@ -522,6 +521,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
       send: async () => landedSend(),
       now: () => 1_050,
       priceOf: () => 1,
+      readBalance: async () => 20,
     },
     null,
     [],
@@ -530,7 +530,6 @@ test("a null or thrown read skips that holding and the other chain still quotes"
       { ...row, address: sol },
     ],
     false,
-    async () => 20,
     async () => new Response(JSON.stringify(resolution), { status: 200 }),
   );
   const response = await app.inject({

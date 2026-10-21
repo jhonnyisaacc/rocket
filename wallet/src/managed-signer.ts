@@ -45,6 +45,7 @@ function policyConfig(config: AppConfig) {
     solanaPrograms: config.solanaProgramAllowlist,
     maxLeverage: config.maxLeverage,
     recoveryTokens: config.tokenRecoveryAllowlist,
+    allowOpaqueSwap: config.lifiLive,
   };
 }
 
@@ -59,6 +60,7 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
         ...input,
         ...policy,
         routers: routersForChain(config.routerAllowlist, input.chainId),
+        owner: inner.evmAddress() ?? "",
         nativeSell: input.nativeSell === true,
       });
       return inner.signEvm(input);
@@ -71,6 +73,8 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
         expectedFeePayer: expected,
         allowlist: policy.solanaPrograms,
         withdrawAllowlist: policy.withdrawAllowlist,
+        maxTipLamports: config.jitoTipLamports,
+        maxPriorityLamports: config.solanaMaxPriorityLamports,
       });
       return inner.signSolana(serialized);
     },

@@ -8,13 +8,14 @@ import { createBalanceCache } from "../src/balances.js";
 import { broadcastRoute, rememberIfFunded, type EvmReceipt, type EvmRpc, type SendIo } from "../src/broadcast.js";
 import { assertLiveEdges, configSecrets, loadConfig, type AppConfig } from "../src/config.js";
 import type { Holding, RouteLeg, SwapIntent } from "../src/domain.js";
-import { execute, resetExecutorState, type ExecutorDeps } from "../src/executor.js";
+import { BroadcastError, execute, resetExecutorState, type ExecutorDeps } from "../src/executor.js";
 import type { EvmSignInput, TransactionSigner } from "../src/managed-signer.js";
 import { createNonceManager } from "../src/nonce.js";
 import { buildPairMap } from "../src/pairs.js";
 import { retryAfterAt } from "../src/provider-guard.js";
 import { evmReadClient } from "../src/rpc.js";
 import { screenToken } from "../src/screening.js";
+import { kyberData, tagOf, zeroExData } from "./fixtures.js";
 
 const USDC = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const WETH = "0xcccccccccccccccccccccccccccccccccccccccc";
@@ -262,6 +263,7 @@ function fakeChain(failSend = false): Chain {
     rpc: {
       fees: async () => ({ maxFeePerGas: 1_000n, maxPriorityFeePerGas: 100n }),
       pendingNonce: async () => 1,
+      latestNonce: async () => 1,
       estimateGas: async () => 21_000n,
       simulate: async () => undefined,
       sendRaw: async (signed) => {
@@ -316,7 +318,7 @@ const zeroExBody = (data: Hex, minBuyAmount = "9950000", issues: unknown = { all
   buyAmount: "10000000",
   minBuyAmount,
   issues,
-  transaction: { to: ROUTER, data, value: "0", gas: "100000" },
+  transaction: { to: ROUTER, data: zeroExData(data, { recipient: OWNER, buyToken: TOKEN, minOut: BigInt(minBuyAmount) }), value: "0", gas: "100000" },
 });
 
 const request = (legs: RouteLeg[], provider = "zeroex") => ({ kind: "evm" as const, description: "swap", chain: base, hyperliquidActions: [], provider, legs });
@@ -347,15 +349,15 @@ test("a fresh race quote is signed without a re-quote, and a stale or too-loose 
   const fresh = await broadcastRoute(config, signer(signed), request([storedLeg("zeroex", zeroExBody("0x05"), 9_000)]), 1, fetchImpl, [], { io: io(() => chain.rpc) });
   assert.equal(fresh.venue === "chain" && fresh.outcome, "landed");
   assert.equal(firm.length, 0);
-  assert.equal(signed[0]?.data, "0x05");
+  assert.equal(tagOf(signed[0]?.data), "0x05");
   clock = 11_500;
   await broadcastRoute(config, signer(signed), request([storedLeg("zeroex", zeroExBody("0x05"), 9_000)]), 1, fetchImpl, [], { io: io(() => chain.rpc) });
   assert.equal(firm.length, 1);
-  assert.equal(signed[1]?.data, "0x06");
+  assert.equal(tagOf(signed[1]?.data), "0x06");
   clock = 9_500;
   await broadcastRoute(config, signer(signed), request([storedLeg("zeroex", zeroExBody("0x05", "9000000"), 9_000)]), 1, fetchImpl, [], { io: io(() => chain.rpc) });
   assert.equal(firm.length, 2);
-  assert.equal(signed[2]?.data, "0x06");
+  assert.equal(tagOf(signed[2]?.data), "0x06");
 });
 
 test("a fresh Kyber route summary goes straight to the build call", async () => {
@@ -369,7 +371,7 @@ test("a fresh Kyber route summary goes straight to the build call", async () => 
     "aggregator-api.kyberswap.com": (url, init) => {
       if (!url.pathname.endsWith("/route/build")) return json({}, 500);
       builds.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
-      return json({ data: { data: "0x07", routerAddress: ROUTER, amountOut: "10000000" } });
+      return json({ data: { data: kyberData("0x07", { recipient: OWNER, buyToken: TOKEN, minOut: 9_950_000n }), routerAddress: ROUTER, amountOut: "10000000" } });
     },
   });
   const routes = { data: { routeSummary: { amountOut: "10000000", routerAddress: ROUTER } } };
@@ -381,7 +383,32 @@ test("a fresh Kyber route summary goes straight to the build call", async () => 
     ["/base/api/v1/route/build"],
   );
   assert.deepEqual(builds[0]?.routeSummary, routes.data.routeSummary);
-  assert.equal(signed[0]?.data, "0x07");
+  assert.equal(tagOf(signed[0]?.data), "0x07");
+});
+
+test("a Kyber build that pays someone else or lowers the minimum is refused before signing", async () => {
+  const config: AppConfig = { ...loadConfig({ RPC_URL_8453: "http://fake.invalid" }), now: () => 1_000 };
+  const routes = { data: { routeSummary: { amountOut: "10000000", routerAddress: ROUTER } } };
+  const cases = [
+    { terms: { recipient: "0x9999999999999999999999999999999999999999", buyToken: TOKEN, minOut: 9_950_000n }, error: /recipient is not the hot wallet/ },
+    { terms: { recipient: OWNER, buyToken: TOKEN, minOut: 1n }, error: /below ours/ },
+    { terms: { recipient: OWNER, buyToken: WETH, minOut: 9_950_000n }, error: /buys a different token/ },
+  ];
+  for (const { terms, error } of cases) {
+    resetProviderGuards();
+    resetApprovals();
+    rememberApproval({ chainId: 8453, token: USDC, spender: ROUTER, owner: OWNER }, 10n ** 30n);
+    const fetchImpl = byHost([], {
+      "aggregator-api.kyberswap.com": (url) =>
+        url.pathname.endsWith("/route/build") ? json({ data: { data: kyberData("0x07", terms), routerAddress: ROUTER, amountOut: "10000000" } }) : json(routes),
+    });
+    const signed: EvmSignInput[] = [];
+    await assert.rejects(
+      () => broadcastRoute(config, signer(signed), request([storedLeg("kyberswap", routes, 900)], "kyberswap"), 1, fetchImpl, [], { io: io(() => fakeChain().rpc) }),
+      (thrown: unknown) => thrown instanceof BroadcastError && !thrown.broadcast && error.test(thrown.message),
+    );
+    assert.equal(signed.length, 0);
+  }
 });
 
 test("a 0x quote whose allowance issue is null counts as funded", async () => {

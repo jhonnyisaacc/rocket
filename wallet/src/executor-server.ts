@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import { guardFor } from "./aggregators.js";
-import { timeoutSignal } from "./timeout.js";
+import { withTimeout } from "./timeout.js";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { configSecrets, drainTimeoutMs, loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { createBalanceCache, holdingFitsChain, type BalanceCache, type BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
-import { createExecutorState, decideWithdraw, execute, restoreSpent, type ExecutorDeps, type ExecutorState, type SpendScope } from "./executor.js";
+import { createExecutorState, decideWithdraw, execute, restoreSpent, type ExecutorDeps, type ExecutorState } from "./executor.js";
 import { chainReader } from "./executor-server/chain-reader.js";
 import { latencyLog } from "./latency.js";
 import { anyTokenMatches, bearerOf, buildApp, mutatingLimit, perMinute, shutdown } from "./http.js";
@@ -17,7 +17,21 @@ import { assertApprovedAgent, fetchSzDecimals } from "./hyperliquid.js";
 import { createLogger } from "./log.js";
 import { assertBoot, loadManagedSigner, tokenMatches, type TransactionSigner } from "./managed-signer.js";
 import { seedApprovals } from "./approvals.js";
-import { acquireExecutorLock, closeSpendPools, commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
+import {
+  acquireExecutorLock,
+  closeSpendPools,
+  commitSpend,
+  listingKey,
+  readKillSwitch,
+  reconcileReserved,
+  recordSpend,
+  recordTx,
+  releaseSpend,
+  spendDay,
+  spentOnDay,
+  type SpendScope,
+  strategyKey,
+} from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
 import { supportTierFor } from "./support.js";
@@ -45,7 +59,7 @@ export function intentFromResolution(
 ): SwapIntent | null {
   if (resolution.kind !== "hit" || !resolution.token) return null;
   return {
-    idempotencyKey: alert.id,
+    idempotencyKey: listingKey(alert.id),
     side: "buy",
     notionalUsd,
     slippageBps,
@@ -118,7 +132,7 @@ function deps(
     spendScope: opts.spendScope,
     recordSpend:
       config.live && databaseUrl
-        ? (key, usd, scope) => recordSpend(databaseUrl, key, usd, spendDay(new Date(), config.spendTimezone), scope?.capUsd ?? config.dailyUsdCap, scope?.strategyId)
+        ? (key, usd, scope) => recordSpend(databaseUrl, key, usd, spendDay(new Date(), config.spendTimezone), config.dailyUsdCap, scope)
         : undefined,
     killSwitchEnabled: async () => {
       if (config.killSwitch) return true;
@@ -130,6 +144,7 @@ function deps(
     screenToken: config.screening ? (token) => screenToken(config, token) : undefined,
     supportTierFor: (chainKey) => supportTierFor(config.supportByChain, chainKey),
     readTokenDecimals: (token) => resolveTokenDecimals(token.chainKey, token.address, token.chain, config.rpcByChainKey[token.chainKey]),
+    readBalance: balances?.read ?? null,
   };
 }
 
@@ -164,7 +179,6 @@ export async function createExecutorApp(
   secrets: readonly string[],
   holdings: SwapIntent["holdings"],
   logger = false,
-  readBalance: BalanceReader | null = null,
   fetchImpl: typeof fetch = fetch,
 ): Promise<FastifyInstance> {
   const app = await buildApp({ authTokens: config.executorAuthTokens, secrets, logger });
@@ -188,7 +202,7 @@ export async function createExecutorApp(
     const strategyEntry = Object.entries(config.strategies).find(([, strategy]) => anyTokenMatches(presented, strategy.tokens));
     if (!strategyEntry) return reply.code(401).send({ error: "unauthorized" });
     const [strategyId, strategy] = strategyEntry;
-    const intent: SwapIntent = { ...parsed.data, idempotencyKey: `${strategyId}:${parsed.data.idempotencyKey}` };
+    const intent: SwapIntent = { ...parsed.data, idempotencyKey: strategyKey(strategyId, parsed.data.idempotencyKey) };
     if (parsed.data.notionalUsd > strategy.maxUsdPerTrade) {
       return {
         idempotencyKey: intent.idempotencyKey,
@@ -215,15 +229,20 @@ export async function createExecutorApp(
     }
     if (!config.resolverUrl || config.resolverAuthTokens.length === 0) return reply.code(503).send({ error: "RESOLVER_URL is not set" });
     let resolution;
+    const resolverUrl = config.resolverUrl;
+    const resolverToken = config.resolverAuthTokens[0];
     try {
-      const response = await fetchImpl(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
-        method: "POST",
-        headers: { "content-type": "application/json", authorization: `Bearer ${config.resolverAuthTokens[0]}` },
-        body: JSON.stringify(parsed.data),
-        signal: timeoutSignal(config.resolverTimeoutMs),
+      const body = await withTimeout(config.resolverTimeoutMs, async (signal) => {
+        const response = await fetchImpl(`${resolverUrl.replace(/\/$/, "")}/alert`, {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${resolverToken}` },
+          body: JSON.stringify(parsed.data),
+          signal,
+        });
+        return response.ok ? ((await response.json()) as unknown) : undefined;
       });
-      if (!response.ok) return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
-      resolution = resolutionSchema.safeParse(await response.json());
+      if (body === undefined) return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
+      resolution = resolutionSchema.safeParse(body);
     } catch {
       return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
     }
@@ -233,7 +252,7 @@ export async function createExecutorApp(
     }
     const intent = intentFromResolution(parsed.data, resolution.data, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
     if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
-    const report = await app.drain.track(() => execute(intent, { ...runtime, readBalance }));
+    const report = await app.drain.track(() => execute(intent, runtime));
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;
@@ -325,7 +344,7 @@ async function main(): Promise<void> {
   const state = createExecutorState();
   const reconcile = async () => {
     if (!config.databaseUrl) return;
-    await reconcileReserved(config.databaseUrl, config.reconcileAfterMinutes, (chainKey, hash) => lookupAgedTx(config, chainKey, hash), (entry) =>
+    await reconcileReserved(config.databaseUrl, config.reconcileAfterMinutes, (tx) => lookupAgedTx(config, tx), (entry) =>
       logger.info({ reconcile: entry }, "reconciled reserved spend"),
     );
   };
@@ -343,7 +362,7 @@ async function main(): Promise<void> {
   reconcileTimer?.unref();
   const balances = config.live ? createBalanceCache(chainReader(config, signer), config.balanceCacheMs) : null;
   const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding), balances, { state });
-  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, balances?.read ?? null);
+  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true);
   let stopping = false;
   const stop = () => {
     if (stopping) return;

@@ -8,6 +8,7 @@ import type { Hex } from "viem";
 import { landedStatus } from "./broadcast/solana.js";
 import { nextHyperliquidNonce, readExchangeResponse } from "./hyperliquid.js";
 import { redactError } from "./redact.js";
+import type { AgedTx } from "./spend.js";
 import { defaultIo, evmContext, journal, rpcsFor, runLegs, solanaContext, type Ctx, type PreparedLeg, type SendHooks, type SendIo } from "./broadcast/shared.js";
 import { prepareEvmLeg } from "./broadcast/evm.js";
 import { prepareSolanaLeg } from "./broadcast/solana.js";
@@ -101,17 +102,21 @@ export async function broadcastRoute(
   return runLegs((leg, slippageBps, next) => prepareEvmLeg(evm, leg, slippageBps, next, capBps, request.provider), request.legs, capBps, ctx);
 }
 
-export async function lookupAgedTx(config: AppConfig, chainKey: string, txHash: string, io: SendIo = defaultIo(config)): Promise<TxOutcome | null> {
-  const spec = chainByKey(chainKey);
-  const rpcs = rpcsFor(config, chainKey);
+// An EVM hash with no receipt is dead once the account's mined nonce has passed its nonce: that nonce
+// was consumed by another transaction, so this one can never be included. Without a recorded nonce it stays pending.
+export async function lookupAgedTx(config: AppConfig, tx: AgedTx, io: SendIo = defaultIo(config)): Promise<TxOutcome | null> {
+  const spec = chainByKey(tx.chainKey);
+  const rpcs = rpcsFor(config, tx.chainKey);
   if (!spec || rpcs.length === 0) return null;
   if (spec.chain.kind === "evm") {
-    const receipt = await io.evm(spec.chain.chainId, rpcs).receipt(txHash as Hex);
-    if (!receipt) return "pending";
-    return receipt.status === "success" ? "landed" : "reverted";
+    const rpc = io.evm(spec.chain.chainId, rpcs);
+    const mined = tx.from && tx.nonce !== null ? await rpc.latestNonce(tx.from as Hex) : null;
+    const receipt = await rpc.receipt(tx.txHash as Hex);
+    if (receipt) return receipt.status === "success" ? "landed" : "reverted";
+    return mined !== null && tx.nonce !== null && mined > tx.nonce ? "expired" : "pending";
   }
   if (spec.chain.kind === "solana") {
-    const status = await io.solana(rpcs).status(txHash, true);
+    const status = await io.solana(rpcs).status(tx.txHash, true);
     if (status === null) return "expired";
     return landedStatus(status) ?? "pending";
   }

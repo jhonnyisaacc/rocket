@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { timeoutSignal } from "./timeout.js";
+import { withTimeout } from "./timeout.js";
 import { holdingFitsChain } from "./balances.js";
 import { addressKey, chainByKey } from "./chains.js";
 import type { AppConfig } from "./config.js";
@@ -71,9 +71,12 @@ export function coingeckoLoader(config: AppConfig, holdings: readonly Holding[],
   const headers: Record<string, string> = config.keys.coingecko ? { "x-cg-demo-api-key": config.keys.coingecko } : {};
   const base = config.coingeckoBase.replace(/\/$/, "");
   const getPrices = async (url: string) => {
-    const response = await fetchImpl(url, { headers, signal: timeoutSignal(config.priceTimeoutMs) });
-    if (!response.ok) throw new Error(`price lookup failed ${response.status}`);
-    return priceSchema.parse(await response.json());
+    const body = await withTimeout(config.priceTimeoutMs, async (signal) => {
+      const response = await fetchImpl(url, { headers, signal });
+      if (!response.ok) throw new Error(`price lookup failed ${response.status}`);
+      return response.json() as Promise<unknown>;
+    });
+    return priceSchema.parse(body);
   };
   return async () => {
     const prices = new Map<string, number>();

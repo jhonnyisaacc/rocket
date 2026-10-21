@@ -171,6 +171,7 @@ export type TxRecord = {
   value: string;
   outcome: TxOutcome;
   note?: string;
+  nonce?: number;
 };
 
 export type Fill = { totalSz: string; avgPx: string };

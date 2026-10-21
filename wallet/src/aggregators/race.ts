@@ -1,12 +1,12 @@
 import { createHmac } from "node:crypto";
-import { timeoutSignal, anySignal } from "../timeout.js";
+import { withTimeout } from "../timeout.js";
 import type { AppConfig } from "../config.js";
 import type { QuoteHop } from "../quote-hop.js";
 import { validSellAmount } from "../quote-hop.js";
 import type { HopQuote } from "../executor.js";
 import { chainByEvmId, gasCeilingUsd } from "../chains.js";
 import { impactPctFromUsd, readJupiter, readLifi, readZeroEx } from "../quotes.js";
-import { KYBER_SLUG, SIGNABLE_PROVIDERS, callProvider, chainKeyOf, empty, guardFor, jupiterHeaders, jupiterQuote, jupiterQuoteUrl, kyberRouteQuote, kyberRoutesUrl, lifiHeaders, lifiQuote, lifiUrl, nowMs, oneInchSchema, okxSchema, providersFor, quoteKyber, veloraSchema, withNet, zeroExHeaders, zeroExQuote, zeroExUrl, type QuoteProviderId, type Reference } from "./shared.js";
+import { KYBER_SLUG, callProvider, chainKeyOf, empty, guardFor, jupiterHeaders, jupiterQuote, jupiterQuoteUrl, kyberRouteQuote, kyberRoutesUrl, lifiHeaders, lifiQuote, lifiUrl, nowMs, oneInchSchema, okxSchema, providersFor, quoteKyber, signableProvider, veloraSchema, withNet, zeroExHeaders, zeroExQuote, zeroExUrl, type QuoteProviderId, type Reference } from "./shared.js";
 
 async function quoteOne(config: AppConfig, id: QuoteProviderId, hop: QuoteHop, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal): Promise<HopQuote> {
   const key = chainKeyOf(hop.chain);
@@ -40,7 +40,7 @@ async function quoteLifiSame(config: AppConfig, hop: QuoteHop, chainId: number, 
   if (!taker) return empty();
   const body = await callProvider(config, "lifi", lifiUrl(config, hop, chainId, taker, config.raceSlippageBps), { headers: lifiHeaders(config) }, fetchImpl, signal);
   if (!body) return empty();
-  return withNet({ ...lifiQuote(body, reference, chainId), taker }, reference, key, null);
+  return withNet({ ...lifiQuote(config, body, reference, chainId), taker }, reference, key, null);
 }
 
 async function quoteOneInch(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
@@ -142,11 +142,12 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
   if (!validSellAmount(hop.sellAmount)) return empty();
   const ids = providersFor(hop.chain, config);
   if (ids.length === 0) return empty();
-  const deadline = timeoutSignal(config.quoteDeadlineMs);
+  const deadline = new AbortController();
+  const deadlineTimer = setTimeout(() => deadline.abort(new Error("quote deadline")), config.quoteDeadlineMs);
   const slots: Array<HopQuote | undefined> = ids.map(() => undefined);
   await new Promise<void>((resolve) => {
     let pending = ids.length;
-    let signablePending = ids.filter((id) => SIGNABLE_PROVIDERS.has(id)).length;
+    let signablePending = ids.filter((id) => signableProvider(config, id)).length;
     let usableSignable = false;
     let done = false;
     let grace: ReturnType<typeof setTimeout> | undefined;
@@ -157,21 +158,22 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
       resolve();
     };
     const timer = setTimeout(finish, config.quoteDeadlineMs);
-    ids.forEach((id, index) => {
-      quoteOne(config, id, hop, reference, fetchImpl, anySignal([deadline, timeoutSignal(config.quoteTimeoutMs)]))
+    const calls = ids.map((id, index) =>
+      withTimeout(config.quoteTimeoutMs, (signal) => quoteOne(config, id, hop, reference, fetchImpl, signal), deadline.signal)
         .catch(() => empty())
         .then((quote) => {
           if (done) return;
           slots[index] = { ...quote, quotedAtMs: nowMs(config) };
           pending -= 1;
-          if (SIGNABLE_PROVIDERS.has(id)) signablePending -= 1;
+          if (signableProvider(config, id)) signablePending -= 1;
           if (quote.signable !== false && quote.priceImpactPct !== null) {
             usableSignable = true;
             grace ??= setTimeout(finish, config.raceGraceMs);
           }
           if (pending === 0 || (usableSignable && signablePending === 0)) finish();
-        });
-    });
+        }),
+    );
+    void Promise.allSettled(calls).then(() => clearTimeout(deadlineTimer));
   });
   return chooseQuote(slots.filter((quote): quote is HopQuote => quote !== undefined));
 }

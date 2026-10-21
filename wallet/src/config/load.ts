@@ -1,6 +1,7 @@
 import { CHAINS, QUOTE_ASSETS, chainByKey, type QuoteAsset, type QuoteAssets } from "../chains.js";
 import { kyberSupports } from "../aggregators.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "../signing-policy.js";
+import { LISTING_SCOPE } from "../spend.js";
 import { routerAllowlist, spendTimezone, splitList } from "./guard.js";
 import { isSolanaAddress } from "../signer.js";
 import { DEFAULT_KYBER_CLIENT_ID, type AppConfig, type ApprovalSeed, type StrategyCap } from "./types.js";
@@ -115,6 +116,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     zeroExBase: env.ZEROX_API_BASE ?? "https://api.0x.org",
     jupiterBase: env.JUPITER_API_BASE ?? "https://api.jup.ag/swap/v1",
     lifiBase: env.LIFI_API_BASE ?? "https://li.quest/v1",
+    lifiLive: env.LIFI_LIVE === "true",
     hyperliquidUrl: env.HYPERLIQUID_API_URL ?? "https://api.hyperliquid.xyz",
     jupiterImpactUnit: env.JUPITER_IMPACT_UNIT === "percent" ? "percent" : "fraction",
     liveLookupTimeoutMs: intEnv(env, "LIVE_LOOKUP_TIMEOUT_MS", 400),
@@ -255,7 +257,7 @@ function strategyCaps(raw: string | undefined): Record<string, StrategyCap> {
     const item = (typeof row === "object" && row !== null ? row : {}) as { dailyUsdCap?: unknown; maxUsdPerTrade?: unknown; token?: unknown };
     const tokens = Array.isArray(item.token) ? item.token.filter((value): value is string => typeof value === "string") : splitList(typeof item.token === "string" ? item.token : "");
     const positive = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value > 0;
-    if (!STRATEGY_ID.test(id) || !positive(item.dailyUsdCap) || !positive(item.maxUsdPerTrade) || tokens.length === 0) {
+    if (!STRATEGY_ID.test(id) || id === LISTING_SCOPE || !positive(item.dailyUsdCap) || !positive(item.maxUsdPerTrade) || tokens.length === 0) {
       throw new Error(`STRATEGY_CAPS_JSON has an invalid entry for ${id}`);
     }
     out[id] = { dailyUsdCap: item.dailyUsdCap, maxUsdPerTrade: item.maxUsdPerTrade, tokens };

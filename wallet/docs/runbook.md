@@ -57,14 +57,14 @@ curl -s -X POST http://127.0.0.1:8081/listing \
 
 A hit responds with `decision: would_send`, the route, and latency stamps measured from `receivedAt`. The same `id` returns the stored report and does not quote again. A lookalike, a thin pool with no Hyperliquid market, or a missed live lookup responds with `skipped`.
 
-`POST /execute` with the executor token accepts a `SwapIntent` and always returns a dry-run report, including when the process is live. With a strategy token from `STRATEGY_CAPS_JSON` it runs in the process mode instead, under that strategy's caps, and the report key is `<strategyId>:<idempotencyKey>`. Live broadcast is `POST /listing`, which rebuilds the intent from the resolver, or the strategy `/execute`.
+`POST /execute` with the executor token accepts a `SwapIntent` and always returns a dry-run report, including when the process is live. With a strategy token from `STRATEGY_CAPS_JSON` it runs in the process mode instead, under that strategy's caps and the global `DAILY_USD_CAP`, and the report key is `<strategyId>:<idempotencyKey>`. A `/listing` alert id is its key as is, unless it contains `:`; then the key is `listing:<id>`, and `listing` is refused as a strategy id, so the two kinds of key never collide. Dry-run and live reports are stored apart, so a dry-run preview never answers for a later live call with the same key. Live broadcast is `POST /listing`, which rebuilds the intent from the resolver, or the strategy `/execute`.
 
 ## Turn the knobs
 
 | Variable | Default | Effect |
 | --- | --- | --- |
 | `MAX_USD_PER_TRADE` | 5 | Reject a larger notional |
-| `DAILY_USD_CAP` | 25 | Counted only after a live broadcast. Day boundary is `SPEND_TIMEZONE`, default `UTC` |
+| `DAILY_USD_CAP` | 25 | Counted only after a live broadcast. Shared by `/listing` and every strategy; a strategy reservation must also fit its own `dailyUsdCap`. Day boundary is `SPEND_TIMEZONE`, default `UTC` |
 | `MAX_SLIPPAGE_BPS` | 100 | Cap for route selection. Cannot exceed `SLIPPAGE_HARD_MAX_BPS` (300) |
 | `MIN_LIQUIDITY_USD` | 75000 | Floor for the top pool |
 | `KILL_SWITCH` | off | `1` or `true` skips every trade. A `control_flags` row named `kill_switch` does the same without a restart |
@@ -85,6 +85,7 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `TOKEN_SCREENING` | on in live, off in dry-run | `false` turns screening off. `true` turns it on. Refresh and a live buy both use it |
 | `MAX_TOKEN_TAX` | 0 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
+| `LIFI_LIVE` | off | `true` lets LI.FI same-chain quotes be signed. The signer cannot decode the swap recipient in LI.FI calldata, so without it LI.FI stays quote-only and Blast has no signable route |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
 | `RACE_GRACE_MS` | 60 | After the first signable quote, wait this long for others, then rank. Quote-only providers never extend the wait |
 | `RACE_SLIPPAGE_BPS` | 50 | Slippage baked into race quotes from Jupiter, 0x, and LI.FI, capped at `MAX_SLIPPAGE_BPS` |
@@ -92,8 +93,8 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `FIRM_TIMEOUT_MS` | 800 | Timeout for each firm quote, build, and Jupiter `/swap` call |
 | `SCREEN_CACHE_MS` | 600000 | How long a screening verdict is reused. An outage is not cached |
 | `BALANCE_CACHE_MS` | 3000 | How long a live balance read is reused. Any tx on that chain drops it |
-| `SOLANA_MAX_PRIORITY_LAMPORTS` | 1000000 | Cap for the Jupiter `veryHigh` priority fee, and for the Jito tip |
-| `JITO_TIP_LAMPORTS` | 10000 | Jupiter `jitoTipLamports` when `JITO_ENABLED=true`. At least 1000 |
+| `SOLANA_MAX_PRIORITY_LAMPORTS` | 1000000 | Cap for the Jupiter `veryHigh` priority fee. The signer refuses a transaction whose compute-unit price times limit, plus Jito tips, exceeds it |
+| `JITO_TIP_LAMPORTS` | 10000 | Jupiter `jitoTipLamports` when `JITO_ENABLED=true`. At least 1000. The signer refuses Jito tips that total more |
 | `RPC_URLS_<chainId>`, `SOLANA_RPC_URLS` | empty | Comma-separated extra RPCs. Reads fail over in order. Sends go to every RPC unless `MEV_RPC_URL_<chainId>` is set |
 | `MAX_BRIDGE_USD` | 25 | Largest inventory move `planRebalance` will accept |
 
@@ -153,7 +154,9 @@ Signing requests fail before broadcast, so spend reservations are released and n
 
 ## Stuck or dropped EVM transaction
 
-Find the row first: `SELECT idempotency_key, tx_hash, chain_key, outcome FROM spend_journal WHERE tx_hash = '<hash>'`. The sender replaces a timed-out receipt once at the same nonce with a fee bump. If the hash is unknown on chain after the replacement window, the boot reconciliation releases reservations older than `RECONCILE_AFTER_MINUTES` that have no landed hash. Never delete a `committed` row to force a retry; a retry of the same id returns `exists`.
+Find the row first: `SELECT idempotency_key, tx_hash, chain_key, outcome FROM spend_journal WHERE tx_hash = '<hash>'`. The sender replaces a timed-out receipt once at the same nonce with a fee bump. After a send fails or ends without a receipt, the next send re-reads the pending nonce, so a dropped transaction does not leave a gap that blocks later sends. A send the node rejected before its mempool (insufficient funds, intrinsic gas too low, invalid sender, fee cap below base fee) releases its reservation at once; a timeout or 5xx keeps it reserved.
+
+Reconciliation looks at every hash signed for a reservation older than `RECONCILE_AFTER_MINUTES` (`signed_tx` by idempotency key). One landed hash commits it. It is released only when every hash reverted or is provably dead. An EVM hash is dead when it has no receipt and the account's mined nonce (`latest`) has passed the nonce it was signed with: that nonce was used by another transaction, so this one can never be included. The nonce is read before the receipt, so a hash that landed is seen as landed. A row whose hashes have no recorded nonce (signed before the `signed_tx.nonce` column) stays `reserved`; settle it by hand after checking the explorer. Never delete a `committed` row to force a retry; a retry of the same id returns `exists`.
 
 ## Drained wallet
 
@@ -175,4 +178,4 @@ Railway Postgres keeps its own backups; check they are enabled on the service. I
 
 ## Shutdown window
 
-On SIGTERM the executor stops taking mutating work (503) and waits up to 20 seconds for tracked sends, including withdraws. A send whose confirmation runs past the window is not abandoned on chain: its journal row stays `reserved` with the signed hash, a retry of the same id returns `exists`, and boot reconciliation settles it. The process exits 1 when the window expires with work still in flight, so the platform restart is visible.
+On SIGTERM the executor stops taking mutating work (503) and waits up to 20 seconds for tracked sends, including withdraws. That window is far shorter than one send's worst case (`sendBoundMs`, about 190 seconds at the default timeouts), so a restart during a slow confirmation often cuts it. A send whose confirmation runs past the window is not abandoned on chain: its journal row stays `reserved` with the signed hash, a retry of the same id returns `exists`, and boot reconciliation settles it. The process exits 1 when the window expires with work still in flight, so the platform restart is visible.

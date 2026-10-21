@@ -4,18 +4,18 @@ import type { RouteLeg, TxRecord } from "../domain.js";
 import type { EvmSignInput } from "../managed-signer.js";
 import { firmJupiter, firmKyber, firmLifi, firmZeroEx, jupiterQuote, jupiterSwap, kyberFromRoute } from "../aggregators.js";
 import { chainByEvmId } from "../chains.js";
-import { anyOk } from "../rpc.js";
-import { isNonceRejection } from "../nonce.js";
+import { isDefiniteRejection } from "../nonce.js";
 import type { RaceQuote, TxOutcome } from "../domain.js";
 import { BroadcastError } from "../executor.js";
 import { allowanceCovers, rememberApproval } from "../approvals.js";
 import { readLifi, readZeroEx } from "../quotes.js";
 import { redactError } from "../redact.js";
 import { sellBaseUnits } from "../routing.js";
+import { routersForChain, swapTerms } from "../signing-policy.js";
 import { approvalSpender, asHex, assertMinOut, executionSlippageBps, journal, ourMinOut, referenceFor, rememberIfFunded, reusableQuote, reuseOrFirm, type Confirmed, type Ctx, type EvmCtx, type EvmReceipt, type EvmRpc, type EvmTx, type PreparedLeg, type Submitted, NATIVE_SELL, digits, overCap } from "./shared.js";
 
-export function evmRecord(ctx: EvmCtx, signed: Hex, tx: { to: Hex; value: bigint }): TxRecord {
-  return { chainKey: ctx.chainKey, txHash: keccak256(signed), from: ctx.owner, to: tx.to, value: tx.value.toString(), outcome: "pending" };
+export function evmRecord(ctx: EvmCtx, signed: Hex, tx: { to: Hex; value: bigint; nonce: number }): TxRecord {
+  return { chainKey: ctx.chainKey, txHash: keccak256(signed), from: ctx.owner, to: tx.to, value: tx.value.toString(), outcome: "pending", nonce: tx.nonce };
 }
 
 export async function sendOnce(rpc: EvmRpc, signed: Hex): Promise<void> {
@@ -27,12 +27,15 @@ export async function sendOnce(rpc: EvmRpc, signed: Hex): Promise<void> {
   }
 }
 
+// Only a rejection every sender gave before its mempool proves the transaction is nowhere; a timeout or
+// 5xx from any of them leaves it possibly broadcast, so the spend stays reserved for reconcile.
 export async function broadcastEvm(ctx: EvmCtx, signed: Hex): Promise<void> {
   try {
-    await anyOk(ctx.senders.map((rpc) => () => sendOnce(rpc, signed)));
+    await Promise.any(ctx.senders.map((rpc) => sendOnce(rpc, signed)));
   } catch (error) {
-    const message = redactError(error, ctx.secrets);
-    throw new BroadcastError(message, !isNonceRejection(message));
+    const reasons: unknown[] = error instanceof AggregateError ? error.errors : [error];
+    const messages = reasons.map((reason) => redactError(reason, ctx.secrets));
+    throw new BroadcastError(messages[0] ?? "no rpc is configured", !messages.every(isDefiniteRejection));
   }
 }
 
@@ -84,7 +87,10 @@ export async function confirmEvm(ctx: EvmCtx, input: EvmSignInput, first: TxReco
     if (replacement) records.push(replacement);
     found = await pollReceipts(ctx, records.map((record) => record.txHash), ctx.io.now() + ctx.io.confirmTimeoutMs);
   }
-  if (!found) return { records: records.map((record) => ({ ...record, outcome: "pending" })), received: null };
+  if (!found) {
+    ctx.io.nonces.resync(ctx.chainId, ctx.owner);
+    return { records: records.map((record) => ({ ...record, outcome: "pending" })), received: null };
+  }
   const outcome: TxOutcome = found.receipt.status === "success" ? "landed" : "reverted";
   const losers = records.filter((record) => record.txHash !== found.hash).map((record) => ({ ...record, outcome: "expired" as const }));
   const won = records.find((record) => record.txHash === found.hash) ?? first;
@@ -136,12 +142,27 @@ export async function submitEvm(ctx: EvmCtx, tx: EvmTx, buyToken: string | null)
     } catch (error) {
       throw new BroadcastError(redactError(error, ctx.secrets), false);
     }
-    const record = evmRecord(ctx, signed, tx);
+    const record = evmRecord(ctx, signed, { ...tx, nonce });
     await journal(ctx, record);
     await broadcastEvm(ctx, signed);
     return { input, record };
   });
   return { record: sent.record, confirm: () => confirmEvm(ctx, sent.input, sent.record, before, buyToken) };
+}
+
+function sameToken(left: string, right: string): boolean {
+  const a = left.toLowerCase();
+  const b = right.toLowerCase();
+  return a === b || (NATIVE_SELL.has(a) && NATIVE_SELL.has(b));
+}
+
+// The calldata, not the API's summary of it, decides who receives the output and the minimum it may be.
+function decodedMinOut(data: Hex, provider: "kyberswap" | "zeroex", owner: string, buyToken: string): bigint {
+  const terms = swapTerms(data);
+  if (!terms || terms.provider !== provider) throw new BroadcastError("swap calldata is not decodable", false);
+  if (terms.recipient.toLowerCase() !== owner.toLowerCase()) throw new BroadcastError("swap recipient is not the hot wallet", false);
+  if (!sameToken(terms.buyToken, buyToken)) throw new BroadcastError("swap calldata buys a different token", false);
+  return terms.minOut;
 }
 
 type BuiltEvm = { provider: string; to: Hex; data: Hex; value: bigint; gas: bigint | null; impact: number; raw: unknown; minOut: bigint | null; quotedOut: bigint };
@@ -157,21 +178,21 @@ export async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number,
     if (overCap(quoted.priceImpactPct, capPct) || !quoted.prepared?.to || !quoted.prepared.data) {
       throw new BroadcastError("firm quote outside the slippage cap", false);
     }
-    const built = (quoted.raw as { build?: { amountOut?: string | null; slippageBps?: number } } | undefined)?.build;
-    const amountOut = digits(built?.amountOut);
+    const data = asHex(quoted.prepared.data);
     return {
       provider: selected,
       to: asHex(quoted.prepared.to),
-      data: asHex(quoted.prepared.data),
+      data,
       value: BigInt(quoted.prepared.value || "0"),
       gas: null,
       impact: quoted.priceImpactPct ?? capPct + 1,
       raw: quoted.raw,
-      minOut: amountOut === null || built?.slippageBps !== slippageBps ? null : (amountOut * BigInt(10_000 - slippageBps)) / 10_000n,
+      minOut: decodedMinOut(data, "kyberswap", taker, leg.buyAddress),
       quotedOut: BigInt(quoted.buyAmount),
     };
   }
   if (selected === "lifi") {
+    if (!config.lifiLive) throw new BroadcastError("LI.FI swaps are not signable without LIFI_LIVE=true", false);
     const quoted = stored ? { raw: stored.raw } : await firmLifi(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
     if (quoted.raw === undefined) throw new BroadcastError("firm quote outside the slippage cap", false);
     const parsed = readLifi(quoted.raw as Parameters<typeof readLifi>[0], reference, chainId);
@@ -200,32 +221,45 @@ export async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number,
   if (overCap(parsed.priceImpactPct, capPct) || parsed.priceImpactPct === null || !parsed.to || !parsed.data) {
     throw new BroadcastError("firm quote outside the slippage cap", false);
   }
-  const raw = quoted.raw as { transaction?: { gas?: string }; minBuyAmount?: unknown };
+  const raw = quoted.raw as { transaction?: { gas?: string } };
+  const data = asHex(parsed.data);
   return {
     provider: selected,
     to: asHex(parsed.to),
-    data: asHex(parsed.data),
+    data,
     value: BigInt(parsed.value || "0"),
     gas: raw.transaction?.gas ? BigInt(raw.transaction.gas) : null,
     impact: parsed.priceImpactPct,
     raw: quoted.raw,
-    minOut: digits(raw.minBuyAmount),
+    minOut: decodedMinOut(data, "zeroex", taker, leg.buyAddress),
     quotedOut: BigInt(parsed.buyAmount),
   };
 }
 
+function selectedProvider(chainId: number, leg: RouteLeg, provider: string | undefined): string {
+  return leg.quote?.provider ?? provider ?? (chainByEvmId(chainId)?.aggregator === "lifi" ? "lifi" : "zeroex");
+}
+
+// Leg 2 is firmed only after leg 1 lands, so its spender is known now only when it uses leg 1's provider.
+// Otherwise any allowlisted router with a cached allowance can be the one it picks.
+function nextLegSpenders(ctx: EvmCtx, next: RouteLeg, provider: string | undefined, built: BuiltEvm): readonly string[] {
+  if (selectedProvider(ctx.chainId, next, provider) === built.provider) return [approvalSpender(built.provider, built.raw, built.to)];
+  return routersForChain(ctx.config.routerAllowlist, ctx.chainId);
+}
+
 export async function prepareEvmLeg(ctx: EvmCtx, leg: RouteLeg, slippageBps: number, next: RouteLeg | undefined, capBps: number, provider: string | undefined): Promise<PreparedLeg> {
   const reuse = reusableQuote(ctx.config, leg, ctx.owner);
-  const selected = leg.quote?.provider ?? provider ?? (chainByEvmId(ctx.chainId)?.aggregator === "lifi" ? "lifi" : "zeroex");
+  const selected = selectedProvider(ctx.chainId, leg, provider);
   const { built, minOut } = await reuseOrFirm(reuse, async (stored) => {
     const built = await evmTransaction(ctx, leg, capBps / 100, slippageBps, selected, stored);
     return { built, minOut: assertMinOut(built.minOut, ourMinOut(leg, capBps)) };
   });
   rememberIfFunded(built.provider, built.raw, ctx.chainId, leg.sellAddress, ctx.owner, BigInt(leg.sellAmount), built.to);
   if (next && !NATIVE_SELL.has(next.sellAddress.toLowerCase())) {
-    if (!allowanceCovers({ chainId: ctx.chainId, token: next.sellAddress, spender: built.to, owner: ctx.owner }, built.quotedOut)) {
-      throw new BroadcastError("approval is not cached", false);
-    }
+    const covered = nextLegSpenders(ctx, next, provider, built).some((spender) =>
+      allowanceCovers({ chainId: ctx.chainId, token: next.sellAddress, spender, owner: ctx.owner }, built.quotedOut),
+    );
+    if (!covered) throw new BroadcastError("approval is not cached", false);
   }
   return {
     impact: built.impact,

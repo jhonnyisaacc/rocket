@@ -3,7 +3,7 @@ import test from "node:test";
 import { Keypair, VersionedTransaction } from "@solana/web3.js";
 import { keccak256, toHex, type Hex } from "viem";
 import { rememberApproval, resetApprovals } from "../src/approvals.js";
-import { broadcastRoute, receivedFromMeta, withdrawNative, type EvmReceipt, type EvmRpc, type SendIo, type SolanaRpc } from "../src/broadcast.js";
+import { broadcastRoute, lookupAgedTx, receivedFromMeta, solanaRpcOver, withdrawNative, type EvmReceipt, type EvmRpc, type SendIo, type SolanaRpc } from "../src/broadcast.js";
 import { loadConfig } from "../src/config.js";
 import type { RouteLeg, SwapIntent, TxRecord } from "../src/domain.js";
 import { BroadcastError, execute, resetExecutorState, type ExecutorDeps } from "../src/executor.js";
@@ -14,6 +14,7 @@ import { buildPairMap } from "../src/pairs.js";
 import { screenToken } from "../src/screening.js";
 import { reconcileDecision } from "../src/spend.js";
 import { WSOL_MINT } from "../src/signing-policy.js";
+import { tagOf, zeroExData } from "./fixtures.js";
 
 const USDC = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const WETH = "0xcccccccccccccccccccccccccccccccccccccccc";
@@ -28,6 +29,7 @@ type FakeChain = {
   receipts: Map<string, EvmReceipt>;
   balances: Map<string, bigint>;
   pending: number;
+  mined: number;
   onSend: (signed: Hex, hash: string) => void;
   rejectSimulation: (data: Hex) => boolean;
 };
@@ -40,11 +42,13 @@ function fakeChain(): FakeChain {
     receipts: new Map(),
     balances: new Map(),
     pending: 7,
+    mined: 7,
     onSend: () => undefined,
     rejectSimulation: () => false,
     rpc: {
       fees: async () => ({ maxFeePerGas: 1_000n, maxPriorityFeePerGas: 100n }),
       pendingNonce: async () => chain.pending,
+      latestNonce: async () => chain.mined,
       estimateGas: async () => 21_000n,
       simulate: async (call) => {
         if (chain.rejectSimulation(call.data)) throw new Error("execution reverted");
@@ -105,10 +109,12 @@ function zeroEx(byBuy: Record<string, Firm>, seen: URL[]): typeof fetch {
   return async (input) => {
     const url = new URL(String(input));
     seen.push(url);
-    const firm = byBuy[(url.searchParams.get("buyToken") ?? "").toLowerCase()];
+    const buyToken = (url.searchParams.get("buyToken") ?? "").toLowerCase();
+    const firm = byBuy[buyToken];
     if (!firm) return new Response("{}", { status: 404 });
+    const data = firm.minBuyAmount === undefined ? firm.data : zeroExData(firm.data, { recipient: OWNER, buyToken, minOut: BigInt(firm.minBuyAmount) });
     return new Response(
-      JSON.stringify({ liquidityAvailable: true, buyAmount: firm.buyAmount, minBuyAmount: firm.minBuyAmount, transaction: { to: ROUTER, data: firm.data, value: "0", gas: "100000" } }),
+      JSON.stringify({ liquidityAvailable: true, buyAmount: firm.buyAmount, minBuyAmount: firm.minBuyAmount, transaction: { to: ROUTER, data, value: "0", gas: "100000" } }),
       { status: 200 },
     );
   };
@@ -130,7 +136,7 @@ function approveRouter(): void {
 function deliver(chain: FakeChain, byData: Record<string, { token: string; amount: bigint; receipt?: EvmReceipt }>): void {
   chain.onSend = (signed, hash) => {
     const data = Buffer.from(signed.slice(2), "hex").toString("utf8").split(":")[3] ?? "";
-    const effect = byData[data];
+    const effect = byData[tagOf(data as Hex) ?? ""];
     if (!effect) return;
     chain.receipts.set(hash, effect.receipt ?? success);
     const key = effect.token.toLowerCase();
@@ -254,7 +260,7 @@ test("a leg-2 failure after leg 1 landed keeps the spend committed, reports the 
   const chain = fakeChain();
   freshBalances(chain);
   deliver(chain, { "0x01": { token: WETH, amount: 2_500_000_000_000_000n } });
-  chain.rejectSimulation = (data) => data === "0x02";
+  chain.rejectSimulation = (data) => tagOf(data) === "0x02";
   const spend = new Map<string, string>();
   const records: TxRecord[] = [];
   const io = clockIo(chain.rpc);
@@ -325,7 +331,7 @@ test("a provider minimum output below ours is refused before signing", async () 
   const missing = { [TOKEN]: { buyAmount: "10000000", data: "0x04" as Hex } };
   await assert.rejects(
     () => broadcastRoute(evmConfig, evmSigner(signed), { ...twoHop, legs: [single] }, 1, zeroEx(missing, []), [], { io: clockIo(chain.rpc) }),
-    /no checkable minimum/,
+    /swap calldata is not decodable/,
   );
   assert.equal(signed.length, 0);
   assert.equal(chain.sent.length, 0);
@@ -344,17 +350,64 @@ test("concurrent evm sends get distinct nonces and a rejected nonce resyncs", as
     [7, 8, 9],
   );
   const manager = createNonceManager();
+  let pending = 3;
   let reads = 0;
   const read = async () => {
     reads += 1;
-    return reads === 1 ? 3 : 11;
+    return pending;
   };
+  pending = 3;
   await assert.rejects(() => manager.use(1, OWNER, read, async () => Promise.reject(new BroadcastError("nonce too low", false))));
+  pending = 11;
   assert.equal(await manager.use(1, OWNER, read, async (nonce) => nonce), 11);
   assert.equal(await manager.use(1, OWNER, read, async (nonce) => nonce), 12);
-  await assert.rejects(() => manager.use(1, OWNER, read, async () => Promise.reject(new BroadcastError("simulation rejected", false))));
-  assert.equal(await manager.use(1, OWNER, read, async (nonce) => nonce), 13);
   assert.equal(reads, 2);
+  pending = 13;
+  await assert.rejects(() => manager.use(1, OWNER, read, async () => Promise.reject(new BroadcastError("rpc timed out", true))));
+  assert.equal(await manager.use(1, OWNER, read, async (nonce) => nonce), 13, "a failed send re-reads the pending count instead of skipping a nonce");
+  assert.equal(reads, 3);
+});
+
+test("a rejected or unconfirmed evm send leaves no nonce gap", async () => {
+  const chain = fakeChain();
+  const failures = ["insufficient funds for gas * price + value", "fetch failed: socket hang up"];
+  chain.rpc.sendRaw = async (signed) => {
+    const failure = failures.shift();
+    if (failure) throw new Error(failure);
+    chain.sent.push(signed);
+    chain.onSend(signed, keccak256(signed));
+  };
+  const signed: EvmSignInput[] = [];
+  const io = clockIo(chain.rpc);
+  const send = () => withdrawNative({ config: evmConfig, signer: evmSigner(signed), chainKey: "base", to: DEST, amount: 0.0001, io });
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && !error.broadcast);
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && error.broadcast);
+  const stuck = await send();
+  assert.equal(stuck.outcome, "pending");
+  chain.onSend = (_signed, hash) => chain.receipts.set(hash, success);
+  const landed = await send();
+  assert.equal(landed.outcome, "landed");
+  assert.deepEqual(
+    signed.map((input) => input.nonce),
+    [7, 7, 7, 7, 7],
+    "the pending count stayed 7, so every attempt, the fee-bumped replacement included, reused nonce 7",
+  );
+});
+
+test("insufficient funds on every sender releases the reserved spend", async () => {
+  resetExecutorState();
+  approveRouter();
+  const chain = fakeChain();
+  chain.rpc.sendRaw = async () => {
+    throw new Error("The total cost (gas * gas fee + value) of executing this transaction exceeds the balance of the account.");
+  };
+  const spend = new Map<string, string>();
+  const io = clockIo(chain.rpc);
+  const quotes = { [TOKEN]: { buyAmount: "10000000", minBuyAmount: "9950000", data: "0x0a" as Hex } };
+  const deps = liveDeps((request, onTx) => broadcastRoute(evmConfig, evmSigner([]), request, 1, zeroEx(quotes, []), [], { io, onTx }), spend, [], false);
+  const report = await execute(evmIntent("broke"), deps);
+  assert.equal(report.decision, "skipped");
+  assert.equal(spend.get("broke"), "released");
 });
 
 test("a receipt timeout sends one replacement at the same nonce with fees bumped at least 12.5%", async () => {
@@ -533,6 +586,69 @@ test("hyperliquid replies decide commit or release", async () => {
   assert.equal(readExchangeResponse({ status: "ok", response: { data: { statuses: [{ resting: { oid: 1 } }] } } }).status, "ok");
 });
 
+test("a hyperliquid spot buy sends only the order, with no leverage action", async () => {
+  resetExecutorState();
+  const hyperConfig = loadConfig({ HYPERLIQUID_API_URL: "https://hl.invalid" });
+  const seen: unknown[] = [];
+  const filled = { status: "ok", response: { type: "order", data: { statuses: [{ filled: { totalSz: "5", avgPx: "1.001", oid: 9 } }] } } };
+  const deps: ExecutorDeps = {
+    ...liveDeps((request, onTx) => broadcastRoute(hyperConfig, evmSigner([]), request, 1, exchange(filled, seen), [], { onTx }), new Map(), [], false),
+    config: { ...hyperConfig, enabledChainKeys: new Set(["base", "hypercore"]) },
+    markPrice: async () => 1,
+    szDecimals: async () => 2,
+  };
+  const spot = { ...hyperIntent("hl-spot"), hyperliquid: { coin: "TKN", assetIndex: 10_004, market: "spot" as const, maxLeverage: 1 } };
+  const report = await execute(spot, deps);
+  assert.equal(report.decision, "sent");
+  assert.deepEqual(
+    seen.map((action) => (action as { type: string }).type),
+    ["order"],
+  );
+});
+
+test("a solana expiry is rechecked on every rpc before it is declared", async () => {
+  const keypair = Keypair.generate();
+  let height = 95;
+  const confirmed = { slot: 1, confirmations: null, err: null, confirmationStatus: "confirmed" as const };
+  const connection = (knows: boolean) =>
+    ({
+      getLatestBlockhash: async () => ({ blockhash: Keypair.generate().publicKey.toBase58(), lastValidBlockHeight: 100 }),
+      getBlockHeight: async () => (height += 1),
+      getBalance: async () => 10_000_000_000,
+      sendRawTransaction: async () => "sig",
+      getSignatureStatuses: async (_sigs: string[], options?: { searchTransactionHistory?: boolean }) => ({
+        context: { slot: 1 },
+        value: [knows && options?.searchTransactionHistory ? confirmed : null],
+      }),
+    }) as never;
+  const signer: TransactionSigner = {
+    backend: "keystore",
+    evmAddress: () => null,
+    solanaAddress: () => keypair.publicKey.toBase58(),
+    async signEvm() {
+      return "0x";
+    },
+    async signSolana(serialized) {
+      const tx = VersionedTransaction.deserialize(serialized);
+      tx.sign([keypair]);
+      return tx.serialize();
+    },
+    async signHyperliquid() {
+      return { r: "0x01", s: "0x02", v: 27 };
+    },
+  };
+  const tx = await withdrawNative({
+    config: loadConfig({ SOLANA_RPC_URL: "http://fake.invalid" }),
+    signer,
+    chainKey: "solana",
+    to: Keypair.generate().publicKey.toBase58(),
+    amount: 0.01,
+    io: clockIo(null, solanaRpcOver([connection(false), connection(true)])),
+  });
+  assert.ok(height > 100, "the blockhash had expired on the first rpc");
+  assert.equal(tx.outcome, "landed", "the second rpc's history shows the signature landed");
+});
+
 test("a hyperliquid sizing failure is skipped, not thrown", async () => {
   resetExecutorState();
   const report = await execute(hyperIntent("hl-size"), {
@@ -556,11 +672,27 @@ test("live screening denies a token whose tax fields are missing", async () => {
 
 test("reconciliation commits landed rows, releases dead ones, and keeps what it cannot prove", () => {
   const row = { idempotencyKey: "k", txHash: "0xabc", chainKey: "base", legacy: false };
-  assert.equal(reconcileDecision(row, "landed"), "commit");
-  assert.equal(reconcileDecision(row, "reverted"), "release");
-  assert.equal(reconcileDecision(row, "expired"), "release");
-  assert.equal(reconcileDecision(row, "pending"), "keep");
-  assert.equal(reconcileDecision(row, null), "keep");
-  assert.equal(reconcileDecision({ ...row, txHash: null }, null), "release");
-  assert.equal(reconcileDecision({ ...row, txHash: null, legacy: true }, null), "keep");
+  assert.equal(reconcileDecision(row, ["landed"]), "commit");
+  assert.equal(reconcileDecision(row, ["reverted"]), "release");
+  assert.equal(reconcileDecision(row, ["expired"]), "release");
+  assert.equal(reconcileDecision(row, ["pending"]), "keep");
+  assert.equal(reconcileDecision(row, [null]), "keep");
+  assert.equal(reconcileDecision(row, ["expired", "landed"]), "commit", "a replacement that landed commits even though the original died");
+  assert.equal(reconcileDecision(row, ["expired", "pending"]), "keep");
+  assert.equal(reconcileDecision({ ...row, txHash: null }, []), "release");
+  assert.equal(reconcileDecision({ ...row, txHash: null, legacy: true }, []), "keep");
+});
+
+test("an aged evm hash is dead only once the mined nonce has passed it", async () => {
+  const chain = fakeChain();
+  const config = evmConfig;
+  const io = clockIo(chain.rpc);
+  const aged = { chainKey: "base", txHash: "0xdead", from: OWNER, nonce: 7 };
+  chain.mined = 7;
+  assert.equal(await lookupAgedTx(config, aged, io), "pending");
+  chain.mined = 8;
+  assert.equal(await lookupAgedTx(config, aged, io), "expired");
+  assert.equal(await lookupAgedTx(config, { ...aged, nonce: null }, io), "pending", "without a recorded nonce the row stays held");
+  chain.receipts.set("0xdead", success);
+  assert.equal(await lookupAgedTx(config, aged, io), "landed");
 });

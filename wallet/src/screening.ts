@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { timeoutSignal } from "./timeout.js";
+import { withTimeout } from "./timeout.js";
 import type { AppConfig } from "./config.js";
 import type { ChainRef } from "./domain.js";
 
@@ -112,9 +112,12 @@ function goPlusUrl(token: { chain: ChainRef; contract: string }): string | null 
 async function screenGoPlus(config: AppConfig, url: string, contract: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const headers: Record<string, string> = {};
   if (config.keys.goplus) headers.authorization = `Bearer ${config.keys.goplus}`;
-  const response = await fetchImpl(url, { headers, signal: timeoutSignal(config.liveLookupTimeoutMs) });
-  if (!response.ok) return "unavailable";
-  const parsed = goplusSchema.safeParse(await response.json());
+  const body = await withTimeout(config.liveLookupTimeoutMs, async (signal) => {
+    const response = await fetchImpl(url, { headers, signal });
+    return response.ok ? ((await response.json()) as unknown) : null;
+  });
+  if (body === null) return "unavailable";
+  const parsed = goplusSchema.safeParse(body);
   if (!parsed.success || String(parsed.data.code) !== "1" || !parsed.data.result) return "unavailable";
   const row = parsed.data.result[contract] ?? parsed.data.result[contract.toLowerCase()];
   if (!row) return "deny";
@@ -132,14 +135,17 @@ function taxTooHigh(raw: string | undefined, cap: number): boolean {
 }
 
 async function screenBlockaid(config: AppConfig, chain: string, address: string, fetchImpl: typeof fetch): Promise<Outcome> {
-  const response = await fetchImpl("https://api.blockaid.io/v0/token/scan", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
-    body: JSON.stringify({ chain, address }),
-    signal: timeoutSignal(config.liveLookupTimeoutMs),
+  const body = await withTimeout(config.liveLookupTimeoutMs, async (signal) => {
+    const response = await fetchImpl("https://api.blockaid.io/v0/token/scan", {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
+      body: JSON.stringify({ chain, address }),
+      signal,
+    });
+    return response.ok ? ((await response.json()) as unknown) : null;
   });
-  if (!response.ok) return "unavailable";
-  const parsed = blockaidSchema.safeParse(await response.json());
+  if (body === null) return "unavailable";
+  const parsed = blockaidSchema.safeParse(body);
   if (!parsed.success) return "unavailable";
   return parsed.data.result_type === "Benign" ? "allow" : "deny";
 }

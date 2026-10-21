@@ -12,15 +12,22 @@ The collector holds the executor token. The executor calls the resolver with the
 
 Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-App policy constrains the destination token account, chain, native value, and Solana instructions. The Turnkey EVM policy constrains only the router in `eth.tx.to`, the chain, the native value cap, and the selector prefix; it cannot see the swap's destination token account, so that check lives in the app policy and the pre-sign simulation. The Turnkey Solana policy constrains native transfer recipients and program ids. Each Turnkey policy is scoped to one wallet with `wallet.id`. The checked-in file is `policies/turnkey.json`, a template with placeholder ids. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
+App policy constrains the chain, native value, router, Solana instructions, and, where the calldata can be decoded, the swap recipient. Per provider:
+
+- Solana (Jupiter): the destination token account must belong to the hot wallet, checked per instruction below.
+- KyberSwap (MetaAggregationRouterV2 `swap` and `swapSimpleMode`): the signer decodes `desc.dstReceiver` and refuses any recipient but the hot wallet. Before signing, the sender also requires `desc.dstToken` to be the bought token and uses `desc.minReturnAmount` as the minimum output, which must clear ours.
+- 0x (AllowanceHolder `exec` wrapping Settler `execute`, or Settler `execute` directly): the signer decodes `slippage.recipient` and refuses any recipient but the hot wallet. The sender requires `slippage.buyToken` to be the bought token and uses `slippage.minAmountOut` as the minimum. Settler checks that minimum against what it pays the recipient. Residual risk: the `operator` and `target` in `exec` are not pinned to a known Settler deployment, because Settler addresses rotate. A compromised 0x API on an allowlisted AllowanceHolder could name a contract that pulls the approved sell amount. The router allowlist, the exact-amount allowance, and the per-trade cap bound that loss.
+- LI.FI: the calldata targets the LI.FI diamond with facet-specific encodings this app does not decode, so the recipient is not checked. LI.FI is quote-only unless `LIFI_LIVE=true`. With it on, the signer accepts swap calldata it cannot decode, and only the router allowlist, simulation, and the received-amount check stand between a bad quote and the wallet.
+
+Calldata to an allowlisted router that decodes as none of these is refused unless `LIFI_LIVE=true`. The Turnkey EVM policy constrains only the router in `eth.tx.to`, the chain, the native value cap, and the selector prefix; it cannot see the swap recipient, so that check lives in the app policy and the pre-sign simulation. The Turnkey Solana policy constrains native transfer recipients and program ids. Each Turnkey policy is scoped to one wallet with `wallet.id`. The checked-in file is `policies/turnkey.json`, a template with placeholder ids. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
 
 The app decodes every top-level instruction of a base program against a default-deny table in `signing-policy.ts`. An instruction that is not in the table is denied. The table allows these:
 
-- System Program Transfer from the hot wallet to the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account. Assign, CreateAccount, TransferWithSeed, AdvanceNonceAccount, and every other System instruction are denied.
+- System Program Transfer from the hot wallet to the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account. Tips across the transaction may total at most `JITO_TIP_LAMPORTS`. Assign, CreateAccount, TransferWithSeed, AdvanceNonceAccount, and every other System instruction are denied.
 - Token and Token-2022 SyncNative, CloseAccount that pays the hot wallet, InitializeAccount3 owned by the hot wallet, and Transfer or TransferChecked into an associated token account of the hot wallet or an allowlisted withdraw address. Approve, ApproveChecked, SetAuthority, and the rest are denied.
 - Associated Token Account CreateIdempotent funded by the hot wallet for the hot wallet or an allowlisted withdraw address.
-- Compute Budget unit limit, unit price, and loaded-data limit.
-- Jupiter `route`, `routeWithTokenLedger`, `sharedAccountsRoute`, `sharedAccountsRouteWithTokenLedger`, and `sharedAccountsExactOutRoute`. The transfer authority must be the hot wallet, the platform fee account must be unset, and the destination must be the hot wallet's token account for the output mint. Other Jupiter instructions, such as `exactOutRoute` and newer v2 routes, are denied until they are added to the table.
+- Compute Budget unit limit, unit price, and loaded-data limit. Unit price times unit limit (1.4M units when no limit is set), plus Jito tips, may total at most `SOLANA_MAX_PRIORITY_LAMPORTS`.
+- Jupiter `route`, `routeWithTokenLedger`, `sharedAccountsRoute`, and `sharedAccountsRouteWithTokenLedger`. The transfer authority must be the hot wallet, the platform fee account must be unset, and the destination must be the hot wallet's token account for the output mint. Quotes are always `exactIn`, so `exactOutRoute`, `sharedAccountsExactOutRoute`, and newer v2 routes are denied until they are added to the table.
 
 An account that comes from an address lookup table cannot be checked offline, so a rule that needs it denies the signature. Instructions of an extra program from `SOLANA_PROGRAM_ALLOWLIST` are not decoded. Only add a program you trust with the hot wallet's signature.
 
@@ -32,7 +39,7 @@ Pre-sign simulation is viem `simulateCalls` on EVM and `simulateTransaction` on 
 
 ## Repudiation
 
-pino logs the execution report. Authorization, API keys, and OKX signature headers are redacted. `redactError` still strips a 64-hex key and a long base58 string. The spend journal records the idempotency key, the USD amount, the UTC day, and `reserved`, `committed`, or `released`.
+pino logs the execution report. Authorization, API keys, and OKX signature headers are redacted. `redactError` still strips a 64-hex key and a long base58 string. The spend journal records the idempotency key, the strategy id (`listing` for alerts), the USD amount, the UTC day, and `reserved`, `committed`, or `released`. `signed_tx` records every signed hash with its nonce.
 
 ## Information disclosure
 
@@ -52,7 +59,7 @@ HyperCore refuses `withdraw3`, `usdSend`, `spotSend`, `sendAsset`, `agentSendAss
 
 `KILL_SWITCH=true`, or the `kill_switch` row in `control_flags`, skips new buys on `/listing` and `/execute`. `/withdraw` is not blocked by the database flag; it stays open as the incident escape hatch, and the env switch holds a live withdraw at `would_send`. Neither deletes a key. Revoke the Turnkey API user to stop signing. See the [runbook](runbook.md).
 
-The daily cap is enforced inside a Postgres transaction with an advisory lock. A second executor cannot pass the boot advisory lock, and `railway.json` runs one replica, so the in-memory idempotency map is never shared.
+The daily cap is enforced inside a Postgres transaction with one advisory lock per day, shared by `/listing` and every strategy. A strategy reservation must fit both the global `DAILY_USD_CAP` and its own cap; the strategy sum matches `strategy_id` exactly. A second executor cannot pass the boot advisory lock, and `railway.json` runs one replica, so the in-memory idempotency map is never shared.
 
 A compromised or mispriced Hyperliquid agent could try to drain the account through IOC orders crossed far from the mark. The app bounds that path before signing: the order size comes from the per-trade USD cap, and the limit price is the mark moved by at most the slippage cap, rounded to the venue wire format. An order the venue reports as an error, or that fills nothing, releases the spend reservation.
 
