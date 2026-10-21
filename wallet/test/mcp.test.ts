@@ -6,7 +6,8 @@ function deps(mode: McpDeps["approvalMode"], live: boolean): McpDeps {
   return {
     executorUrl: "http://executor",
     resolverUrl: "http://resolver",
-    authToken: "token",
+    executorAuthToken: "executor-token",
+    resolverAuthToken: "resolver-token",
     approvalMode: mode,
     live,
     fetchImpl: async (url) => new Response(JSON.stringify({ url: String(url) }), { status: 200 }),

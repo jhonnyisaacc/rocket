@@ -4,7 +4,8 @@ import { parseApprovalMode, approvalGate, type ApprovalMode } from "./approval-m
 export type McpDeps = {
   executorUrl: string;
   resolverUrl: string;
-  authToken: string | null;
+  executorAuthToken: string | null;
+  resolverAuthToken: string | null;
   approvalMode: ApprovalMode;
   live: boolean;
   fetchImpl?: typeof fetch;
@@ -18,10 +19,10 @@ export const TOOLS = [
   { name: "plan_rebalance", description: "Plan a bridge between chains. It returns would_send and broadcasts nothing.", inputSchema: { type: "object", properties: {}, additionalProperties: true } },
 ] as const;
 
-async function callHttp(deps: McpDeps, base: string, route: string, body?: unknown): Promise<unknown> {
+async function callHttp(deps: McpDeps, base: string, token: string | null, route: string, body?: unknown): Promise<unknown> {
   const fetchImpl = deps.fetchImpl ?? fetch;
   const headers: Record<string, string> = { "content-type": "application/json" };
-  if (deps.authToken) headers.authorization = `Bearer ${deps.authToken}`;
+  if (token) headers.authorization = `Bearer ${token}`;
   const response = await fetchImpl(`${base.replace(/\/$/, "")}${route}`, {
     method: body === undefined ? "GET" : "POST",
     headers,
@@ -38,18 +39,18 @@ async function callHttp(deps: McpDeps, base: string, route: string, body?: unkno
 export async function callTool(deps: McpDeps, name: string, args: Record<string, unknown>): Promise<unknown> {
   if (name === "wallet_status") {
     const [executor, resolver] = await Promise.all([
-      callHttp(deps, deps.executorUrl, "/status"),
-      callHttp(deps, deps.resolverUrl, "/status").catch(() => null),
+      callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/status"),
+      callHttp(deps, deps.resolverUrl, deps.resolverAuthToken, "/status").catch(() => null),
     ]);
     return { executor, resolver, approvalMode: deps.approvalMode };
   }
-  if (name === "resolve_alert") return callHttp(deps, deps.resolverUrl, "/alert", args);
-  if (name === "request_swap") return callHttp(deps, deps.executorUrl, "/execute", args);
-  if (name === "plan_rebalance") return callHttp(deps, deps.executorUrl, "/rebalance", args);
+  if (name === "resolve_alert") return callHttp(deps, deps.resolverUrl, deps.resolverAuthToken, "/alert", args);
+  if (name === "request_swap") return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/execute", args);
+  if (name === "plan_rebalance") return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/rebalance", args);
   if (name === "request_listing") {
     const gate = approvalGate(deps.approvalMode, { live: deps.live, screened: true });
     if (gate.action !== "sign") return { status: "pending_approval", action: gate.action, reason: gate.reason };
-    return callHttp(deps, deps.executorUrl, "/listing", args);
+    return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/listing", args);
   }
   throw new Error(`unknown tool ${name}`);
 }
@@ -82,7 +83,8 @@ if (entry.endsWith("mcp-server.js")) {
   const deps: McpDeps = {
     executorUrl: process.env.EXECUTOR_URL ?? "http://127.0.0.1:8788",
     resolverUrl: process.env.RESOLVER_URL ?? "http://127.0.0.1:8787",
-    authToken: process.env.AUTH_TOKEN ?? null,
+    executorAuthToken: process.env.EXECUTOR_AUTH_TOKEN ?? process.env.AUTH_TOKEN ?? null,
+    resolverAuthToken: process.env.RESOLVER_AUTH_TOKEN ?? process.env.AUTH_TOKEN ?? null,
     approvalMode: parseApprovalMode(process.env.WALLET_APPROVAL_MODE),
     live: process.env.LISTING_TRADER_LIVE === "true",
   };
