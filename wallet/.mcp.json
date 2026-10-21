@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "rocket": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "dist/src/mcp-server.js"
+      ],
+      "env": {
+        "EXECUTOR_URL": "http://127.0.0.1:8788",
+        "RESOLVER_URL": "http://127.0.0.1:8787",
+        "EXECUTOR_AUTH_TOKEN": "<executor token>",
+        "RESOLVER_AUTH_TOKEN": "<resolver token>"
+      }
+    }
+  }
+}
