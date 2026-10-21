@@ -3,13 +3,13 @@ import type { SendRequest } from "./executor.js";
 import { BroadcastError } from "./executor.js";
 import type { TransactionSigner } from "./managed-signer.js";
 import type { Fill, SendResult, TxOutcome, TxRecord } from "./domain.js";
-import { chainByEvmId, chainByKey } from "./chains.js";
+import { chainByEvmId, chainByKey, reorgDepth } from "./chains.js";
 import type { Hex } from "viem";
 import { landedStatus } from "./broadcast/solana.js";
 import { nextHyperliquidNonce, readExchangeResponse } from "./hyperliquid.js";
 import { redactError } from "./redact.js";
 import type { AgedTx } from "./spend.js";
-import { defaultIo, evmContext, journal, rpcsFor, runLegs, solanaContext, type Ctx, type PreparedLeg, type SendHooks, type SendIo } from "./broadcast/shared.js";
+import { defaultIo, evmContext, journal, onAnyRpc, rpcsFor, runLegs, solanaContext, type Ctx, type PreparedLeg, type SendHooks, type SendIo } from "./broadcast/shared.js";
 import { prepareEvmLeg } from "./broadcast/evm.js";
 import { prepareSolanaLeg } from "./broadcast/solana.js";
 export * from "./broadcast/shared.js";
@@ -102,16 +102,21 @@ export async function broadcastRoute(
   return runLegs((leg, slippageBps, next) => prepareEvmLeg(evm, leg, slippageBps, next, capBps, request.provider), request.legs, capBps, ctx);
 }
 
-// An EVM hash with no receipt is dead once the account's mined nonce has passed its nonce: that nonce
-// was consumed by another transaction, so this one can never be included. Without a recorded nonce it stays pending.
+// An EVM hash with no receipt on any RPC is dead once the account's nonce, read REORG_DEPTH blocks below
+// the head, has passed its nonce: another transaction consumed it, so this one can never be included.
+// Without a recorded nonce it stays pending.
 export async function lookupAgedTx(config: AppConfig, tx: AgedTx, io: SendIo = defaultIo(config)): Promise<TxOutcome | null> {
   const spec = chainByKey(tx.chainKey);
   const rpcs = rpcsFor(config, tx.chainKey);
   if (!spec || rpcs.length === 0) return null;
   if (spec.chain.kind === "evm") {
-    const rpc = io.evm(spec.chain.chainId, rpcs);
-    const mined = tx.from && tx.nonce !== null ? await rpc.latestNonce(tx.from as Hex) : null;
-    const receipt = await rpc.receipt(tx.txHash as Hex);
+    const chainId = spec.chain.chainId;
+    const depth = reorgDepth(chainId, config.reorgDepthByChainId);
+    const mined = tx.from && tx.nonce !== null ? await io.evm(chainId, rpcs).confirmedNonce(tx.from as Hex, depth) : null;
+    const receipt = await onAnyRpc(
+      rpcs.map((rpc) => io.evm(chainId, [rpc])),
+      (rpc) => rpc.receipt(tx.txHash as Hex),
+    );
     if (receipt) return receipt.status === "success" ? "landed" : "reverted";
     return mined !== null && tx.nonce !== null && mined > tx.nonce ? "expired" : "pending";
   }

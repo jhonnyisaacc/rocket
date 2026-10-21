@@ -1,6 +1,6 @@
 import { PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction, type Connection } from "@solana/web3.js";
 import bs58 from "bs58";
-import { TransactionReceiptNotFoundError, createPublicClient, defineChain, encodeFunctionData, erc20Abi, keccak256, parseUnits, type Hex } from "viem";
+import { TransactionNotFoundError, TransactionReceiptNotFoundError, createPublicClient, defineChain, encodeFunctionData, erc20Abi, keccak256, parseUnits, type Hex } from "viem";
 import { z } from "zod";
 import type { AppConfig } from "../config.js";
 import type { Fill, RaceQuote, RouteLeg, SendResult, TxOutcome, TxRecord } from "../domain.js";
@@ -36,11 +36,12 @@ export type EvmReceipt = { status: "success" | "reverted"; gasUsed: bigint; effe
 export type EvmRpc = {
   fees(): Promise<{ maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }>;
   pendingNonce(address: Hex): Promise<number>;
-  latestNonce(address: Hex): Promise<number>;
+  confirmedNonce(address: Hex, depth: number): Promise<number>;
   estimateGas(call: EvmCall): Promise<bigint>;
   simulate(call: EvmCall): Promise<void>;
   sendRaw(signed: Hex): Promise<void>;
   receipt(hash: Hex): Promise<EvmReceipt | null>;
+  seen(hash: Hex): Promise<boolean>;
   balance(token: string, owner: Hex): Promise<bigint>;
 };
 
@@ -116,7 +117,11 @@ export function createViemRpc(chainId: number, rpcs: readonly string[]): EvmRpc 
       return { maxFeePerGas: fees.maxFeePerGas, maxPriorityFeePerGas: fees.maxPriorityFeePerGas };
     },
     pendingNonce: (address) => client.getTransactionCount({ address, blockTag: "pending" }),
-    latestNonce: (address) => client.getTransactionCount({ address, blockTag: "latest" }),
+    async confirmedNonce(address, depth) {
+      const head = await client.getBlockNumber({ cacheTime: 0 });
+      const span = BigInt(depth);
+      return client.getTransactionCount({ address, blockNumber: head > span ? head - span : 0n });
+    },
     estimateGas: (call) => client.estimateGas({ account: call.from, to: call.to, data: call.data, value: call.value }),
     async simulate(call) {
       if (typeof client.simulateCalls === "function") {
@@ -135,6 +140,15 @@ export function createViemRpc(chainId: number, rpcs: readonly string[]): EvmRpc 
         return { status: receipt.status, gasUsed: receipt.gasUsed, effectiveGasPrice: receipt.effectiveGasPrice };
       } catch (error) {
         if (error instanceof TransactionReceiptNotFoundError) return null;
+        throw error;
+      }
+    },
+    async seen(hash) {
+      try {
+        await client.getTransaction({ hash });
+        return true;
+      } catch (error) {
+        if (error instanceof TransactionNotFoundError) return false;
         throw error;
       }
     },
@@ -170,16 +184,8 @@ type SolanaConnection = Pick<
   "simulateTransaction" | "sendRawTransaction" | "getLatestBlockhash" | "getBlockHeight" | "getSignatureStatuses" | "getTransaction" | "getBalance" | "getParsedTokenAccountsByOwner"
 >;
 
-// A history lookup asks every RPC: one lagging node must not report a landed signature as unknown.
-async function historyStatus(connections: readonly SolanaConnection[], signature: string): Promise<SolanaStatus> {
-  const settled = await Promise.allSettled(
-    connections.map(async (connection) => (await connection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0] ?? null),
-  );
-  const found = settled.find((result) => result.status === "fulfilled" && result.value !== null);
-  if (found?.status === "fulfilled") return found.value;
-  const failed = settled.find((result) => result.status === "rejected");
-  if (failed?.status === "rejected") throw failed.reason;
-  return null;
+function historyStatus(connections: readonly SolanaConnection[], signature: string): Promise<SolanaStatus> {
+  return onAnyRpc(connections, async (connection) => (await connection.getSignatureStatuses([signature], { searchTransactionHistory: true })).value[0] ?? null);
 }
 
 export function solanaRpcOver(connections: readonly SolanaConnection[]): SolanaRpc {
@@ -360,8 +366,18 @@ export async function runLegs(prepare: PrepareLeg, legs: readonly RouteLeg[], ca
 }
 
 
-export type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; senders: EvmRpc[] };
+export type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; reads: EvmRpc[]; senders: EvmRpc[] };
 export type EvmTx = { to: Hex; data: Hex; value: bigint; gas: bigint | null; purpose: EvmSignInput["purpose"]; nativeSell?: boolean };
+
+// A lookup that must prove absence asks every RPC: one lagging node must not hide a transaction another has.
+export async function onAnyRpc<R, T>(rpcs: readonly R[], read: (rpc: R) => Promise<T | null>): Promise<T | null> {
+  const settled = await Promise.allSettled(rpcs.map(read));
+  const found = settled.find((result) => result.status === "fulfilled" && result.value !== null);
+  if (found?.status === "fulfilled") return found.value;
+  const failed = settled.find((result) => result.status === "rejected");
+  if (failed?.status === "rejected") throw failed.reason;
+  return null;
+}
 
 export function evmContext(ctx: Ctx, chainKey: string, rpcs: readonly string[]): EvmCtx {
   const spec = chainByKey(chainKey);
@@ -370,8 +386,8 @@ export function evmContext(ctx: Ctx, chainKey: string, rpcs: readonly string[]):
   if (!owner) throw new BroadcastError("evm signer is not loaded", false);
   const chainId = spec.chain.chainId;
   const mev = ctx.config.mevRpcByChainId[chainId];
-  const senders = mev ? [ctx.io.evm(chainId, [mev])] : rpcs.map((rpc) => ctx.io.evm(chainId, [rpc]));
-  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpcs), senders };
+  const reads = rpcs.map((rpc) => ctx.io.evm(chainId, [rpc]));
+  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpcs), reads, senders: mev ? [ctx.io.evm(chainId, [mev])] : reads };
 }
 
 export function solanaContext(ctx: Ctx, rpcs: readonly string[]): SolanaCtx {

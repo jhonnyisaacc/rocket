@@ -2,7 +2,7 @@ import { CHAINS, QUOTE_ASSETS, chainByKey, type QuoteAsset, type QuoteAssets } f
 import { kyberSupports } from "../aggregators.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "../signing-policy.js";
 import { LISTING_SCOPE } from "../spend.js";
-import { routerAllowlist, spendTimezone, splitList } from "./guard.js";
+import { chainAddressMap, reorgDepths, routerAllowlist, spendTimezone, splitList } from "./guard.js";
 import { isSolanaAddress } from "../signer.js";
 import { DEFAULT_KYBER_CLIENT_ID, type AppConfig, type ApprovalSeed, type StrategyCap } from "./types.js";
 import { manifestRouters, parseDeploymentManifest } from "../deployment-manifest.js";
@@ -177,6 +177,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     reconcileAfterMinutes: intEnv(env, "RECONCILE_AFTER_MINUTES", 10),
     minExecutionSlippageBps: intEnv(env, "MIN_EXECUTION_SLIPPAGE_BPS", 20),
     routerAllowlist: manifest ? manifestRouters(manifest) : legacyRouters,
+    reorgDepthByChainId: reorgDepths(env.REORG_DEPTH_JSON),
+    zeroExSettlers: env.ZEROX_SETTLER_ALLOWLIST_JSON ? chainAddressMap(env.ZEROX_SETTLER_ALLOWLIST_JSON, "ZEROX_SETTLER_ALLOWLIST_JSON", /^0x[0-9a-fA-F]{40}$/) : {},
     supportByChain: supportByChain(CHAINS.map((chain) => chain.key), env.SUPPORT_TIERS),
     solanaProgramAllowlist: [...new Set([...SOLANA_BASE_PROGRAMS, ...splitList(env.SOLANA_PROGRAM_ALLOWLIST), ...(manifest?.solanaPrograms ?? [])])],
     maxValueWei: manifest ? BigInt(manifest.maxValueWei) : weiEnv(env.MAX_NATIVE_VALUE_WEI),

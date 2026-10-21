@@ -15,7 +15,7 @@ import { buildPairMap } from "../src/pairs.js";
 import { retryAfterAt } from "../src/provider-guard.js";
 import { evmReadClient } from "../src/rpc.js";
 import { screenToken } from "../src/screening.js";
-import { kyberData, tagOf, zeroExData } from "./fixtures.js";
+import { SETTLERS, kyberData, tagOf, zeroExData } from "./fixtures.js";
 
 const USDC = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const WETH = "0xcccccccccccccccccccccccccccccccccccccccc";
@@ -156,9 +156,11 @@ test("the Jupiter swap body asks for a capped veryHigh priority fee, or a Jito t
 });
 
 test("live boot requires a 0x key, a unique Kyber client id, and https on every RPC in a list", () => {
-  const live = { LISTING_TRADER_LIVE: "true", ZEROX_API_KEY: "zeroex-key", KYBERSWAP_CLIENT_ID: "rocket-trader" };
+  const live = { LISTING_TRADER_LIVE: "true", ZEROX_API_KEY: "zeroex-key", ZEROX_SETTLER_ALLOWLIST_JSON: SETTLERS, KYBERSWAP_CLIENT_ID: "rocket-trader" };
   assert.doesNotThrow(() => assertLiveEdges(loadConfig(live), {}));
   assert.throws(() => assertLiveEdges(loadConfig({ ...live, ZEROX_API_KEY: "" }), {}), /ZEROX_API_KEY/);
+  assert.throws(() => assertLiveEdges(loadConfig({ ...live, ZEROX_SETTLER_ALLOWLIST_JSON: "" }), {}), /ZEROX_SETTLER_ALLOWLIST_JSON/);
+  assert.throws(() => loadConfig({ ...live, ZEROX_SETTLER_ALLOWLIST_JSON: JSON.stringify({ "8453": ["settler"] }) }), /ZEROX_SETTLER_ALLOWLIST_JSON is invalid/);
   assert.throws(() => assertLiveEdges(loadConfig({ ...live, KYBERSWAP_CLIENT_ID: "" }), {}), /KYBERSWAP_CLIENT_ID/);
   assert.throws(() => assertLiveEdges(loadConfig({ ...live, RPC_URLS_8453: "https://one.example,http://two.example" }), {}), /live RPC URLs/);
   const listed = loadConfig({ RPC_URL_8453: "https://one.example/k1", RPC_URLS_8453: "https://two.example/k2, https://one.example/k1" });
@@ -263,7 +265,7 @@ function fakeChain(failSend = false): Chain {
     rpc: {
       fees: async () => ({ maxFeePerGas: 1_000n, maxPriorityFeePerGas: 100n }),
       pendingNonce: async () => 1,
-      latestNonce: async () => 1,
+      confirmedNonce: async () => 1,
       estimateGas: async () => 21_000n,
       simulate: async () => undefined,
       sendRaw: async (signed) => {
@@ -272,6 +274,7 @@ function fakeChain(failSend = false): Chain {
         receipts.set(keccak256(signed), { status: "success", gasUsed: 21_000n, effectiveGasPrice: 1n });
       },
       receipt: async (hash) => receipts.get(hash) ?? null,
+      seen: async (hash) => receipts.has(hash),
       balance: async () => 10n ** 20n,
     },
   };
@@ -318,7 +321,7 @@ const zeroExBody = (data: Hex, minBuyAmount = "9950000", issues: unknown = { all
   buyAmount: "10000000",
   minBuyAmount,
   issues,
-  transaction: { to: ROUTER, data: zeroExData(data, { recipient: OWNER, buyToken: TOKEN, minOut: BigInt(minBuyAmount) }), value: "0", gas: "100000" },
+  transaction: { to: ROUTER, data: zeroExData(data, { recipient: OWNER, buyToken: TOKEN, minOut: BigInt(minBuyAmount) }, { token: USDC, amount: 5_000_000n }), value: "0", gas: "100000" },
 });
 
 const request = (legs: RouteLeg[], provider = "zeroex") => ({ kind: "evm" as const, description: "swap", chain: base, hyperliquidActions: [], provider, legs });
@@ -406,6 +409,25 @@ test("a Kyber build that pays someone else or lowers the minimum is refused befo
     await assert.rejects(
       () => broadcastRoute(config, signer(signed), request([storedLeg("kyberswap", routes, 900)], "kyberswap"), 1, fetchImpl, [], { io: io(() => fakeChain().rpc) }),
       (thrown: unknown) => thrown instanceof BroadcastError && !thrown.broadcast && error.test(thrown.message),
+    );
+    assert.equal(signed.length, 0);
+  }
+});
+
+test("a 0x exec that spends another token or amount than the leg is refused before signing", async () => {
+  const config: AppConfig = { ...loadConfig({ RPC_URL_8453: "http://fake.invalid", ZEROX_API_KEY: "zeroex-key" }), now: () => 10_000 };
+  const terms = { recipient: OWNER, buyToken: TOKEN, minOut: 9_950_000n };
+  for (const exec of [
+    { token: USDC, amount: 2n ** 255n },
+    { token: WETH, amount: 5_000_000n },
+  ]) {
+    resetProviderGuards();
+    resetApprovals();
+    const raw = { ...zeroExBody("0x0a"), transaction: { to: ROUTER, data: zeroExData("0x0a", terms, exec), value: "0", gas: "100000" } };
+    const signed: EvmSignInput[] = [];
+    await assert.rejects(
+      () => broadcastRoute(config, signer(signed), request([storedLeg("zeroex", raw, 9_000)]), 1, byHost([], { "api.0x.org": () => json(raw) }), [], { io: io(() => fakeChain().rpc) }),
+      (thrown: unknown) => thrown instanceof BroadcastError && !thrown.broadcast && /does not spend the leg's sell amount/.test(thrown.message),
     );
     assert.equal(signed.length, 0);
   }

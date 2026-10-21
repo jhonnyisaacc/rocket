@@ -192,6 +192,14 @@ export function chainByKey(key: string): ChainSpec | undefined {
   return byKey.get(key);
 }
 
+// Blocks below the head at which a mined nonce is treated as final: Polygon and BNB reorg deeper than the other chains.
+const REORG_DEPTH: Readonly<Record<number, number>> = { 56: 15, 137: 64 };
+export const DEFAULT_REORG_DEPTH = 3;
+
+export function reorgDepth(chainId: number, overrides: Readonly<Record<number, number>>): number {
+  return overrides[chainId] ?? REORG_DEPTH[chainId] ?? DEFAULT_REORG_DEPTH;
+}
+
 export function chainByEvmId(chainId: number): ChainSpec | undefined {
   return byEvmId.get(chainId);
 }

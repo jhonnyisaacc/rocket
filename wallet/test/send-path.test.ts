@@ -30,6 +30,8 @@ type FakeChain = {
   balances: Map<string, bigint>;
   pending: number;
   mined: number;
+  depths: number[];
+  known: Set<string>;
   onSend: (signed: Hex, hash: string) => void;
   rejectSimulation: (data: Hex) => boolean;
 };
@@ -43,12 +45,17 @@ function fakeChain(): FakeChain {
     balances: new Map(),
     pending: 7,
     mined: 7,
+    depths: [],
+    known: new Set(),
     onSend: () => undefined,
     rejectSimulation: () => false,
     rpc: {
       fees: async () => ({ maxFeePerGas: 1_000n, maxPriorityFeePerGas: 100n }),
       pendingNonce: async () => chain.pending,
-      latestNonce: async () => chain.mined,
+      confirmedNonce: async (_address, depth) => {
+        chain.depths.push(depth);
+        return chain.mined;
+      },
       estimateGas: async () => 21_000n,
       simulate: async (call) => {
         if (chain.rejectSimulation(call.data)) throw new Error("execution reverted");
@@ -56,8 +63,10 @@ function fakeChain(): FakeChain {
       sendRaw: async (signed) => {
         chain.sent.push(signed);
         chain.onSend(signed, keccak256(signed));
+        chain.known.add(keccak256(signed));
       },
       receipt: async (hash) => chain.receipts.get(hash) ?? null,
+      seen: async (hash) => chain.known.has(hash) || chain.receipts.has(hash),
       balance: async (token) => chain.balances.get(token.toLowerCase()) ?? 10n ** 20n,
     },
   };
@@ -112,7 +121,7 @@ function zeroEx(byBuy: Record<string, Firm>, seen: URL[]): typeof fetch {
     const buyToken = (url.searchParams.get("buyToken") ?? "").toLowerCase();
     const firm = byBuy[buyToken];
     if (!firm) return new Response("{}", { status: 404 });
-    const data = firm.minBuyAmount === undefined ? firm.data : zeroExData(firm.data, { recipient: OWNER, buyToken, minOut: BigInt(firm.minBuyAmount) });
+    const data = firm.minBuyAmount === undefined ? firm.data : zeroExData(firm.data, { recipient: OWNER, buyToken, minOut: BigInt(firm.minBuyAmount) }, { token: url.searchParams.get("sellToken") ?? "", amount: BigInt(url.searchParams.get("sellAmount") ?? "0") });
     return new Response(
       JSON.stringify({ liquidityAvailable: true, buyAmount: firm.buyAmount, minBuyAmount: firm.minBuyAmount, transaction: { to: ROUTER, data, value: "0", gas: "100000" } }),
       { status: 200 },
@@ -695,4 +704,46 @@ test("an aged evm hash is dead only once the mined nonce has passed it", async (
   assert.equal(await lookupAgedTx(config, { ...aged, nonce: null }, io), "pending", "without a recorded nonce the row stays held");
   chain.receipts.set("0xdead", success);
   assert.equal(await lookupAgedTx(config, aged, io), "landed");
+  assert.deepEqual(chain.depths, [3, 3, 3], "base reads the nonce three blocks below the head");
+});
+
+test("an aged evm hash is not released while any RPC has its receipt, and the nonce is read at the chain's reorg depth", async () => {
+  const lagging = fakeChain();
+  const fresh = fakeChain();
+  lagging.mined = 8;
+  fresh.mined = 8;
+  fresh.receipts.set("0xdead", success);
+  const config = loadConfig({ RPC_URLS_137: "http://lagging.invalid,http://fresh.invalid" });
+  const io: SendIo = { ...clockIo(lagging.rpc), evm: (_chainId, rpcs) => (rpcs.length === 1 && rpcs[0] === "http://fresh.invalid" ? fresh.rpc : lagging.rpc) };
+  const aged = { chainKey: "polygon", txHash: "0xdead", from: OWNER, nonce: 7 };
+  assert.equal(await lookupAgedTx(config, aged, io), "landed", "the lagging node's missing receipt does not outvote the node that has it");
+  assert.deepEqual(lagging.depths, [64]);
+  fresh.receipts.clear();
+  assert.equal(await lookupAgedTx(config, aged, io), "expired");
+  fresh.rpc.receipt = async () => {
+    throw new Error("fetch failed");
+  };
+  await assert.rejects(() => lookupAgedTx(config, aged, io), /fetch failed/, "an RPC that cannot answer leaves the row held");
+  await lookupAgedTx(loadConfig({ RPC_URLS_137: "http://lagging.invalid", REORG_DEPTH_JSON: JSON.stringify({ "137": 128 }) }), aged, io);
+  assert.deepEqual(lagging.depths, [64, 64, 64, 128]);
+});
+
+test("a definite rejection for a hash some RPC already has is treated as broadcast", async () => {
+  const chain = fakeChain();
+  chain.rpc.sendRaw = async (signed) => {
+    chain.known.add(keccak256(signed));
+    throw new Error("nonce too low");
+  };
+  const io = clockIo(chain.rpc);
+  const send = () => withdrawNative({ config: evmConfig, signer: evmSigner([]), chainKey: "base", to: DEST, amount: 0.0001, io });
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && error.broadcast);
+  chain.known.clear();
+  chain.rpc.sendRaw = async () => {
+    throw new Error("nonce too low");
+  };
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && !error.broadcast);
+  chain.rpc.seen = async () => {
+    throw new Error("fetch failed");
+  };
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && error.broadcast, "a lookup that fails cannot prove the hash is nowhere");
 });

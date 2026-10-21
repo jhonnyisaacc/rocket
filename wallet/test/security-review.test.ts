@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { landedSend } from "./fixtures.js";
+import { SETTLERS, landedSend } from "./fixtures.js";
 import { Keypair } from "@solana/web3.js";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { resetProviderGuards } from "../src/aggregators.js";
@@ -388,6 +388,7 @@ test("a router allowed on one chain is denied on another, and a token sell canno
   const config = loadConfig({ ROUTER_ALLOWLIST_JSON: JSON.stringify({ "8453": [router] }) });
   const base = {
     data: "0x" as const,
+    settlers: [],
     withdrawAllowlist: [],
     maxValueWei: DEFAULT_MAX_VALUE_WEI,
     allowHotApproval: false,
@@ -434,7 +435,7 @@ test("a router allowed on one chain is denied on another, and a token sell canno
 });
 
 test("live mode pins aggregator hosts and private service URLs", () => {
-  const live = { LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", ZEROX_API_KEY: "zeroex-key", KYBERSWAP_CLIENT_ID: "listing-trader-test" };
+  const live = { LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", ZEROX_API_KEY: "zeroex-key", ZEROX_SETTLER_ALLOWLIST_JSON: SETTLERS, KYBERSWAP_CLIENT_ID: "listing-trader-test" };
   assert.throws(() => assertBoot(loadConfig({ ...live, JUPITER_API_BASE: "https://evil.example/swap/v1" }), "executor"), /pins jupiterBase/);
   assert.throws(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://evil.example/alert" }), "executor"), /https or a railway.internal host/);
   assert.doesNotThrow(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://resolver.railway.internal:8080" }), "executor"));

@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { decodeFunctionData, erc20Abi, type Hex } from "viem";
-import { swapTerms } from "./signing-policy/swap-terms.js";
+import { isAllowanceHolderExec, swapTerms, type SwapTerms } from "./signing-policy/swap-terms.js";
 import { CHAINS } from "./chains.js";
 import { assertTradableAction, type HyperliquidAction } from "./hyperliquid.js";
 
@@ -61,6 +61,7 @@ type EvmSigningInput = {
   value: bigint;
   purpose: EvmPurpose;
   routers: readonly string[];
+  settlers: readonly string[];
   withdrawAllowlist: readonly string[];
   maxValueWei: bigint;
   allowHotApproval: boolean;
@@ -107,9 +108,19 @@ export function assertEvmSigning(input: EvmSigningInput): void {
   const terms = swapTerms(input.data);
   if (terms) {
     if (terms.recipient.toLowerCase() !== input.owner.toLowerCase()) throw new Error("swap recipient is not the hot wallet");
+    if (terms.provider === "zeroex") assertSettler(terms, to, input.settlers);
     return;
   }
+  if (isAllowanceHolderExec(input.data)) throw new Error("0x exec does not call a Settler");
   if (!input.allowOpaqueSwap) throw new Error("swap calldata does not name a checkable recipient");
+}
+
+// AllowanceHolder.exec lends the sold-token allowance to `operator` for one call into `target`, so both must be a pinned Settler.
+function assertSettler(terms: Extract<SwapTerms, { provider: "zeroex" }>, to: string, settlers: readonly string[]): void {
+  const pinned = new Set(settlers.map((item) => item.toLowerCase()));
+  const target = (terms.exec?.target ?? to).toLowerCase();
+  if (terms.exec && terms.exec.operator.toLowerCase() !== target) throw new Error("0x exec operator is not its target");
+  if (!pinned.has(target)) throw new Error("0x target is not a pinned Settler");
 }
 
 function assertApproval(input: EvmSigningInput, to: string): void {

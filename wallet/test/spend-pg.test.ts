@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import test from "node:test";
 import pg from "pg";
 import type { TxOutcome, TxRecord } from "../src/domain.js";
-import { acquireExecutorLock, closeSpendPools, commitSpend, reconcileReserved, recordSpend, recordTx, releaseSpend } from "../src/spend.js";
+import { acquireExecutorLock, backfillStrategyIds, closeSpendPools, commitSpend, listingKey, reconcileReserved, recordSpend, recordTx, releaseSpend } from "../src/spend.js";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -93,6 +93,35 @@ test("strategy reservations share the global cap and scope by exact strategy id"
     await client.query("DELETE FROM spend_journal WHERE idempotency_key LIKE $1", [`%${run}%`]);
     await client.end();
     await closeSpendPools();
+  }
+});
+
+test("an upgraded journal backfills strategy ids only for configured strategies, and a replayed ':' alert finds its legacy row", { skip: !url }, async () => {
+  const databaseUrl = url as string;
+  const schema = `spend_${randomUUID().replaceAll("-", "")}`;
+  const scoped = `${databaseUrl}${databaseUrl.includes("?") ? "&" : "?"}options=${encodeURIComponent(`-c search_path=${schema}`)}`;
+  const day = "2026-10-21";
+  const admin = new pg.Client({ connectionString: databaseUrl });
+  await admin.connect();
+  try {
+    await admin.query(`CREATE SCHEMA ${schema}`);
+    await admin.query(`CREATE TABLE ${schema}.spend_journal (idempotency_key text PRIMARY KEY, usd double precision NOT NULL, spent_on date NOT NULL, status text NOT NULL DEFAULT 'committed')`);
+    await admin.query(`INSERT INTO ${schema}.spend_journal (idempotency_key, usd, spent_on) VALUES ('copy:1', 1, $1), ('tg:42', 1, $1), ('plain', 1, $1)`, [day]);
+    await backfillStrategyIds(scoped, ["copy"]);
+    const rows = await admin.query<{ idempotency_key: string; strategy_id: string }>(`SELECT idempotency_key, strategy_id FROM ${schema}.spend_journal`);
+    assert.deepEqual(Object.fromEntries(rows.rows.map((row) => [row.idempotency_key, row.strategy_id])), { "copy:1": "copy", "tg:42": "listing", plain: "listing" });
+    const column = await admin.query("SELECT is_nullable, column_default FROM information_schema.columns WHERE table_schema = $1 AND table_name = 'spend_journal' AND column_name = 'strategy_id'", [schema]);
+    assert.deepEqual(column.rows[0], { is_nullable: "NO", column_default: "'listing'::text" });
+    assert.equal(await recordSpend(scoped, listingKey("tg:42"), 1, day), "exists", "the alert reserved under its old key is not spent twice");
+    assert.equal(await recordSpend(scoped, listingKey("tg:43"), 1, day), "reserved");
+    await closeSpendPools();
+    await backfillStrategyIds(scoped, []);
+    const again = await admin.query(`SELECT strategy_id FROM ${schema}.spend_journal WHERE idempotency_key = 'copy:1'`);
+    assert.equal(again.rows[0]?.strategy_id, "copy", "a reboot leaves backfilled rows alone");
+  } finally {
+    await closeSpendPools();
+    await admin.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);
+    await admin.end();
   }
 });
 

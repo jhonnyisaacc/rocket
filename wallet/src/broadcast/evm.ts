@@ -12,7 +12,7 @@ import { readLifi, readZeroEx } from "../quotes.js";
 import { redactError } from "../redact.js";
 import { sellBaseUnits } from "../routing.js";
 import { routersForChain, swapTerms } from "../signing-policy.js";
-import { approvalSpender, asHex, assertMinOut, executionSlippageBps, journal, ourMinOut, referenceFor, rememberIfFunded, reusableQuote, reuseOrFirm, type Confirmed, type Ctx, type EvmCtx, type EvmReceipt, type EvmRpc, type EvmTx, type PreparedLeg, type Submitted, NATIVE_SELL, digits, overCap } from "./shared.js";
+import { approvalSpender, asHex, assertMinOut, executionSlippageBps, journal, onAnyRpc, ourMinOut, referenceFor, rememberIfFunded, reusableQuote, reuseOrFirm, type Confirmed, type Ctx, type EvmCtx, type EvmReceipt, type EvmRpc, type EvmTx, type PreparedLeg, type Submitted, NATIVE_SELL, digits, overCap } from "./shared.js";
 
 export function evmRecord(ctx: EvmCtx, signed: Hex, tx: { to: Hex; value: bigint; nonce: number }): TxRecord {
   return { chainKey: ctx.chainKey, txHash: keccak256(signed), from: ctx.owner, to: tx.to, value: tx.value.toString(), outcome: "pending", nonce: tx.nonce };
@@ -28,14 +28,24 @@ export async function sendOnce(rpc: EvmRpc, signed: Hex): Promise<void> {
 }
 
 // Only a rejection every sender gave before its mempool proves the transaction is nowhere; a timeout or
-// 5xx from any of them leaves it possibly broadcast, so the spend stays reserved for reconcile.
+// 5xx from any of them leaves it possibly broadcast, so the spend stays reserved for reconcile. A provider
+// that retried internally can report "nonce too low" for a transaction it accepted, so the hash is looked up too.
 export async function broadcastEvm(ctx: EvmCtx, signed: Hex): Promise<void> {
   try {
     await Promise.any(ctx.senders.map((rpc) => sendOnce(rpc, signed)));
   } catch (error) {
     const reasons: unknown[] = error instanceof AggregateError ? error.errors : [error];
     const messages = reasons.map((reason) => redactError(reason, ctx.secrets));
-    throw new BroadcastError(messages[0] ?? "no rpc is configured", !messages.every(isDefiniteRejection));
+    const definite = messages.every(isDefiniteRejection) && !(await seenAnywhere(ctx, keccak256(signed)));
+    throw new BroadcastError(messages[0] ?? "no rpc is configured", !definite);
+  }
+}
+
+async function seenAnywhere(ctx: EvmCtx, hash: Hex): Promise<boolean> {
+  try {
+    return (await onAnyRpc(ctx.reads, async (rpc) => ((await rpc.seen(hash)) ? true : null))) === true;
+  } catch {
+    return true;
   }
 }
 
@@ -157,11 +167,14 @@ function sameToken(left: string, right: string): boolean {
 }
 
 // The calldata, not the API's summary of it, decides who receives the output and the minimum it may be.
-function decodedMinOut(data: Hex, provider: "kyberswap" | "zeroex", owner: string, buyToken: string): bigint {
+function decodedMinOut(data: Hex, provider: "kyberswap" | "zeroex", owner: string, leg: RouteLeg): bigint {
   const terms = swapTerms(data);
   if (!terms || terms.provider !== provider) throw new BroadcastError("swap calldata is not decodable", false);
   if (terms.recipient.toLowerCase() !== owner.toLowerCase()) throw new BroadcastError("swap recipient is not the hot wallet", false);
-  if (!sameToken(terms.buyToken, buyToken)) throw new BroadcastError("swap calldata buys a different token", false);
+  if (!sameToken(terms.buyToken, leg.buyAddress)) throw new BroadcastError("swap calldata buys a different token", false);
+  if (terms.provider === "zeroex" && terms.exec && (!sameToken(terms.exec.token, leg.sellAddress) || terms.exec.amount !== BigInt(leg.sellAmount))) {
+    throw new BroadcastError("0x exec does not spend the leg's sell amount", false);
+  }
   return terms.minOut;
 }
 
@@ -187,7 +200,7 @@ export async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number,
       gas: null,
       impact: quoted.priceImpactPct ?? capPct + 1,
       raw: quoted.raw,
-      minOut: decodedMinOut(data, "kyberswap", taker, leg.buyAddress),
+      minOut: decodedMinOut(data, "kyberswap", taker, leg),
       quotedOut: BigInt(quoted.buyAmount),
     };
   }
@@ -231,7 +244,7 @@ export async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number,
     gas: raw.transaction?.gas ? BigInt(raw.transaction.gas) : null,
     impact: parsed.priceImpactPct,
     raw: quoted.raw,
-    minOut: decodedMinOut(data, "zeroex", taker, leg.buyAddress),
+    minOut: decodedMinOut(data, "zeroex", taker, leg),
     quotedOut: BigInt(parsed.buyAmount),
   };
 }

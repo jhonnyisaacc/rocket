@@ -204,6 +204,13 @@ test("listing and strategy idempotency keys never alias", () => {
   );
 });
 
+test("a ':' alert reserved under its pre-namespace key is not reserved again", async () => {
+  const journal = createMemoryJournal();
+  assert.equal(await journal.reserve("tg:42", 1, "2026-10-21", 25), "reserved");
+  assert.equal(await journal.reserve(listingKey("tg:42"), 1, "2026-10-21", 25), "exists");
+  assert.equal(await journal.reserve(listingKey("tg:43"), 1, "2026-10-21", 25), "reserved");
+});
+
 test("a strategy reservation is held to the global cap as well as its own", async () => {
   assert.equal(reserveDecision({ existing: null, spent: 24, usd: 5, cap: 25, scoped: { spent: 0, cap: 50 } }), "cap", "global cap binds a strategy");
   assert.equal(reserveDecision({ existing: null, spent: 0, usd: 5, cap: 25, scoped: { spent: 48, cap: 50 } }), "cap", "strategy cap binds");

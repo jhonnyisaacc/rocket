@@ -9,9 +9,9 @@ CREATE TABLE IF NOT EXISTS spend_journal (
 );
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'committed';
 DO $$ BEGIN
-  ALTER TABLE spend_journal ADD CONSTRAINT spend_journal_status_check CHECK (status IN ('reserved', 'committed', 'released'));
-EXCEPTION
-  WHEN duplicate_object THEN NULL;
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conrelid = 'spend_journal'::regclass AND conname = 'spend_journal_status_check') THEN
+    ALTER TABLE spend_journal ADD CONSTRAINT spend_journal_status_check CHECK (status IN ('reserved', 'committed', 'released'));
+  END IF;
 END $$;
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS reserved_at timestamptz;
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS tx_hash text;
@@ -19,10 +19,6 @@ ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS chain_key text;
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS outcome text;
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS note text;
 ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS strategy_id text;
-UPDATE spend_journal SET strategy_id = CASE WHEN position(':' in idempotency_key) > 0 THEN split_part(idempotency_key, ':', 1) ELSE 'listing' END
-WHERE strategy_id IS NULL;
-ALTER TABLE spend_journal ALTER COLUMN strategy_id SET DEFAULT 'listing';
-ALTER TABLE spend_journal ALTER COLUMN strategy_id SET NOT NULL;
 CREATE TABLE IF NOT EXISTS signed_tx (
   tx_hash text PRIMARY KEY,
   idempotency_key text,
@@ -38,6 +34,16 @@ CREATE TABLE IF NOT EXISTS signed_tx (
 ALTER TABLE signed_tx ADD COLUMN IF NOT EXISTS nonce bigint;
 `;
 
+export const STRATEGY_COLUMN_SQL =
+  "SELECT is_nullable FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'spend_journal' AND column_name = 'strategy_id'";
+// Rows written before strategy_id existed: a key belongs to a strategy only when its prefix is a configured
+// strategy id. Any other key, ':' or not, was a listing alert id.
+export const STRATEGY_BACKFILL_SQL = `
+UPDATE spend_journal
+SET strategy_id = CASE WHEN position(':' in idempotency_key) > 0 AND split_part(idempotency_key, ':', 1) = ANY($1::text[]) THEN split_part(idempotency_key, ':', 1) ELSE 'listing' END
+WHERE strategy_id IS NULL
+`;
+export const STRATEGY_NOT_NULL_SQL = "ALTER TABLE spend_journal ALTER COLUMN strategy_id SET DEFAULT 'listing', ALTER COLUMN strategy_id SET NOT NULL";
 export const RESERVE_LOCK_SQL = "SELECT pg_advisory_xact_lock(hashtext($1))";
 export const RESERVE_SUM_SQL =
   "SELECT COALESCE(SUM(usd), 0)::text AS total FROM spend_journal WHERE spent_on = $1::date AND status IN ('reserved', 'committed')";
@@ -92,6 +98,16 @@ export function strategyKey(strategyId: string, key: string): string {
   return `${strategyId}:${key}`;
 }
 
+// The key an alert id with ':' had before it moved under the listing prefix; a replay of that alert must find it.
+export function legacyListingKey(key: string): string | null {
+  const prefix = `${LISTING_SCOPE}:`;
+  return key.startsWith(prefix) ? key.slice(prefix.length) : null;
+}
+
+function heldStatus(statuses: readonly (SpendStatus | undefined)[]): SpendStatus | null {
+  return statuses.find((status) => status === "reserved" || status === "committed") ?? statuses.find((status) => status !== undefined) ?? null;
+}
+
 export type ReservedRow = { idempotencyKey: string; txHash: string | null; chainKey: string | null; legacy: boolean };
 
 // Every transaction signed for the row decides it: one landing commits, and only when all of them are
@@ -143,7 +159,7 @@ export function createMemoryJournal() {
   return {
     reserve(key: string, usd: number, day: string, cap: number, scope?: SpendScope) {
       return lock(() => {
-        const existing = rows.get(key)?.status ?? null;
+        const existing = heldStatus([key, legacyListingKey(key)].map((item) => (item === null ? undefined : rows.get(item)?.status)));
         const strategyId = scope?.strategyId ?? LISTING_SCOPE;
         let spent = 0;
         let scopedSpent = 0;
@@ -208,8 +224,9 @@ export async function recordSpend(
   try {
     await client.query("BEGIN");
     await client.query(RESERVE_LOCK_SQL, [day]);
-    const existing = await client.query<{ status: SpendStatus }>("SELECT status FROM spend_journal WHERE idempotency_key = $1", [idempotencyKey]);
-    const status = existing.rows[0]?.status ?? null;
+    const keys = [idempotencyKey, legacyListingKey(idempotencyKey)].filter((item): item is string => item !== null);
+    const existing = await client.query<{ status: SpendStatus }>("SELECT status FROM spend_journal WHERE idempotency_key = ANY($1)", [keys]);
+    const status = heldStatus(existing.rows.map((row) => row.status));
     const spent = await total(RESERVE_SUM_SQL, [day]);
     const scoped = scope ? { spent: await total(RESERVE_SUM_SCOPED_SQL, [day, scope.strategyId]), cap: scope.capUsd } : undefined;
     const decision = reserveDecision({ existing: status, spent, usd, cap: capUsd, scoped });
@@ -220,6 +237,25 @@ export async function recordSpend(
     await client.query(RESERVE_UPSERT_SQL, [idempotencyKey, usd, day, scope?.strategyId ?? LISTING_SCOPE]);
     await client.query("COMMIT");
     return "reserved";
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function backfillStrategyIds(databaseUrl: string, strategyIds: readonly string[]): Promise<void> {
+  const pool = await poolFor(databaseUrl);
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const column = await client.query<{ is_nullable: string }>(STRATEGY_COLUMN_SQL);
+    if (column.rows[0]?.is_nullable === "YES") {
+      await client.query(STRATEGY_BACKFILL_SQL, [strategyIds]);
+      await client.query(STRATEGY_NOT_NULL_SQL);
+    }
+    await client.query("COMMIT");
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;

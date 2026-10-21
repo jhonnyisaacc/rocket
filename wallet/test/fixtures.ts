@@ -12,7 +12,8 @@ export function landedSend(): SendResult {
 }
 
 const ZERO = "0x0000000000000000000000000000000000000000";
-const SETTLER = "0x5555555555555555555555555555555555555555";
+export const SETTLER = "0x5555555555555555555555555555555555555555";
+export const SETTLERS = JSON.stringify({ "8453": [SETTLER] });
 
 const allowanceHolderAbi = parseAbi(["function exec(address operator, address token, uint256 amount, address target, bytes data) payable returns (bytes result)"]);
 const settlerAbi = parseAbi([
@@ -28,13 +29,16 @@ const kyberAbi = parseAbi([
 export type SwapFixture = { recipient: string; buyToken: string; minOut: bigint };
 
 // Real AllowanceHolder.exec -> Settler.execute calldata; `tag` rides as the only action so fakes can tell legs apart.
-export function zeroExData(tag: Hex, terms: SwapFixture): Hex {
+export type ExecFixture = { token: string; amount: bigint; operator?: string; target?: string };
+
+export function zeroExData(tag: Hex, terms: SwapFixture, exec: ExecFixture): Hex {
   const settler = encodeFunctionData({
     abi: settlerAbi,
     functionName: "execute",
     args: [{ recipient: terms.recipient as Hex, buyToken: terms.buyToken as Hex, minAmountOut: terms.minOut }, [tag], `0x${"00".repeat(32)}`],
   });
-  return encodeFunctionData({ abi: allowanceHolderAbi, functionName: "exec", args: [SETTLER, ZERO, 0n, SETTLER, settler] });
+  const args = [(exec.operator ?? SETTLER) as Hex, exec.token as Hex, exec.amount, (exec.target ?? SETTLER) as Hex, settler] as const;
+  return encodeFunctionData({ abi: allowanceHolderAbi, functionName: "exec", args });
 }
 
 export function kyberData(tag: Hex, terms: SwapFixture): Hex {

@@ -15,7 +15,11 @@ const SETTLER_ABI = parseAbi([
   "function execute(AllowedSlippage slippage, bytes[] actions, bytes32 zid) payable returns (bool)",
 ]);
 
-export type SwapTerms = { provider: "kyberswap" | "zeroex"; recipient: string; buyToken: string; minOut: bigint };
+export type ZeroExExec = { operator: string; token: string; amount: bigint; target: string };
+
+export type SwapTerms =
+  | { provider: "kyberswap"; recipient: string; buyToken: string; minOut: bigint }
+  | { provider: "zeroex"; recipient: string; buyToken: string; minOut: bigint; exec: ZeroExExec | null };
 
 function decoded<T>(read: () => T): T | null {
   try {
@@ -36,5 +40,15 @@ export function swapTerms(data: Hex): SwapTerms | null {
   const settler = decoded(() => decodeFunctionData({ abi: SETTLER_ABI, data: exec ? exec.args[4] : data }));
   if (!settler) return null;
   const slippage = settler.args[0];
-  return { provider: "zeroex", recipient: slippage.recipient, buyToken: slippage.buyToken, minOut: slippage.minAmountOut };
+  return {
+    provider: "zeroex",
+    recipient: slippage.recipient,
+    buyToken: slippage.buyToken,
+    minOut: slippage.minAmountOut,
+    exec: exec ? { operator: exec.args[0], token: exec.args[1], amount: exec.args[2], target: exec.args[3] } : null,
+  };
+}
+
+export function isAllowanceHolderExec(data: Hex): boolean {
+  return decoded(() => decodeFunctionData({ abi: ALLOWANCE_HOLDER_ABI, data })) !== null;
 }

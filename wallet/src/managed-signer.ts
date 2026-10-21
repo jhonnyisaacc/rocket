@@ -60,6 +60,7 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
         ...input,
         ...policy,
         routers: routersForChain(config.routerAllowlist, input.chainId),
+        settlers: routersForChain(config.zeroExSettlers, input.chainId),
         owner: inner.evmAddress() ?? "",
         nativeSell: input.nativeSell === true,
       });

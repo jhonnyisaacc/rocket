@@ -39,19 +39,33 @@ export function spendTimezone(raw: string | undefined): string {
   return timeZone;
 }
 
-export function routerAllowlist(env: NodeJS.ProcessEnv): Record<number, string[]> {
-  if (env.ROUTER_ALLOWLIST_JSON) {
-    const parsed: unknown = JSON.parse(env.ROUTER_ALLOWLIST_JSON);
-    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("ROUTER_ALLOWLIST_JSON must be an object");
-    const map: Record<number, string[]> = {};
-    for (const [id, list] of Object.entries(parsed)) {
-      if (!/^\d+$/.test(id) || !Array.isArray(list) || list.some((item) => typeof item !== "string" || item.length === 0)) {
-        throw new Error("ROUTER_ALLOWLIST_JSON is invalid");
-      }
-      map[Number(id)] = list;
+export function chainAddressMap(raw: string, name: string, pattern = /./): Record<number, string[]> {
+  const parsed: unknown = JSON.parse(raw);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error(`${name} must be an object`);
+  const map: Record<number, string[]> = {};
+  for (const [id, list] of Object.entries(parsed)) {
+    if (!/^\d+$/.test(id) || !Array.isArray(list) || list.some((item) => typeof item !== "string" || !pattern.test(item))) {
+      throw new Error(`${name} is invalid`);
     }
-    return map;
+    map[Number(id)] = list;
   }
+  return map;
+}
+
+export function reorgDepths(raw: string | undefined): Record<number, number> {
+  if (!raw) return {};
+  const parsed: unknown = JSON.parse(raw);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("REORG_DEPTH_JSON must be an object");
+  const map: Record<number, number> = {};
+  for (const [id, depth] of Object.entries(parsed)) {
+    if (!/^\d+$/.test(id) || !Number.isSafeInteger(depth) || (depth as number) < 0) throw new Error("REORG_DEPTH_JSON is invalid");
+    map[Number(id)] = depth as number;
+  }
+  return map;
+}
+
+export function routerAllowlist(env: NodeJS.ProcessEnv): Record<number, string[]> {
+  if (env.ROUTER_ALLOWLIST_JSON) return chainAddressMap(env.ROUTER_ALLOWLIST_JSON, "ROUTER_ALLOWLIST_JSON");
   const global = splitList(env.ROUTER_ALLOWLIST);
   const map: Record<number, string[]> = {};
   if (global.length === 0) return map;
@@ -88,6 +102,7 @@ export function assertLiveEdges(config: AppConfig, env: NodeJS.ProcessEnv): void
   assertServiceUrl(config.resolverUrl);
   for (const url of [...Object.values(config.rpcUrlsByChainKey).flat(), ...Object.values(config.mevRpcByChainId)]) assertRpcUrl(url);
   if (!config.keys.zeroEx) throw new Error("live mode requires ZEROX_API_KEY");
+  if (Object.values(config.zeroExSettlers).flat().length === 0) throw new Error("live mode requires ZEROX_SETTLER_ALLOWLIST_JSON");
   const kyberChains = CHAINS.some((chain) => config.enabledChainKeys.has(chain.key) && chain.chain.kind === "evm" && kyberSupports(chain.chain.chainId));
   if (kyberChains && config.keys.kyberClientId === DEFAULT_KYBER_CLIENT_ID) throw new Error("live mode requires a unique KYBERSWAP_CLIENT_ID");
 }

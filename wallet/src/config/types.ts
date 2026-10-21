@@ -78,6 +78,8 @@ export type AppConfig = LimitConfig & {
   confirmTimeoutMs: number;
   reconcileAfterMinutes: number;
   routerAllowlist: Record<number, string[]>;
+  zeroExSettlers: Record<number, string[]>;
+  reorgDepthByChainId: Record<number, number>;
   supportByChain: Record<string, SupportTier>;
   solanaProgramAllowlist: string[];
   maxValueWei: bigint;

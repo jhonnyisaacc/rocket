@@ -19,6 +19,7 @@ import { assertBoot, loadManagedSigner, tokenMatches, type TransactionSigner } f
 import { seedApprovals } from "./approvals.js";
 import {
   acquireExecutorLock,
+  backfillStrategyIds,
   closeSpendPools,
   commitSpend,
   listingKey,
@@ -349,6 +350,7 @@ async function main(): Promise<void> {
     );
   };
   if (config.databaseUrl) {
+    await backfillStrategyIds(config.databaseUrl, Object.keys(config.strategies));
     await reconcile();
     const day = spendDay(new Date(), config.spendTimezone);
     restoreSpent(state, await spentOnDay(config.databaseUrl, day), day);

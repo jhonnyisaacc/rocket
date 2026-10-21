@@ -4,12 +4,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import { ComputeBudgetProgram, Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
-import { encodeFunctionData, erc20Abi, maxUint256, parseSignature } from "viem";
+import { encodeFunctionData, erc20Abi, maxUint256, parseAbi, parseSignature } from "viem";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { configSecrets, loadConfig } from "../src/config.js";
 import { readHiddenLine, writeKeystoreFile } from "../src/create-wallet.js";
 import { buildLeverage } from "../src/hyperliquid.js";
-import { kyberData, zeroExData } from "./fixtures.js";
+import { SETTLER, kyberData, zeroExData } from "./fixtures.js";
 import { loadManagedSigner, turnkeySigner, withPolicy, type TransactionSigner, type TurnkeyApi } from "../src/managed-signer.js";
 import { assertEvmSigning, associatedTokenAddress, DEFAULT_MAX_VALUE_WEI, JITO_TIP_ACCOUNTS, JUPITER_PROGRAM_ID, turnkeyPolicyDocument, wrappedSolAccount } from "../src/signing-policy.js";
 
@@ -158,15 +158,35 @@ test("jupiter exact-out routes are denied because quotes are always exactIn", as
 test("swap calldata must pay the hot wallet unless opaque swaps are opted in", () => {
   const owner = "0x2222222222222222222222222222222222222222";
   const router = "0x1111111111111111111111111111111111111111";
-  const base = { chainId: 8453, to: router, value: 0n, purpose: "swap" as const, routers: [router], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false, owner, allowOpaqueSwap: false };
+  const base = { chainId: 8453, to: router, value: 0n, purpose: "swap" as const, routers: [router], settlers: [SETTLER], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false, owner, allowOpaqueSwap: false };
   const terms = (recipient: string) => ({ recipient, buyToken: "0xdddddddddddddddddddddddddddddddddddddddd", minOut: 1n });
+  const sold = { token: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", amount: 1000n };
   assert.doesNotThrow(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms(owner)) }));
-  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms(owner)) }));
+  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms(owner), sold) }));
   assert.throws(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms("0x9999999999999999999999999999999999999999")) }), /recipient is not the hot wallet/);
-  assert.throws(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms("0x9999999999999999999999999999999999999999")) }), /recipient is not the hot wallet/);
+  assert.throws(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms("0x9999999999999999999999999999999999999999"), sold) }), /recipient is not the hot wallet/);
   assert.throws(() => assertEvmSigning({ ...base, data: "0x12345678" }), /does not name a checkable recipient/);
   assert.doesNotThrow(() => assertEvmSigning({ ...base, data: "0x12345678", allowOpaqueSwap: true }));
   assert.throws(() => assertEvmSigning({ ...base, data: kyberData("0x01", terms("0x9999999999999999999999999999999999999999")), allowOpaqueSwap: true }), /recipient/);
+});
+
+test("a 0x exec must lend the allowance to a pinned Settler and call it", () => {
+  const owner = "0x2222222222222222222222222222222222222222";
+  const holder = "0x1111111111111111111111111111111111111111";
+  const attacker = "0x9999999999999999999999999999999999999999";
+  const base = { chainId: 8453, to: holder, value: 0n, purpose: "swap" as const, routers: [holder], settlers: [SETTLER], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false, owner, allowOpaqueSwap: true };
+  const terms = { recipient: owner, buyToken: "0xdddddddddddddddddddddddddddddddddddddddd", minOut: 1n };
+  const token = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  assert.throws(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms, { token, amount: 2n ** 255n, operator: attacker, target: attacker }) }), /not a pinned Settler/);
+  assert.throws(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms, { token, amount: 1000n, operator: attacker }) }), /operator is not its target/);
+  assert.throws(() => assertEvmSigning({ ...base, settlers: [], data: zeroExData("0x01", terms, { token, amount: 1000n }) }), /not a pinned Settler/);
+  const opaque = encodeFunctionData({
+    abi: parseAbi(["function exec(address operator, address token, uint256 amount, address target, bytes data) payable returns (bytes result)"]),
+    functionName: "exec",
+    args: [attacker, token, 2n ** 255n, attacker, "0x12345678"],
+  });
+  assert.throws(() => assertEvmSigning({ ...base, data: opaque }), /does not call a Settler/);
+  assert.doesNotThrow(() => assertEvmSigning({ ...base, data: zeroExData("0x01", terms, { token, amount: 1000n }) }));
 });
 
 test("an approval must be exact, carry no value, target the sold token, and pay an allowlisted router", () => {
@@ -180,6 +200,7 @@ test("an approval must be exact, carry no value, target the sold token, and pay 
     value: 0n,
     purpose: "approve" as const,
     routers: [router],
+    settlers: [],
     withdrawAllowlist: [],
     maxValueWei: DEFAULT_MAX_VALUE_WEI,
     allowHotApproval: true,
