@@ -7,6 +7,7 @@ import { associatedTokenAccount, tokenRecoveryInstructions } from "../src/broadc
 import { loadConfig } from "../src/config.js";
 import type { SwapIntent, TokenRecord } from "../src/domain.js";
 import { execute, resetExecutorState, type ExecutorDeps } from "../src/executor.js";
+import { createExecutorApp } from "../src/executor-server.js";
 import { withPolicy, type TransactionSigner } from "../src/managed-signer.js";
 import { buildPairMap } from "../src/pairs.js";
 import { holdingsSchema } from "../src/schemas.js";
@@ -170,8 +171,148 @@ test("a holding without chainKey is read on the buy chain", async () => {
     "base",
   );
   assert.equal(tagged.ok, true);
-  if (tagged.ok) assert.equal(tagged.holdings[0]?.chainKey, "solana");
+  if (tagged.ok) assert.equal(tagged.holdings.length, 0);
+  const onSolana = await holdingsForTrade(
+    true,
+    [{ ...row, chainKey: "solana" }],
+    async (holding) => {
+      seen.push(holding.chainKey);
+      return 2;
+    },
+    "solana",
+  );
+  assert.equal(onSolana.ok, true);
+  if (onSolana.ok) {
+    assert.equal(onSolana.holdings[0]?.amount, 2);
+    assert.equal(onSolana.holdings[0]?.chainKey, "solana");
+  }
+  assert.equal("chainKey" in row, false);
   assert.deepEqual(seen, ["base", "solana"]);
+});
+
+test("an untagged holding funds an alternate chain", async () => {
+  resetExecutorState();
+  const auth = "0123456789abcdef";
+  const holding: { symbol: string; address: string; amount: number; usd: number; native: boolean; decimals: number; chainKey?: string } = {
+    symbol: "USDC",
+    address: "usdc",
+    amount: 20,
+    usd: 20,
+    native: false,
+    decimals: 6,
+  };
+  const config = loadConfig({
+    AUTH_TOKEN: auth,
+    LISTING_TRADER_LIVE: "true",
+    RESOLVER_URL: "http://resolver.railway.internal:8080",
+  });
+  const resolution = {
+    kind: "hit",
+    token: evmToken(6),
+    alternates: [
+      {
+        id: "solana:mint",
+        ticker: "MPLX",
+        names: ["Metaplex"],
+        chainKey: "solana",
+        chain: { kind: "solana" },
+        contract: "mint",
+        decimals: 6,
+        pairMap: buildPairMap([
+          {
+            poolAddress: "pool",
+            dex: "raydium",
+            chainKey: "solana",
+            baseSymbol: "MPLX",
+            baseAddress: "mint",
+            quoteSymbol: "USDC",
+            quoteAddress: "usdc",
+            liquidityUsd: 200_000,
+            priceUsd: 0.2,
+            baseDecimals: 6,
+          },
+        ]),
+        hyperliquid: null,
+        refreshedAt: "2026-10-21T00:00:00.000Z",
+      },
+    ],
+  };
+  const kinds: string[] = [];
+  const runtime: ExecutorDeps = {
+    config,
+    mode: "live",
+    spentTodayUsd: 0,
+    quoteHop: async (hop) => {
+      kinds.push(hop.chain.kind);
+      return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
+    },
+    markPrice: async () => null,
+    send: async () => {},
+    now: () => 1_050,
+  };
+  const app = await createExecutorApp(
+    config,
+    runtime,
+    null,
+    [],
+    [holding],
+    false,
+    async () => 20,
+    async () => new Response(JSON.stringify(resolution), { status: 200 }),
+  );
+  const response = await app.inject({
+    method: "POST",
+    url: "/listing",
+    headers: { authorization: `Bearer ${auth}`, "content-type": "application/json" },
+    payload: {
+      id: "untagged-alt",
+      ticker: "MPLX",
+      projectName: "Metaplex",
+      source: "test",
+      publishedAt: "2026-10-21T00:00:00.000Z",
+      receivedAt: "2026-10-21T00:00:00.000Z",
+    },
+  });
+  assert.equal(response.statusCode, 200);
+  assert.deepEqual(kinds.slice().sort(), ["evm", "solana"]);
+  assert.equal(holding.chainKey, undefined);
+  await app.close();
+
+  resetExecutorState();
+  const taggedKinds: string[] = [];
+  const tagged = { ...holding, chainKey: "base" };
+  const taggedApp = await createExecutorApp(
+    config,
+    {
+      ...runtime,
+      quoteHop: async (hop) => {
+        taggedKinds.push(hop.chain.kind);
+        return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
+      },
+    },
+    null,
+    [],
+    [tagged],
+    false,
+    async (row) => (row.chainKey === "base" ? 20 : null),
+    async () => new Response(JSON.stringify(resolution), { status: 200 }),
+  );
+  const taggedResponse = await taggedApp.inject({
+    method: "POST",
+    url: "/listing",
+    headers: { authorization: `Bearer ${auth}`, "content-type": "application/json" },
+    payload: {
+      id: "tagged-base",
+      ticker: "MPLX",
+      projectName: "Metaplex",
+      source: "test",
+      publishedAt: "2026-10-21T00:00:00.000Z",
+      receivedAt: "2026-10-21T00:00:00.000Z",
+    },
+  });
+  assert.equal(taggedResponse.json().decision, "sent");
+  assert.deepEqual(taggedKinds, ["evm"]);
+  await taggedApp.close();
 });
 
 test("SOLANA_PROGRAM_ALLOWLIST adds to the base programs", () => {

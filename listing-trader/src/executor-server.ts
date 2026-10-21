@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
-import { holdingsForTrade, type BalanceReader } from "./balances.js";
+import type { BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
 import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
@@ -135,11 +135,9 @@ export async function createExecutorApp(
     if (resolution.data.kind !== "hit" || !resolution.data.token) {
       return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
     }
-    const sized = await holdingsForTrade(config.live, holdings, readBalance, resolution.data.token.chainKey);
-    if (!sized.ok) return reply.code(200).send({ decision: "skipped", reason: sized.reason, latency: { alertReceivedMs: 0 } });
-    const intent = intentFromResolution(parsed.data, resolution.data, sized.holdings, config.maxUsdPerTrade, config.maxSlippageBps);
+    const intent = intentFromResolution(parsed.data, resolution.data, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
     if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
-    const report = await execute(intent, runtime);
+    const report = await execute(intent, { ...runtime, readBalance });
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;

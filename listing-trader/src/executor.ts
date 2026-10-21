@@ -1,3 +1,4 @@
+import { holdingsForTrade, type BalanceReader } from "./balances.js";
 import type { ChainRef, ExecutionReport, Latency, RouteLeg, RouteQuote, SwapIntent } from "./domain.js";
 import { chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
@@ -54,6 +55,7 @@ export type ExecutorDeps = {
   killSwitchEnabled?: () => Promise<boolean>;
   screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
   readTokenDecimals?: (token: { chainKey: string; chain: ChainRef; address: string }) => Promise<number | null>;
+  readBalance?: BalanceReader | null;
 };
 
 const reports = new Map<string, ExecutionReport>();
@@ -385,6 +387,8 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   const candidates = [intent.token, ...alternates].filter((token) => deps.config.enabledChainKeys.has(token.chainKey));
   const plannedQuotes: RouteQuote[] = [];
   let unsized = false;
+  let unread = false;
+  let sizedAny = false;
   for (const token of candidates) {
     const liquidity = token.pairMap.top?.liquidityUsd ?? null;
     const allowed = checkLimits(deps.config, {
@@ -398,14 +402,24 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     });
     if (!allowed.ok) continue;
     if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") continue;
-    const planned = await quotePlan(intent, token, deps);
+    let quoted = intent;
+    if (deps.mode === "live") {
+      const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey);
+      if (!sized.ok) {
+        unread = true;
+        continue;
+      }
+      sizedAny = true;
+      quoted = { ...intent, holdings: sized.holdings };
+    }
+    const planned = await quotePlan(quoted, token, deps);
     plannedQuotes.push(...planned.quotes);
     unsized = unsized || planned.unsized;
   }
   latency = stamp(latency, "quotedMs", now());
   const planned = { quotes: plannedQuotes, unsized };
   if (planned.quotes.length === 0) {
-    const reason = planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
+    const reason = unread && !sizedAny ? "balance was not read" : planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
     const report = skipped(intent, latency, reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;

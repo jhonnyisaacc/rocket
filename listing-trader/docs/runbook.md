@@ -40,7 +40,7 @@ npm run start:executor
 
 Leave `LISTING_TRADER_LIVE` unset. `GET /health` on each port returns `live: false`.
 
-Omit `chainKey` when that balance may fund a buy on any chain. Live mode then reads it on the chain of the buy. Set `chainKey` to a known chain key when the address belongs to one chain. An unknown key stops boot.
+Omit `chainKey` when that balance may fund a buy on any chain. Live mode then reads and sizes it on each candidate chain. Set `chainKey` to a known chain key when the address belongs to one chain. An unknown key stops boot.
 
 ## Send a fake alert
 

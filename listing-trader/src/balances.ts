@@ -22,6 +22,7 @@ export async function holdingsForTrade(
   if (!read || !tradeChainKey) return { ok: false, reason: "balance was not read" };
   const holdings: Holding[] = [];
   for (const holding of declared) {
+    if (holding.chainKey && holding.chainKey !== tradeChainKey) continue;
     const scoped = scopeHolding(holding, tradeChainKey);
     const amount = await read(scoped);
     if (amount === null || !Number.isFinite(amount) || amount < 0) return { ok: false, reason: "balance was not read" };
