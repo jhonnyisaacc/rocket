@@ -20,6 +20,10 @@ The source is Binah rules v4.6, read on 2026-10-21. Each row names the rule, the
 | Verification skill and a control CLI | Gap. `feature-map.md` lists checks. No driver skill exists yet. | Planned. Generate it before the next feature |
 | Signed, owner-authored, trailer-free commits | Gap. This host does not carry the agent signing key. | Planned. The preflight script does not exist in this repo |
 
+## CI audit, 2026-10-21
+
+The wallet workflows split cleanly. `wallet.yml` runs hygiene, unit tests, entrypoint smoke, and the Docker build. `wallet-security.yml` runs CodeQL, Semgrep, and Gitleaks. `research-governance.yml` covers Python paths only and never overlaps a wallet path. Two duplications remain by design. The smoke job compiles again after the test job, and `npm run check` locally repeats the hygiene scripts that CI runs on their own. The Semgrep container digest in `wallet-security.yml` has no automated update path. Dependabot covers the Dockerfile at `/wallet`, not a workflow container image. That digest stays a manual review item until the repo adopts a tool that scans workflow containers.
+
 ## Order
 
 The next gap to close is the verification skill. It turns the feature map rows into commands an agent can run. The repo-level gaps wait on the repo hygiene work. They do not block wallet features, because the wallet workflow already runs its own checks.
