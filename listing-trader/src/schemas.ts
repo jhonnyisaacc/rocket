@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { nativeHoldingError } from "./balances.js";
 import { chainByKey } from "./chains.js";
 
 export const chainSchema = z.discriminatedUnion("kind", [
@@ -56,6 +57,9 @@ const holdingSchema = z.object({
     .min(1)
     .optional()
     .refine((value) => value === undefined || chainByKey(value) !== undefined, { message: "unknown chain" }),
+}).superRefine((holding, ctx) => {
+  const message = nativeHoldingError(holding);
+  if (message) ctx.addIssue({ code: z.ZodIssueCode.custom, message });
 });
 
 export const intentSchema = z.object({

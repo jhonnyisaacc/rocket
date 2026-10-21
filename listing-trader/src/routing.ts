@@ -1,3 +1,4 @@
+import { holdingFitsChain } from "./balances.js";
 import type { Holding, Hop, PairMap, RoutePlan, RouteQuote } from "./domain.js";
 
 export function spendableAmount(holding: Holding, minNativeReserve: number): number {
@@ -45,6 +46,7 @@ export function planRoutes(input: {
   const plans: RoutePlan[] = [];
   const top = input.pairMap.top;
   for (const holding of input.holdings) {
+    if (input.chainKey && holding.native && !holdingFitsChain(holding, input.chainKey)) continue;
     if (input.chainKey && holding.chainKey && holding.chainKey !== input.chainKey) continue;
     const human = sizedHuman(holding, input.minNativeReserve, input.notionalUsd);
     if (!(human > 0)) continue;

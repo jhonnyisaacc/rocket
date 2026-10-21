@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { Keypair, PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
-import { holdingsForTrade } from "../src/balances.js";
+import { holdingFitsChain, holdingsForTrade } from "../src/balances.js";
+import { planRoutes } from "../src/routing.js";
 import { associatedTokenAccount, tokenRecoveryInstructions } from "../src/broadcast.js";
 import { loadConfig } from "../src/config.js";
 import type { SwapIntent, TokenRecord } from "../src/domain.js";
@@ -188,6 +189,100 @@ test("a holding without chainKey is read on the buy chain", async () => {
   }
   assert.equal("chainKey" in row, false);
   assert.deepEqual(seen, ["base", "solana"]);
+});
+
+test("a native holding is read only on chains of its own asset", async () => {
+  const sol = { symbol: "SOL", address: "sol", amount: 1, usd: 150, native: true, decimals: 9 };
+  const eth = { symbol: "ETH", address: "eth", amount: 0.1, usd: 300, native: true, decimals: 18 };
+  const bnb = { symbol: "BNB", address: "bnb", amount: 0.2, usd: 100, native: true, decimals: 18 };
+  const pol = { symbol: "POL", address: "pol", amount: 10, usd: 5, native: true, decimals: 18 };
+  const mon = { symbol: "MON", address: "mon", amount: 1, usd: 2, native: true, decimals: 18 };
+  const hype = { symbol: "HYPE", address: "hype", amount: 1, usd: 20, native: true, decimals: 18 };
+  assert.equal(holdingFitsChain(sol, "solana"), true);
+  assert.equal(holdingFitsChain(sol, "base"), false);
+  assert.equal(holdingFitsChain({ ...sol, address: "So11111111111111111111111111111111111111112" }, "ethereum"), false);
+  assert.equal(holdingFitsChain(eth, "base"), true);
+  assert.equal(holdingFitsChain(eth, "ethereum"), true);
+  assert.equal(holdingFitsChain(eth, "arbitrum"), true);
+  assert.equal(holdingFitsChain(eth, "bnb"), false);
+  assert.equal(holdingFitsChain(eth, "solana"), false);
+  assert.equal(holdingFitsChain(bnb, "bnb"), true);
+  assert.equal(holdingFitsChain(bnb, "base"), false);
+  assert.equal(holdingFitsChain(pol, "polygon"), true);
+  assert.equal(holdingFitsChain(pol, "ethereum"), false);
+  assert.equal(holdingFitsChain(mon, "monad"), true);
+  assert.equal(holdingFitsChain(mon, "base"), false);
+  assert.equal(holdingFitsChain(hype, "hyperevm"), true);
+  assert.equal(holdingFitsChain(hype, "hypercore"), false);
+  assert.equal(holdingFitsChain(eth, "robinhood"), true);
+  assert.equal(holdingFitsChain(eth, "polygon"), false);
+  assert.equal(holdingFitsChain(eth, "hyperevm"), false);
+  assert.equal(holdingFitsChain({ ...eth, address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }, "base"), true);
+  assert.equal(holdingFitsChain({ ...eth, address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }, "bnb"), false);
+  assert.equal(holdingFitsChain({ ...sol, symbol: "sol", address: "SOL" }, "solana"), true);
+  assert.equal(holdingFitsChain({ symbol: "GAS", address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", amount: 1, usd: 1, native: true }, "base"), false);
+  const hyperUsdc = { symbol: "USDC", address: "usdc", amount: 1, usd: 1, native: true, chainKey: "hypercore" };
+  assert.equal(holdingFitsChain(hyperUsdc, "hypercore"), true);
+  assert.equal(holdingFitsChain(hyperUsdc, "solana"), false);
+  assert.equal(holdingsSchema.safeParse([sol, eth]).success, true);
+  assert.equal(holdingsSchema.safeParse([{ symbol: "GAS", address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", amount: 1, usd: 1, native: true }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ symbol: "GAS", address: "0x0000000000000000000000000000000000000000", amount: 1, usd: 1, native: true, chainKey: "base" }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ ...sol, chainKey: "base" }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ ...eth, address: "So11111111111111111111111111111111111111112" }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ ...eth, address: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }]).success, true);
+  assert.equal(holdingsSchema.safeParse([{ symbol: "USDC", address: "usdc", amount: 1, usd: 1, native: true }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ symbol: "MATIC", address: "matic", amount: 1, usd: 1, native: true }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ ...sol, decimals: 6 }]).success, false);
+  assert.equal(holdingsSchema.safeParse([{ ...eth, decimals: 9 }]).success, false);
+  assert.equal(holdingsSchema.safeParse([hyperUsdc]).success, true);
+  assert.equal(holdingsSchema.safeParse([{ symbol: "USDC", address: "sol", amount: 1, usd: 1, native: true }]).success, false);
+  const plans = planRoutes({
+    tokenSymbol: "MPLX",
+    tokenAddress: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    pairMap: buildPairMap([]),
+    holdings: [sol, eth, { symbol: "USDC", address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", amount: 20, usd: 20, native: false, decimals: 6 }],
+    minNativeReserve: 0,
+    notionalUsd: 5,
+    chainKey: "base",
+  });
+  const sells = plans.map((plan) => (plan.kind === "aggregator" ? plan.hop.sellSymbol : ""));
+  assert.deepEqual(sells.sort(), ["ETH", "USDC"]);
+  const seen: string[] = [];
+  const read = await holdingsForTrade(true, [sol, eth], async (holding) => {
+    seen.push(`${holding.symbol}:${holding.chainKey}`);
+    return 1;
+  }, "base");
+  assert.equal(read.ok, true);
+  if (read.ok) assert.deepEqual(read.holdings.map((holding) => holding.symbol), ["ETH"]);
+  assert.deepEqual(seen, ["ETH:base"]);
+  assert.equal("chainKey" in sol, false);
+  assert.equal("chainKey" in eth, false);
+  const seenSol: string[] = [];
+  const onSolana = await holdingsForTrade(true, [sol, eth], async (holding) => {
+    seenSol.push(`${holding.symbol}:${holding.chainKey}`);
+    return 1;
+  }, "solana");
+  assert.equal(onSolana.ok, true);
+  if (onSolana.ok) assert.deepEqual(onSolana.holdings.map((holding) => holding.symbol), ["SOL"]);
+  assert.deepEqual(seenSol, ["SOL:solana"]);
+  const seenTagged: string[] = [];
+  const taggedOnEthereum = await holdingsForTrade(true, [sol, { ...eth, chainKey: "base" }], async (holding) => {
+    seenTagged.push(`${holding.symbol}:${holding.chainKey}`);
+    return 1;
+  }, "ethereum");
+  assert.equal(taggedOnEthereum.ok, true);
+  if (taggedOnEthereum.ok) assert.deepEqual(taggedOnEthereum.holdings, []);
+  assert.deepEqual(seenTagged, []);
+  const taggedAway = planRoutes({
+    tokenSymbol: "MPLX",
+    tokenAddress: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    pairMap: buildPairMap([]),
+    holdings: [sol, { ...eth, chainKey: "base" }],
+    minNativeReserve: 0,
+    notionalUsd: 5,
+    chainKey: "ethereum",
+  });
+  assert.deepEqual(taggedAway, []);
 });
 
 test("an untagged holding funds an alternate chain", async () => {
