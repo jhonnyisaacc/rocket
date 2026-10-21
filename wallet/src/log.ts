@@ -16,13 +16,17 @@ export const REDACT_PATHS = [
   "err.config.headers['ok-access-passphrase']",
 ];
 
-export function createLogger(secrets: readonly string[]) {
-  return pino({
+export function loggerOptions(secrets: readonly string[]) {
+  return {
     redact: { paths: REDACT_PATHS, censor: "[redacted]" },
     serializers: {
-      err(error) {
-        return { type: error.name, message: redactError(error, secrets) };
+      err(error: Error) {
+        return { type: error.name, message: redactError(error, secrets), stack: error.stack ?? "" };
       },
     },
-  });
+  };
+}
+
+export function createLogger(secrets: readonly string[]) {
+  return pino(loggerOptions(secrets));
 }

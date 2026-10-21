@@ -2,7 +2,7 @@ import fastifyAuth from "@fastify/auth";
 import rateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import { tokenMatches } from "./managed-signer.js";
-import { createLogger } from "./log.js";
+import { loggerOptions } from "./log.js";
 
 export const BODY_LIMIT = 32 * 1024;
 // Node applies requestTimeout only while the request is still arriving, so it guards slow uploads and never
@@ -87,7 +87,7 @@ export async function buildApp(options: { authTokens: readonly string[]; secrets
     bodyLimit: BODY_LIMIT,
     requestTimeout: REQUEST_TIMEOUT_MS,
     return503OnClosing: false,
-    logger: options.logger === false ? false : createLogger(options.secrets ?? []),
+    logger: options.logger === false ? false : loggerOptions(options.secrets ?? []),
   });
   const drain = createDrain();
   app.decorate("drain", drain);
