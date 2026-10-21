@@ -61,6 +61,7 @@ export type ExecutorDeps = {
   now?: () => number;
   killSwitchEnabled?: () => Promise<boolean>;
   screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
+  supportTierFor?: (chainKey: string) => "live" | "dry_run" | "disabled";
   readTokenDecimals?: (token: { chainKey: string; chain: ChainRef; address: string }) => Promise<number | null>;
   readBalance?: BalanceReader | null;
   priceOf?: PriceOf | null;
@@ -285,6 +286,11 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   }
   if (stopped) {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "kill switch is on", intent.token.chainKey, deps.mode);
+    stateOf(deps).reports.set(intent.idempotencyKey, report);
+    return report;
+  }
+  if (deps.mode === "live" && deps.supportTierFor && deps.supportTierFor(intent.token.chainKey) !== "live") {
+    const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "chain is not enabled for live sends", intent.token.chainKey, deps.mode);
     stateOf(deps).reports.set(intent.idempotencyKey, report);
     return report;
   }

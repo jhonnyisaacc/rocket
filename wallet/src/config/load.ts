@@ -4,6 +4,8 @@ import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "../signing-policy.j
 import { routerAllowlist, spendTimezone, splitList } from "./guard.js";
 import { isSolanaAddress } from "../signer.js";
 import { DEFAULT_KYBER_CLIENT_ID, type AppConfig, type ApprovalSeed, type StrategyCap } from "./types.js";
+import { manifestRouters, parseDeploymentManifest } from "../deployment-manifest.js";
+import { supportByChain } from "../support.js";
 export type { AppConfig, ApprovalSeed, StrategyCap } from "./types.js";
 
 function screeningEnabled(env: NodeJS.ProcessEnv, live: boolean): boolean {
@@ -79,6 +81,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   const slippageHardMaxBps = intEnv(env, "SLIPPAGE_HARD_MAX_BPS", 300);
   if (maxSlippageBps > slippageHardMaxBps) {
     throw new Error("MAX_SLIPPAGE_BPS exceeds SLIPPAGE_HARD_MAX_BPS");
+  }
+  const manifest = env.WALLET_DEPLOYMENT_MANIFEST_JSON ? parseDeploymentManifest(JSON.parse(env.WALLET_DEPLOYMENT_MANIFEST_JSON) as unknown) : null;
+  const legacyRouters = routerAllowlist(env);
+  if (manifest && env.ROUTER_ALLOWLIST_JSON && JSON.stringify(manifestRouters(manifest)) !== JSON.stringify(legacyRouters)) {
+    throw new Error("WALLET_DEPLOYMENT_MANIFEST_JSON and ROUTER_ALLOWLIST_JSON disagree on routers");
   }
   const rpcUrlsByChainKey = rpcLists(env);
   const rpcByChainKey: Record<string, string> = {};
@@ -167,9 +174,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     confirmTimeoutMs: intEnv(env, "CONFIRM_TIMEOUT_MS", 30_000),
     reconcileAfterMinutes: intEnv(env, "RECONCILE_AFTER_MINUTES", 10),
     minExecutionSlippageBps: intEnv(env, "MIN_EXECUTION_SLIPPAGE_BPS", 20),
-    routerAllowlist: routerAllowlist(env),
-    solanaProgramAllowlist: [...new Set([...SOLANA_BASE_PROGRAMS, ...splitList(env.SOLANA_PROGRAM_ALLOWLIST)])],
-    maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),
+    routerAllowlist: manifest ? manifestRouters(manifest) : legacyRouters,
+    supportByChain: supportByChain(CHAINS.map((chain) => chain.key), env.SUPPORT_TIERS),
+    solanaProgramAllowlist: [...new Set([...SOLANA_BASE_PROGRAMS, ...splitList(env.SOLANA_PROGRAM_ALLOWLIST), ...(manifest?.solanaPrograms ?? [])])],
+    maxValueWei: manifest ? BigInt(manifest.maxValueWei) : weiEnv(env.MAX_NATIVE_VALUE_WEI),
     mevRpcByChainId: mevRpcs(env),
     jitoUrl: env.JITO_ENABLED === "true" ? (env.JITO_BLOCK_ENGINE_URL ?? "https://mainnet.block-engine.jito.wtf/api/v1/transactions") : null,
     oneInchBase: env.ONEINCH_API_BASE ?? "https://api.1inch.com",
