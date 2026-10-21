@@ -3,6 +3,7 @@ import type { LimitConfig } from "../limits.js";
 import { kyberSupports } from "../aggregators.js";
 import { isSolanaAddress } from "../signer.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "../signing-policy.js";
+import type { SupportTier } from "../support.js";
 
 export const DEFAULT_KYBER_CLIENT_ID = "listing-trader";
 
@@ -76,6 +77,7 @@ export type AppConfig = LimitConfig & {
   confirmTimeoutMs: number;
   reconcileAfterMinutes: number;
   routerAllowlist: Record<number, string[]>;
+  supportByChain: Record<string, SupportTier>;
   solanaProgramAllowlist: string[];
   maxValueWei: bigint;
   mevRpcByChainId: Record<number, string>;

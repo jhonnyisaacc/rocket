@@ -287,6 +287,7 @@ export type TurnkeyPolicyInput = {
   routers: Readonly<Record<number, readonly string[]>>;
   selectors?: readonly string[];
   maxValueWei: bigint;
+  solanaPrograms?: readonly string[];
 };
 
 const TURNKEY_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -313,6 +314,8 @@ export function turnkeyPolicyDocument(input: TurnkeyPolicyInput): unknown[] {
   const selectors = (input.selectors ?? []).map((item) => item.toLowerCase());
   if (selectors.some((item) => !/^0x[0-9a-f]{8}$/.test(item))) throw new Error("router selector is invalid");
   if (input.maxValueWei < 0n) throw new Error("max native value is negative");
+  const solanaPrograms = [...new Set([...SOLANA_BASE_PROGRAMS, ...(input.solanaPrograms ?? [])])];
+  for (const program of solanaPrograms) new PublicKey(program);
   return renderTurnkeyPolicy({
     userId,
     wallets,
@@ -321,6 +324,7 @@ export function turnkeyPolicyDocument(input: TurnkeyPolicyInput): unknown[] {
     routers,
     selectors,
     maxValueWei: input.maxValueWei,
+    solanaPrograms,
   });
 }
 
@@ -344,11 +348,12 @@ function renderTurnkeyPolicy(input: {
   routers: Readonly<Record<number, readonly string[]>>;
   selectors: readonly string[];
   maxValueWei: bigint;
+  solanaPrograms?: readonly string[];
 }): unknown[] {
   const clauses = Object.entries(input.routers).map(([id, list]) => `(eth.tx.chain_id == ${id} && (${list.map((item) => `eth.tx.to == '${item}'`).join(" || ")}))`);
   const evmMatch = clauses.length === 0 ? "eth.tx.chain_id == 0" : clauses.join(" || ");
   const selector = input.selectors.length === 0 ? "" : ` && (${input.selectors.map((item) => `eth.tx.data[0..10] == '${item}'`).join(" || ")})`;
-  const programs = SOLANA_BASE_PROGRAMS.map((id) => `p == '${id}'`).join(" || ");
+  const programs = [...new Set([...SOLANA_BASE_PROGRAMS, ...(input.solanaPrograms ?? [])])].map((id) => `p == '${id}'`).join(" || ");
   const recipients = [input.solanaAddress, input.wrappedSol, ...JITO_TIP_ACCOUNTS].map((item) => `t.to == '${item}'`).join(" || ");
   const consensus = `approvers.any(user, user.id == '${input.userId}')`;
   const policies = [

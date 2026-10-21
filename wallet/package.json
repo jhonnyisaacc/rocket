@@ -21,7 +21,8 @@
     "check": "node scripts/check-file-size.mjs && node scripts/check-boundaries.mjs && tsc -p tsconfig.json && node scripts/patch-jayson-stream-json.mjs && node --test dist/test/*.test.js",
     "start:mcp": "node dist/src/mcp-server.js",
     "smoke": "node scripts/patch-jayson-stream-json.mjs && tsc -p tsconfig.json && node scripts/smoke-entrypoints.mjs",
-    "canary": "tsc -p tsconfig.json && node dist/src/canary.js"
+    "canary": "tsc -p tsconfig.json && node dist/src/canary.js",
+    "policy:manifest": "tsc -p tsconfig.json && node scripts/turnkey-policy.mjs"
   },
   "dependencies": {
     "@fastify/auth": "^5.0.3",

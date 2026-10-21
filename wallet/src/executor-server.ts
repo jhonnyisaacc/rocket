@@ -20,6 +20,7 @@ import { seedApprovals } from "./approvals.js";
 import { acquireExecutorLock, closeSpendPools, commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
+import { supportTierFor } from "./support.js";
 import { evmReadClient, firstOk, solanaConnection } from "./rpc.js";
 import { coingeckoLoader, createPriceCache, pricedHoldings, type PriceOf } from "./prices.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
@@ -127,6 +128,7 @@ function deps(
     commitSpend: config.live && databaseUrl ? (key) => commitSpend(databaseUrl, key) : undefined,
     releaseSpend: config.live && databaseUrl ? (key) => releaseSpend(databaseUrl, key) : undefined,
     screenToken: config.screening ? (token) => screenToken(config, token) : undefined,
+    supportTierFor: (chainKey) => supportTierFor(config.supportByChain, chainKey),
     readTokenDecimals: (token) => resolveTokenDecimals(token.chainKey, token.address, token.chain, config.rpcByChainKey[token.chainKey]),
   };
 }
