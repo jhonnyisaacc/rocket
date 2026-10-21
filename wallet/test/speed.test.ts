@@ -163,7 +163,7 @@ test("live boot requires a 0x key, a unique Kyber client id, and https on every 
   const listed = loadConfig({ RPC_URL_8453: "https://one.example/k1", RPC_URLS_8453: "https://two.example/k2, https://one.example/k1" });
   assert.deepEqual(listed.rpcUrlsByChainKey.base, ["https://one.example/k1", "https://two.example/k2"]);
   assert.equal(listed.rpcByChainKey.base, "https://one.example/k1");
-  assert.ok(configSecrets(listed).includes("https://two.example/k2"));
+  assert.ok(configSecrets(listed).some((secret) => secret === "https://two.example/k2"));
 });
 
 test("screening verdicts are cached per contract, denials included, but an outage is not", async () => {
