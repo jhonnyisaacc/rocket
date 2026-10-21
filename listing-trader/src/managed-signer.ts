@@ -284,11 +284,11 @@ function assertTokens(name: string, tokens: readonly string[], required: boolean
 
 export function assertBoot(config: AppConfig, service: "executor" | "resolver", env: NodeJS.ProcessEnv = process.env): void {
   assertTokens("RESOLVER_AUTH_TOKEN", config.resolverAuthTokens, service === "resolver" || config.resolverUrl !== null);
+  const allTokens = serviceTokens(config);
+  if (new Set(allTokens).size !== allTokens.length) throw new Error("EXECUTOR_AUTH_TOKEN, RESOLVER_AUTH_TOKEN and strategy tokens must all differ");
   if (service === "executor") {
     assertTokens("EXECUTOR_AUTH_TOKEN", config.executorAuthTokens, true);
     for (const [id, strategy] of Object.entries(config.strategies)) assertTokens(`STRATEGY_CAPS_JSON token for ${id}`, strategy.tokens, true);
-    const all = serviceTokens(config);
-    if (new Set(all).size !== all.length) throw new Error("EXECUTOR_AUTH_TOKEN, RESOLVER_AUTH_TOKEN and strategy tokens must all differ");
     if (config.live && config.reconcileAfterMinutes * 60_000 <= drainTimeoutMs(config)) {
       throw new Error("RECONCILE_AFTER_MINUTES must exceed the send bound so reconcile never touches an in-flight send");
     }

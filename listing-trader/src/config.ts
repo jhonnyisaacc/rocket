@@ -249,7 +249,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     resolverAuthTokens: splitList(env.RESOLVER_AUTH_TOKEN),
     strategies: strategyCaps(env.STRATEGY_CAPS_JSON),
     listingRateLimitPerMin: intEnv(env, "LISTING_RATE_LIMIT_PER_MIN", 60),
-    resolverTimeoutMs: intEnv(env, "RESOLVER_TIMEOUT_MS", 300),
+    resolverTimeoutMs: intEnv(env, "RESOLVER_TIMEOUT_MS", 6_500),
     resolverFetchTimeoutMs: intEnv(env, "RESOLVER_FETCH_TIMEOUT_MS", 5_000),
     resolverMaxBodyBytes: intEnv(env, "RESOLVER_MAX_BODY_BYTES", 16 * 1024 * 1024),
     reconcileIntervalMs: intEnv(env, "RECONCILE_INTERVAL_MS", 5 * 60 * 1000),

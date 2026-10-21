@@ -22,6 +22,31 @@ export function resolveAlert(alert: Alert, minLiquidityUsd: number, allowedChain
 
 const coinListSchema = z.array(z.object({ id: z.string(), symbol: z.string(), name: z.string() }).passthrough());
 
+async function readCapped(response: Response, maxBodyBytes: number): Promise<string> {
+  const reader = response.body?.getReader();
+  if (!reader) {
+    const text = await response.text();
+    if (new TextEncoder().encode(text).byteLength > maxBodyBytes) throw new Error("response body too large");
+    return text;
+  }
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBodyBytes) {
+      await reader.cancel();
+      throw new Error("response body too large");
+    }
+    chunks.push(value);
+  }
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { merged.set(chunk, offset); offset += chunk.byteLength; }
+  return new TextDecoder().decode(merged);
+}
+
 export function isValidDexAddress(address: string): boolean {
   return /^0x[0-9a-fA-F]{40}$/.test(address) || isSolanaAddress(address) || /^[A-Za-z0-9_-]{1,128}$/.test(address);
 }
@@ -33,9 +58,7 @@ export async function getJson(url: string, init: RequestInit, fetchImpl: typeof 
   });
   const response = await Promise.race([fetchImpl(url, { ...init, signal }), aborted]);
   if (!response.ok) throw new Error(`lookup failed ${response.status}`);
-  const text = await response.text();
-  if (new TextEncoder().encode(text).byteLength > maxBodyBytes) throw new Error("response body too large");
-  return JSON.parse(text) as unknown;
+  return JSON.parse(await readCapped(response, maxBodyBytes)) as unknown;
 }
 
 export async function refreshWatchlist(config: AppConfig, list: MemoryWatchlist, fetchImpl: typeof fetch = fetch): Promise<void> {
@@ -105,9 +128,7 @@ async function liveLookup(
 ): Promise<{ kind: "ambiguous" | "none" | "timed_out" | "screened" | "young" | "unlisted_contract" | "report" } | { kind: "qualified"; token: TokenRecord }> {
   const url = `${config.dexscreenerBase}/latest/dex/search?q=${encodeURIComponent(alert.ticker)}`;
   try {
-    const response = await fetchImpl(url, { signal: AbortSignal.timeout(config.liveLookupTimeoutMs) });
-    if (!response.ok) return { kind: "none" };
-    const body = await response.json();
+    const body = await getJson(url, {}, fetchImpl, config.liveLookupTimeoutMs, config.resolverMaxBodyBytes);
     const found = tokenFromDexSearch(body, alert, new Date().toISOString(), config.quoteAssets, config.dexscreenerSlugOverrides);
     if (found.kind === "ambiguous") return { kind: "ambiguous" };
     if (found.kind !== "token") return { kind: "none" };

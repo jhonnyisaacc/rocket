@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS signed_tx (
 export const RESERVE_LOCK_SQL = "SELECT pg_advisory_xact_lock(hashtext($1))";
 export const RESERVE_SUM_SQL =
   "SELECT COALESCE(SUM(usd), 0)::text AS total FROM spend_journal WHERE spent_on = $1::date AND status IN ('reserved', 'committed')";
+export const RESERVE_SUM_SCOPED_SQL =
+  "SELECT COALESCE(SUM(usd), 0)::text AS total FROM spend_journal WHERE spent_on = $1::date AND status IN ('reserved', 'committed') AND idempotency_key LIKE $2";
 export const RESERVE_UPSERT_SQL = `
 INSERT INTO spend_journal (idempotency_key, usd, spent_on, status, reserved_at)
 VALUES ($1, $2, $3::date, 'reserved', now())
@@ -164,15 +166,18 @@ export async function recordSpend(
   usd: number,
   day = utcDay(),
   capUsd = Number.POSITIVE_INFINITY,
+  strategyId?: string,
 ): Promise<"reserved" | "exists" | "cap"> {
   const pool = await poolFor(databaseUrl);
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    await client.query(RESERVE_LOCK_SQL, [day]);
+    await client.query(RESERVE_LOCK_SQL, [strategyId ? `${day}:${strategyId}` : day]);
     const existing = await client.query<{ status: SpendStatus }>("SELECT status FROM spend_journal WHERE idempotency_key = $1", [idempotencyKey]);
     const status = existing.rows[0]?.status ?? null;
-    const sum = await client.query<{ total: string | null }>(RESERVE_SUM_SQL, [day]);
+    const sum = strategyId
+      ? await client.query<{ total: string | null }>(RESERVE_SUM_SCOPED_SQL, [day, `${strategyId}:%`])
+      : await client.query<{ total: string | null }>(RESERVE_SUM_SQL, [day]);
     const spent = Number(sum.rows[0]?.total ?? 0);
     const decision = reserveDecision({ existing: status, spent: Number.isFinite(spent) ? spent : 0, usd, cap: capUsd });
     if (decision !== "reserved") {
@@ -245,9 +250,10 @@ export function lockAcquired(rows: readonly { locked?: unknown }[]): boolean {
   return rows[0]?.locked === true;
 }
 
-export async function acquireExecutorLock(databaseUrl: string): Promise<() => Promise<void>> {
+export async function acquireExecutorLock(databaseUrl: string, onLost: (error: Error) => void = (error) => console.error(JSON.stringify({ executorLockLost: String(error) }))): Promise<() => Promise<void>> {
   const { default: pg } = await import("pg");
   const client = new pg.Client({ connectionString: databaseUrl });
+  client.on("error", onLost);
   await client.connect();
   const result = await client.query<{ locked: boolean }>(EXECUTOR_LOCK_SQL, [EXECUTOR_LOCK_KEY]);
   if (!lockAcquired(result.rows)) {

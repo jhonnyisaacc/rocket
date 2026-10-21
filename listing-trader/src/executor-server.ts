@@ -114,7 +114,7 @@ function deps(
     spendScope: opts.spendScope,
     recordSpend:
       config.live && databaseUrl
-        ? (key, usd, scope) => recordSpend(databaseUrl, key, usd, spendDay(new Date(), config.spendTimezone), scope?.capUsd ?? config.dailyUsdCap)
+        ? (key, usd, scope) => recordSpend(databaseUrl, key, usd, spendDay(new Date(), config.spendTimezone), scope?.capUsd ?? config.dailyUsdCap, scope?.strategyId)
         : undefined,
     killSwitchEnabled: async () => {
       if (config.killSwitch) return true;
@@ -143,7 +143,7 @@ export function createExecutor(
 ): ExecutorInstance {
   const state = createExecutorState();
   const secrets = opts.secrets ?? configSecrets(config).filter((item) => item.length >= 8);
-  const runtime = deps(config, signer, secrets, txJournal(config, () => undefined), opts.priceOf ?? (() => null), opts.balances ?? null, { state, databaseUrl: db });
+  const runtime = deps(config, signer, secrets, txJournal({ ...config, databaseUrl: db }, () => undefined), opts.priceOf ?? (() => null), opts.balances ?? null, { state, databaseUrl: db });
   return {
     config,
     state,
@@ -261,20 +261,23 @@ export async function createExecutorApp(
     const onTx = async (tx: TxRecord) => runtime.recordTx?.(null, tx);
     let tx: TxRecord;
     if (!parsed.data.mint) {
-      tx = await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets, onTx });
+      tx = await app.drain.track(() => withdrawNative({ config, signer, chainKey: parsed.data.chainKey as string, to: parsed.data.to, amount: parsed.data.amount as number, secrets, onTx }));
     } else {
       if (parsed.data.decimals === undefined) return reply.code(409).send({ error: "token withdraw needs decimals" });
-      tx = await recoverToken({
-        config,
-        signer,
-        chainKey: parsed.data.chainKey,
-        to: parsed.data.to,
-        amount: parsed.data.amount,
-        mint: parsed.data.mint,
-        decimals: parsed.data.decimals,
-        secrets,
-        onTx,
-      });
+      const recovery = { chainKey: parsed.data.chainKey, amount: parsed.data.amount, mint: parsed.data.mint, decimals: parsed.data.decimals };
+      tx = await app.drain.track(() =>
+        recoverToken({
+          config,
+          signer,
+          chainKey: recovery.chainKey,
+          to: parsed.data.to,
+          amount: recovery.amount,
+          mint: recovery.mint,
+          decimals: recovery.decimals,
+          secrets,
+          onTx,
+        }),
+      );
     }
     return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint, tx };
   });
@@ -312,7 +315,7 @@ async function main(): Promise<void> {
   if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
   const secrets = [...signerSecrets, ...configSecrets(config)].filter((item) => item.length >= 8);
   const logger = createLogger(secrets);
-  const releaseLock = config.databaseUrl ? await acquireExecutorLock(config.databaseUrl) : null;
+  const releaseLock = config.databaseUrl ? await acquireExecutorLock(config.databaseUrl, () => process.exit(1)) : null;
   const state = createExecutorState();
   const reconcile = async () => {
     if (!config.databaseUrl) return;
@@ -345,7 +348,7 @@ async function main(): Promise<void> {
       zeroLoadedSecrets();
       await closeSpendPools();
       await releaseLock?.();
-    }).then(() => process.exit(0));
+    }).then((idle) => process.exit(idle ? 0 : 1));
   };
   process.once("SIGINT", stop);
   process.once("SIGTERM", stop);

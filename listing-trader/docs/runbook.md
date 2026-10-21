@@ -79,7 +79,7 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `EXECUTOR_AUTH_TOKEN` / `RESOLVER_AUTH_TOKEN` | unset | Required, different from each other and from every strategy token. At least 16 characters. Boot refuses a shorter value and refuses the old `AUTH_TOKEN` name |
 | `STRATEGY_CAPS_JSON` | empty | Per-strategy `{dailyUsdCap, maxUsdPerTrade, token}` for copy-trading on `/execute` |
 | `LISTING_RATE_LIMIT_PER_MIN` | 60 | Rate limit for `POST /listing` |
-| `RESOLVER_TIMEOUT_MS` | 300 | How long `/listing` waits for the resolver before answering `resolver_error` |
+| `RESOLVER_TIMEOUT_MS` | 6500 | How long `/listing` waits for the resolver before answering `resolver_error` |
 | `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |
 | `SOLANA_PROGRAM_ALLOWLIST` | empty | Extra Solana program ids added to the base set. The base programs stay allowed |
 | `TOKEN_SCREENING` | on in live, off in dry-run | `false` turns screening off. `true` turns it on. Refresh and a live buy both use it |
@@ -163,7 +163,7 @@ Find the row first: `SELECT idempotency_key, tx_hash, chain_key, outcome FROM sp
 
 ## Token and API key rotation
 
-Service tokens rotate with overlap: set `EXECUTOR_AUTH_TOKEN='old-token, new-token'` (the same for `RESOLVER_AUTH_TOKEN` or a strategy `token` list), restart, move callers to the new token, restart again with only the new one. Turnkey API keys follow the key ceremony: add the new key to the same API user, set the Railway variables, restart, then delete the old key. Provider keys rotate the same way, one provider at a time, with a dry-run alert between restarts.
+Service tokens rotate with overlap: set `EXECUTOR_AUTH_TOKEN='old-token, new-token'` (the same for `RESOLVER_AUTH_TOKEN` or a strategy `token` list), restart, move callers to the new token, restart again with only the new one. The executor sends the first resolver token in its list, so on the executor set `RESOLVER_AUTH_TOKEN='new-token, old-token'` during the overlap and drop the old one last. Turnkey API keys follow the key ceremony: add the new key to the same API user, set the Railway variables, restart, then delete the old key. Provider keys rotate the same way, one provider at a time, with a dry-run alert between restarts.
 
 ## Hyperliquid agent-key expiry
 
@@ -172,3 +172,7 @@ An expired or revoked agent makes order submits fail the signature recovery chec
 ## Postgres backup and restore
 
 Railway Postgres keeps its own backups; check they are enabled on the service. In addition, dump weekly from a trusted host: `pg_dump "$DATABASE_URL" > listing-$(date -u +%F).sql` and keep the file encrypted off Railway. Restore into an empty database with `psql "$DATABASE_URL" < listing-<date>.sql`, then boot the resolver first so `verified_tokens` hydrates, and only then the executor. After a restore, run one dry-run alert and check the spend journal day totals before live mode.
+
+## Shutdown window
+
+On SIGTERM the executor stops taking mutating work (503) and waits up to 20 seconds for tracked sends, including withdraws. A send whose confirmation runs past the window is not abandoned on chain: its journal row stays `reserved` with the signed hash, a retry of the same id returns `exists`, and boot reconciliation settles it. The process exits 1 when the window expires with work still in flight, so the platform restart is visible.

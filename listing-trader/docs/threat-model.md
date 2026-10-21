@@ -6,7 +6,7 @@ The listing trader can move the funds in the hot wallet. This page uses STRIDE s
 
 `EXECUTOR_AUTH_TOKEN` and `RESOLVER_AUTH_TOKEN` are required at boot, must differ from each other and from every strategy token, and must be at least 16 characters. Mutating routes compare `Authorization: Bearer` with SHA-256 and `timingSafeEqual`. `GET /health` is the only open route and returns only `{"ok":true}`. The public config moved to an authenticated `GET /status`. Secrets, the router list, and the approval cache are not in either payload.
 
-The collector holds the executor token. The executor calls the resolver with the resolver token, so one leaked token does not open both services. A strategy token from `STRATEGY_CAPS_JSON` opens only that strategy's live `/execute`, under its own caps and namespaced idempotency keys. A missing, short, or reused token refuses boot.
+The collector holds the executor token. The executor calls the resolver with the resolver token, so a leaked collector (executor) token does not open the resolver; the executor process itself holds the resolver token as a client credential. A strategy token from `STRATEGY_CAPS_JSON` opens only that strategy's live `/execute`, under its own daily cap on top of the global cap, its own per-trade cap, and namespaced idempotency keys. A missing, short, or reused token refuses boot.
 
 ## Tampering
 

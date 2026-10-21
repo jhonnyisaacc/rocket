@@ -5,7 +5,7 @@ import { createExecutorState, execute, type ExecutorDeps } from "../src/executor
 import { createExecutorApp } from "../src/executor-server.js";
 import { createResolverApp, getJson, isValidDexAddress } from "../src/resolver-server.js";
 import { buildApp, shutdown } from "../src/http.js";
-import { EXECUTOR_LOCK_SQL, lockAcquired } from "../src/spend.js";
+import { EXECUTOR_LOCK_SQL, RESERVE_SUM_SCOPED_SQL, lockAcquired } from "../src/spend.js";
 import { parseTokenRecords } from "../src/watchlist.js";
 import { createExecutor } from "../src/index.js";
 import { landedSend } from "./fixtures.js";
@@ -130,6 +130,7 @@ test("watchlist hydration parses rows and skips invalid ones; executor lock is a
   assert.equal(parsed.length, 1);
   assert.equal(parsed[0]?.ticker, "MPLX");
   assert.match(EXECUTOR_LOCK_SQL, /pg_try_advisory_lock/);
+  assert.match(RESERVE_SUM_SCOPED_SQL, /idempotency_key LIKE/);
   assert.equal(lockAcquired([{ locked: true }]), true);
   assert.equal(lockAcquired([{ locked: false }]), false);
   assert.equal(lockAcquired([]), false);

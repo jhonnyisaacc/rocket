@@ -4,6 +4,7 @@ title = "listing-trader"
 useDefault = true
 
 [allowlist]
+condition = "AND"
 description = "Synthetic fixture values used only by listing-trader unit tests"
 paths = [
   '''listing-trader/test/.*\.test\.ts''',

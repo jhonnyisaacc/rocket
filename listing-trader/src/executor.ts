@@ -69,10 +69,10 @@ export type ExecutorDeps = {
 
 export type SpendScope = { strategyId: string; capUsd: number };
 
-export type ExecutorState = { reports: Map<string, ExecutionReport>; spent: { day: string; usd: number } };
+export type ExecutorState = { reports: Map<string, ExecutionReport>; spent: { day: string; usd: number }; flagged: Set<string> };
 
 export function createExecutorState(): ExecutorState {
-  return { reports: new Map(), spent: { day: "", usd: 0 } };
+  return { reports: new Map(), spent: { day: "", usd: 0 }, flagged: new Set() };
 }
 
 const defaultState = createExecutorState();
@@ -91,6 +91,7 @@ export function resetExecutorState(state?: ExecutorState): void {
   const target = state ?? defaultState;
   target.reports.clear();
   target.spent = { day: "", usd: 0 };
+  target.flagged.clear();
   flaggedTokens.clear();
 }
 
@@ -290,7 +291,7 @@ async function commitLive(
       const status = await deps.recordSpend(intent.idempotencyKey, intent.notionalUsd, deps.spendScope);
       if (status === "cap") {
         stateOf(deps).reports.delete(intent.idempotencyKey);
-        return skipped(intent, latency, `daily cap ${deps.config.dailyUsdCap} USD`, venueKey, deps.mode);
+        return skipped(intent, latency, `daily cap ${deps.spendScope?.capUsd ?? deps.config.dailyUsdCap} USD`, venueKey, deps.mode);
       }
       if (status === "exists") {
         const report = skipped(intent, latency, "duplicate spend", venueKey, deps.mode);
@@ -345,7 +346,7 @@ async function commitLive(
   if (result.venue === "chain" && result.held) notes.push(`holding ${result.held.amount} of ${result.held.token}${result.note ? `: ${result.note}` : ""}`);
   if (result.venue === "chain" && result.shortfall) {
     const last = request.legs[request.legs.length - 1];
-    if (last) flaggedTokens.add(tokenKey(venueKey, last.buyAddress));
+    if (last) { stateOf(deps).flagged.add(tokenKey(venueKey, last.buyAddress)); flaggedTokens.add(tokenKey(venueKey, last.buyAddress)); }
     notes.push("received less than the minimum output, token flagged");
   }
   const report: ExecutionReport = {
@@ -420,7 +421,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     stateOf(deps).reports.set(intent.idempotencyKey, report);
     return report;
   }
-  if (tokenFlagged(intent.token.chainKey, intent.token.address)) {
+  if (stateOf(deps).flagged.has(tokenKey(intent.token.chainKey, intent.token.address)) || tokenFlagged(intent.token.chainKey, intent.token.address)) {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "token flagged for a transfer shortfall", intent.token.chainKey, deps.mode);
     stateOf(deps).reports.set(intent.idempotencyKey, report);
     return report;
