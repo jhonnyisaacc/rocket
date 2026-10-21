@@ -95,32 +95,54 @@ export async function holdingsForTrade(
 ): Promise<{ ok: true; holdings: Holding[] } | { ok: false; reason: string }> {
   if (!live) return { ok: true, holdings: [...declared] };
   if (!read || !tradeChainKey) return { ok: false, reason: "balance was not read" };
-  const holdings: Holding[] = [];
-  let failed = false;
-  let unpriced = false;
-  for (const holding of declared) {
-    if (holding.chainKey && holding.chainKey !== tradeChainKey) continue;
-    if (!holdingFitsChain(holding, tradeChainKey)) continue;
-    const scoped = scopeHolding(holding, tradeChainKey);
-    const unitUsd = priceOf?.(scoped) ?? null;
-    if (unitUsd === null || !(unitUsd > 0)) {
-      unpriced = true;
-      continue;
-    }
-    let amount: number | null;
-    try {
-      amount = await read(scoped);
-    } catch {
-      failed = true;
-      continue;
-    }
-    if (amount === null || !Number.isFinite(amount) || amount < 0) {
-      failed = true;
-      continue;
-    }
-    holdings.push(applyBalance(scoped, amount, unitUsd));
-  }
-  if (holdings.length === 0 && unpriced) return { ok: false, reason: "holding price stale" };
-  if (holdings.length === 0 && failed) return { ok: false, reason: "balance was not read" };
+  const scoped = declared
+    .filter((holding) => (!holding.chainKey || holding.chainKey === tradeChainKey) && holdingFitsChain(holding, tradeChainKey))
+    .map((holding) => scopeHolding(holding, tradeChainKey));
+  const rows = await Promise.all(
+    scoped.map(async (holding): Promise<Holding | "unpriced" | "failed"> => {
+      const unitUsd = priceOf?.(holding) ?? null;
+      if (unitUsd === null || !(unitUsd > 0)) return "unpriced";
+      let amount: number | null;
+      try {
+        amount = await read(holding);
+      } catch {
+        return "failed";
+      }
+      if (amount === null || !Number.isFinite(amount) || amount < 0) return "failed";
+      return applyBalance(holding, amount, unitUsd);
+    }),
+  );
+  const holdings = rows.filter((row): row is Holding => typeof row !== "string");
+  if (holdings.length === 0 && rows.includes("unpriced")) return { ok: false, reason: "holding price stale" };
+  if (holdings.length === 0 && rows.includes("failed")) return { ok: false, reason: "balance was not read" };
   return { ok: true, holdings };
+}
+
+export type BalanceCache = { read: BalanceReader; invalidate(chainKey: string): void };
+
+export function createBalanceCache(read: BalanceReader, ttlMs: number, now: () => number = Date.now): BalanceCache {
+  const rows = new Map<string, { chainKey: string; amount: Promise<number | null>; atMs: number }>();
+  return {
+    read(holding) {
+      const key = `${holding.chainKey ?? ""}:${holding.native ? "native" : holding.address.toLowerCase()}`;
+      const at = now();
+      const hit = rows.get(key);
+      if (hit && at - hit.atMs < ttlMs) return hit.amount;
+      const amount = read(holding);
+      const row = { chainKey: holding.chainKey ?? "", amount, atMs: at };
+      rows.set(key, row);
+      amount.then(
+        (value) => {
+          if (value === null && rows.get(key) === row) rows.delete(key);
+        },
+        () => {
+          if (rows.get(key) === row) rows.delete(key);
+        },
+      );
+      return amount;
+    },
+    invalidate(chainKey) {
+      for (const [key, row] of rows) if (row.chainKey === chainKey) rows.delete(key);
+    },
+  };
 }

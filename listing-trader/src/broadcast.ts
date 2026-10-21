@@ -1,18 +1,19 @@
-import { Connection, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import bs58 from "bs58";
-import { TransactionReceiptNotFoundError, createPublicClient, defineChain, encodeFunctionData, erc20Abi, http, keccak256, parseUnits, type Hex } from "viem";
+import { TransactionReceiptNotFoundError, createPublicClient, defineChain, encodeFunctionData, erc20Abi, keccak256, parseUnits, type Hex } from "viem";
 import { z } from "zod";
 import type { AppConfig } from "./config.js";
-import type { Fill, RouteLeg, SendResult, TxOutcome, TxRecord } from "./domain.js";
+import type { Fill, RaceQuote, RouteLeg, SendResult, TxOutcome, TxRecord } from "./domain.js";
 import { chainByEvmId, chainByKey } from "./chains.js";
 import { allowanceCovers, rememberApproval } from "./approvals.js";
-import { firmJupiter, firmKyber, firmLifi, firmZeroEx } from "./aggregators.js";
+import { firmJupiter, firmKyber, firmLifi, firmZeroEx, jupiterQuote, jupiterSwap, kyberFromRoute } from "./aggregators.js";
 import { BroadcastError, type SendRequest } from "./executor.js";
 import { nextHyperliquidNonce, readExchangeResponse } from "./hyperliquid.js";
 import type { EvmSignInput, TransactionSigner } from "./managed-signer.js";
 import { evmNonces, isNonceRejection, type NonceManager } from "./nonce.js";
 import { readLifi, readZeroEx } from "./quotes.js";
 import { redactError } from "./redact.js";
+import { anyOk, firstOk, readTransport, solanaConnection } from "./rpc.js";
 import { sellBaseUnits } from "./routing.js";
 import { isSolanaAddress } from "./signer.js";
 import { JUPITER_PROGRAM_ID, WSOL_MINT } from "./signing-policy.js";
@@ -26,7 +27,7 @@ const allowanceSchema = z
   })
   .passthrough();
 
-const jupiterSwapSchema = z.object({ swapTransaction: z.string().min(1), lastValidBlockHeight: z.number().int().optional() }).passthrough();
+const lifiApprovalSchema = z.object({ estimate: z.object({ approvalAddress: z.string().min(1) }) }).passthrough();
 
 type EvmCall = { from: Hex; to: Hex; data: Hex; value: bigint };
 
@@ -56,8 +57,8 @@ export type SolanaRpc = {
 };
 
 export type SendIo = {
-  evm(chainId: number, rpc: string): EvmRpc;
-  solana(rpc: string): SolanaRpc;
+  evm(chainId: number, rpcs: readonly string[]): EvmRpc;
+  solana(rpcs: readonly string[]): SolanaRpc;
   nonces: NonceManager;
   sleep(ms: number): Promise<void>;
   now(): number;
@@ -81,22 +82,33 @@ type Ctx = {
   secrets: readonly string[];
 };
 
-function rpcTransport(rpc: string) {
-  return http(rpc, { retryCount: 0, timeout: 1_500 });
-}
-
-function evmChain(chainId: number, rpc: string) {
+function evmChain(chainId: number, rpcs: readonly string[]) {
   const spec = chainByEvmId(chainId);
   return defineChain({
     id: chainId,
     name: spec?.key ?? String(chainId),
     nativeCurrency: { name: spec?.nativeSymbol ?? "ETH", symbol: spec?.nativeSymbol ?? "ETH", decimals: 18 },
-    rpcUrls: { default: { http: [rpc] } },
+    rpcUrls: { default: { http: [...rpcs] } },
   });
 }
 
-function viemRpc(chainId: number, rpc: string): EvmRpc {
-  const client = createPublicClient({ chain: evmChain(chainId, rpc), transport: rpcTransport(rpc) });
+const evmRpcs = new Map<string, EvmRpc>();
+
+export function resetSendClients(): void {
+  evmRpcs.clear();
+}
+
+function viemRpc(chainId: number, rpcs: readonly string[]): EvmRpc {
+  const key = `${chainId}:${rpcs.join(",")}`;
+  const existing = evmRpcs.get(key);
+  if (existing) return existing;
+  const created = createViemRpc(chainId, rpcs);
+  evmRpcs.set(key, created);
+  return created;
+}
+
+function createViemRpc(chainId: number, rpcs: readonly string[]): EvmRpc {
+  const client = createPublicClient({ chain: evmChain(chainId, rpcs), transport: readTransport(rpcs) });
   return {
     async fees() {
       const fees = await client.estimateFeesPerGas();
@@ -151,37 +163,33 @@ const TOKEN_PROGRAM = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA
 const TOKEN_2022_PROGRAM = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
 const ATA_PROGRAM = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
 
-function web3Rpc(rpc: string): SolanaRpc {
-  const connection = new Connection(rpc, "confirmed");
+function web3Rpc(rpcs: readonly string[]): SolanaRpc {
+  const connections = rpcs.map(solanaConnection);
+  const read = <T>(call: (connection: (typeof connections)[number]) => Promise<T>) => firstOk(connections.map((connection) => () => call(connection)));
   return {
-    async simulate(tx) {
-      return (await connection.simulateTransaction(tx, { sigVerify: false, replaceRecentBlockhash: true })).value.err;
-    },
+    simulate: (tx) => read(async (connection) => (await connection.simulateTransaction(tx, { sigVerify: false, replaceRecentBlockhash: true })).value.err),
     async sendRaw(signed) {
-      await connection.sendRawTransaction(signed);
+      await anyOk(connections.map((connection) => async () => void (await connection.sendRawTransaction(signed))));
     },
-    latestBlockhash: () => connection.getLatestBlockhash(),
-    blockHeight: () => connection.getBlockHeight(),
-    async status(signature, searchHistory = false) {
-      const statuses = await connection.getSignatureStatuses([signature], { searchTransactionHistory: searchHistory });
-      return statuses.value[0] ?? null;
-    },
-    async received(signature, owner, mint) {
-      const tx = await connection.getTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
-      if (!tx?.meta) return null;
-      return receivedFromMeta(tx.meta, owner, mint);
-    },
-    async lamports(owner) {
-      return BigInt(await connection.getBalance(new PublicKey(owner)));
-    },
-    async tokenAccount(owner, mint) {
-      for (const program of [TOKEN_PROGRAM, TOKEN_2022_PROGRAM]) {
-        const accounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(owner), { mint: new PublicKey(mint), programId: program });
-        const source = accounts.value[0]?.pubkey;
-        if (source) return { source: source.toBase58(), program: program.toBase58() };
-      }
-      return null;
-    },
+    latestBlockhash: () => read((connection) => connection.getLatestBlockhash()),
+    blockHeight: () => read((connection) => connection.getBlockHeight()),
+    status: (signature, searchHistory = false) =>
+      read(async (connection) => (await connection.getSignatureStatuses([signature], { searchTransactionHistory: searchHistory })).value[0] ?? null),
+    received: (signature, owner, mint) =>
+      read(async (connection) => {
+        const tx = await connection.getTransaction(signature, { commitment: "confirmed", maxSupportedTransactionVersion: 0 });
+        return tx?.meta ? receivedFromMeta(tx.meta, owner, mint) : null;
+      }),
+    lamports: (owner) => read(async (connection) => BigInt(await connection.getBalance(new PublicKey(owner)))),
+    tokenAccount: (owner, mint) =>
+      read(async (connection) => {
+        for (const program of [TOKEN_PROGRAM, TOKEN_2022_PROGRAM]) {
+          const accounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(owner), { mint: new PublicKey(mint), programId: program });
+          const source = accounts.value[0]?.pubkey;
+          if (source) return { source: source.toBase58(), program: program.toBase58() };
+        }
+        return null;
+      }),
   };
 }
 
@@ -225,6 +233,24 @@ function assertMinOut(provider: bigint | null, ours: bigint): bigint {
   return provider;
 }
 
+export function reusableQuote(config: AppConfig, leg: RouteLeg, taker: string): RaceQuote | null {
+  const quote = leg.quote;
+  if (!quote || quote.sellAmount !== leg.sellAmount) return null;
+  if ((config.now?.() ?? Date.now()) - quote.quotedAtMs >= config.quoteTtlMs) return null;
+  if ((quote.provider === "zeroex" || quote.provider === "lifi") && quote.taker?.toLowerCase() !== taker.toLowerCase()) return null;
+  return quote;
+}
+
+async function reuseOrFirm<T>(reuse: RaceQuote | null, build: (reuse: RaceQuote | null) => Promise<T>): Promise<T> {
+  if (!reuse) return build(null);
+  try {
+    return await build(reuse);
+  } catch (error) {
+    if (!(error instanceof BroadcastError) || error.broadcast) throw error;
+    return build(null);
+  }
+}
+
 function referenceFor(leg: RouteLeg): { spentUsd: number; priceUsd: number; decimals: number } | null {
   if (leg.priceUsd === null || leg.decimals === null) return null;
   return { spentUsd: leg.spentUsd, priceUsd: leg.priceUsd, decimals: leg.decimals };
@@ -235,19 +261,35 @@ function asHex(value: string): Hex {
   return value as Hex;
 }
 
-function rememberIfFunded(raw: unknown, chainId: number, token: string, owner: string, needed: bigint, spenderHint: string): void {
+export function approvalSpender(provider: string, raw: unknown, to: string): string {
+  if (provider !== "lifi") return to;
+  const parsed = lifiApprovalSchema.safeParse(raw);
+  return parsed.success ? parsed.data.estimate.approvalAddress : to;
+}
+
+export function rememberIfFunded(provider: string, raw: unknown, chainId: number, token: string, owner: string, needed: bigint, to: string): void {
   if (NATIVE_SELL.has(token.toLowerCase())) return;
-  const parsed = allowanceSchema.safeParse(raw);
-  const allowance = parsed.success ? parsed.data.issues?.allowance : undefined;
-  if (allowance?.spender && /^\d+$/.test(allowance.actual)) {
-    const actual = BigInt(allowance.actual);
-    if (actual >= needed) {
-      rememberApproval({ chainId, token, spender: allowance.spender, owner }, actual);
+  const spender = approvalSpender(provider, raw, to);
+  const key = { chainId, token, spender, owner };
+  if (provider === "zeroex") {
+    const parsed = allowanceSchema.safeParse(raw);
+    const issues = parsed.success ? parsed.data.issues : undefined;
+    const allowance = issues?.allowance;
+    if (issues && allowance === null) {
+      if (!allowanceCovers(key, needed)) rememberApproval(key, needed);
       return;
     }
+    if (allowance?.spender && /^\d+$/.test(allowance.actual)) {
+      const actual = BigInt(allowance.actual);
+      const reported = { ...key, spender: allowance.spender };
+      if (actual >= needed) {
+        rememberApproval(reported, actual);
+        return;
+      }
+      if (allowanceCovers(reported, needed)) return;
+    }
   }
-  const spender = allowance?.spender || spenderHint;
-  if (spender && allowanceCovers({ chainId, token, spender, owner }, needed)) return;
+  if (allowanceCovers(key, needed)) return;
   throw new BroadcastError("approval is not cached", false);
 }
 
@@ -375,52 +417,56 @@ async function submitSolana(
 
 async function prepareSolanaLeg(ctx: SolanaCtx, leg: RouteLeg, slippageBps: number, capBps: number): Promise<PreparedLeg> {
   const { config, fetchImpl } = ctx;
-  const quoted = await firmJupiter(
-    config,
-    { sellAddress: leg.sellAddress, buyAddress: leg.buyAddress, sellAmount: leg.sellAmount, chain: { kind: "solana" } },
-    slippageBps,
-    referenceFor(leg),
-    fetchImpl,
-  );
-  if (quoted.signable === false || overCap(quoted.priceImpactPct, capBps / 100) || quoted.raw === undefined) {
-    throw new BroadcastError("firm quote outside the slippage cap", false);
-  }
-  const minOut = assertMinOut(digits((quoted.raw as { otherAmountThreshold?: unknown }).otherAmountThreshold), ourMinOut(leg, capBps));
-  const headers: Record<string, string> = { "content-type": "application/json" };
-  if (config.keys.jupiter) headers["x-api-key"] = config.keys.jupiter;
-  const response = await fetchImpl(`${config.jupiterBase}/swap`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ quoteResponse: quoted.raw, userPublicKey: ctx.owner, wrapAndUnwrapSol: true, dynamicComputeUnitLimit: true }),
+  const reuse = reusableQuote(config, leg, ctx.owner);
+  const { quoted, minOut } = await reuseOrFirm(reuse?.provider === "jupiter" ? reuse : null, async (stored) => {
+    const quoted = stored
+      ? jupiterQuote(config, stored.raw)
+      : await firmJupiter(
+          config,
+          { sellAddress: leg.sellAddress, buyAddress: leg.buyAddress, sellAmount: leg.sellAmount, chain: { kind: "solana" } },
+          slippageBps,
+          referenceFor(leg),
+          fetchImpl,
+        );
+    if (quoted.signable === false || overCap(quoted.priceImpactPct, capBps / 100) || quoted.raw === undefined) {
+      throw new BroadcastError("firm quote outside the slippage cap", false);
+    }
+    return { quoted, minOut: assertMinOut(digits((quoted.raw as { otherAmountThreshold?: unknown }).otherAmountThreshold), ourMinOut(leg, capBps)) };
   });
-  if (!response.ok) throw new BroadcastError("jupiter swap build failed", false);
-  const parsed = jupiterSwapSchema.safeParse(await response.json());
-  if (!parsed.success) throw new BroadcastError("jupiter swap build failed", false);
-  const tx = VersionedTransaction.deserialize(Buffer.from(parsed.data.swapTransaction, "base64"));
+  const built = await jupiterSwap(config, quoted.raw, ctx.owner, fetchImpl);
+  if (!built) throw new BroadcastError("jupiter swap build failed", false);
+  const tx = VersionedTransaction.deserialize(Buffer.from(built.swapTransaction, "base64"));
   const simulated = await ctx.rpc.simulate(tx).catch(() => "unavailable");
   if (simulated) throw new BroadcastError("simulation rejected the transaction", false);
   return {
     impact: quoted.priceImpactPct ?? capBps,
     minOut,
     quotedOut: BigInt(quoted.buyAmount),
-    submit: () =>
-      submitSolana(ctx, tx, parsed.data.lastValidBlockHeight ?? null, { to: JUPITER_PROGRAM_ID, value: "0", buyToken: leg.buyAddress, jitoUrl: config.jitoUrl }),
+    submit: () => submitSolana(ctx, tx, built.lastValidBlockHeight ?? null, { to: JUPITER_PROGRAM_ID, value: "0", buyToken: leg.buyAddress, jitoUrl: config.jitoUrl }),
   };
 }
 
-type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; send: EvmRpc };
+type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; senders: EvmRpc[] };
 type EvmTx = { to: Hex; data: Hex; value: bigint; gas: bigint | null; purpose: EvmSignInput["purpose"]; nativeSell?: boolean };
 
 function evmRecord(ctx: EvmCtx, signed: Hex, tx: { to: Hex; value: bigint }): TxRecord {
   return { chainKey: ctx.chainKey, txHash: keccak256(signed), from: ctx.owner, to: tx.to, value: tx.value.toString(), outcome: "pending" };
 }
 
+async function sendOnce(rpc: EvmRpc, signed: Hex): Promise<void> {
+  try {
+    await rpc.sendRaw(signed);
+  } catch (error) {
+    if (/already known/i.test(error instanceof Error ? error.message : String(error))) return;
+    throw error;
+  }
+}
+
 async function broadcastEvm(ctx: EvmCtx, signed: Hex): Promise<void> {
   try {
-    await ctx.send.sendRaw(signed);
+    await anyOk(ctx.senders.map((rpc) => () => sendOnce(rpc, signed)));
   } catch (error) {
     const message = redactError(error, ctx.secrets);
-    if (/already known/i.test(message)) return;
     throw new BroadcastError(message, !isNonceRejection(message));
   }
 }
@@ -533,22 +579,23 @@ async function submitEvm(ctx: EvmCtx, tx: EvmTx, buyToken: string | null): Promi
   return { record: sent.record, confirm: () => confirmEvm(ctx, sent.input, sent.record, before, buyToken) };
 }
 
-type BuiltEvm = { to: Hex; data: Hex; value: bigint; gas: bigint | null; impact: number; raw: unknown; minOut: bigint | null; quotedOut: bigint };
+type BuiltEvm = { provider: string; to: Hex; data: Hex; value: bigint; gas: bigint | null; impact: number; raw: unknown; minOut: bigint | null; quotedOut: bigint };
 
-async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippageBps: number, provider: string | undefined): Promise<BuiltEvm> {
+async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippageBps: number, selected: string, stored: RaceQuote | null): Promise<BuiltEvm> {
   const { config, chainId, owner: taker, fetchImpl } = ctx;
   const hop = { sellAddress: leg.sellAddress, buyAddress: leg.buyAddress, sellAmount: leg.sellAmount, chain: { kind: "evm" as const, chainId } };
   const reference = referenceFor(leg);
-  const spec = chainByEvmId(chainId);
-  const selected = provider ?? (spec?.aggregator === "lifi" ? "lifi" : "zeroex");
   if (selected === "kyberswap") {
-    const quoted = await firmKyber(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
+    const quoted = stored
+      ? await kyberFromRoute(config, stored.raw, chainId, taker, reference, fetchImpl, slippageBps)
+      : await firmKyber(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
     if (overCap(quoted.priceImpactPct, capPct) || !quoted.prepared?.to || !quoted.prepared.data) {
       throw new BroadcastError("firm quote outside the slippage cap", false);
     }
     const built = (quoted.raw as { build?: { amountOut?: string | null; slippageBps?: number } } | undefined)?.build;
     const amountOut = digits(built?.amountOut);
     return {
+      provider: selected,
       to: asHex(quoted.prepared.to),
       data: asHex(quoted.prepared.data),
       value: BigInt(quoted.prepared.value || "0"),
@@ -560,7 +607,7 @@ async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippa
     };
   }
   if (selected === "lifi") {
-    const quoted = await firmLifi(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
+    const quoted = stored ? { raw: stored.raw } : await firmLifi(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
     if (quoted.raw === undefined) throw new BroadcastError("firm quote outside the slippage cap", false);
     const parsed = readLifi(quoted.raw as Parameters<typeof readLifi>[0], reference, chainId);
     if (!parsed.sameChain || overCap(parsed.priceImpactPct, capPct) || parsed.priceImpactPct === null) {
@@ -570,6 +617,7 @@ async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippa
     const request = raw.transactionRequest;
     if (!request?.to || !request.data) throw new BroadcastError("firm quote has no transaction", false);
     return {
+      provider: selected,
       to: asHex(request.to),
       data: asHex(request.data),
       value: BigInt(request.value ?? "0"),
@@ -581,7 +629,7 @@ async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippa
     };
   }
   if (selected !== "zeroex") throw new BroadcastError("provider is not signable", false);
-  const quoted = await firmZeroEx(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
+  const quoted = stored ? { raw: stored.raw } : await firmZeroEx(config, hop, chainId, taker, reference, fetchImpl, slippageBps);
   if (quoted.raw === undefined) throw new BroadcastError("firm quote outside the slippage cap", false);
   const parsed = readZeroEx(quoted.raw as Parameters<typeof readZeroEx>[0], reference);
   if (overCap(parsed.priceImpactPct, capPct) || parsed.priceImpactPct === null || !parsed.to || !parsed.data) {
@@ -589,6 +637,7 @@ async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippa
   }
   const raw = quoted.raw as { transaction?: { gas?: string }; minBuyAmount?: unknown };
   return {
+    provider: selected,
     to: asHex(parsed.to),
     data: asHex(parsed.data),
     value: BigInt(parsed.value || "0"),
@@ -601,9 +650,13 @@ async function evmTransaction(ctx: EvmCtx, leg: RouteLeg, capPct: number, slippa
 }
 
 async function prepareEvmLeg(ctx: EvmCtx, leg: RouteLeg, slippageBps: number, next: RouteLeg | undefined, capBps: number, provider: string | undefined): Promise<PreparedLeg> {
-  const built = await evmTransaction(ctx, leg, capBps / 100, slippageBps, provider);
-  const minOut = assertMinOut(built.minOut, ourMinOut(leg, capBps));
-  rememberIfFunded(built.raw, ctx.chainId, leg.sellAddress, ctx.owner, BigInt(leg.sellAmount), built.to);
+  const reuse = reusableQuote(ctx.config, leg, ctx.owner);
+  const selected = leg.quote?.provider ?? provider ?? (chainByEvmId(ctx.chainId)?.aggregator === "lifi" ? "lifi" : "zeroex");
+  const { built, minOut } = await reuseOrFirm(reuse, async (stored) => {
+    const built = await evmTransaction(ctx, leg, capBps / 100, slippageBps, selected, stored);
+    return { built, minOut: assertMinOut(built.minOut, ourMinOut(leg, capBps)) };
+  });
+  rememberIfFunded(built.provider, built.raw, ctx.chainId, leg.sellAddress, ctx.owner, BigInt(leg.sellAmount), built.to);
   if (next && !NATIVE_SELL.has(next.sellAddress.toLowerCase())) {
     if (!allowanceCovers({ chainId: ctx.chainId, token: next.sellAddress, spender: built.to, owner: ctx.owner }, built.quotedOut)) {
       throw new BroadcastError("approval is not cached", false);
@@ -677,19 +730,25 @@ async function sendHypercore(ctx: Ctx, request: SendRequest): Promise<SendResult
   return { venue: "hypercore", txs, fill, note };
 }
 
-function evmContext(ctx: Ctx, chainKey: string, rpc: string, sendRpc: string): EvmCtx {
+function evmContext(ctx: Ctx, chainKey: string, rpcs: readonly string[]): EvmCtx {
   const spec = chainByKey(chainKey);
   if (!spec || spec.chain.kind !== "evm") throw new BroadcastError("evm chain missing", false);
   const owner = ctx.signer.evmAddress();
   if (!owner) throw new BroadcastError("evm signer is not loaded", false);
   const chainId = spec.chain.chainId;
-  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpc), send: ctx.io.evm(chainId, sendRpc) };
+  const mev = ctx.config.mevRpcByChainId[chainId];
+  const senders = mev ? [ctx.io.evm(chainId, [mev])] : rpcs.map((rpc) => ctx.io.evm(chainId, [rpc]));
+  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpcs), senders };
 }
 
-function solanaContext(ctx: Ctx, rpc: string): SolanaCtx {
+function solanaContext(ctx: Ctx, rpcs: readonly string[]): SolanaCtx {
   const owner = ctx.signer.solanaAddress();
   if (!owner) throw new BroadcastError("solana signer is not loaded", false);
-  return { ...ctx, rpc: ctx.io.solana(rpc), owner };
+  return { ...ctx, rpc: ctx.io.solana(rpcs), owner };
+}
+
+function rpcsFor(config: AppConfig, chainKey: string): readonly string[] {
+  return config.rpcUrlsByChainKey[chainKey] ?? [];
 }
 
 export async function broadcastRoute(
@@ -707,31 +766,31 @@ export async function broadcastRoute(
   if (request.legs.length === 0) throw new BroadcastError("route has no signable leg", false);
   const capBps = Math.round(capPct * 100);
   if (request.kind === "solana") {
-    const rpc = config.rpcByChainKey.solana;
-    if (!rpc) throw new BroadcastError("solana rpc is not configured", false);
-    const solana = solanaContext(ctx, rpc);
+    const rpcs = rpcsFor(config, "solana");
+    if (rpcs.length === 0) throw new BroadcastError("solana rpc is not configured", false);
+    const solana = solanaContext(ctx, rpcs);
     return runLegs((leg, slippageBps) => prepareSolanaLeg(solana, leg, slippageBps, capBps), request.legs, capBps, ctx);
   }
   if (request.chain.kind !== "evm") throw new BroadcastError("evm chain missing", false);
   const spec = chainByEvmId(request.chain.chainId);
-  const rpc = spec ? config.rpcByChainKey[spec.key] : undefined;
-  if (!spec || !rpc) throw new BroadcastError("evm rpc is not configured", false);
+  const rpcs = spec ? rpcsFor(config, spec.key) : [];
+  if (!spec || rpcs.length === 0) throw new BroadcastError("evm rpc is not configured", false);
   if (spec.liveSend === "disabled") throw new BroadcastError(spec.gap ?? "live send disabled", false);
-  const evm = evmContext(ctx, spec.key, rpc, config.mevRpcByChainId[request.chain.chainId] ?? rpc);
+  const evm = evmContext(ctx, spec.key, rpcs);
   return runLegs((leg, slippageBps, next) => prepareEvmLeg(evm, leg, slippageBps, next, capBps, request.provider), request.legs, capBps, ctx);
 }
 
 export async function lookupAgedTx(config: AppConfig, chainKey: string, txHash: string, io: SendIo = defaultIo(config)): Promise<TxOutcome | null> {
   const spec = chainByKey(chainKey);
-  const rpc = config.rpcByChainKey[chainKey];
-  if (!spec || !rpc) return null;
+  const rpcs = rpcsFor(config, chainKey);
+  if (!spec || rpcs.length === 0) return null;
   if (spec.chain.kind === "evm") {
-    const receipt = await io.evm(spec.chain.chainId, rpc).receipt(txHash as Hex);
+    const receipt = await io.evm(spec.chain.chainId, rpcs).receipt(txHash as Hex);
     if (!receipt) return "pending";
     return receipt.status === "success" ? "landed" : "reverted";
   }
   if (spec.chain.kind === "solana") {
-    const status = await io.solana(rpc).status(txHash, true);
+    const status = await io.solana(rpcs).status(txHash, true);
     if (status === null) return "expired";
     return landedStatus(status) ?? "pending";
   }
@@ -767,12 +826,12 @@ async function finalRecord(submitted: Submitted, ctx: Ctx): Promise<TxRecord> {
 export async function withdrawNative(input: TransferInput): Promise<TxRecord> {
   const spec = chainByKey(input.chainKey);
   if (!spec) throw new Error("unknown chain");
-  const rpc = input.config.rpcByChainKey[input.chainKey];
-  if (!rpc) throw new Error("rpc is not configured");
+  const rpcs = rpcsFor(input.config, input.chainKey);
+  if (rpcs.length === 0) throw new Error("rpc is not configured");
   const ctx = transferContext(input);
   if (spec.chain.kind === "solana") {
     if (!isSolanaAddress(input.to)) throw new Error("destination is not a solana address");
-    const solana = solanaContext(ctx, rpc);
+    const solana = solanaContext(ctx, rpcs);
     const lamports = BigInt(sellBaseUnits(input.amount, 9));
     const reserve = BigInt(sellBaseUnits(spec.minNativeReserve, 9));
     if (lamports <= 0n || (await solana.rpc.lamports(solana.owner)) - lamports < reserve) throw new Error("withdraw would spend the native reserve");
@@ -787,7 +846,7 @@ export async function withdrawNative(input: TransferInput): Promise<TxRecord> {
   }
   if (spec.chain.kind !== "evm") throw new Error("withdraw is not available on this venue");
   if (!/^0x[0-9a-fA-F]{40}$/.test(input.to)) throw new Error("destination is not an evm address");
-  const evm = evmContext(ctx, input.chainKey, rpc, rpc);
+  const evm = evmContext(ctx, input.chainKey, rpcs);
   const value = BigInt(sellBaseUnits(input.amount, 18));
   const reserve = BigInt(sellBaseUnits(spec.minNativeReserve, 18));
   if (value <= 0n || (await evm.read.balance(NATIVE_ADDRESS, evm.owner)) - value < reserve) throw new Error("withdraw would spend the native reserve");
@@ -842,12 +901,12 @@ export function tokenRecoveryInstructions(input: {
 export async function recoverToken(input: TransferInput & { mint: string; decimals: number }): Promise<TxRecord> {
   const spec = chainByKey(input.chainKey);
   if (!spec) throw new Error("unknown chain");
-  const rpc = input.config.rpcByChainKey[input.chainKey];
-  if (!rpc) throw new Error("rpc is not configured");
+  const rpcs = rpcsFor(input.config, input.chainKey);
+  if (rpcs.length === 0) throw new Error("rpc is not configured");
   const ctx = transferContext(input);
   if (spec.chain.kind === "evm") {
     if (!/^0x[0-9a-fA-F]{40}$/.test(input.to) || !/^0x[0-9a-fA-F]{40}$/.test(input.mint)) throw new Error("destination is not an evm address");
-    const evm = evmContext(ctx, input.chainKey, rpc, rpc);
+    const evm = evmContext(ctx, input.chainKey, rpcs);
     const data = encodeFunctionData({ abi: erc20Abi, functionName: "transfer", args: [input.to as Hex, parseUnits(String(input.amount), input.decimals)] });
     const submitted = await submitEvm(evm, { to: input.mint as Hex, data, value: 0n, gas: null, purpose: "withdraw", nativeSell: false }, null);
     return finalRecord(submitted, ctx);
@@ -855,7 +914,7 @@ export async function recoverToken(input: TransferInput & { mint: string; decima
   if (spec.chain.kind !== "solana" || !input.signer.solanaAddress() || !isSolanaAddress(input.to) || !isSolanaAddress(input.mint)) {
     throw new Error("destination is not a solana address");
   }
-  const solana = solanaContext(ctx, rpc);
+  const solana = solanaContext(ctx, rpcs);
   const found = await solana.rpc.tokenAccount(solana.owner, input.mint);
   if (!found) throw new Error("token account was not found");
   const ownerKey = new PublicKey(solana.owner);

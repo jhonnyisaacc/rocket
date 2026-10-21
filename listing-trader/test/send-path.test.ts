@@ -114,7 +114,7 @@ function zeroEx(byBuy: Record<string, Firm>, seen: URL[]): typeof fetch {
   };
 }
 
-const evmConfig = loadConfig({ RPC_URL_8453: "http://fake.invalid" });
+const evmConfig = loadConfig({ RPC_URL_8453: "http://fake.invalid", ZEROX_API_KEY: "zeroex-key" });
 const leg1: RouteLeg = { sellAddress: USDC, buyAddress: WETH, sellAmount: "5000000", spentUsd: 5, priceUsd: 2000, decimals: 18, impactPct: 0 };
 const leg2: RouteLeg = { sellAddress: WETH, buyAddress: TOKEN, sellAmount: "2500000000000000", spentUsd: 5, priceUsd: 0.5, decimals: 6, impactPct: 0 };
 const firmQuotes: Record<string, Firm> = {

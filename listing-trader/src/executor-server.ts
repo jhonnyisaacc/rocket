@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { configSecrets, loadConfig, publicConfig, type AppConfig } from "./config.js";
-import { holdingFitsChain, type BalanceReader } from "./balances.js";
+import { createBalanceCache, holdingFitsChain, type BalanceCache, type BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
 import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
@@ -17,6 +17,7 @@ import { seedApprovals } from "./approvals.js";
 import { commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
+import { evmReadClient, firstOk, solanaConnection } from "./rpc.js";
 import { coingeckoLoader, createPriceCache, pricedHoldings, type PriceOf } from "./prices.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
 
@@ -78,7 +79,15 @@ export function txJournal(config: AppConfig, log: (entry: { idempotencyKey: stri
   };
 }
 
-function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[], journal: ReturnType<typeof txJournal>, priceOf: PriceOf): ExecutorDeps {
+function deps(
+  config: AppConfig,
+  signer: TransactionSigner | null,
+  secrets: readonly string[],
+  journal: ReturnType<typeof txJournal>,
+  priceOf: PriceOf,
+  balances: BalanceCache | null,
+): ExecutorDeps {
+  const spent = (tx: TxRecord) => balances?.invalidate(tx.chainKey);
   return {
     config,
     priceOf,
@@ -89,11 +98,15 @@ function deps(config: AppConfig, signer: TransactionSigner | null, secrets: read
         context.priceUsd !== null && context.decimals !== null
           ? { spentUsd: context.spentUsd, priceUsd: context.priceUsd, decimals: context.decimals }
           : null;
-      return quoteHop(config, { ...hop, sellAmount: hop.sellAmount }, reference);
+      const taker = hop.chain.kind === "evm" ? signer?.evmAddress() : hop.chain.kind === "solana" ? signer?.solanaAddress() : null;
+      return quoteHop(config, { ...hop, taker: taker ?? null }, reference);
     },
     markPrice: (coin) => fetchHyperliquidMid(config.hyperliquidUrl, coin),
     send: (request, onTx) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100, fetch, secrets, { onTx }),
-    recordTx: journal,
+    recordTx: async (key, tx) => {
+      spent(tx);
+      await journal(key, tx);
+    },
     szDecimals: (market) => fetchSzDecimals(config.hyperliquidUrl, market),
     recordSpend:
       config.live && config.databaseUrl
@@ -244,8 +257,9 @@ async function main(): Promise<void> {
   const refreshPrices = () => prices.refresh().catch((error: unknown) => logger.warn({ err: error }, "price refresh failed"));
   await refreshPrices();
   setInterval(refreshPrices, config.priceRefreshMs).unref();
-  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding));
-  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, config.live ? chainReader(config, signer) : null);
+  const balances = config.live ? createBalanceCache(chainReader(config, signer), config.balanceCacheMs) : null;
+  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding), balances);
+  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, balances?.read ?? null);
   const stop = () => {
     zeroLoadedSecrets();
     process.exit(0);
@@ -260,32 +274,32 @@ function chainReader(config: AppConfig, signer: TransactionSigner | null): Balan
   return async (holding: Holding) => {
     if (!signer || !holding.chainKey) return null;
     const spec = chainByKey(holding.chainKey);
-    const rpc = config.rpcByChainKey[holding.chainKey];
-    if (!spec || !rpc) return null;
+    const rpcs = config.rpcUrlsByChainKey[holding.chainKey] ?? [];
+    if (!spec || rpcs.length === 0) return null;
     const decimals = holding.decimals ?? (holding.native ? (spec.chain.kind === "solana" ? 9 : 18) : null);
     if (decimals === null) return null;
     if (holding.chainKey && !holdingFitsChain(holding, holding.chainKey)) return null;
     if (spec.chain.kind === "solana") {
       const owner = signer.solanaAddress();
       if (!owner) return null;
-      const { Connection, PublicKey } = await import("@solana/web3.js");
-      const connection = new Connection(rpc, "confirmed");
-      if (holding.native) return (await connection.getBalance(new PublicKey(owner))) / 10 ** decimals;
+      const { PublicKey } = await import("@solana/web3.js");
+      const ownerKey = new PublicKey(owner);
+      if (holding.native) return firstOk(rpcs.map((rpc) => async () => (await solanaConnection(rpc).getBalance(ownerKey)) / 10 ** decimals));
       let mint;
       try {
         mint = new PublicKey(holding.address);
       } catch {
         return null;
       }
-      const accounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(owner), { mint });
+      const accounts = await firstOk(rpcs.map((rpc) => () => solanaConnection(rpc).getParsedTokenAccountsByOwner(ownerKey, { mint })));
       const ui = accounts.value[0]?.account.data.parsed?.info?.tokenAmount?.uiAmountString;
       return typeof ui === "string" ? Number(ui) : null;
     }
     if (spec.chain.kind !== "evm") return null;
     const owner = signer.evmAddress();
     if (!owner) return null;
-    const { createPublicClient, erc20Abi, formatUnits, http } = await import("viem");
-    const client = createPublicClient({ transport: http(rpc, { retryCount: 0, timeout: 1500 }) });
+    const { erc20Abi, formatUnits } = await import("viem");
+    const client = evmReadClient(rpcs);
     if (holding.native) {
       const raw = await client.getBalance({ address: owner as `0x${string}` });
       return Number(formatUnits(raw, decimals));

@@ -81,6 +81,15 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `MAX_TOKEN_TAX` | 0.1 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
+| `RACE_GRACE_MS` | 60 | After the first signable quote, wait this long for others, then rank. Quote-only providers never extend the wait |
+| `RACE_SLIPPAGE_BPS` | 50 | Slippage baked into race quotes from Jupiter, 0x, and LI.FI, capped at `MAX_SLIPPAGE_BPS` |
+| `QUOTE_TTL_MS` | 2000 | A race quote younger than this is built and signed without a re-quote, if its minimum output still clears ours |
+| `FIRM_TIMEOUT_MS` | 800 | Timeout for each firm quote, build, and Jupiter `/swap` call |
+| `SCREEN_CACHE_MS` | 600000 | How long a screening verdict is reused. An outage is not cached |
+| `BALANCE_CACHE_MS` | 3000 | How long a live balance read is reused. Any tx on that chain drops it |
+| `SOLANA_MAX_PRIORITY_LAMPORTS` | 1000000 | Cap for the Jupiter `veryHigh` priority fee, and for the Jito tip |
+| `JITO_TIP_LAMPORTS` | 10000 | Jupiter `jitoTipLamports` when `JITO_ENABLED=true`. At least 1000 |
+| `RPC_URLS_<chainId>`, `SOLANA_RPC_URLS` | empty | Comma-separated extra RPCs. Reads fail over in order. Sends go to every RPC unless `MEV_RPC_URL_<chainId>` is set |
 | `MAX_BRIDGE_USD` | 25 | Largest inventory move `planRebalance` will accept |
 
 `POST /withdraw` uses the same bearer hook as the other mutating routes, then checks `x-admin-token` against `ADMIN_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. An SPL recovery creates the destination owner's associated token account when it is missing and transfers the tokens there. `POST /rebalance` plans a bridge and does not broadcast. This service has no bridge send.

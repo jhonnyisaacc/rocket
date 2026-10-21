@@ -42,38 +42,80 @@ const goplusSchema = z
 
 const blockaidSchema = z.object({ result_type: z.enum(["Benign", "Warning", "Malicious", "Spam"]) }).passthrough();
 
+type Verdict = "allow" | "deny";
+type Outcome = Verdict | "unavailable";
+
+const caches = new WeakMap<AppConfig, Map<string, { verdict: Promise<Verdict>; atMs: number }>>();
+
+function cacheFor(config: AppConfig): Map<string, { verdict: Promise<Verdict>; atMs: number }> {
+  const existing = caches.get(config);
+  if (existing) return existing;
+  const created = new Map<string, { verdict: Promise<Verdict>; atMs: number }>();
+  caches.set(config, created);
+  return created;
+}
+
 export async function screenToken(
   config: AppConfig,
   token: { chainKey: string; chain: ChainRef; contract: string },
   fetchImpl: typeof fetch = fetch,
-): Promise<"allow" | "deny"> {
+): Promise<Verdict> {
   if (!config.screening) return "allow";
+  const verdicts = cacheFor(config);
+  const key = `${token.chainKey}:${token.contract.toLowerCase()}`;
+  const now = config.now?.() ?? Date.now();
+  const cached = verdicts.get(key);
+  if (cached && now - cached.atMs < config.screenCacheMs) return cached.verdict;
+  const outcome = screenUncached(config, token, fetchImpl);
+  const verdict = outcome.then((result) => (result === "allow" ? "allow" : "deny"));
+  if (verdicts.size >= 1024) {
+    for (const [stale, row] of verdicts) if (now - row.atMs >= config.screenCacheMs) verdicts.delete(stale);
+  }
+  verdicts.set(key, { verdict, atMs: now });
+  outcome.then((result) => {
+    if (result === "unavailable" && verdicts.get(key)?.verdict === verdict) verdicts.delete(key);
+  });
+  return verdict;
+}
+
+async function screenUncached(config: AppConfig, token: { chainKey: string; chain: ChainRef; contract: string }, fetchImpl: typeof fetch): Promise<Outcome> {
+  const goplusUrl = goPlusUrl(token);
+  if (!goplusUrl) return "deny";
+  const blockaidChain = BLOCKAID_CHAIN[token.chainKey];
+  const results = await Promise.all([
+    guarded(() => screenGoPlus(config, goplusUrl, token.contract, fetchImpl)),
+    config.keys.blockaid && blockaidChain ? guarded(() => screenBlockaid(config, blockaidChain, token.contract, fetchImpl)) : Promise.resolve<Outcome>("allow"),
+  ]);
+  if (results.includes("deny")) return "deny";
+  if (results.includes("unavailable")) return "unavailable";
+  return "allow";
+}
+
+async function guarded(run: () => Promise<Outcome>): Promise<Outcome> {
   try {
-    const goplus = await screenGoPlus(config, token, fetchImpl);
-    if (goplus !== "allow") return "deny";
-    const blockaidChain = BLOCKAID_CHAIN[token.chainKey];
-    if (!config.keys.blockaid || !blockaidChain) return "allow";
-    return await screenBlockaid(config, blockaidChain, token.contract, fetchImpl);
+    return await run();
   } catch {
-    return "deny";
+    return "unavailable";
   }
 }
 
-async function screenGoPlus(config: AppConfig, token: { chainKey: string; chain: ChainRef; contract: string }, fetchImpl: typeof fetch): Promise<"allow" | "deny"> {
-  const url =
-    token.chain.kind === "solana"
-      ? `https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${encodeURIComponent(token.contract)}`
-      : token.chain.kind === "evm" && GOPLUS_EVM_CHAIN_IDS.has(token.chain.chainId)
-        ? `https://api.gopluslabs.io/api/v1/token_security/${token.chain.chainId}?contract_addresses=${encodeURIComponent(token.contract)}`
-        : "";
-  if (!url) return "deny";
+function goPlusUrl(token: { chain: ChainRef; contract: string }): string | null {
+  const contract = encodeURIComponent(token.contract);
+  if (token.chain.kind === "solana") return `https://api.gopluslabs.io/api/v1/solana/token_security?contract_addresses=${contract}`;
+  if (token.chain.kind === "evm" && GOPLUS_EVM_CHAIN_IDS.has(token.chain.chainId)) {
+    return `https://api.gopluslabs.io/api/v1/token_security/${token.chain.chainId}?contract_addresses=${contract}`;
+  }
+  return null;
+}
+
+async function screenGoPlus(config: AppConfig, url: string, contract: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const headers: Record<string, string> = {};
   if (config.keys.goplus) headers.authorization = `Bearer ${config.keys.goplus}`;
   const response = await fetchImpl(url, { headers, signal: AbortSignal.timeout(config.liveLookupTimeoutMs) });
-  if (!response.ok) return "deny";
+  if (!response.ok) return "unavailable";
   const parsed = goplusSchema.safeParse(await response.json());
-  if (!parsed.success || String(parsed.data.code) !== "1" || !parsed.data.result) return "deny";
-  const row = parsed.data.result[token.contract] ?? parsed.data.result[token.contract.toLowerCase()];
+  if (!parsed.success || String(parsed.data.code) !== "1" || !parsed.data.result) return "unavailable";
+  const row = parsed.data.result[contract] ?? parsed.data.result[contract.toLowerCase()];
   if (!row) return "deny";
   if (row.is_honeypot === "1" || row.cannot_sell_all === "1") return "deny";
   if (config.live && (!row.buy_tax || !row.sell_tax)) return "deny";
@@ -88,15 +130,15 @@ function taxTooHigh(raw: string | undefined, cap: number): boolean {
   return value > cap;
 }
 
-async function screenBlockaid(config: AppConfig, chain: string, address: string, fetchImpl: typeof fetch): Promise<"allow" | "deny"> {
+async function screenBlockaid(config: AppConfig, chain: string, address: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const response = await fetchImpl("https://api.blockaid.io/v0/token/scan", {
     method: "POST",
     headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
     body: JSON.stringify({ chain, address }),
     signal: AbortSignal.timeout(config.liveLookupTimeoutMs),
   });
-  if (!response.ok) return "deny";
+  if (!response.ok) return "unavailable";
   const parsed = blockaidSchema.safeParse(await response.json());
-  if (!parsed.success) return "deny";
+  if (!parsed.success) return "unavailable";
   return parsed.data.result_type === "Benign" ? "allow" : "deny";
 }

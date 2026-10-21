@@ -9,6 +9,14 @@ export function classifyHttp(status: number, body: string): HttpClass {
   return "error";
 }
 
+export function retryAfterAt(header: string | null, now: number): number | null {
+  if (!header) return null;
+  const trimmed = header.trim();
+  if (/^\d+$/.test(trimmed)) return now + Number(trimmed) * 1000;
+  const at = Date.parse(trimmed);
+  return Number.isFinite(at) && at > now ? at : null;
+}
+
 type Row = { failures: number; openUntil: number; used: number; windowStart: number; compliance: boolean };
 
 export class ProviderGuard {
@@ -47,6 +55,12 @@ export class ProviderGuard {
     const row = this.row(id);
     row.failures += 1;
     if (row.failures >= this.options.failureThreshold) row.openUntil = this.options.now() + this.options.openMs;
+  }
+
+  rateLimited(id: string, retryAt: number | null): void {
+    this.failure(id);
+    const row = this.row(id);
+    if (retryAt !== null && retryAt > row.openUntil) row.openUntil = retryAt;
   }
 
   compliance(id: string): void {

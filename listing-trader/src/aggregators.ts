@@ -5,11 +5,11 @@ import type { ChainRef } from "./domain.js";
 import { chainByEvmId, gasCeilingUsd } from "./chains.js";
 import { validSellAmount, type QuoteHop } from "./quote-hop.js";
 import type { HopQuote } from "./executor.js";
-import { ProviderGuard, classifyHttp } from "./provider-guard.js";
+import { ProviderGuard, classifyHttp, retryAfterAt } from "./provider-guard.js";
 import { impactPctFromUsd, readJupiter, readLifi, readZeroEx } from "./quotes.js";
 
 const ZEROEX = new Set([1, 10, 56, 137, 143, 8453, 42161, 59144, 534352, 4663, 999]);
-const ONEINCH = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144, 999, 4663]);
+const ONEINCH = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144]);
 const VELORA = new Set([1, 10, 56, 137, 8453, 42161]);
 const OKX_EVM = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144, 81457, 534352, 4663, 999]);
 const KYBER_SLUG: Record<number, string> = {
@@ -29,6 +29,12 @@ export const PROVIDER_REGISTRY = {
   odos: { calls: false, reason: "Odos shut down trading and API services." },
   jumper: { calls: false, reason: "Jumper is the LI.FI interface. Bridge quotes call LI.FI once." },
 } as const;
+
+export function kyberSupports(chainId: number): boolean {
+  return KYBER_SLUG[chainId] !== undefined;
+}
+
+const SIGNABLE_PROVIDERS: ReadonlySet<string> = new Set(["jupiter", "zeroex", "kyberswap", "lifi"]);
 
 export type QuoteProviderId = "jupiter" | "zeroex" | "oneinch" | "kyberswap" | "velora" | "okx" | "lifi";
 
@@ -63,7 +69,7 @@ export function providersFor(chain: ChainRef, config: AppConfig): QuoteProviderI
   if (chain.kind !== "evm") return [];
   const id = chain.chainId;
   const out: QuoteProviderId[] = [];
-  if (ZEROEX.has(id)) out.push("zeroex");
+  if (ZEROEX.has(id) && config.keys.zeroEx) out.push("zeroex");
   if (ONEINCH.has(id) && config.keys.oneInch) out.push("oneinch");
   if (KYBER_SLUG[id]) out.push("kyberswap");
   if (VELORA.has(id)) out.push("velora");
@@ -133,6 +139,10 @@ function chainKeyOf(chain: ChainRef): string {
   return "hypercore";
 }
 
+function nowMs(config: AppConfig): number {
+  return config.now?.() ?? Date.now();
+}
+
 async function callProvider(config: AppConfig, id: string, url: string, init: RequestInit, fetchImpl: typeof fetch, signal: AbortSignal): Promise<unknown | null> {
   const guard = guardFor(config);
   if (guard.before(id) !== "allow") return null;
@@ -142,6 +152,10 @@ async function callProvider(config: AppConfig, id: string, url: string, init: Re
     const kind = classifyHttp(response.status, text);
     if (kind === "compliance") {
       guard.compliance(id);
+      return null;
+    }
+    if (kind === "rate") {
+      guard.rateLimited(id, retryAfterAt(response.headers.get("retry-after"), nowMs(config)));
       return null;
     }
     if (kind !== "ok") {
@@ -156,27 +170,43 @@ async function callProvider(config: AppConfig, id: string, url: string, init: Re
   }
 }
 
+function firmSignal(config: AppConfig): AbortSignal {
+  return AbortSignal.timeout(config.firmTimeoutMs);
+}
+
+function jupiterHeaders(config: AppConfig, json = false): Record<string, string> {
+  const headers: Record<string, string> = json ? { "content-type": "application/json" } : {};
+  if (config.keys.jupiter) headers["x-api-key"] = config.keys.jupiter;
+  return headers;
+}
+
+function jupiterQuoteUrl(config: AppConfig, hop: QuoteHop, slippageBps: number): string {
+  const url = new URL(`${config.jupiterBase}/quote`);
+  url.searchParams.set("inputMint", hop.sellAddress);
+  url.searchParams.set("outputMint", hop.buyAddress);
+  url.searchParams.set("amount", hop.sellAmount);
+  url.searchParams.set("slippageBps", String(slippageBps));
+  return url.toString();
+}
+
+export function jupiterQuote(config: AppConfig, body: unknown): HopQuote {
+  const parsed = readJupiter(body as Parameters<typeof readJupiter>[0], config.jupiterImpactUnit);
+  return { priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, provider: "jupiter", signable: true };
+}
+
 async function quoteOne(config: AppConfig, id: QuoteProviderId, hop: QuoteHop, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal): Promise<HopQuote> {
   const key = chainKeyOf(hop.chain);
   if (id === "jupiter") {
-    const url = new URL(`${config.jupiterBase}/quote`);
-    url.searchParams.set("inputMint", hop.sellAddress);
-    url.searchParams.set("outputMint", hop.buyAddress);
-    url.searchParams.set("amount", hop.sellAmount);
-    url.searchParams.set("slippageBps", String(config.maxSlippageBps));
-    const headers: Record<string, string> = {};
-    if (config.keys.jupiter) headers["x-api-key"] = config.keys.jupiter;
-    const body = await callProvider(config, id, url.toString(), { headers }, fetchImpl, signal);
+    const body = await callProvider(config, id, jupiterQuoteUrl(config, hop, config.raceSlippageBps), { headers: jupiterHeaders(config) }, fetchImpl, signal);
     if (!body) return empty();
-    const parsed = readJupiter(body as Parameters<typeof readJupiter>[0], config.jupiterImpactUnit);
-    return withNet({ priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, provider: id, signable: true }, reference, key, null);
+    return withNet(jupiterQuote(config, body), reference, key, null);
   }
   if (hop.chain.kind !== "evm") {
     if (id !== "okx") return empty();
     return quoteOkx(config, "501", hop, reference, fetchImpl, signal, key);
   }
   const chainId = hop.chain.chainId;
-  if (id === "zeroex") return quoteZeroExPrice(config, hop, chainId, reference, fetchImpl, signal, key);
+  if (id === "zeroex") return quoteZeroExRace(config, hop, chainId, reference, fetchImpl, signal, key);
   if (id === "lifi") return quoteLifiSame(config, hop, chainId, reference, fetchImpl, signal, key);
   if (id === "oneinch") return quoteOneInch(config, hop, chainId, reference, fetchImpl, signal, key);
   if (id === "kyberswap") return quoteKyber(config, hop, chainId, reference, fetchImpl, signal, key);
@@ -184,35 +214,64 @@ async function quoteOne(config: AppConfig, id: QuoteProviderId, hop: QuoteHop, r
   return quoteOkx(config, String(chainId), hop, reference, fetchImpl, signal, key);
 }
 
-async function quoteZeroExPrice(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
-  const url = new URL(`${config.zeroExBase}/swap/allowance-holder/price`);
+function zeroExUrl(config: AppConfig, hop: QuoteHop, chainId: number, taker: string | null, slippageBps: number): string {
+  const url = new URL(`${config.zeroExBase}/swap/allowance-holder/${taker ? "quote" : "price"}`);
   url.searchParams.set("chainId", String(chainId));
   url.searchParams.set("sellToken", hop.sellAddress);
   url.searchParams.set("buyToken", hop.buyAddress);
   url.searchParams.set("sellAmount", hop.sellAmount);
-  const headers: Record<string, string> = { "0x-version": "v2" };
-  if (config.keys.zeroEx) headers["0x-api-key"] = config.keys.zeroEx;
-  const body = await callProvider(config, "zeroex", url.toString(), { headers }, fetchImpl, signal);
-  if (!body) return empty();
-  const parsed = readZeroEx(body as Parameters<typeof readZeroEx>[0], reference);
-  return withNet({ priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, prepared: parsed, provider: "zeroex", signable: true }, reference, key, null);
+  if (taker) {
+    url.searchParams.set("taker", taker);
+    url.searchParams.set("slippageBps", String(slippageBps));
+  }
+  return url.toString();
 }
 
-async function quoteLifiSame(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
+function zeroExHeaders(config: AppConfig): Record<string, string> {
+  return { "0x-version": "v2", "0x-api-key": config.keys.zeroEx ?? "" };
+}
+
+function zeroExQuote(body: unknown, reference: Reference | null): HopQuote {
+  const parsed = readZeroEx(body as Parameters<typeof readZeroEx>[0], reference);
+  return { priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, prepared: parsed, provider: "zeroex", signable: true };
+}
+
+async function quoteZeroExRace(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
+  const taker = hop.taker ?? null;
+  const body = await callProvider(config, "zeroex", zeroExUrl(config, hop, chainId, taker, config.raceSlippageBps), { headers: zeroExHeaders(config) }, fetchImpl, signal);
+  if (!body) return empty();
+  return withNet({ ...zeroExQuote(body, reference), taker }, reference, key, null);
+}
+
+function lifiUrl(config: AppConfig, hop: QuoteHop, chainId: number, taker: string, slippageBps: number): string {
   const url = new URL(`${config.lifiBase}/quote`);
   url.searchParams.set("fromChain", String(chainId));
   url.searchParams.set("toChain", String(chainId));
   url.searchParams.set("fromToken", hop.sellAddress);
   url.searchParams.set("toToken", hop.buyAddress);
   url.searchParams.set("fromAmount", hop.sellAmount);
+  url.searchParams.set("fromAddress", taker);
+  url.searchParams.set("slippage", String(slippageBps / 10_000));
   if (config.keys.lifiIntegrator) url.searchParams.set("integrator", config.keys.lifiIntegrator);
-  const headers: Record<string, string> = {};
-  if (config.keys.lifi) headers["x-lifi-api-key"] = config.keys.lifi;
-  const body = await callProvider(config, "lifi", url.toString(), { headers }, fetchImpl, signal);
-  if (!body) return empty();
+  return url.toString();
+}
+
+function lifiHeaders(config: AppConfig): Record<string, string> {
+  return config.keys.lifi ? { "x-lifi-api-key": config.keys.lifi } : {};
+}
+
+function lifiQuote(body: unknown, reference: Reference | null, chainId: number): HopQuote {
   const parsed = readLifi(body as Parameters<typeof readLifi>[0], reference, chainId);
   if (!parsed.sameChain) return empty();
-  return withNet({ priceImpactPct: parsed.priceImpactPct, feeUsd: parsed.feeUsd, buyAmount: parsed.buyAmount, raw: body, provider: "lifi", signable: true }, reference, key, null);
+  return { priceImpactPct: parsed.priceImpactPct, feeUsd: parsed.feeUsd, buyAmount: parsed.buyAmount, raw: body, provider: "lifi", signable: true };
+}
+
+async function quoteLifiSame(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
+  const taker = hop.taker ?? null;
+  if (!taker) return empty();
+  const body = await callProvider(config, "lifi", lifiUrl(config, hop, chainId, taker, config.raceSlippageBps), { headers: lifiHeaders(config) }, fetchImpl, signal);
+  if (!body) return empty();
+  return withNet({ ...lifiQuote(body, reference, chainId), taker }, reference, key, null);
 }
 
 async function quoteOneInch(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
@@ -227,24 +286,46 @@ async function quoteOneInch(config: AppConfig, hop: QuoteHop, chainId: number, r
   return withNet({ priceImpactPct: impact, feeUsd: 0, buyAmount: parsed.data.dstAmount, provider: "oneinch", signable: false, raw: body }, reference, key, null);
 }
 
-async function quoteKyber(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
-  const slug = KYBER_SLUG[chainId];
-  if (!slug) return empty();
+function kyberRoutesUrl(config: AppConfig, slug: string, hop: QuoteHop): string {
   const url = new URL(`${config.kyberBase}/${slug}/api/v1/routes`);
   url.searchParams.set("tokenIn", hop.sellAddress);
   url.searchParams.set("tokenOut", hop.buyAddress);
   url.searchParams.set("amountIn", hop.sellAmount);
-  const body = await callProvider(config, "kyberswap", url.toString(), { headers: { "x-client-id": config.keys.kyberClientId } }, fetchImpl, signal);
+  return url.toString();
+}
+
+function kyberRouteQuote(body: unknown, reference: Reference | null): HopQuote | null {
   const parsed = kyberSchema.safeParse(body);
-  if (!parsed.success) return empty();
+  if (!parsed.success) return null;
   const summary = parsed.data.data.routeSummary;
   const gas = summary.gasUsd ? Number(summary.gasUsd) : null;
   const impact = reference ? impactPctFromUsd(reference.spentUsd, Number(summary.amountOut) / 10 ** reference.decimals, reference.priceUsd) : null;
-  return withNet({ priceImpactPct: impact, feeUsd: 0, buyAmount: summary.amountOut, provider: "kyberswap", signable: true, raw: body }, reference, key, Number.isFinite(gas ?? NaN) ? gas : null);
+  return {
+    priceImpactPct: impact,
+    feeUsd: 0,
+    buyAmount: summary.amountOut,
+    provider: "kyberswap",
+    signable: true,
+    raw: body,
+    gasUsd: Number.isFinite(gas ?? NaN) ? (gas as number) : undefined,
+  };
+}
+
+async function quoteKyber(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
+  const slug = KYBER_SLUG[chainId];
+  if (!slug) return empty();
+  const body = await callProvider(config, "kyberswap", kyberRoutesUrl(config, slug, hop), { headers: { "x-client-id": config.keys.kyberClientId } }, fetchImpl, signal);
+  const quote = kyberRouteQuote(body, reference);
+  if (!quote) return empty();
+  return withNet(quote, reference, key, quote.gasUsd ?? null);
 }
 
 async function quoteVelora(config: AppConfig, hop: QuoteHop, chainId: number, reference: Reference | null, fetchImpl: typeof fetch, signal: AbortSignal, key: string): Promise<HopQuote> {
+  if (hop.sellDecimals === undefined || !reference) return empty();
   const url = new URL(`${config.veloraBase}/prices`);
+  url.searchParams.set("version", "6.2");
+  url.searchParams.set("srcDecimals", String(hop.sellDecimals));
+  url.searchParams.set("destDecimals", String(reference.decimals));
   url.searchParams.set("srcToken", hop.sellAddress);
   url.searchParams.set("destToken", hop.buyAddress);
   url.searchParams.set("amount", hop.sellAmount);
@@ -327,31 +408,78 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
   const ids = providersFor(hop.chain, config);
   if (ids.length === 0) return empty();
   const deadline = AbortSignal.timeout(config.quoteDeadlineMs);
-  const quotes = await Promise.all(
-    ids.map(async (id) => {
-      try {
-        return await quoteOne(config, id, hop, reference, fetchImpl, AbortSignal.any([deadline, AbortSignal.timeout(config.quoteTimeoutMs)]));
-      } catch {
-        return empty();
-      }
-    }),
-  );
-  return chooseQuote(quotes);
+  const slots: Array<HopQuote | undefined> = ids.map(() => undefined);
+  await new Promise<void>((resolve) => {
+    let pending = ids.length;
+    let signablePending = ids.filter((id) => SIGNABLE_PROVIDERS.has(id)).length;
+    let usableSignable = false;
+    let done = false;
+    let grace: ReturnType<typeof setTimeout> | undefined;
+    const finish = () => {
+      done = true;
+      clearTimeout(grace);
+      clearTimeout(timer);
+      resolve();
+    };
+    const timer = setTimeout(finish, config.quoteDeadlineMs);
+    ids.forEach((id, index) => {
+      quoteOne(config, id, hop, reference, fetchImpl, AbortSignal.any([deadline, AbortSignal.timeout(config.quoteTimeoutMs)]))
+        .catch(() => empty())
+        .then((quote) => {
+          if (done) return;
+          slots[index] = { ...quote, quotedAtMs: nowMs(config) };
+          pending -= 1;
+          if (SIGNABLE_PROVIDERS.has(id)) signablePending -= 1;
+          if (quote.signable !== false && quote.priceImpactPct !== null) {
+            usableSignable = true;
+            grace ??= setTimeout(finish, config.raceGraceMs);
+          }
+          if (pending === 0 || (usableSignable && signablePending === 0)) finish();
+        });
+    });
+  });
+  return chooseQuote(slots.filter((quote): quote is HopQuote => quote !== undefined));
 }
 
 export async function firmJupiter(config: AppConfig, hop: QuoteHop, slippageBps: number, reference: Reference | null, fetchImpl: typeof fetch): Promise<HopQuote> {
-  const url = new URL(`${config.jupiterBase}/quote`);
-  url.searchParams.set("inputMint", hop.sellAddress);
-  url.searchParams.set("outputMint", hop.buyAddress);
-  url.searchParams.set("amount", hop.sellAmount);
-  url.searchParams.set("slippageBps", String(slippageBps));
-  const headers: Record<string, string> = {};
-  if (config.keys.jupiter) headers["x-api-key"] = config.keys.jupiter;
-  const response = await fetchImpl(url, { headers });
-  if (!response.ok) return empty();
-  const body: unknown = await response.json();
-  const parsed = readJupiter(body as Parameters<typeof readJupiter>[0], config.jupiterImpactUnit);
-  return { priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, provider: "jupiter", signable: true };
+  const body = await callProvider(config, "jupiter", jupiterQuoteUrl(config, hop, slippageBps), { headers: jupiterHeaders(config) }, fetchImpl, firmSignal(config));
+  if (!body) return empty();
+  return jupiterQuote(config, body);
+}
+
+const jupiterSwapSchema = z.object({ swapTransaction: z.string().min(1), lastValidBlockHeight: z.number().int().optional() }).passthrough();
+
+function jupiterFees(config: AppConfig): Record<string, unknown> {
+  if (config.jitoUrl) return { jitoTipLamports: config.jitoTipLamports };
+  return { priorityLevelWithMaxLamports: { maxLamports: config.solanaMaxPriorityLamports, priorityLevel: "veryHigh" } };
+}
+
+export async function jupiterSwap(
+  config: AppConfig,
+  quoteResponse: unknown,
+  owner: string,
+  fetchImpl: typeof fetch,
+): Promise<{ swapTransaction: string; lastValidBlockHeight?: number } | null> {
+  const body = await callProvider(
+    config,
+    "jupiter",
+    `${config.jupiterBase}/swap`,
+    {
+      method: "POST",
+      headers: jupiterHeaders(config, true),
+      body: JSON.stringify({
+        quoteResponse,
+        userPublicKey: owner,
+        wrapAndUnwrapSol: true,
+        dynamicComputeUnitLimit: true,
+        prioritizationFeeLamports: jupiterFees(config),
+      }),
+    },
+    fetchImpl,
+    firmSignal(config),
+  );
+  const parsed = jupiterSwapSchema.safeParse(body);
+  return parsed.success ? parsed.data : null;
 }
 
 export async function firmZeroEx(
@@ -363,20 +491,10 @@ export async function firmZeroEx(
   fetchImpl: typeof fetch,
   slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
-  const url = new URL(`${config.zeroExBase}/swap/allowance-holder/quote`);
-  url.searchParams.set("chainId", String(chainId));
-  url.searchParams.set("sellToken", hop.sellAddress);
-  url.searchParams.set("buyToken", hop.buyAddress);
-  url.searchParams.set("sellAmount", hop.sellAmount);
-  url.searchParams.set("taker", taker);
-  url.searchParams.set("slippageBps", String(slippageBps));
-  const headers: Record<string, string> = { "0x-version": "v2" };
-  if (config.keys.zeroEx) headers["0x-api-key"] = config.keys.zeroEx;
-  const response = await fetchImpl(url, { headers });
-  if (!response.ok) return empty();
-  const body: unknown = await response.json();
-  const parsed = readZeroEx(body as Parameters<typeof readZeroEx>[0], reference);
-  return { priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, prepared: parsed, provider: "zeroex", signable: true };
+  if (!config.keys.zeroEx) return empty();
+  const body = await callProvider(config, "zeroex", zeroExUrl(config, hop, chainId, taker, slippageBps), { headers: zeroExHeaders(config) }, fetchImpl, firmSignal(config));
+  if (!body) return empty();
+  return zeroExQuote(body, reference);
 }
 
 export async function firmLifi(
@@ -388,23 +506,9 @@ export async function firmLifi(
   fetchImpl: typeof fetch,
   slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
-  const url = new URL(`${config.lifiBase}/quote`);
-  url.searchParams.set("fromChain", String(chainId));
-  url.searchParams.set("toChain", String(chainId));
-  url.searchParams.set("fromToken", hop.sellAddress);
-  url.searchParams.set("toToken", hop.buyAddress);
-  url.searchParams.set("fromAmount", hop.sellAmount);
-  url.searchParams.set("fromAddress", taker);
-  url.searchParams.set("slippage", String(slippageBps / 10_000));
-  if (config.keys.lifiIntegrator) url.searchParams.set("integrator", config.keys.lifiIntegrator);
-  const headers: Record<string, string> = {};
-  if (config.keys.lifi) headers["x-lifi-api-key"] = config.keys.lifi;
-  const response = await fetchImpl(url, { headers });
-  if (!response.ok) return empty();
-  const body: unknown = await response.json();
-  const parsed = readLifi(body as Parameters<typeof readLifi>[0], reference, chainId);
-  if (!parsed.sameChain) return empty();
-  return { priceImpactPct: parsed.priceImpactPct, feeUsd: parsed.feeUsd, buyAmount: parsed.buyAmount, raw: body, provider: "lifi", signable: true };
+  const body = await callProvider(config, "lifi", lifiUrl(config, hop, chainId, taker, slippageBps), { headers: lifiHeaders(config) }, fetchImpl, firmSignal(config));
+  if (!body) return empty();
+  return lifiQuote(body, reference, chainId);
 }
 
 export async function firmKyber(
@@ -418,30 +522,26 @@ export async function firmKyber(
 ): Promise<HopQuote> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return empty();
-  const url = new URL(`${config.kyberBase}/${slug}/api/v1/routes`);
-  url.searchParams.set("tokenIn", hop.sellAddress);
-  url.searchParams.set("tokenOut", hop.buyAddress);
-  url.searchParams.set("amountIn", hop.sellAmount);
-  const response = await fetchImpl(url, { headers: { "x-client-id": config.keys.kyberClientId } });
-  if (!response.ok) return empty();
-  const body: unknown = await response.json();
-  const parsed = kyberSchema.safeParse(body);
-  if (!parsed.success) return empty();
-  const built = await buildKyberSwap(config, chainId, parsed.data.data.routeSummary, sender, fetchImpl, slippageBps);
+  const body = await callProvider(config, "kyberswap", kyberRoutesUrl(config, slug, hop), { headers: { "x-client-id": config.keys.kyberClientId } }, fetchImpl, firmSignal(config));
+  if (!body) return empty();
+  return kyberFromRoute(config, body, chainId, sender, reference, fetchImpl, slippageBps);
+}
+
+export async function kyberFromRoute(
+  config: AppConfig,
+  body: unknown,
+  chainId: number,
+  sender: string,
+  reference: Reference | null,
+  fetchImpl: typeof fetch,
+  slippageBps: number,
+): Promise<HopQuote> {
+  const quote = kyberRouteQuote(body, reference);
+  if (!quote) return empty();
+  const parsed = kyberSchema.parse(body);
+  const built = await buildKyberSwap(config, chainId, parsed.data.routeSummary, sender, fetchImpl, slippageBps);
   if (!built) return empty();
-  const summary = parsed.data.data.routeSummary;
-  const gas = summary.gasUsd ? Number(summary.gasUsd) : null;
-  const impact = reference ? impactPctFromUsd(reference.spentUsd, Number(summary.amountOut) / 10 ** reference.decimals, reference.priceUsd) : null;
-  return {
-    priceImpactPct: impact,
-    feeUsd: 0,
-    buyAmount: summary.amountOut,
-    provider: "kyberswap",
-    signable: true,
-    raw: { route: body, build: built },
-    gasUsd: Number.isFinite(gas ?? NaN) ? (gas as number) : undefined,
-    prepared: { to: built.to, data: built.data, value: built.value },
-  };
+  return { ...quote, raw: { route: body, build: built }, prepared: { to: built.to, data: built.data, value: built.value } };
 }
 
 export async function buildKyberSwap(
@@ -454,13 +554,19 @@ export async function buildKyberSwap(
 ): Promise<{ to: string; data: string; value: string; amountOut: string | null; slippageBps: number } | null> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return null;
-  const response = await fetchImpl(`${config.kyberBase}/${slug}/api/v1/route/build`, {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-client-id": config.keys.kyberClientId },
-    body: JSON.stringify({ routeSummary, sender, recipient: sender, slippageTolerance: slippageBps, source: config.keys.kyberClientId }),
-  });
-  if (!response.ok) return null;
-  const parsed = kyberBuildSchema.safeParse(await response.json());
+  const body = await callProvider(
+    config,
+    "kyberswap",
+    `${config.kyberBase}/${slug}/api/v1/route/build`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-client-id": config.keys.kyberClientId },
+      body: JSON.stringify({ routeSummary, sender, recipient: sender, slippageTolerance: slippageBps, source: config.keys.kyberClientId }),
+    },
+    fetchImpl,
+    firmSignal(config),
+  );
+  const parsed = kyberBuildSchema.safeParse(body);
   if (!parsed.success) return null;
   const built = parsed.data.data;
   return { to: built.routerAddress, data: built.data, value: built.transactionValue ?? "0", amountOut: built.amountOut ?? null, slippageBps };

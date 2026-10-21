@@ -133,7 +133,7 @@ test("a holding tagged for another chain is not spent on this chain", () => {
 
 test("a quote that misses the deadline is dropped and a fast quote is kept", async () => {
   resetProviderGuards();
-  const config = loadConfig({ QUOTE_TIMEOUT_MS: "30", QUOTE_DEADLINE_MS: "60" });
+  const config = loadConfig({ QUOTE_TIMEOUT_MS: "30", QUOTE_DEADLINE_MS: "60", ZEROX_API_KEY: "zeroex-key" });
   const quote = await raceProviderQuotes(
     config,
     { sellAddress: "0xusdc", buyAddress: "0xtoken", sellAmount: "5000000", chain: { kind: "evm", chainId: 8453 } },
@@ -205,6 +205,7 @@ test("an uncached erc-20 sell is not signed", async () => {
   const config = loadConfig({
     AUTH_TOKEN: tokenAuth,
     RPC_URL_8453: "http://127.0.0.1:9",
+    ZEROX_API_KEY: "zeroex-key",
     ROUTER_ALLOWLIST: "0x1111111111111111111111111111111111111111",
   });
   const router = "0x1111111111111111111111111111111111111111";

@@ -432,7 +432,7 @@ test("a router allowed on one chain is denied on another, and a token sell canno
 });
 
 test("live mode pins aggregator hosts and private service URLs", () => {
-  const live = { LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth };
+  const live = { LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth, ZEROX_API_KEY: "zeroex-key", KYBERSWAP_CLIENT_ID: "listing-trader-test" };
   assert.throws(() => assertBoot(loadConfig({ ...live, JUPITER_API_BASE: "https://evil.example/swap/v1" })), /pins jupiterBase/);
   assert.throws(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://evil.example/alert" })), /https or a railway.internal host/);
   assert.doesNotThrow(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://resolver.railway.internal:8080" })));

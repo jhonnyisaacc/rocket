@@ -5,6 +5,8 @@ export type QuoteHop = {
   buyAddress: string;
   sellAmount: string;
   chain: ChainRef;
+  sellDecimals?: number;
+  taker?: string | null;
 };
 
 const AMOUNT = /^[1-9][0-9]{0,77}$/;

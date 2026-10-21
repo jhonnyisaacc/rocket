@@ -1,5 +1,5 @@
 import { holdingsForTrade, type BalanceReader } from "./balances.js";
-import type { ChainRef, ExecutionReport, HyperliquidMarket, Latency, RouteLeg, RouteQuote, SendResult, SwapIntent, TxRecord } from "./domain.js";
+import type { ChainRef, ExecutionReport, HyperliquidMarket, Latency, RaceQuote, RouteLeg, RoutePlan, RouteQuote, SendResult, SwapIntent, TxRecord } from "./domain.js";
 import { QUOTE_ASSETS, chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
 import { stamp } from "./latency.js";
@@ -20,6 +20,8 @@ export type HopQuote = {
   netOutputUsd?: number;
   signable?: boolean;
   note?: string;
+  quotedAtMs?: number;
+  taker?: string | null;
 };
 
 export type SendRequest = {
@@ -45,7 +47,7 @@ export type ExecutorDeps = {
   mode: "dry_run" | "live";
   spentTodayUsd: number;
   quoteHop: (
-    hop: { sellAddress: string; buyAddress: string; sellAmount: string; chain: ChainRef },
+    hop: { sellAddress: string; buyAddress: string; sellAmount: string; chain: ChainRef; sellDecimals?: number },
     context: { spentUsd: number; priceUsd: number | null; decimals: number | null },
   ) => Promise<HopQuote>;
   markPrice: (coin: string) => Promise<number | null>;
@@ -110,10 +112,16 @@ function skipped(intent: SwapIntent, latency: Latency, reason: string, venue: st
   };
 }
 
+function raceQuoteOf(hop: { sellAmount: string }, quote: HopQuote): RaceQuote | undefined {
+  if (quote.raw === undefined || !quote.provider || quote.quotedAtMs === undefined || quote.signable === false) return undefined;
+  return { provider: quote.provider, raw: quote.raw, quotedAtMs: quote.quotedAtMs, sellAmount: hop.sellAmount, taker: quote.taker ?? null };
+}
+
 function legOf(
   hop: { sellAddress: string; buyAddress: string; sellAmount: string },
   context: { spentUsd: number; priceUsd: number | null; decimals: number | null },
   impactPct: number,
+  quote?: RaceQuote,
 ): RouteLeg {
   return {
     sellAddress: hop.sellAddress,
@@ -123,7 +131,13 @@ function legOf(
     priceUsd: context.priceUsd,
     decimals: context.decimals,
     impactPct,
+    ...(quote ? { quote } : {}),
   };
+}
+
+function publicRoute(route: RouteQuote | null): RouteQuote | null {
+  if (!route?.legs) return route;
+  return { ...route, legs: route.legs.map(({ quote: _quote, ...leg }) => leg) };
 }
 
 function decorate(quote: RouteQuote, token: SwapIntent["token"]): RouteQuote {
@@ -149,6 +163,69 @@ async function buyDecimals(token: SwapIntent["token"], deps: ExecutorDeps): Prom
   }
 }
 
+async function quoteOnePlan(
+  intent: SwapIntent,
+  token: SwapIntent["token"],
+  plan: RoutePlan,
+  context: { spentUsd: number; priceUsd: number | null; decimals: number | null },
+  deps: ExecutorDeps,
+): Promise<RouteQuote | null> {
+  if (plan.kind === "aggregator") {
+    const hop = await deps.quoteHop({ ...plan.hop, chain: token.chain }, context);
+    if (hop.priceImpactPct === null) return null;
+    return decorate({
+      planId: plan.id,
+      kind: "aggregator",
+      hops: [`${plan.hop.sellSymbol}->${plan.hop.buySymbol}`],
+      priceImpactPct: hop.priceImpactPct,
+      feeUsd: hop.feeUsd,
+      buyAmount: hop.buyAmount,
+      legs: [legOf(plan.hop, context, hop.priceImpactPct, raceQuoteOf(plan.hop, hop))],
+      provider: hop.provider,
+      netOutputUsd: hop.netOutputUsd,
+      gasUsd: hop.gasUsd,
+      signable: hop.signable,
+      note: hop.note,
+    }, token);
+  }
+  const firstContext =
+    plan.quotePriceUsd !== null && plan.quoteDecimals !== null
+      ? { spentUsd: intent.notionalUsd, priceUsd: plan.quotePriceUsd, decimals: plan.quoteDecimals }
+      : { spentUsd: intent.notionalUsd, priceUsd: null, decimals: null };
+  const first = await deps.quoteHop({ ...plan.first, chain: token.chain }, firstContext);
+  if (first.priceImpactPct === null || !/^[1-9][0-9]*$/.test(first.buyAmount)) return null;
+  let secondSpent = intent.notionalUsd;
+  if (plan.quotePriceUsd !== null && plan.quoteDecimals !== null) {
+    const received = Number(first.buyAmount) / 10 ** plan.quoteDecimals;
+    if (Number.isFinite(received) && received > 0) secondSpent = received * plan.quotePriceUsd;
+  }
+  const second = await deps.quoteHop(
+    { ...plan.second, sellAmount: first.buyAmount, chain: token.chain },
+    { spentUsd: secondSpent, priceUsd: context.priceUsd, decimals: context.decimals },
+  );
+  if (second.priceImpactPct === null) return null;
+  const gasUsd = (first.gasUsd ?? 0) + (second.gasUsd ?? 0);
+  const routeImpact = combineHopImpact(first.priceImpactPct, second.priceImpactPct);
+  const netOutputUsd = second.netOutputUsd === undefined ? undefined : second.netOutputUsd - first.feeUsd - (first.gasUsd ?? 0);
+  return decorate({
+    planId: plan.id,
+    kind: "two_hop",
+    hops: [`${plan.first.sellSymbol}->${plan.first.buySymbol}`, `${plan.second.sellSymbol}->${plan.second.buySymbol}`],
+    priceImpactPct: routeImpact,
+    feeUsd: first.feeUsd + second.feeUsd,
+    buyAmount: second.buyAmount,
+    gasUsd,
+    netOutputUsd,
+    provider: second.provider ?? first.provider,
+    signable: first.signable !== false && second.signable !== false,
+    note: second.note ?? first.note,
+    legs: [
+      legOf(plan.first, firstContext, first.priceImpactPct, raceQuoteOf(plan.first, first)),
+      legOf({ ...plan.second, sellAmount: first.buyAmount }, { spentUsd: intent.notionalUsd, priceUsd: context.priceUsd, decimals: context.decimals }, routeImpact),
+    ],
+  }, token);
+}
+
 async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: ExecutorDeps): Promise<{ quotes: RouteQuote[]; unsized: boolean }> {
   const spec = chainByKey(token.chainKey);
   const reserve = spec?.minNativeReserve ?? 0;
@@ -167,64 +244,8 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
     priceUsd: intent.token.pairMap.top?.priceUsd ?? null,
     decimals: await buyDecimals(token, deps),
   };
-  const quotes: RouteQuote[] = [];
-  for (const plan of plans) {
-    if (plan.kind === "aggregator") {
-      const hop = await deps.quoteHop({ ...plan.hop, chain: token.chain }, context);
-      if (hop.priceImpactPct === null) continue;
-      quotes.push(decorate({
-        planId: plan.id,
-        kind: "aggregator",
-        hops: [`${plan.hop.sellSymbol}->${plan.hop.buySymbol}`],
-        priceImpactPct: hop.priceImpactPct,
-        feeUsd: hop.feeUsd,
-        buyAmount: hop.buyAmount,
-        legs: [legOf(plan.hop, context, hop.priceImpactPct)],
-        provider: hop.provider,
-        netOutputUsd: hop.netOutputUsd,
-        gasUsd: hop.gasUsd,
-        signable: hop.signable,
-        note: hop.note,
-      }, token));
-      continue;
-    }
-    const firstContext =
-      plan.quotePriceUsd !== null && plan.quoteDecimals !== null
-        ? { spentUsd: intent.notionalUsd, priceUsd: plan.quotePriceUsd, decimals: plan.quoteDecimals }
-        : { spentUsd: intent.notionalUsd, priceUsd: null, decimals: null };
-    const first = await deps.quoteHop({ ...plan.first, chain: token.chain }, firstContext);
-    if (first.priceImpactPct === null || !/^[1-9][0-9]*$/.test(first.buyAmount)) continue;
-    let secondSpent = intent.notionalUsd;
-    if (plan.quotePriceUsd !== null && plan.quoteDecimals !== null) {
-      const received = Number(first.buyAmount) / 10 ** plan.quoteDecimals;
-      if (Number.isFinite(received) && received > 0) secondSpent = received * plan.quotePriceUsd;
-    }
-    const second = await deps.quoteHop(
-      { ...plan.second, sellAmount: first.buyAmount, chain: token.chain },
-      { spentUsd: secondSpent, priceUsd: context.priceUsd, decimals: context.decimals },
-    );
-    if (second.priceImpactPct === null) continue;
-    const gasUsd = (first.gasUsd ?? 0) + (second.gasUsd ?? 0);
-    const routeImpact = combineHopImpact(first.priceImpactPct, second.priceImpactPct);
-    const netOutputUsd = second.netOutputUsd === undefined ? undefined : second.netOutputUsd - first.feeUsd - (first.gasUsd ?? 0);
-    quotes.push(decorate({
-      planId: plan.id,
-      kind: "two_hop",
-      hops: [`${plan.first.sellSymbol}->${plan.first.buySymbol}`, `${plan.second.sellSymbol}->${plan.second.buySymbol}`],
-      priceImpactPct: routeImpact,
-      feeUsd: first.feeUsd + second.feeUsd,
-      buyAmount: second.buyAmount,
-      gasUsd,
-      netOutputUsd,
-      provider: second.provider ?? first.provider,
-      signable: first.signable !== false && second.signable !== false,
-      note: second.note ?? first.note,
-      legs: [
-        legOf(plan.first, firstContext, first.priceImpactPct),
-        legOf({ ...plan.second, sellAmount: first.buyAmount }, { spentUsd: intent.notionalUsd, priceUsd: context.priceUsd, decimals: context.decimals }, routeImpact),
-      ],
-    }, token));
-  }
+  const quoted = await Promise.all(plans.map((plan) => quoteOnePlan(intent, token, plan, context, deps)));
+  const quotes = quoted.filter((quote): quote is RouteQuote => quote !== null);
   const unsized =
     plans.length > 0 &&
     plans.every((plan) => (plan.kind === "aggregator" ? plan.hop.sellAmount === "0" : plan.first.sellAmount === "0"));
@@ -311,7 +332,7 @@ async function commitLive(
     decision: "sent",
     reason: notes.join("; "),
     venue: venueKey,
-    route,
+    route: publicRoute(route),
     latency,
     txs: result.txs,
   };
@@ -321,21 +342,45 @@ async function commitLive(
   return report;
 }
 
-async function keepScreened(
-  intent: SwapIntent,
-  deps: ExecutorDeps,
-): Promise<{ ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> }> {
+type Screened = { ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> };
+
+async function keepScreened(intent: SwapIntent, deps: ExecutorDeps): Promise<Screened> {
   const alternates = intent.alternates ?? [];
   if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates };
   const screen = deps.screenToken;
-  const primary = await screen({ chainKey: intent.token.chainKey, chain: intent.token.chain, contract: intent.token.address });
+  const verdict = (token: SwapIntent["token"]) => screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address }).catch(() => "deny" as const);
+  const [primary, ...rest] = await Promise.all([intent.token, ...alternates].map(verdict));
   if (primary !== "allow") return { ok: false };
-  const kept = [];
-  for (const token of alternates) {
-    const verdict = await screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address });
-    if (verdict === "allow") kept.push(token);
+  return { ok: true, alternates: alternates.filter((_, index) => rest[index] === "allow") };
+}
+
+type CandidateQuotes = { quotes: RouteQuote[]; unsized: boolean; unread: string | null; sized: boolean; crashed?: unknown };
+
+async function quoteCandidate(intent: SwapIntent, token: SwapIntent["token"], deps: ExecutorDeps): Promise<CandidateQuotes> {
+  const none: CandidateQuotes = { quotes: [], unsized: false, unread: null, sized: false };
+  const allowed = checkLimits(deps.config, {
+    notionalUsd: intent.notionalUsd,
+    slippageBps: intent.slippageBps,
+    leverage: 1,
+    spentTodayUsd: deps.spentTodayUsd + spentToday(today(deps)),
+    chain: token.chain,
+    chainKey: token.chainKey,
+    liquidityUsd: token.pairMap.top?.liquidityUsd ?? null,
+  });
+  if (!allowed.ok) return none;
+  if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") return none;
+  try {
+    let quoted = intent;
+    if (deps.mode === "live") {
+      const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey, deps.priceOf ?? null);
+      if (!sized.ok) return { ...none, unread: sized.reason };
+      quoted = { ...intent, holdings: sized.holdings };
+    }
+    const planned = await quotePlan(quoted, token, deps);
+    return { quotes: planned.quotes, unsized: planned.unsized, unread: null, sized: deps.mode === "live" };
+  } catch (error) {
+    return { ...none, crashed: error };
   }
-  return { ok: true, alternates: kept };
 }
 
 export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<ExecutionReport> {
@@ -358,13 +403,19 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reports.set(intent.idempotencyKey, report);
     return report;
   }
-  const screened = await keepScreened(intent, deps);
-  if (!screened.ok) {
+  const screening = keepScreened(intent, deps);
+  const rejected = () => {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "token screening rejected the contract", intent.token.chainKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;
+  };
+  let alternates = intent.alternates ?? [];
+  if (intent.hyperliquid !== null) {
+    const screened = await screening;
+    if (!screened.ok) return rejected();
+    alternates = screened.alternates;
   }
-  const alternates = screened.alternates;
+  let primaryBlocked: string | null = null;
   let latency: Latency = { alertReceivedMs: intent.receivedAtMs };
   latency = stamp(latency, "resolvedMs", now());
   const spec = chainByKey(intent.token.chainKey);
@@ -387,6 +438,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reports.set(intent.idempotencyKey, report);
     return report;
   }
+  if (!limits.ok) primaryBlocked = limits.reason;
   if (spec?.liveSend === "disabled" && deps.mode === "live" && !useHyper) {
     const other = alternates.some((token) => chainByKey(token.chainKey)?.liveSend !== "disabled");
     if (!other) {
@@ -394,6 +446,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
       reports.set(intent.idempotencyKey, report);
       return report;
     }
+    primaryBlocked = spec.gap ?? "live send disabled for this chain";
   }
 
   if (useHyper && intent.hyperliquid) {
@@ -454,53 +507,26 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   }
 
   const candidates = [intent.token, ...alternates].filter((token) => deps.config.enabledChainKeys.has(token.chainKey));
-  const plannedQuotes: RouteQuote[] = [];
-  let unsized = false;
-  let unread: string | null = null;
-  let sizedAny = false;
-  let crashed: unknown;
-  for (const token of candidates) {
-    const liquidity = token.pairMap.top?.liquidityUsd ?? null;
-    const allowed = checkLimits(deps.config, {
-      notionalUsd: intent.notionalUsd,
-      slippageBps: intent.slippageBps,
-      leverage: 1,
-      spentTodayUsd: deps.spentTodayUsd + spentToday(today(deps)),
-      chain: token.chain,
-      chainKey: token.chainKey,
-      liquidityUsd: liquidity,
-    });
-    if (!allowed.ok) continue;
-    if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") continue;
-    try {
-      let quoted = intent;
-      if (deps.mode === "live") {
-        const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey, deps.priceOf ?? null);
-        if (!sized.ok) {
-          unread = sized.reason;
-          continue;
-        }
-        sizedAny = true;
-        quoted = { ...intent, holdings: sized.holdings };
-      }
-      const planned = await quotePlan(quoted, token, deps);
-      plannedQuotes.push(...planned.quotes);
-      unsized = unsized || planned.unsized;
-    } catch (error) {
-      crashed = error;
-      continue;
-    }
-  }
+  const results = await Promise.all(candidates.map((token) => quoteCandidate(intent, token, deps)));
   latency = stamp(latency, "quotedMs", now());
-  const planned = { quotes: plannedQuotes, unsized };
-  if (planned.quotes.length === 0) {
-    if (crashed !== undefined) throw crashed;
-    const reason = unread !== null && !sizedAny ? unread : planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
+  const screened = await screening;
+  if (!screened.ok) return rejected();
+  const kept = new Set([intent.token, ...screened.alternates]);
+  const allowed = results.filter((_, index) => kept.has(candidates[index] as SwapIntent["token"]));
+  const quotes = allowed.flatMap((result) => result.quotes);
+  if (quotes.length === 0) {
+    const crashed = allowed.find((result) => result.crashed !== undefined);
+    if (crashed) throw crashed.crashed;
+    const unread = allowed.find((result) => result.unread !== null)?.unread ?? null;
+    const sizedAny = allowed.some((result) => result.sized);
+    const unsized = allowed.some((result) => result.unsized);
+    const fallback = primaryBlocked !== null && screened.alternates.length === 0 ? primaryBlocked : null;
+    const reason = fallback ?? (unread !== null && !sizedAny ? unread : unsized ? "holding decimals missing" : "no route inside the slippage cap");
     const report = skipped(intent, latency, reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;
   }
-  const picked = pickRoute(planned.quotes, intent.slippageBps, deps.config.minExecutionSlippageBps ?? 0);
+  const picked = pickRoute(quotes, intent.slippageBps, deps.config.minExecutionSlippageBps ?? 0);
   if ("kind" in picked && picked.kind === "none") {
     const report = skipped(intent, latency, picked.reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
@@ -517,7 +543,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
       decision: "would_send",
       reason: `${route.kind} ${route.hops.join(" then ")} impact ${route.priceImpactPct}${note}`,
       venue: routeVenue,
-      route,
+      route: publicRoute(route),
       latency,
     };
     reports.set(intent.idempotencyKey, report);

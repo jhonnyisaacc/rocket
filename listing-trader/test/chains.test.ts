@@ -26,7 +26,7 @@ test("Robinhood Chain and HyperEVM use the published chain ids and RPCs", () => 
   assert.equal(feeRankOf("monad"), 1000);
   const off = loadConfig({} as NodeJS.ProcessEnv);
   assert.equal(off.enabledChainKeys.has("monad"), false);
-  const on = loadConfig({ ENABLED_CHAINS: "monad" } as NodeJS.ProcessEnv);
+  const on = loadConfig({ ENABLED_CHAINS: "monad", ZEROX_API_KEY: "zeroex-key" } as NodeJS.ProcessEnv);
   assert.equal(on.enabledChainKeys.has("monad"), true);
   const providers = providersFor({ kind: "evm", chainId: 143 }, on);
   assert.equal(providers.includes("zeroex"), true);

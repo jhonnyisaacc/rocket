@@ -44,7 +44,7 @@ Provider keys, only where you want that quote:
 - `GOPLUS_API_KEY`, `BLOCKAID_API_KEY` only if `TOKEN_SCREENING=true`
 - `COINGECKO_API_KEY` on the resolver and the executor. The public API takes one contract per price call, so the executor makes one call per token holding and chain every `PRICE_REFRESH_MS`
 
-Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL`, and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. In live mode `RESOLVER_URL` and `NOTIFIER_WEBHOOK_URL` must be `https` or a `railway.internal` host. `WALLET_HOLDINGS_JSON` names the mints. Live mode reads the amounts from chain and skips the trade when that read fails. `OWNER_WITHDRAW_ADDRESSES` is required before `WITHDRAW_ENABLED=true`. Withdraw also needs `ADMIN_TOKEN`, separate from `AUTH_TOKEN`. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
+Live mode requires `ZEROX_API_KEY` and a `KYBERSWAP_CLIENT_ID` of your own. Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL` (add fallbacks with `RPC_URLS_<chainId>` and `SOLANA_RPC_URLS`; in live mode every one must be `https` or a `railway.internal` host), and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. In live mode `RESOLVER_URL` and `NOTIFIER_WEBHOOK_URL` must be `https` or a `railway.internal` host. `WALLET_HOLDINGS_JSON` names the mints. Live mode reads the amounts from chain and skips the trade when that read fails. `OWNER_WITHDRAW_ADDRESSES` is required before `WITHDRAW_ENABLED=true`. Withdraw also needs `ADMIN_TOKEN`, separate from `AUTH_TOKEN`. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
 
 Do not set `LISTING_TRADER_LIVE`. Health should show `live: false`. The collector posts alerts to `/listing` with the bearer token.
 

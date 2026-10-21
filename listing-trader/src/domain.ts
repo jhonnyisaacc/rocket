@@ -82,6 +82,7 @@ export type Hop = {
   buySymbol: string;
   buyAddress: string;
   sellAmount: string;
+  sellDecimals?: number;
 };
 
 export type RoutePlan =
@@ -95,6 +96,14 @@ export type RoutePlan =
       quoteDecimals: number | null;
     };
 
+export type RaceQuote = {
+  provider: string;
+  raw: unknown;
+  quotedAtMs: number;
+  sellAmount: string;
+  taker: string | null;
+};
+
 export type RouteLeg = {
   sellAddress: string;
   buyAddress: string;
@@ -103,6 +112,7 @@ export type RouteLeg = {
   priceUsd: number | null;
   decimals: number | null;
   impactPct?: number;
+  quote?: RaceQuote;
 };
 
 export type RouteQuote = {

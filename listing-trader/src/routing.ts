@@ -32,6 +32,7 @@ function hop(holding: Holding, human: number, buySymbol: string, buyAddress: str
     buySymbol: buySymbol.toUpperCase(),
     buyAddress,
     sellAmount: typeof decimals === "number" ? sellBaseUnits(human, decimals) : "0",
+    ...(typeof decimals === "number" ? { sellDecimals: decimals } : {}),
   };
 }
 
@@ -76,6 +77,7 @@ export function planRoutes(input: {
         buySymbol: direct.buySymbol,
         buyAddress: direct.buyAddress,
         sellAmount: "0",
+        sellDecimals: via.asset.decimals,
       },
       quotePriceUsd: via.pool.quotePriceUsd ?? null,
       quoteDecimals: via.asset.decimals,

@@ -1,7 +1,10 @@
 import { CHAINS, QUOTE_ASSETS, chainByKey, type QuoteAsset, type QuoteAssets } from "./chains.js";
 import type { LimitConfig } from "./limits.js";
+import { kyberSupports } from "./aggregators.js";
 import { isSolanaAddress } from "./signer.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "./signing-policy.js";
+
+export const DEFAULT_KYBER_CLIENT_ID = "listing-trader";
 
 export type ApprovalSeed = { chainId: number; token: string; spender: string; owner: string; amount: string };
 
@@ -22,6 +25,7 @@ export type AppConfig = LimitConfig & {
   withdrawAllowlist: string[];
   dexscreenerSlugOverrides: Record<string, string>;
   rpcByChainKey: Record<string, string>;
+  rpcUrlsByChainKey: Record<string, string[]>;
   refreshEnabled: boolean;
   shortlistLimit: number;
   quoteAssets: QuoteAssets;
@@ -32,6 +36,14 @@ export type AppConfig = LimitConfig & {
   dexscreenerBase: string;
   quoteTimeoutMs: number;
   quoteDeadlineMs: number;
+  firmTimeoutMs: number;
+  quoteTtlMs: number;
+  raceGraceMs: number;
+  raceSlippageBps: number;
+  screenCacheMs: number;
+  balanceCacheMs: number;
+  solanaMaxPriorityLamports: number;
+  jitoTipLamports: number;
   providerBudgetPerMinute: number;
   providerFailureThreshold: number;
   providerOpenMs: number;
@@ -158,11 +170,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   if (maxSlippageBps > slippageHardMaxBps) {
     throw new Error("MAX_SLIPPAGE_BPS exceeds SLIPPAGE_HARD_MAX_BPS");
   }
+  const rpcUrlsByChainKey = rpcLists(env);
   const rpcByChainKey: Record<string, string> = {};
-  for (const chain of CHAINS) {
-    const raw = env[chain.rpcEnv];
-    if (raw) rpcByChainKey[chain.key] = raw;
-    else if (chain.defaultRpc) rpcByChainKey[chain.key] = chain.defaultRpc;
+  for (const [key, urls] of Object.entries(rpcUrlsByChainKey)) {
+    if (urls[0]) rpcByChainKey[key] = urls[0];
   }
   let dexscreenerSlugOverrides: Record<string, string> = {};
   if (env.DEXSCREENER_CHAIN_SLUGS) {
@@ -206,8 +217,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       .filter(Boolean),
     dexscreenerSlugOverrides,
     rpcByChainKey,
+    rpcUrlsByChainKey,
     quoteTimeoutMs: intEnv(env, "QUOTE_TIMEOUT_MS", 350),
     quoteDeadlineMs: intEnv(env, "QUOTE_DEADLINE_MS", 500),
+    firmTimeoutMs: intEnv(env, "FIRM_TIMEOUT_MS", 800),
+    quoteTtlMs: intEnv(env, "QUOTE_TTL_MS", 2_000),
+    raceGraceMs: intEnv(env, "RACE_GRACE_MS", 60),
+    raceSlippageBps: Math.min(intEnv(env, "RACE_SLIPPAGE_BPS", 50), maxSlippageBps),
+    screenCacheMs: intEnv(env, "SCREEN_CACHE_MS", 10 * 60 * 1000),
+    balanceCacheMs: intEnv(env, "BALANCE_CACHE_MS", 3_000),
+    ...solanaFees(env),
     providerBudgetPerMinute: intEnv(env, "PROVIDER_BUDGET_PER_MINUTE", 30),
     providerFailureThreshold: intEnv(env, "PROVIDER_FAILURE_THRESHOLD", 3),
     providerOpenMs: intEnv(env, "PROVIDER_OPEN_MS", 30_000),
@@ -248,7 +267,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       okxKey: env.OKX_API_KEY ?? null,
       okxSecret: env.OKX_API_SECRET ?? null,
       okxPassphrase: env.OKX_API_PASSPHRASE ?? null,
-      kyberClientId: env.KYBERSWAP_CLIENT_ID ?? "listing-trader",
+      kyberClientId: env.KYBERSWAP_CLIENT_ID || DEFAULT_KYBER_CLIENT_ID,
       veloraPartner: env.VELORA_PARTNER ?? null,
       acrossKey: env.ACROSS_API_KEY ?? null,
       acrossIntegrator: env.ACROSS_INTEGRATOR_ID ?? null,
@@ -260,6 +279,30 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     },
     approvalSeed: approvalSeed(env),
   };
+}
+
+export function rpcListEnv(rpcEnv: string): string | null {
+  return rpcEnv.includes("RPC_URL") ? rpcEnv.replace("RPC_URL", "RPC_URLS") : null;
+}
+
+function rpcLists(env: NodeJS.ProcessEnv): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const chain of CHAINS) {
+    const listEnv = rpcListEnv(chain.rpcEnv);
+    const urls = [...new Set([env[chain.rpcEnv] ?? "", ...splitList(listEnv ? env[listEnv] : undefined)].filter(Boolean))];
+    if (urls.length === 0 && chain.defaultRpc) urls.push(chain.defaultRpc);
+    if (urls.length > 0) out[chain.key] = urls;
+  }
+  return out;
+}
+
+function solanaFees(env: NodeJS.ProcessEnv): { solanaMaxPriorityLamports: number; jitoTipLamports: number } {
+  const solanaMaxPriorityLamports = intEnv(env, "SOLANA_MAX_PRIORITY_LAMPORTS", 1_000_000);
+  const jitoTipLamports = intEnv(env, "JITO_TIP_LAMPORTS", 10_000);
+  if (!Number.isInteger(solanaMaxPriorityLamports) || solanaMaxPriorityLamports < 0) throw new Error("invalid SOLANA_MAX_PRIORITY_LAMPORTS");
+  if (!Number.isInteger(jitoTipLamports) || jitoTipLamports < 1_000) throw new Error("JITO_TIP_LAMPORTS must be at least 1000");
+  if (jitoTipLamports > solanaMaxPriorityLamports) throw new Error("JITO_TIP_LAMPORTS exceeds SOLANA_MAX_PRIORITY_LAMPORTS");
+  return { solanaMaxPriorityLamports, jitoTipLamports };
 }
 
 function approvalSeed(env: NodeJS.ProcessEnv): ApprovalSeed[] {
@@ -358,6 +401,22 @@ export function assertLiveEdges(config: AppConfig, env: NodeJS.ProcessEnv): void
   }
   assertServiceUrl(config.notifierUrl);
   assertServiceUrl(config.resolverUrl);
+  for (const url of [...Object.values(config.rpcUrlsByChainKey).flat(), ...Object.values(config.mevRpcByChainId)]) assertRpcUrl(url);
+  if (!config.keys.zeroEx) throw new Error("live mode requires ZEROX_API_KEY");
+  const kyberChains = CHAINS.some((chain) => config.enabledChainKeys.has(chain.key) && chain.chain.kind === "evm" && kyberSupports(chain.chain.chainId));
+  if (kyberChains && config.keys.kyberClientId === DEFAULT_KYBER_CLIENT_ID) throw new Error("live mode requires a unique KYBERSWAP_CLIENT_ID");
+}
+
+function assertRpcUrl(value: string): void {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error("live RPC URLs must be https or a railway.internal host");
+  }
+  const railway = url.hostname === "railway.internal" || url.hostname.endsWith(".railway.internal");
+  if (url.protocol === "https:" || (url.protocol === "http:" && railway)) return;
+  throw new Error("live RPC URLs must be https or a railway.internal host");
 }
 
 function assertServiceUrl(value: string | null): void {
@@ -416,7 +475,7 @@ export function configSecrets(config: AppConfig): string[] {
     config.adminToken,
     config.notifierUrl,
     config.databaseUrl,
-    ...Object.values(config.rpcByChainKey),
+    ...Object.values(config.rpcUrlsByChainKey).flat(),
     ...Object.values(config.mevRpcByChainId),
   ].filter((item): item is string => typeof item === "string" && item.length >= 8);
 }
