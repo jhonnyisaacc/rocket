@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { guardFor } from "./aggregators.js";
 import { timeoutSignal } from "./timeout.js";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
@@ -169,6 +170,7 @@ export async function createExecutorApp(
   const listingGuard = { preHandler: app.auth([app.verifyBearer]), config: perMinute(config.listingRateLimitPerMin) };
   app.get("/health", async () => ({ ok: true }));
   app.get("/status", { preHandler: app.auth([app.verifyBearer]) }, async () => ({ ok: true, service: "executor", ...publicConfig(config) }));
+  app.get("/provider-health", { preHandler: app.auth([app.verifyBearer]) }, async () => ({ providers: guardFor(config).snapshot() }));
   app.post("/execute", { config: mutatingLimit }, async (request, reply) => {
     const presented = bearerOf(request);
     const strategyPeek = Object.values(config.strategies).some((strategy) => anyTokenMatches(presented, strategy.tokens));
