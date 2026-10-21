@@ -160,13 +160,19 @@ export async function callProvider(config: AppConfig, id: string, url: string, i
       return null;
     }
     if (kind !== "ok") {
-      guard.failure(id);
+      guard.failure(id, "http");
       return null;
     }
-    guard.success(id);
-    return JSON.parse(text) as unknown;
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      guard.success(id);
+      return parsed;
+    } catch {
+      guard.failure(id, "schema");
+      return null;
+    }
   } catch {
-    guard.failure(id);
+    guard.failure(id, "network");
     return null;
   }
 }

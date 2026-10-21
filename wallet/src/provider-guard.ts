@@ -17,7 +17,20 @@ export function retryAfterAt(header: string | null, now: number): number | null 
   return Number.isFinite(at) && at > now ? at : null;
 }
 
-type Row = { failures: number; openUntil: number; used: number; windowStart: number; compliance: boolean };
+export type ProviderErrorClass = "http" | "rate" | "compliance" | "network" | "schema";
+
+export type ProviderHealthSnapshot = {
+  provider: string;
+  state: "healthy" | "degraded" | "open" | "compliance";
+  consecutiveFailures: number;
+  lastSuccessAt: number | null;
+  lastFailureAt: number | null;
+  lastErrorClass: ProviderErrorClass | null;
+  openUntil: number | null;
+  callsInWindow: number;
+};
+
+type Row = { failures: number; openUntil: number; used: number; windowStart: number; compliance: boolean; lastSuccessAt: number | null; lastFailureAt: number | null; lastErrorClass: ProviderErrorClass | null };
 
 export class ProviderGuard {
   private readonly rows = new Map<string, Row>();
@@ -49,16 +62,20 @@ export class ProviderGuard {
     const row = this.row(id);
     row.failures = 0;
     row.compliance = false;
+    row.lastSuccessAt = this.options.now();
+    row.lastErrorClass = null;
   }
 
-  failure(id: string): void {
+  failure(id: string, errorClass: ProviderErrorClass = "http"): void {
     const row = this.row(id);
     row.failures += 1;
+    row.lastFailureAt = this.options.now();
+    row.lastErrorClass = errorClass;
     if (row.failures >= this.options.failureThreshold) row.openUntil = this.options.now() + this.options.openMs;
   }
 
   rateLimited(id: string, retryAt: number | null): void {
-    this.failure(id);
+    this.failure(id, "rate");
     const row = this.row(id);
     if (retryAt !== null && retryAt > row.openUntil) row.openUntil = retryAt;
   }
@@ -66,7 +83,25 @@ export class ProviderGuard {
   compliance(id: string): void {
     const row = this.row(id);
     row.compliance = true;
+    row.lastFailureAt = this.options.now();
+    row.lastErrorClass = "compliance";
     row.openUntil = this.options.now() + this.options.openMs;
+  }
+
+  snapshot(): ProviderHealthSnapshot[] {
+    const now = this.options.now();
+    return [...this.rows.entries()]
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([provider, row]) => ({
+        provider,
+        state: row.compliance && row.openUntil > now ? "compliance" : row.openUntil > now ? "open" : row.failures > 0 ? "degraded" : "healthy",
+        consecutiveFailures: row.failures,
+        lastSuccessAt: row.lastSuccessAt,
+        lastFailureAt: row.lastFailureAt,
+        lastErrorClass: row.lastErrorClass,
+        openUntil: row.openUntil > now ? row.openUntil : null,
+        callsInWindow: row.used,
+      }));
   }
 
   complianceOpen(id: string): boolean {
@@ -76,7 +111,7 @@ export class ProviderGuard {
   private row(id: string): Row {
     const existing = this.rows.get(id);
     if (existing) return existing;
-    const created: Row = { failures: 0, openUntil: 0, used: 0, windowStart: this.options.now(), compliance: false };
+    const created: Row = { failures: 0, openUntil: 0, used: 0, windowStart: this.options.now(), compliance: false, lastSuccessAt: null, lastFailureAt: null, lastErrorClass: null };
     this.rows.set(id, created);
     return created;
   }
