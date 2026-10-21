@@ -8,6 +8,8 @@ any bot  →  rocket <workflow> --json  →  ResearchResult  →  adapter presen
 
 Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No orders, no signing, no automatic holdings or watch changes.
 
+`listing-trader/` is a separate Node service for listing alerts. The Rocket CLI does not import it. See [listing-trader/README.md](listing-trader/README.md).
+
 Design: [docs/ROCKET_PLAN.md](docs/ROCKET_PLAN.md)
 
 ```bash

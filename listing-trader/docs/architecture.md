@@ -1,0 +1,40 @@
+# How a listing becomes a sized route
+
+The collector is outside this tree. It hears a listing and `POST`s an alert to the executor `/listing` route. The executor asks the resolver, then either logs a dry-run buy or, when live mode is on, signs a transaction. Rocket never sees that path. `rocket/` does not import `listing-trader/`.
+
+## The watchlist is the hot path
+
+Each token record holds a ticker, every project name the resolver has (English, and Korean when CoinGecko returned one), the chain, the contract, and a pair map. The pair map is every pool for that contract on that chain, sorted by liquidity. `top` is the deepest pool. For MPLX that is often MPLX against SOL, with a thinner MPLX against USDC kept beside it. `bestByQuote` keeps the deepest pool for each quote symbol.
+
+The resolver keeps that list in memory, keyed by exact ticker. A hit needs the ticker and a full project-name match after Unicode normalization. `AXIS` does not match `AXS`. A ticker with the wrong name is a lookalike and stops. Two chains with the same ticker and the same name are ambiguous unless the alert names a chain. A token under the liquidity floor is illiquid unless it has a Hyperliquid perp, which the executor can use as a fallback.
+
+Postgres is the shared copy. The memory map is per process. On boot the resolver loads `verified_tokens` when `DATABASE_URL` is set. `REFRESH_ENABLED=true` rebuilds identities about once a day from the CoinGecko coin list and refreshes pools for the shortlist on `LIQUIDITY_REFRESH_MS` (default 10 minutes, inside the 5 to 15 minute band). The shortlist is the tokens that already have pools, capped by `SHORTLIST_LIMIT` (default 200), deepest first. A full rebuild keeps those pools. It does not ask DexScreener for the whole coin list.
+
+An unlisted alert gets one DexScreener search, bounded by `LIVE_LOOKUP_TIMEOUT_MS` (default 400). The search has to match ticker and project name on one contract. A timeout, a miss, or two contracts returns no buy. A single match is stored, so the next liquidity refresh includes it.
+
+CoinGecko platform ids are mapped only where the key is the usual public id (`ethereum`, `base`, `solana`, and the other keys in `PLATFORM_TO_CHAIN`). Robinhood Chain and HyperEVM are not in that map. DexScreener slugs for those two chains were not confirmed, so pool refresh ignores them until `DEXSCREENER_CHAIN_SLUGS` sets a slug.
+
+## The executor spends what the wallet holds
+
+`WALLET_HOLDINGS_JSON` lists symbol, address, human amount, USD value, whether the balance is the native gas token, and decimals. The planner drops a native balance that would cross the reserve (0.01 SOL, 0.001 of the native token on EVM). It sizes the sell to the trade notional, default 5 USD, and converts it with the holding's decimals. Missing decimals skip the route with `holding decimals missing` rather than a guessed unit size.
+
+For each spendable holding the planner builds two candidates.
+
+- An aggregator hop from that holding to the token. Jupiter on Solana, and 0x on the chains it lists, can fill USDC to SOL to the token inside one quote.
+- An explicit two-hop when the deepest pool's quote is a different asset. The first leg buys that quote. The second leg sells the amount the first quote returned.
+
+Quotes that do not return a price impact are dropped. 0x has no impact field, so impact is the gap between USD spent and the bought amount at the pool price. That needs the buy token's decimals and USD price. Jupiter's `priceImpactPct` example is `0.0001` with no stated unit. The default treats it as a fraction (`0.0001` becomes 0.01 percent). Set `JUPITER_IMPACT_UNIT=percent` if a response is already in percent. The published quote path is Swap V1, which Jupiter marks as superseded by V2. `JUPITER_API_BASE` overrides the origin.
+
+Two-hop impact compounds. One percent then one percent is 1.99 percent. The picker keeps routes inside the slippage cap (default 100 bps, hard max 300) and sorts by impact, then fee USD, then buy amount. LI.FI reports fee USD. Jupiter and 0x fees stay 0 when the response has no USD fee, so impact decides those ties. Explicit EVM two-hops need `QUOTE_DECIMALS_JSON` (for example `{"SOL":9,"USDC":6}`) before the intermediate leg has a verifiable impact. Without it, that leg is skipped and the aggregator quote can still win.
+
+Live mode re-quotes the chosen legs and refuses the send when the firm total impact is above the cap. Solana signs the Jupiter swap transaction. EVM chains on 0x sign the allowance-holder quote. zkSync Era and Blast quote through LI.FI with `fromChain` equal to `toChain`. A LI.FI transaction whose chain id is anything else is rejected. zkSync live send stays off because those transactions are not standard EIP-1559.
+
+## One execute call for a second strategy
+
+`POST /execute` takes a `SwapIntent` and returns an `ExecutionReport`. A copy-trading process can call that route, or `execute()` in process, without going through a listing alert. The same caps, kill switch, and dry-run default apply.
+
+Hyperliquid is two surfaces. HyperEVM (chain id 999) is another EVM chain on 0x. HyperCore is the native book. When the spot pool is missing or under the liquidity floor and the ticker matches a non-delisted perp, the executor plans a 1x cross update and an IOC order. The mark comes from `allMids`. There is no mark, so there is no order. The service signs only `order`, `cancel`, and `updateLeverage`.
+
+## Where the numbers came from
+
+Chain ids, RPCs, and aggregator coverage are the ones recorded on each chain in `src/chains.ts`, with the page that was checked. Robinhood Chain mainnet is chain id 4663 with the public RPC from Robinhood's connecting docs, and 0x lists it. HyperEVM mainnet is chain id 999. Blast is quoted through LI.FI because 0x no longer lists it for swaps. No public RPC is invented for chains that did not publish one in those pages. Set `RPC_URL_<chainId>` or `SOLANA_RPC_URL`.
