@@ -51,6 +51,7 @@ export type ExecutorDeps = {
   releaseSpend?: (idempotencyKey: string) => Promise<void>;
   now?: () => number;
   killSwitchEnabled?: () => Promise<boolean>;
+  screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
 };
 
 const reports = new Map<string, ExecutionReport>();
@@ -242,6 +243,23 @@ async function commitLive(
   return report;
 }
 
+async function keepScreened(
+  intent: SwapIntent,
+  deps: ExecutorDeps,
+): Promise<{ ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> }> {
+  const alternates = intent.alternates ?? [];
+  if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates };
+  const screen = deps.screenToken;
+  const primary = await screen({ chainKey: intent.token.chainKey, chain: intent.token.chain, contract: intent.token.address });
+  if (primary !== "allow") return { ok: false };
+  const kept = [];
+  for (const token of alternates) {
+    const verdict = await screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address });
+    if (verdict === "allow") kept.push(token);
+  }
+  return { ok: true, alternates: kept };
+}
+
 export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<ExecutionReport> {
   const existing = reports.get(intent.idempotencyKey);
   if (existing) return existing;
@@ -257,11 +275,18 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reports.set(intent.idempotencyKey, report);
     return report;
   }
+  const screened = await keepScreened(intent, deps);
+  if (!screened.ok) {
+    const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "token screening rejected the contract", intent.token.chainKey, deps.mode);
+    reports.set(intent.idempotencyKey, report);
+    return report;
+  }
+  const alternates = screened.alternates;
   let latency: Latency = { alertReceivedMs: intent.receivedAtMs };
   latency = stamp(latency, "resolvedMs", now());
   const spec = chainByKey(intent.token.chainKey);
   const liquidity = intent.token.pairMap.top?.liquidityUsd ?? null;
-  const liquidAlternate = (intent.alternates ?? []).some((token) => (token.pairMap.top?.liquidityUsd ?? 0) >= deps.config.minLiquidityUsd);
+  const liquidAlternate = alternates.some((token) => (token.pairMap.top?.liquidityUsd ?? 0) >= deps.config.minLiquidityUsd);
   const useHyper = intent.hyperliquid !== null && (liquidity === null || liquidity < deps.config.minLiquidityUsd) && !liquidAlternate;
   const venueChain = useHyper ? { kind: "hypercore" as const, market: intent.hyperliquid?.market ?? "perp" } : intent.token.chain;
   const venueKey = useHyper ? "hypercore" : intent.token.chainKey;
@@ -274,13 +299,13 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     chainKey: venueKey,
     liquidityUsd: useHyper ? null : liquidity,
   });
-  if (!limits.ok && !(limits.reason.startsWith("chain ") && (intent.alternates?.length ?? 0) > 0)) {
+  if (!limits.ok && !(limits.reason.startsWith("chain ") && alternates.length > 0)) {
     const report = skipped(intent, latency, limits.reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;
   }
   if (spec?.liveSend === "disabled" && deps.mode === "live" && !useHyper) {
-    const other = (intent.alternates ?? []).some((token) => chainByKey(token.chainKey)?.liveSend !== "disabled");
+    const other = alternates.some((token) => chainByKey(token.chainKey)?.liveSend !== "disabled");
     if (!other) {
       const report = skipped(intent, latency, spec.gap ?? "live send disabled for this chain", venueKey, deps.mode);
       reports.set(intent.idempotencyKey, report);
@@ -336,7 +361,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     );
   }
 
-  const candidates = [intent.token, ...(intent.alternates ?? [])].filter((token) => deps.config.enabledChainKeys.has(token.chainKey));
+  const candidates = [intent.token, ...alternates].filter((token) => deps.config.enabledChainKeys.has(token.chainKey));
   const plannedQuotes: RouteQuote[] = [];
   let unsized = false;
   for (const token of candidates) {

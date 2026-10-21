@@ -30,7 +30,7 @@ Net output is bought amount times the pool USD price, minus the reported fee, mi
 | zkSync, Robinhood, HyperEVM | 0.1 |
 | Ethereum | 2 |
 
-`feeRank` breaks ties after net, impact, and fee. Lower is preferred: Solana 10, Base 20, Arbitrum 30, Optimism 40, Polygon 50, BNB 60, Linea 70, Scroll 80, Blast 90, zkSync 100, Robinhood 110, HyperEVM 120, HyperCore 150, Ethereum 200. An unknown chain is 1000.
+`feeRank` breaks ties after net, impact, and fee. Lower is preferred: Solana 10, Base 20, Arbitrum 30, Optimism 40, Polygon 50, BNB 60, Linea 70, Scroll 80, Blast 90, zkSync 100, Robinhood 110, HyperEVM 120, HyperCore 150, Ethereum 200. An unknown chain is 1000. Monad is not in this table, so it ranks as 1000. That number is the unknown-chain rank, not a measured Monad fee.
 
 The deadline is 500 ms. Each provider also has a 350 ms timeout. Late responses are aborted. They are not selected for arriving first.
 
@@ -40,7 +40,7 @@ Repeat trades should not pay approve gas. The hot path does not sign `approve` u
 
 ## Bridges stay off the buy
 
-`POST /rebalance` plans a move of inventory. It does not broadcast. Destinations must be in both `ownAddresses` and `OWNER_WITHDRAW_ADDRESSES`. Caps are `MAX_BRIDGE_USD` (25), `MAX_BRIDGE_FEE_BPS` (50), and `DAILY_BRIDGE_USD_CAP` (50).
+`POST /rebalance` plans a move of inventory. It does not broadcast, and nothing else in this service submits a bridge. Destinations must be in both `ownAddresses` and `OWNER_WITHDRAW_ADDRESSES`. Caps are `MAX_BRIDGE_USD` (25), `MAX_BRIDGE_FEE_BPS` (50), and `DAILY_BRIDGE_USD_CAP` (50).
 
 | Provider | Call |
 | --- | --- |

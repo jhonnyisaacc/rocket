@@ -17,36 +17,38 @@ on:
       - ".gitleaks.toml"
 permissions:
   contents: read
+  pull-requests: read
   security-events: write
 jobs:
   codeql:
     name: CodeQL
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: github/codeql-action/init@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
         with:
           languages: javascript-typescript
           config: |
             paths:
               - listing-trader
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
   semgrep:
     name: Semgrep
     runs-on: ubuntu-latest
     container:
       image: semgrep/semgrep
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: semgrep scan --config p/typescript --config p/security-audit --error --metrics=off listing-trader
   gitleaks:
     name: Gitleaks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: .gitleaks.toml
           GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"

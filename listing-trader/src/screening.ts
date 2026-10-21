@@ -25,6 +25,8 @@ const goplusSchema = z
           .object({
             is_honeypot: z.string().optional(),
             cannot_sell_all: z.string().optional(),
+            buy_tax: z.string().optional(),
+            sell_tax: z.string().optional(),
           })
           .passthrough(),
       )
@@ -67,7 +69,15 @@ async function screenGoPlus(config: AppConfig, token: { chainKey: string; chain:
   const row = parsed.data.result[token.contract] ?? parsed.data.result[token.contract.toLowerCase()];
   if (!row) return "deny";
   if (row.is_honeypot === "1" || row.cannot_sell_all === "1") return "deny";
+  if (taxTooHigh(row.buy_tax, config.maxTokenTax) || taxTooHigh(row.sell_tax, config.maxTokenTax)) return "deny";
   return "allow";
+}
+
+function taxTooHigh(raw: string | undefined, cap: number): boolean {
+  if (raw === undefined || raw === "") return false;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0) return true;
+  return value > cap;
 }
 
 async function screenBlockaid(config: AppConfig, token: { chainKey: string; chain: ChainRef; contract: string }, fetchImpl: typeof fetch): Promise<"allow" | "deny"> {

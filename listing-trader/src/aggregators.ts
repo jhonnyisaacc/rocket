@@ -8,7 +8,7 @@ import type { HopQuote } from "./executor.js";
 import { ProviderGuard, classifyHttp } from "./provider-guard.js";
 import { impactPctFromUsd, readJupiter, readLifi, readZeroEx } from "./quotes.js";
 
-const ZEROEX = new Set([1, 10, 56, 137, 8453, 42161, 59144, 534352, 4663, 999]);
+const ZEROEX = new Set([1, 10, 56, 137, 143, 8453, 42161, 59144, 534352, 4663, 999]);
 const ONEINCH = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144, 999, 4663]);
 const VELORA = new Set([1, 10, 56, 137, 8453, 42161]);
 const OKX_EVM = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144, 81457, 534352, 4663, 999]);
@@ -22,6 +22,7 @@ const KYBER_SLUG: Record<number, string> = {
   59144: "linea",
   999: "hyperevm",
   4663: "robinhood",
+  143: "monad",
 };
 
 export const PROVIDER_REGISTRY = {

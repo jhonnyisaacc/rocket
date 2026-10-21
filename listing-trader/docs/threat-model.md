@@ -12,7 +12,7 @@ The collector and the executor share that token when the executor calls the reso
 
 Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program or SPL transfer must pay the hot wallet or an allowlisted withdraw address.
+App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program transfer must pay the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account. An SPL transfer must pay an allowlisted withdraw address.
 
 Pre-sign simulation is viem `simulateCalls` on EVM and `simulateTransaction` on Solana. A revert is `simulation rejected the transaction` and `broadcast` is false, so the spend reservation is released.
 
@@ -24,7 +24,7 @@ pino logs the execution report. Authorization, API keys, and OKX signature heade
 
 ## Information disclosure
 
-With Turnkey, the trading keys are not in this process. The process holds the Turnkey API key, which can request a signature inside the policy. The local keystore decrypts into the process only when `ALLOW_LOCAL_SIGNER=true` or when live mode is off and a keystore is configured for a dry run that never signs. Logs do not print `Secret` values.
+With Turnkey, the trading keys are not in this process. The process holds the Turnkey API key, which can request a signature inside the policy. The local keystore decrypts into the process only for a dry-run. Live mode does not accept it. Logs do not print `Secret` values.
 
 Do not attach a Railway public domain. Boot throws when `RAILWAY_PUBLIC_DOMAIN` is set. Use the private network URL for Postgres and for `RESOLVER_URL`.
 

@@ -13,7 +13,7 @@ export KEYSTORE_PATH=wallet.keystore.json
 npm run create-wallet
 ```
 
-The file mode is `0600`. `*.keystore.json` is gitignored. That file is the export. Decrypt it with the same passphrase. The command does not print the keys, and a terminal prompt does not echo them. On a laptop this is the fallback signer. Live mode will not use it unless `ALLOW_LOCAL_SIGNER=true`. The production signer is Turnkey. See [the ceremony](#key-ceremony) below.
+The file mode is `0600`. `*.keystore.json` is gitignored. That file is the export. Decrypt it with the same passphrase. The command does not print the keys, and a terminal prompt does not echo them. On a laptop this is the dry-run signer. Live mode does not use it. The production signer is Turnkey. See [the ceremony](#key-ceremony) below.
 
 A HyperCore agent key is separate. Approving that agent is a manual step on the master account. This service does not sign `approveAgent`.
 
@@ -65,20 +65,21 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `MIN_LIQUIDITY_USD` | 75000 | Floor for the top pool |
 | `KILL_SWITCH` | off | `1` or `true` skips every trade. A `control_flags` row named `kill_switch` does the same without a restart |
 | `MAX_LEVERAGE` | 1 | HyperCore orders above this are rejected |
-| `DISABLED_CHAINS` | empty | Comma-separated chain keys |
+| `DISABLED_CHAINS` | empty | Comma-separated chain keys to remove from the default set |
+| `ENABLED_CHAINS` | empty | Comma-separated chain keys to add. Monad stays off until this list includes `monad` |
 | `QUOTE_DECIMALS_JSON` | `{}` | Quote-asset decimals for an explicit two-hop |
 | `OWNER_WITHDRAW_ADDRESSES` | empty | Allowlist. Empty denies every withdraw and every bridge plan |
 | `AUTH_TOKEN` | unset | Required. At least 16 characters. Boot refuses a shorter value |
 | `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |
-| `ALLOW_LOCAL_SIGNER` | off | `true` lets live mode use the keystore |
-| `TOKEN_SCREENING` | off | `true` screens the unlisted lookup only |
+| `TOKEN_SCREENING` | on in live, off in dry-run | `false` turns screening off. `true` turns it on. Refresh and a live buy both use it |
+| `MAX_TOKEN_TAX` | 0.1 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
 | `MAX_BRIDGE_USD` | 25 | Largest inventory move `planRebalance` will accept |
 
-`POST /withdraw` uses `ADMIN_TOKEN`, not `AUTH_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. `POST /rebalance` plans a bridge and does not broadcast.
+`POST /withdraw` uses the same bearer hook as the other mutating routes, then checks `x-admin-token` against `ADMIN_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. `POST /rebalance` plans a bridge and does not broadcast. This service has no bridge send.
 
-To run live, set `LISTING_TRADER_LIVE` to the exact string `true`, set `DATABASE_URL`, and load Turnkey. Live mode refuses to boot without the database and without a Turnkey signer, unless `ALLOW_LOCAL_SIGNER=true`. The daily cap is a reservation in `spend_journal`. A restart does not zero committed or reserved rows. Dry-run does not write that table.
+To run live, set `LISTING_TRADER_LIVE` to the exact string `true`, set `DATABASE_URL`, and load Turnkey. Live mode refuses to boot without the database and without a Turnkey signer. The local keystore cannot override that. The daily cap is a reservation in `spend_journal`. A restart does not zero committed or reserved rows. Dry-run does not write that table.
 
 ## Key ceremony
 
@@ -87,7 +88,7 @@ Do this once, with two people if you can, and do not paste keys into chat.
 1. In Turnkey, create an organization and a wallet with an Ethereum account, a Solana account, and a third Ethereum account for the Hyperliquid agent.
 2. Create an API user that can sign and nothing else. Download the API key pair. Store the private key in the Railway secret `TURNKEY_API_PRIVATE_KEY`. Set `TURNKEY_API_PUBLIC_KEY` and `TURNKEY_ORGANIZATION_ID`.
 3. Copy the three addresses into `TURNKEY_EVM_ADDRESS`, `TURNKEY_SOLANA_ADDRESS`, and `TURNKEY_HYPERLIQUID_ADDRESS`.
-4. Replace `<TURNKEY_API_USER_ID>` and `<ROUTER_ALLOWLIST>` in a copy of `policies/turnkey.json` and create those three policies in the Turnkey console. The file in git keeps the placeholders. The test checks that the file matches `turnkeyPolicyDocument()`.
+4. Build the three Turnkey policies with `turnkeyPolicyDocument({ userId, routers })`, using the API user id and the same map as `ROUTER_ALLOWLIST_JSON`. The file in git is that function with user id `api-user` and an empty router map, so its EVM condition matches no chain. Do not hand-edit a placeholder. The test checks that the file matches the function.
 5. Fund the hot wallet with a small USDC balance and the native gas reserve. Approve each router once with the root quorum, not with the API user. Then set `APPROVAL_CACHE_JSON` to those allowances.
 6. On Hyperliquid, approve the agent from the master account in the UI. Do not import the master key here.
 7. Boot with live mode off. `GET /health` must show `live: false`. Send a dry-run alert. Then set `LISTING_TRADER_LIVE=true`.
@@ -98,7 +99,7 @@ Create a new API key pair, add it to the same API user, set the new Railway vari
 
 ## Revocation
 
-In Turnkey, delete the API key or set the API user to a policy with no allows. Signing stops on the next request even if this process is still up. Then set `KILL_SWITCH=true` and restart. If you were on the local keystore, remove `ALLOW_LOCAL_SIGNER`, delete `EVM_PRIVATE_KEY`, `SOLANA_SECRET_KEY`, and `HYPERLIQUID_AGENT_KEY`, and move the funds.
+In Turnkey, delete the API key or set the API user to a policy with no allows. Signing stops on the next request even if this process is still up. Then set `KILL_SWITCH=true` and restart. If a laptop still has a keystore, delete `EVM_PRIVATE_KEY`, `SOLANA_SECRET_KEY`, and `HYPERLIQUID_AGENT_KEY`, and move the funds. Live mode will not sign with those keys.
 
 ## Kill switch
 

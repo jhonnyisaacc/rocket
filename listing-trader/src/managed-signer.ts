@@ -245,9 +245,9 @@ export function loadManagedSigner(env: NodeJS.ProcessEnv, config: AppConfig): Tr
       config,
     );
   }
-  if (config.live && !config.allowLocalSigner) {
+  if (config.live) {
     delete env.KEYSTORE_PASSPHRASE;
-    throw new Error("live mode requires Turnkey. Set ALLOW_LOCAL_SIGNER=true to use the local keystore.");
+    throw new Error("live mode requires Turnkey");
   }
   const material = loadSigner(env);
   delete env.KEYSTORE_PASSPHRASE;

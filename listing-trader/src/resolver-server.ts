@@ -63,6 +63,18 @@ export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist,
       continue;
     }
   }
+  if (config.screening) {
+    const kept = [];
+    for (const token of tokens) {
+      if (token.pairMap.pools.length === 0) {
+        kept.push(token);
+        continue;
+      }
+      const verdict = await screenToken(config, { chainKey: token.chainKey, chain: token.chain, contract: token.contract }, fetchImpl);
+      if (verdict === "allow") kept.push(token);
+    }
+    tokens = kept;
+  }
   list.replace(tokens);
   if (config.databaseUrl) await saveToPostgres(config.databaseUrl, list.records());
 }

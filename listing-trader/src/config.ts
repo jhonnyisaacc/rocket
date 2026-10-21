@@ -46,9 +46,9 @@ export type AppConfig = LimitConfig & {
   minPoolAgeHours: number;
   minVolume24hUsd: number;
   hyperliquidAccount: string | null;
-  allowLocalSigner: boolean;
   allowHotApproval: boolean;
   screening: boolean;
+  maxTokenTax: number;
   routerAllowlist: Record<number, string[]>;
   solanaProgramAllowlist: string[];
   maxValueWei: bigint;
@@ -78,6 +78,20 @@ export type AppConfig = LimitConfig & {
   now?: () => number;
   approvalSeed: ApprovalSeed[];
 };
+
+function screeningEnabled(env: NodeJS.ProcessEnv, live: boolean): boolean {
+  if (env.TOKEN_SCREENING === "false") return false;
+  if (env.TOKEN_SCREENING === "true") return true;
+  return live;
+}
+
+function taxCap(env: NodeJS.ProcessEnv): number {
+  const raw = env.MAX_TOKEN_TAX;
+  if (raw === undefined || raw === "") return 0.1;
+  const value = Number(raw);
+  if (!Number.isFinite(value) || value < 0 || value > 1) throw new Error("invalid MAX_TOKEN_TAX");
+  return value;
+}
 
 function intEnv(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
   const raw = env[name];
@@ -191,9 +205,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     minPoolAgeHours: intEnv(env, "MIN_POOL_AGE_HOURS", 24),
     minVolume24hUsd: intEnv(env, "MIN_VOLUME_24H_USD", 10_000),
     hyperliquidAccount: env.HYPERLIQUID_ACCOUNT_ADDRESS ?? null,
-    allowLocalSigner: env.ALLOW_LOCAL_SIGNER === "true",
     allowHotApproval: env.ALLOW_HOT_APPROVAL === "true",
-    screening: env.TOKEN_SCREENING === "true",
+    screening: screeningEnabled(env, env.LISTING_TRADER_LIVE === "true"),
+    maxTokenTax: taxCap(env),
     routerAllowlist: routerAllowlist(env),
     solanaProgramAllowlist: env.SOLANA_PROGRAM_ALLOWLIST ? splitList(env.SOLANA_PROGRAM_ALLOWLIST) : [...SOLANA_BASE_PROGRAMS],
     maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),
@@ -372,7 +386,7 @@ export function publicConfig(config: AppConfig): Record<string, unknown> {
     shortlistLimit: config.shortlistLimit,
     quoteDeadlineMs: config.quoteDeadlineMs,
     screening: config.screening,
-    allowLocalSigner: config.allowLocalSigner,
+    maxTokenTax: config.maxTokenTax,
     jito: config.jitoUrl !== null,
   };
 }

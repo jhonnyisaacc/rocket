@@ -1,6 +1,6 @@
 const HEX_KEY = /\b(?:0x)?[0-9a-fA-F]{64}\b/g;
 const BASE58_SECRET = /\b[1-9A-HJ-NP-Za-km-z]{64,128}\b/g;
-const CREDENTIAL_URL = /\b(?:postgres(?:ql)?|https?):\/\/[^\s]*:[^\s@]*@[^\s]+/gi;
+const CREDENTIAL_URL = /\b(?:postgres(?:ql)?|https?):\/\/[^:\s]+:[^@\s]+@\S+/gi;
 
 const tracked: Secret[] = [];
 

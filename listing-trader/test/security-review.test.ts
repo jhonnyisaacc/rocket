@@ -17,7 +17,7 @@ import { BODY_LIMIT, REQUEST_TIMEOUT_MS } from "../src/http.js";
 import { assertBoot, loadManagedSigner, type TransactionSigner } from "../src/managed-signer.js";
 import { listedContract, poolMeetsFloor } from "../src/parsers.js";
 import { redactError, Secret, trackSecret, zeroLoadedSecrets } from "../src/redact.js";
-import { createResolverApp } from "../src/resolver-server.js";
+import { createResolverApp, refreshLiquidity } from "../src/resolver-server.js";
 import { MemoryWatchlist } from "../src/watchlist.js";
 import { assertEvmSigning, DEFAULT_MAX_VALUE_WEI, JUPITER_PROGRAM_ID, SOLANA_BASE_PROGRAMS } from "../src/signing-policy.js";
 import { createMemoryJournal, spendDay } from "../src/spend.js";
@@ -52,11 +52,14 @@ function pair(createdAtMs: number, volume24hUsd: number) {
   };
 }
 
-function lookupFetch(createdAtMs: number, volume24hUsd: number): typeof fetch {
+function lookupFetch(createdAtMs: number, volume24hUsd: number, honeypot = "0"): typeof fetch {
   return (async (input: RequestInfo | URL) => {
-    const url = String(input);
-    if (url.includes("dex/search")) {
+    const url = new URL(String(input), "https://api.dexscreener.com");
+    if (url.pathname.endsWith("/dex/search")) {
       return new Response(JSON.stringify({ pairs: [pair(createdAtMs, volume24hUsd)] }), { status: 200 });
+    }
+    if (url.hostname === "api.gopluslabs.io") {
+      return new Response(JSON.stringify({ code: 1, result: { mint: { is_honeypot: honeypot, cannot_sell_all: "0", buy_tax: "0", sell_tax: "0" } } }), { status: 200 });
     }
     return new Response(JSON.stringify([{ id: "metaplex", symbol: "mplx", name: "Metaplex", platforms: { solana: "mint" } }]), { status: 200 });
   }) as typeof fetch;
@@ -169,6 +172,72 @@ test("a live lookup does not upsert and a dry-run hit stays out of the watchlist
   await young.close();
 });
 
+test("a live honeypot stays unlisted and a refresh drops it", async () => {
+  const live = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true" });
+  const list = new MemoryWatchlist();
+  const app = await createResolverApp(live, list, false, lookupFetch(Date.now() - 48 * 3_600_000, 100_000, "1"));
+  const response = await app.inject({
+    method: "POST",
+    url: "/alert",
+    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    payload: alertBody(),
+  });
+  assert.equal(response.json().kind, "unlisted");
+  assert.equal(response.json().detail, "token screening rejected the contract");
+  assert.equal(list.records().length, 0);
+  await app.close();
+
+  const refreshList = new MemoryWatchlist();
+  refreshList.replace([
+    {
+      id: "solana:mint",
+      ticker: "MPLX",
+      names: ["Metaplex"],
+      chainKey: "solana",
+      chain: { kind: "solana" },
+      contract: "mint",
+      decimals: 6,
+      pairMap: buildPairMap([
+        {
+          poolAddress: "pool",
+          dex: "raydium",
+          chainKey: "solana",
+          baseSymbol: "MPLX",
+          baseAddress: "mint",
+          quoteSymbol: "USDC",
+          quoteAddress: "usdc",
+          liquidityUsd: 200_000,
+          priceUsd: 1,
+          baseDecimals: 6,
+        },
+      ]),
+      hyperliquid: null,
+      refreshedAt: "2026-10-21T00:00:00.000Z",
+    },
+  ]);
+  await refreshLiquidity(loadConfig({ TOKEN_SCREENING: "true", AUTH_TOKEN: tokenAuth }), refreshList, async (input) => {
+    const url = new URL(String(input), "https://api.dexscreener.com");
+    if (url.hostname === "api.gopluslabs.io") {
+      return new Response(JSON.stringify({ code: 1, result: { mint: { is_honeypot: "1", buy_tax: "0", sell_tax: "0" } } }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ pairs: [pair(Date.now() - 48 * 3_600_000, 100_000)] }), { status: 200 });
+  });
+  assert.equal(refreshList.records().length, 0);
+});
+
+test("live mode does not send a token the screener denies", async () => {
+  resetExecutorState();
+  const config = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true" });
+  const sends: string[] = [];
+  const report = await execute(intent(), {
+    ...runtime(config, sends, async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10" })),
+    screenToken: async () => "deny",
+  });
+  assert.equal(report.decision, "skipped");
+  assert.equal(report.reason, "token screening rejected the contract");
+  assert.equal(sends.length, 0);
+});
+
 test("pool floor and coin list membership are required before a dry-run hit", () => {
   const now = Date.now();
   const oldEnough = { liquidityUsd: 1, createdAtMs: now - 48 * 3_600_000, volume24hUsd: 10_000 };
@@ -228,16 +297,12 @@ test("/execute stays dry-run, a thrown quote is a generic 500, and plain text is
     payload: intent(),
   });
   assert.equal(crashed.statusCode, 500);
-  assert.equal(crashed.json().error, "internal error");
-  assert.equal(crashed.body.includes(databaseUrl), false);
-  assert.equal(crashed.body.includes(rpc), false);
+  assert.deepEqual(crashed.json(), { error: "internal error" });
   assert.equal(BODY_LIMIT <= 64 * 1024, true);
   assert.equal(failing.server.requestTimeout, REQUEST_TIMEOUT_MS);
   await failing.close();
   const redacted = redactError(new Error(`connect ${databaseUrl} via ${rpc}`), [databaseUrl, rpc]);
-  assert.equal(redacted.includes(databaseUrl), false);
-  assert.equal(redacted.includes("s3cret-db"), false);
-  assert.equal(redacted.includes(rpc), false);
+  assert.equal(redacted, "connect [redacted] via [redacted]");
 });
 
 test("withdraw requires the admin token, the enable flag, the cap, and the allowlist", async () => {
@@ -249,19 +314,26 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
     MAX_WITHDRAW_AMOUNT: "1",
   });
   const app = await createExecutorApp(config, runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), null, [], []);
-  const headers = { "content-type": "application/json" };
+  const headers = { "content-type": "application/json", authorization: `Bearer ${tokenAuth}`, "x-admin-token": adminAuth };
   const trading = await app.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${tokenAuth}` },
+    headers: { "content-type": "application/json", authorization: `Bearer ${tokenAuth}` },
     payload: { to: owner, amount: 1, chainKey: "base" },
   });
   assert.equal(trading.statusCode, 401);
+  const noBearer = await app.inject({
+    method: "POST",
+    url: "/withdraw",
+    headers: { "content-type": "application/json", "x-admin-token": adminAuth },
+    payload: { to: owner, amount: 1, chainKey: "base" },
+  });
+  assert.equal(noBearer.statusCode, 401);
   const disabled = await createExecutorApp(loadConfig({ AUTH_TOKEN: tokenAuth, ADMIN_TOKEN: adminAuth }), runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), null, [], []);
   const off = await disabled.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${adminAuth}` },
+    headers,
     payload: { to: owner, amount: 1, chainKey: "base" },
   });
   assert.equal(off.statusCode, 403);
@@ -269,28 +341,28 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
   const over = await app.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${adminAuth}` },
+    headers,
     payload: { to: owner, amount: 5, chainKey: "base" },
   });
   assert.equal(over.statusCode, 403);
   const foreign = await app.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${adminAuth}` },
+    headers,
     payload: { to: "0x3333333333333333333333333333333333333333", amount: 1, chainKey: "base" },
   });
   assert.equal(foreign.statusCode, 403);
   const tokenDenied = await app.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${adminAuth}` },
+    headers,
     payload: { to: owner, amount: 1, chainKey: "base", mint: "0x4444444444444444444444444444444444444444", decimals: 6 },
   });
   assert.equal(tokenDenied.statusCode, 403);
   const planned = await app.inject({
     method: "POST",
     url: "/withdraw",
-    headers: { ...headers, authorization: `Bearer ${adminAuth}` },
+    headers,
     payload: { to: owner, amount: 1, chainKey: "base" },
   });
   assert.equal(planned.statusCode, 200);
@@ -448,7 +520,7 @@ test("keystore headers are authenticated, buffers zero, and the passphrase promp
   zeroLoadedSecrets();
   assert.equal(secret.reveal(), "");
   const env = { KEYSTORE_PASSPHRASE: "correct horse battery", ALLOW_LOCAL_SIGNER: "true" };
-  loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth }));
+  assert.throws(() => loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth })), /live mode requires Turnkey/);
   assert.equal(env.KEYSTORE_PASSPHRASE, undefined);
   let written = "";
   const listeners = new Set<(chunk: Buffer) => void>();

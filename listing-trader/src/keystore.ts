@@ -84,7 +84,7 @@ export function decryptWallet(file: KeystoreFile, passphrase: string): WalletMat
   const tag = blob.subarray(blob.length - 16);
   const data = blob.subarray(0, blob.length - 16);
   const key = keyFromPassphrase(passphrase, salt, file.n, file.r, file.p);
-  const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  const decipher = createDecipheriv("aes-256-gcm", key, iv, { authTagLength: 16 });
   decipher.setAAD(headerAad(file));
   decipher.setAuthTag(tag);
   let json: string;

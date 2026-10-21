@@ -1,3 +1,4 @@
+import { PublicKey } from "@solana/web3.js";
 import { decodeFunctionData, erc20Abi, type Hex } from "viem";
 import { CHAINS } from "./chains.js";
 import { assertTradableAction, type HyperliquidAction } from "./hyperliquid.js";
@@ -14,6 +15,27 @@ export const SOLANA_BASE_PROGRAMS = [
 ] as const;
 
 export const DEFAULT_MAX_VALUE_WEI = 2_000_000_000_000_000n;
+export const WSOL_MINT = "So11111111111111111111111111111111111111112";
+export const JITO_TIP_ACCOUNTS = [
+  "96gYZGLnJYVFmbjzopPSU6QiEV5fGqZNyN9nmNhvrZU5",
+  "HFqU5x63VTqvQss8hp11i4wVV8bD44PvwucfZ2bU7gRe",
+  "Cw8CFyM9FkoMi7K7Crf6HNQqf4uEMzpKw6QNghXLvLkY",
+  "ADaUMid9yfUytqMBgopwjb2DTLSokTSzL1zt6iGPaS49",
+  "DfXygSm4jCyNCybVYYK6DwvWqjKee8pbDmJGcLWNDXjh",
+  "ADuUkR4vqLUMWXxW9gh6D6L8pMSawimctcNZ5pGwDcEt",
+  "DttWaMuVvTiduZRnguLF7jNxTgiMBZ1hyAumKUiL2KRL",
+  "3AVi9Tg9Uo68tJfuvoKvqKNWKkC5wPdSSdeBnizKZ6jT",
+] as const;
+
+const TOKEN_PROGRAM_ID = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const ATA_PROGRAM_ID = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+
+export function wrappedSolAccount(owner: string): string {
+  return PublicKey.findProgramAddressSync(
+    [new PublicKey(owner).toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), new PublicKey(WSOL_MINT).toBuffer()],
+    ATA_PROGRAM_ID,
+  )[0].toBase58();
+}
 
 export type EvmPurpose = "swap" | "approve" | "withdraw";
 
@@ -100,8 +122,10 @@ export function assertSolanaSigning(input: {
   }
   const owners = new Set(input.withdrawAllowlist);
   owners.add(input.expectedFeePayer);
+  const wrap = wrappedSolAccount(input.expectedFeePayer);
+  const tips = new Set<string>(JITO_TIP_ACCOUNTS);
   for (const dest of input.nativeTransferTo) {
-    if (!owners.has(dest)) throw new Error("solana native transfer destination is not allowlisted");
+    if (!owners.has(dest) && dest !== wrap && !tips.has(dest)) throw new Error("solana native transfer destination is not allowlisted");
   }
   for (const dest of input.tokenTransferTo ?? []) {
     if (!input.withdrawAllowlist.includes(dest)) throw new Error("solana token transfer destination is not allowlisted");
@@ -113,17 +137,28 @@ export function assertHyperliquidSigning(action: { type: string }, maxLeverage: 
   if (action.type === "updateLeverage" && action.leverage > maxLeverage) throw new Error("leverage exceeds the signing policy");
 }
 
-export function turnkeyPolicyDocument(userId = "<TURNKEY_API_USER_ID>"): unknown[] {
-  const chains = evmChainIds().map((id) => `eth.tx.chain_id == ${id}`).join(" || ");
+const TURNKEY_USER_ID = /^[A-Za-z0-9_-]{1,128}$/;
+
+export function turnkeyPolicyDocument(input: { userId: string; routers: Readonly<Record<number, readonly string[]>> }): unknown[] {
+  if (!TURNKEY_USER_ID.test(input.userId)) throw new Error("turnkey user id is empty or has a placeholder");
+  const clauses: string[] = [];
+  for (const id of evmChainIds()) {
+    const routers = [...new Set((input.routers[id] ?? []).map((item) => item.toLowerCase()))];
+    if (routers.some((item) => !/^0x[0-9a-f]{40}$/.test(item))) throw new Error("router address is invalid");
+    if (routers.length === 0) continue;
+    const dest = routers.map((item) => `eth.tx.to == '${item}'`).join(" || ");
+    clauses.push(`(eth.tx.chain_id == ${id} && (${dest}))`);
+  }
+  const evmMatch = clauses.length === 0 ? "eth.tx.chain_id == 0" : clauses.join(" || ");
   const programs = SOLANA_BASE_PROGRAMS.map((id) => `p == '${id}'`).join(" || ");
-  const consensus = `approvers.any(user, user.id == '${userId}')`;
+  const consensus = `approvers.any(user, user.id == '${input.userId}')`;
   return [
     {
       policyName: "EVM swaps on allowlisted chains and routers",
-      notes: "Replace <ROUTER_ALLOWLIST> with the router addresses from ROUTER_ALLOWLIST_JSON. Native value cap is 2000000000000000 wei. One-time token approvals are a root-quorum ceremony, not this policy.",
+      notes: "Routers come from the map passed to turnkeyPolicyDocument. An empty map matches no chain. Native value cap is 2000000000000000 wei. One-time token approvals are a root-quorum ceremony, not this policy.",
       effect: "EFFECT_ALLOW",
       consensus,
-      condition: `activity.kind == 'SIGN_TRANSACTION' && (${chains}) && eth.tx.value <= 2000000000000000 && (eth.tx.to == '<ROUTER_ALLOWLIST>')`,
+      condition: `activity.kind == 'SIGN_TRANSACTION' && (${evmMatch}) && eth.tx.value <= 2000000000000000`,
     },
     {
       policyName: "Solana swaps through Jupiter and the base programs",

@@ -15,7 +15,7 @@ import { BRIDGE_PROVIDERS, planRebalance } from "../src/rebalance.js";
 import { pickRoute, planRoutes } from "../src/routing.js";
 import { buildPairMap } from "../src/pairs.js";
 import { screenToken } from "../src/screening.js";
-import { assertEvmSigning, assertHyperliquidSigning, DEFAULT_MAX_VALUE_WEI, turnkeyPolicyDocument } from "../src/signing-policy.js";
+import { assertEvmSigning, assertHyperliquidSigning, DEFAULT_MAX_VALUE_WEI, JITO_TIP_ACCOUNTS, JUPITER_PROGRAM_ID, turnkeyPolicyDocument, wrappedSolAccount } from "../src/signing-policy.js";
 import { RESERVE_LOCK_SQL, RESERVE_SUM_SQL, reserveDecision } from "../src/spend.js";
 import { createExecutorApp } from "../src/executor-server.js";
 import type { TokenRecord } from "../src/domain.js";
@@ -126,8 +126,8 @@ test("a quote that misses the deadline is dropped and a fast quote is kept", asy
     { sellAddress: "0xusdc", buyAddress: "0xtoken", sellAmount: "5000000", chain: { kind: "evm", chainId: 8453 } },
     { spentUsd: 5, priceUsd: 1, decimals: 6 },
     async (input, init) => {
-      const url = String(input);
-      if (!url.includes("api.0x.org")) {
+      const host = new URL(String(input)).hostname;
+      if (host !== "api.0x.org") {
         await new Promise((resolve, reject) => {
           const timer = setTimeout(resolve, 400);
           init?.signal?.addEventListener("abort", () => {
@@ -277,11 +277,11 @@ test("signing policy denies an empty router list, a foreign router, and a hyperl
   assert.throws(() => assertHyperliquidSigning({ type: "withdraw3" }, 1), /withdraw3/);
 });
 
-test("live mode refuses the local keystore unless it is explicitly allowed", () => {
+test("live mode refuses the local keystore", () => {
   const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
   assert.throws(() => loadManagedSigner({}, live), /live mode requires Turnkey/);
-  const allowed = loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth });
-  assert.equal(loadManagedSigner({}, allowed), null);
+  const flagged = loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth });
+  assert.throws(() => loadManagedSigner({ ALLOW_LOCAL_SIGNER: "true" }, flagged), /live mode requires Turnkey/);
 });
 
 test("a solana native transfer to a stranger is denied before the backend signs", async () => {
@@ -307,6 +307,69 @@ test("a solana native transfer to a stranger is denied before the backend signs"
     }).compileToV0Message(),
   ).serialize();
   await assert.rejects(() => wrapped.signSolana(bad), /solana program is not allowlisted/);
+});
+
+test("a jupiter swap may wrap SOL to the owner account and tip a jito account", async () => {
+  const payer = Keypair.generate();
+  const ata = new PublicKey(wrappedSolAccount(payer.publicKey.toBase58()));
+  assert.notEqual(ata.toBase58(), payer.publicKey.toBase58());
+  const tip = new PublicKey(JITO_TIP_ACCOUNTS[0]);
+  const mint = new PublicKey("So11111111111111111111111111111111111111112");
+  const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+  const budget = Buffer.alloc(5);
+  budget.writeUInt8(2, 0);
+  budget.writeUInt32LE(200_000, 1);
+  const message = new TransactionMessage({
+    payerKey: payer.publicKey,
+    recentBlockhash: "11111111111111111111111111111111",
+    instructions: [
+      new TransactionInstruction({ programId: new PublicKey("ComputeBudget111111111111111111111111111111"), keys: [], data: budget }),
+      new TransactionInstruction({
+        programId: new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"),
+        keys: [
+          { pubkey: payer.publicKey, isSigner: true, isWritable: true },
+          { pubkey: ata, isSigner: false, isWritable: true },
+          { pubkey: payer.publicKey, isSigner: false, isWritable: false },
+          { pubkey: mint, isSigner: false, isWritable: false },
+          { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+          { pubkey: tokenProgram, isSigner: false, isWritable: false },
+        ],
+        data: Buffer.from([1]),
+      }),
+      SystemProgram.transfer({ fromPubkey: payer.publicKey, toPubkey: ata, lamports: 1_000_000 }),
+      new TransactionInstruction({
+        programId: tokenProgram,
+        keys: [
+          { pubkey: ata, isSigner: false, isWritable: true },
+          { pubkey: payer.publicKey, isSigner: false, isWritable: false },
+        ],
+        data: Buffer.from([17]),
+      }),
+      new TransactionInstruction({
+        programId: new PublicKey(JUPITER_PROGRAM_ID),
+        keys: [
+          { pubkey: payer.publicKey, isSigner: true, isWritable: true },
+          { pubkey: ata, isSigner: false, isWritable: true },
+        ],
+        data: Buffer.from([1, 2, 3, 4]),
+      }),
+      SystemProgram.transfer({ fromPubkey: payer.publicKey, toPubkey: tip, lamports: 1000 }),
+    ],
+  }).compileToV0Message();
+  const calls: string[] = [];
+  const inner = signer(calls);
+  inner.solanaAddress = () => payer.publicKey.toBase58();
+  const wrapped = withPolicy(inner, loadConfig({}));
+  await wrapped.signSolana(new VersionedTransaction(message).serialize());
+  assert.deepEqual(calls, ["solana"]);
+  const stolen = new VersionedTransaction(
+    new TransactionMessage({
+      payerKey: payer.publicKey,
+      recentBlockhash: "11111111111111111111111111111111",
+      instructions: [SystemProgram.transfer({ fromPubkey: payer.publicKey, toPubkey: new PublicKey(wrappedSolAccount(Keypair.generate().publicKey.toBase58())), lamports: 1 })],
+    }).compileToV0Message(),
+  ).serialize();
+  await assert.rejects(() => wrapped.signSolana(stolen), /not allowlisted/);
 });
 
 test("boot requires a long token and refuses a public Railway domain", () => {
@@ -368,8 +431,7 @@ test("screening fails closed on a bad body, a honeypot, and a Blockaid warning",
   const benign = loadConfig({ TOKEN_SCREENING: "true", BLOCKAID_API_KEY: "blockaid-test", AUTH_TOKEN: tokenAuth });
   assert.equal(
     await screenToken(benign, token, async (input) => {
-      const url = String(input);
-      if (url.includes("gopluslabs.io")) {
+      if (new URL(String(input)).hostname === "api.gopluslabs.io") {
         return new Response(JSON.stringify({ code: 1, result: { [token.contract]: { is_honeypot: "0", cannot_sell_all: "0" } } }), { status: 200 });
       }
       return new Response(JSON.stringify({ result_type: "Warning" }), { status: 200 });
@@ -377,6 +439,17 @@ test("screening fails closed on a bad body, a honeypot, and a Blockaid warning",
     "deny",
   );
   assert.equal(await screenToken(loadConfig({ TOKEN_SCREENING: "false" }), token, async () => { throw new Error("offline"); }), "allow");
+  assert.equal(
+    await screenToken(
+      config,
+      token,
+      async () => new Response(JSON.stringify({ code: 1, result: { [token.contract]: { is_honeypot: "0", buy_tax: "0.5", sell_tax: "0" } } }), { status: 200 }),
+    ),
+    "deny",
+  );
+  const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
+  assert.equal(live.screening, true);
+  assert.equal(loadConfig({ AUTH_TOKEN: tokenAuth }).screening, false);
 });
 
 test("spend reservation locks the day and counts reserved plus committed rows", () => {
@@ -391,7 +464,16 @@ test("spend reservation locks the day and counts reserved plus committed rows", 
 
 test("the checked-in Turnkey policy matches the code", () => {
   const file = JSON.parse(readFileSync(new URL("../../policies/turnkey.json", import.meta.url), "utf8"));
-  assert.deepEqual(file, turnkeyPolicyDocument());
+  const sample = { userId: "api-user", routers: {} };
+  assert.deepEqual(file, turnkeyPolicyDocument(sample));
+  const base = "0x1111111111111111111111111111111111111111";
+  const other = "0x2222222222222222222222222222222222222222";
+  const filled = JSON.stringify(turnkeyPolicyDocument({ userId: "api-user", routers: { 8453: [base], 1: [other] } }));
+  assert.equal(filled.includes("<ROUTER_ALLOWLIST>"), false);
+  assert.equal(filled.includes("<TURNKEY_API_USER_ID>"), false);
+  assert.match(filled, /eth\.tx\.chain_id == 8453 && \(eth\.tx\.to == '0x1111111111111111111111111111111111111111'\)/);
+  assert.match(filled, /eth\.tx\.chain_id == 1 && \(eth\.tx\.to == '0x2222222222222222222222222222222222222222'\)/);
+  assert.throws(() => turnkeyPolicyDocument({ userId: "<TURNKEY_API_USER_ID>", routers: {} }), /placeholder/);
 });
 
 test("logs redact authorization and exchange signatures", () => {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { chainByKey } from "../src/chains.js";
+import { providersFor } from "../src/aggregators.js";
+import { chainByKey, feeRankOf } from "../src/chains.js";
 import { loadConfig } from "../src/config.js";
 
 test("Robinhood Chain and HyperEVM use the published chain ids and RPCs", () => {
@@ -15,6 +16,22 @@ test("Robinhood Chain and HyperEVM use the published chain ids and RPCs", () => 
   assert.equal(chainByKey("zksync")?.liveSend, "disabled");
   assert.equal(chainByKey("blast")?.aggregator, "lifi");
   assert.equal(chainByKey("hypercore")?.defaultRpc, "https://api.hyperliquid.xyz");
+  const monad = chainByKey("monad");
+  assert.equal(monad?.chain.kind === "evm" ? monad.chain.chainId : 0, 143);
+  assert.equal(monad?.nativeSymbol, "MON");
+  assert.equal(monad?.defaultRpc, "https://rpc.monad.xyz");
+  assert.equal(monad?.enabledByDefault, false);
+  assert.equal(monad?.dexscreenerSlug, null);
+  assert.equal(monad?.aggregator, "zeroex");
+  assert.equal(feeRankOf("monad"), 1000);
+  const off = loadConfig({} as NodeJS.ProcessEnv);
+  assert.equal(off.enabledChainKeys.has("monad"), false);
+  const on = loadConfig({ ENABLED_CHAINS: "monad" } as NodeJS.ProcessEnv);
+  assert.equal(on.enabledChainKeys.has("monad"), true);
+  const providers = providersFor({ kind: "evm", chainId: 143 }, on);
+  assert.equal(providers.includes("zeroex"), true);
+  assert.equal(providers.includes("kyberswap"), true);
+  assert.equal(providers.includes("lifi"), true);
 });
 
 test("live mode is off unless the flag is the exact string true", () => {

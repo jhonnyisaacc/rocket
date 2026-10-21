@@ -23,9 +23,9 @@ Turnkey latency is one HTTPS round trip after the quote. That cost is accepted. 
 
 `TransactionSigner` is the interface. `loadManagedSigner` builds a Turnkey backend when `TURNKEY_ORGANIZATION_ID`, `TURNKEY_API_PUBLIC_KEY`, `TURNKEY_API_PRIVATE_KEY`, and `TURNKEY_EVM_ADDRESS` are set. Solana and Hyperliquid addresses come from `TURNKEY_SOLANA_ADDRESS` and `TURNKEY_HYPERLIQUID_ADDRESS`. They are not derived in this process.
 
-The encrypted keystore remains for laptops and for an incident where Turnkey is unreachable. Live mode throws unless `ALLOW_LOCAL_SIGNER=true`.
+The encrypted keystore remains for dry-run on a laptop. Live mode throws if Turnkey is not configured. There is no flag that puts the keystore back into live mode.
 
-Policies are code. `assertEvmSigning`, `assertSolanaSigning`, and `assertHyperliquidSigning` run in `withPolicy` before the backend is called. `policies/turnkey.json` is `turnkeyPolicyDocument()` and a test fails if the file drifts. The operator replaces `<TURNKEY_API_USER_ID>` and `<ROUTER_ALLOWLIST>` in the Turnkey console with the same router addresses as `ROUTER_ALLOWLIST_JSON`. An empty router list for a chain denies every EVM swap on that chain. Native value is capped at `2000000000000000` wei (0.002 of the native token). That number is a service policy, not a price. A token sell must send value 0.
+Policies are code. `assertEvmSigning`, `assertSolanaSigning`, and `assertHyperliquidSigning` run in `withPolicy` before the backend is called. `policies/turnkey.json` is `turnkeyPolicyDocument({ userId: "api-user", routers: {} })` and a test fails if the file drifts. The console copy is the same function with the real API user id and `ROUTER_ALLOWLIST_JSON`. An empty router list for a chain denies every EVM swap on that chain. Native value is capped at `2000000000000000` wei (0.002 of the native token). That number is a service policy, not a price. A token sell must send value 0. A Solana native transfer may pay the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account.
 
 ## Hyperliquid limit
 

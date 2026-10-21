@@ -15,6 +15,7 @@ import { seedApprovals } from "./approvals.js";
 import { loadSigner } from "./signer.js";
 import { commitSpend, readKillSwitch, recordSpend, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
+import { screenToken } from "./screening.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
 
 function intentToken(token: TokenRecord): SwapIntent["token"] {
@@ -93,6 +94,7 @@ function deps(config: AppConfig, signer: TransactionSigner | null, secrets: read
     },
     commitSpend: config.live && config.databaseUrl ? (key) => commitSpend(config.databaseUrl as string, key) : undefined,
     releaseSpend: config.live && config.databaseUrl ? (key) => releaseSpend(config.databaseUrl as string, key) : undefined,
+    screenToken: config.screening ? (token) => screenToken(config, token) : undefined,
   };
 }
 
@@ -140,9 +142,9 @@ export async function createExecutorApp(
     await notify(config, report, secrets);
     return report;
   });
-  app.post("/withdraw", { config: mutatingLimit }, async (request, reply) => {
-    const header = request.headers.authorization;
-    const presented = typeof header === "string" && header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
+  app.post("/withdraw", guard, async (request, reply) => {
+    const header = request.headers["x-admin-token"];
+    const presented = typeof header === "string" ? header : "";
     const parsed = withdrawSchema.safeParse(request.body);
     if (!parsed.success) {
       const adminOk = Boolean(config.adminToken) && tokenMatches(presented, config.adminToken ?? "");
@@ -205,7 +207,7 @@ async function main(): Promise<void> {
   seedApprovals(config.approvalSeed);
   const material = loadSigner(process.env);
   const signer = loadManagedSigner(process.env, config);
-  if (config.live && !signer) throw new Error("live mode requires Turnkey or an allowed local signer");
+  if (config.live && !signer) throw new Error("live mode requires Turnkey");
   if (config.live && !config.databaseUrl) throw new Error("live mode requires DATABASE_URL so the daily cap survives restart");
   if (config.live) {
     const agent = hyperliquidAgentAddress(process.env);

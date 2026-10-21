@@ -32,7 +32,7 @@ Turnkey, on the executor:
 - `TURNKEY_EVM_ADDRESS`, `TURNKEY_SOLANA_ADDRESS`, `TURNKEY_HYPERLIQUID_ADDRESS`
 - `ROUTER_ALLOWLIST_JSON` as a map of chain id to router addresses, and, after the ceremony, `APPROVAL_CACHE_JSON`
 
-The keystore is not the live signer. Leave `ALLOW_LOCAL_SIGNER` unset.
+The keystore is not the live signer. Live mode ignores any request to use it.
 
 Provider keys, only where you want that quote:
 
