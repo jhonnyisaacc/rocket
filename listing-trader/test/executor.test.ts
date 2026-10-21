@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { landedSend } from "./fixtures.js";
+import { spendDay } from "../src/spend.js";
 import { execute, resetExecutorState, spentToday, authorizeWithdraw, type ExecutorDeps } from "../src/executor.js";
 import type { SwapIntent } from "../src/domain.js";
 import { buildPairMap } from "../src/pairs.js";
@@ -37,7 +38,7 @@ function intent(notional = 5): SwapIntent {
           baseSymbol: "MPLX",
           baseAddress: "mplx",
           quoteSymbol: "SOL",
-          quoteAddress: "sol",
+          quoteAddress: "So11111111111111111111111111111111111111112",
           liquidityUsd: 2_000_000,
           priceUsd: 0.2,
           baseDecimals: 6,
@@ -80,7 +81,7 @@ test("dry-run logs the buy and does not send or spend the daily cap", async () =
   assert.equal(report.decision, "would_send");
   assert.equal(report.mode, "dry_run");
   assert.equal(sends.length, 0);
-  assert.equal(spentToday(), 0);
+  assert.equal(spentToday(spendDay()), 0);
   assert.ok(report.latency.quotedMs !== undefined);
   const again = await execute({ ...intent(), idempotencyKey: report.idempotencyKey }, deps(sends));
   assert.equal(again, report);
@@ -110,7 +111,7 @@ test("the second hop sells the amount the first hop bought", async () => {
     },
   });
   assert.equal(report.decision, "would_send");
-  assert.ok(seen.includes("sol:900000"));
+  assert.ok(seen.includes("So11111111111111111111111111111111111111112:900000"));
 });
 
 test("withdraw only allows the configured address", () => {

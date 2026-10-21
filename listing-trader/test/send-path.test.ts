@@ -197,7 +197,6 @@ function evmIntent(key: string): SwapIntent {
           priceUsd: 0.5,
           baseDecimals: 6,
           quotePriceUsd: 2000,
-          quoteDecimals: 18,
         },
       ]),
     },
@@ -230,7 +229,7 @@ function journalDeps(spend: Map<string, string>, records: TxRecord[]) {
 function liveDeps(send: ExecutorDeps["send"], spend: Map<string, string>, records: TxRecord[], twoHopOnly: boolean): ExecutorDeps {
   let clock = 1_000;
   return {
-    config: { ...evmConfig, enabledChainKeys: new Set(["base"]), minExecutionSlippageBps: 20 },
+    config: { ...evmConfig, enabledChainKeys: new Set(["base"]), minExecutionSlippageBps: 20, quoteAssets: { base: [{ address: WETH, symbol: "WETH", decimals: 18 }] } },
     mode: "live",
     spentTodayUsd: 0,
     quoteHop: async (hop) => {
@@ -243,6 +242,7 @@ function liveDeps(send: ExecutorDeps["send"], spend: Map<string, string>, record
     markPrice: async () => null,
     send,
     readBalance: async () => 20,
+    priceOf: () => 1,
     now: () => (clock += 10),
     ...journalDeps(spend, records),
   };

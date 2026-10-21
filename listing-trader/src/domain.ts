@@ -18,7 +18,6 @@ export type Pool = {
   baseDecimals: number | null;
   baseName?: string;
   quotePriceUsd?: number | null;
-  quoteDecimals?: number | null;
   createdAtMs?: number | null;
   volume24hUsd?: number | null;
 };
@@ -26,7 +25,6 @@ export type Pool = {
 export type PairMap = {
   pools: Pool[];
   top: Pool | null;
-  bestByQuote: Record<string, Pool>;
 };
 
 export type HyperliquidMarket = {

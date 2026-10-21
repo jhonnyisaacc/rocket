@@ -62,7 +62,7 @@ test("ticker alone is not a match", () => {
 test("top pool is the most liquid pair", () => {
   const mplx = index.lookup("MPLX")[0];
   assert.equal(mplx.pairMap.top?.quoteSymbol, "SOL");
-  assert.equal(mplx.pairMap.bestByQuote.USDC.liquidityUsd, 50_000);
+  assert.equal(mplx.pairMap.pools[1]?.liquidityUsd, 50_000);
 });
 
 test("a thousand lookups stay in memory and finish well under a millisecond each", () => {

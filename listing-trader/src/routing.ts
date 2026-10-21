@@ -1,5 +1,6 @@
 import { holdingFitsChain } from "./balances.js";
-import type { Holding, Hop, PairMap, RoutePlan, RouteQuote } from "./domain.js";
+import { addressKey, quoteAssetOf, type QuoteAsset, type QuoteAssets } from "./chains.js";
+import type { Holding, Hop, PairMap, Pool, RoutePlan, RouteQuote } from "./domain.js";
 
 export function spendableAmount(holding: Holding, minNativeReserve: number): number {
   if (!holding.native) return holding.amount;
@@ -34,6 +35,14 @@ function hop(holding: Holding, human: number, buySymbol: string, buyAddress: str
   };
 }
 
+function deepestAllowedQuote(pairMap: PairMap, quoteAssets: QuoteAssets): { pool: Pool; asset: QuoteAsset } | null {
+  for (const pool of pairMap.pools) {
+    const asset = quoteAssetOf(quoteAssets, pool.chainKey, pool.quoteAddress);
+    if (asset) return { pool, asset };
+  }
+  return null;
+}
+
 export function planRoutes(input: {
   tokenSymbol: string;
   tokenAddress: string;
@@ -41,10 +50,11 @@ export function planRoutes(input: {
   holdings: readonly Holding[];
   minNativeReserve: number;
   notionalUsd: number;
+  quoteAssets: QuoteAssets;
   chainKey?: string;
 }): RoutePlan[] {
   const plans: RoutePlan[] = [];
-  const top = input.pairMap.top;
+  const via = deepestAllowedQuote(input.pairMap, input.quoteAssets);
   for (const holding of input.holdings) {
     if (input.chainKey && holding.native && !holdingFitsChain(holding, input.chainKey)) continue;
     if (input.chainKey && holding.chainKey && holding.chainKey !== input.chainKey) continue;
@@ -52,24 +62,23 @@ export function planRoutes(input: {
     if (!(human > 0)) continue;
     const direct = hop(holding, human, input.tokenSymbol, input.tokenAddress);
     plans.push({ id: `agg:${direct.sellSymbol}`, kind: "aggregator", hop: direct });
-    if (!top) continue;
-    const quote = top.quoteSymbol.toUpperCase();
-    if (quote === direct.sellSymbol) continue;
-    const pool = input.pairMap.bestByQuote[quote];
-    if (!pool) continue;
+    if (!via) continue;
+    const quote = via.asset.symbol.toUpperCase();
+    const chainKey = via.pool.chainKey;
+    if (quote === direct.sellSymbol || addressKey(chainKey, holding.address) === addressKey(chainKey, via.asset.address)) continue;
     plans.push({
       id: `two:${direct.sellSymbol}:${quote}`,
       kind: "two_hop",
-      first: hop(holding, human, quote, pool.quoteAddress),
+      first: hop(holding, human, quote, via.asset.address),
       second: {
         sellSymbol: quote,
-        sellAddress: pool.quoteAddress,
+        sellAddress: via.asset.address,
         buySymbol: direct.buySymbol,
         buyAddress: direct.buyAddress,
         sellAmount: "0",
       },
-      quotePriceUsd: pool.quotePriceUsd ?? null,
-      quoteDecimals: pool.quoteDecimals ?? null,
+      quotePriceUsd: via.pool.quotePriceUsd ?? null,
+      quoteDecimals: via.asset.decimals,
     });
   }
   return plans;

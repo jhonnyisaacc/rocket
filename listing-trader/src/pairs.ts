@@ -1,15 +1,11 @@
+import { quoteAssetOf, type QuoteAssets } from "./chains.js";
 import type { PairMap, Pool } from "./domain.js";
 
 export function buildPairMap(pools: readonly Pool[]): PairMap {
   const sorted = pools.slice().sort((a, b) => b.liquidityUsd - a.liquidityUsd);
-  const bestByQuote: Record<string, Pool> = {};
-  for (const pool of sorted) {
-    const key = pool.quoteSymbol.toUpperCase();
-    if (!bestByQuote[key]) bestByQuote[key] = pool;
-  }
-  return { pools: sorted, top: sorted[0] ?? null, bestByQuote };
+  return { pools: sorted, top: sorted[0] ?? null };
 }
 
-export function topQuoteSymbol(pairMap: PairMap): string | null {
-  return pairMap.top ? pairMap.top.quoteSymbol.toUpperCase() : null;
+export function allowedPools(pools: readonly Pool[], quoteAssets: QuoteAssets): Pool[] {
+  return pools.filter((pool) => quoteAssetOf(quoteAssets, pool.chainKey, pool.quoteAddress) !== undefined);
 }

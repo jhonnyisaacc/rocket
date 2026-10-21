@@ -45,7 +45,7 @@ function pair(createdAtMs: number, volume24hUsd: number) {
     chainId: "solana",
     pairAddress: "pool",
     baseToken: { address: "mint", symbol: "MPLX", name: "Metaplex" },
-    quoteToken: { address: "usdc", symbol: "USDC" },
+    quoteToken: { address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", symbol: "USDC" },
     liquidity: { usd: 200_000 },
     priceUsd: "1",
     pairCreatedAt: createdAtMs,
@@ -207,7 +207,7 @@ test("a live honeypot stays unlisted and a refresh drops it", async () => {
           baseSymbol: "MPLX",
           baseAddress: "mint",
           quoteSymbol: "USDC",
-          quoteAddress: "usdc",
+          quoteAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
           liquidityUsd: 200_000,
           priceUsd: 1,
           baseDecimals: 6,
@@ -449,9 +449,9 @@ test("the kill switch skips a live buy and a missing balance read does not trade
   assert.equal(sends.length, 0);
 
   const holding = { symbol: "USDC", address: "usdc", amount: 20, usd: 20, native: false, decimals: 6 };
-  assert.equal(applyBalance(holding, 1).amount, 1);
-  assert.equal(applyBalance(holding, 1).usd, 1);
-  const unread = await holdingsForTrade(true, [holding], null, "solana");
+  assert.equal(applyBalance(holding, 1, 1).amount, 1);
+  assert.equal(applyBalance(holding, 1, 1).usd, 1);
+  const unread = await holdingsForTrade(true, [holding], null, "solana", () => 1);
   assert.equal(unread.ok, false);
   const app = await createExecutorApp(
     config,

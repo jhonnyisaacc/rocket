@@ -26,7 +26,6 @@ const poolSchema = z
 const pairMapSchema = z.object({
   pools: z.array(poolSchema),
   top: poolSchema.nullable(),
-  bestByQuote: z.record(z.string(), poolSchema),
 });
 
 const hyperliquidSchema = z.object({

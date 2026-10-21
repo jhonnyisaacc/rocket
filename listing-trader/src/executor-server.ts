@@ -17,6 +17,7 @@ import { seedApprovals } from "./approvals.js";
 import { commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
+import { coingeckoLoader, createPriceCache, pricedHoldings, type PriceOf } from "./prices.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
 
 function intentToken(token: TokenRecord): SwapIntent["token"] {
@@ -77,9 +78,10 @@ export function txJournal(config: AppConfig, log: (entry: { idempotencyKey: stri
   };
 }
 
-function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[], journal: ReturnType<typeof txJournal>): ExecutorDeps {
+function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[], journal: ReturnType<typeof txJournal>, priceOf: PriceOf): ExecutorDeps {
   return {
     config,
+    priceOf,
     mode: config.live ? "live" : "dry_run",
     spentTodayUsd: 0,
     quoteHop: (hop, context) => {
@@ -235,9 +237,14 @@ async function main(): Promise<void> {
     await reconcileReserved(config.databaseUrl, config.reconcileAfterMinutes, (chainKey, hash) => lookupAgedTx(config, chainKey, hash), (entry) =>
       logger.info({ reconcile: entry }, "reconciled reserved spend"),
     );
-    restoreSpent(await spentOnDay(config.databaseUrl, spendDay(new Date(), config.spendTimezone)));
+    const day = spendDay(new Date(), config.spendTimezone);
+    restoreSpent(await spentOnDay(config.databaseUrl, day), day);
   }
-  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")));
+  const prices = createPriceCache(coingeckoLoader(config, pricedHoldings(holdingsParsed.data, config.enabledChainKeys)), config.priceMaxAgeMs);
+  const refreshPrices = () => prices.refresh().catch((error: unknown) => logger.warn({ err: error }, "price refresh failed"));
+  await refreshPrices();
+  setInterval(refreshPrices, config.priceRefreshMs).unref();
+  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding));
   const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, config.live ? chainReader(config, signer) : null);
   const stop = () => {
     zeroLoadedSecrets();

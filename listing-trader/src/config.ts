@@ -1,4 +1,4 @@
-import { CHAINS, chainByKey } from "./chains.js";
+import { CHAINS, QUOTE_ASSETS, chainByKey, type QuoteAsset, type QuoteAssets } from "./chains.js";
 import type { LimitConfig } from "./limits.js";
 import { isSolanaAddress } from "./signer.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "./signing-policy.js";
@@ -24,8 +24,11 @@ export type AppConfig = LimitConfig & {
   rpcByChainKey: Record<string, string>;
   refreshEnabled: boolean;
   shortlistLimit: number;
-  quoteDecimals: Record<string, number>;
+  quoteAssets: QuoteAssets;
   coingeckoBase: string;
+  priceRefreshMs: number;
+  priceMaxAgeMs: number;
+  priceTimeoutMs: number;
   dexscreenerBase: string;
   quoteTimeoutMs: number;
   quoteDeadlineMs: number;
@@ -76,6 +79,7 @@ export type AppConfig = LimitConfig & {
     debridgeToken: string | null;
     goplus: string | null;
     blockaid: string | null;
+    coingecko: string | null;
   };
   now?: () => number;
   approvalSeed: ApprovalSeed[];
@@ -123,17 +127,28 @@ function enabledKeys(env: NodeJS.ProcessEnv): Set<string> {
   return keys;
 }
 
-function quoteDecimals(env: NodeJS.ProcessEnv): Record<string, number> {
-  if (!env.QUOTE_DECIMALS_JSON) return {};
-  const parsed: unknown = JSON.parse(env.QUOTE_DECIMALS_JSON);
-  if (typeof parsed !== "object" || parsed === null) throw new Error("QUOTE_DECIMALS_JSON must be an object");
-  const out: Record<string, number> = {};
-  for (const [symbol, decimals] of Object.entries(parsed)) {
-    if (typeof decimals !== "number" || !Number.isInteger(decimals) || decimals < 0 || decimals > 18) {
-      throw new Error(`invalid quote decimals for ${symbol}`);
+function quoteAssetList(chainKey: string, list: unknown): QuoteAsset[] {
+  const spec = chainByKey(chainKey);
+  if (!spec || !Array.isArray(list)) throw new Error(`QUOTE_ASSET_ALLOWLIST_JSON has an invalid entry for ${chainKey}`);
+  return list.map((row) => {
+    const item = (typeof row === "object" && row !== null ? row : {}) as Partial<QuoteAsset>;
+    const address = typeof item.address === "string" ? item.address : "";
+    const valid = spec.chain.kind === "evm" ? /^0x[0-9a-fA-F]{40}$/.test(address) : spec.chain.kind === "solana" && isSolanaAddress(address);
+    const decimals = item.decimals;
+    if (!valid || typeof item.symbol !== "string" || item.symbol.length === 0 || typeof decimals !== "number" || !Number.isInteger(decimals) || decimals < 0 || decimals > 18) {
+      throw new Error(`QUOTE_ASSET_ALLOWLIST_JSON has an invalid asset for ${chainKey}`);
     }
-    out[symbol.toUpperCase()] = decimals;
-  }
+    return { address, symbol: item.symbol, decimals };
+  });
+}
+
+function quoteAssets(env: NodeJS.ProcessEnv): QuoteAssets {
+  if (env.QUOTE_DECIMALS_JSON) throw new Error("QUOTE_DECIMALS_JSON was replaced by QUOTE_ASSET_ALLOWLIST_JSON");
+  if (!env.QUOTE_ASSET_ALLOWLIST_JSON) return QUOTE_ASSETS;
+  const parsed: unknown = JSON.parse(env.QUOTE_ASSET_ALLOWLIST_JSON);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("QUOTE_ASSET_ALLOWLIST_JSON must be an object");
+  const out: Record<string, readonly QuoteAsset[]> = { ...QUOTE_ASSETS };
+  for (const [chainKey, list] of Object.entries(parsed)) out[chainKey] = quoteAssetList(chainKey, list);
   return out;
 }
 
@@ -179,8 +194,11 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     liquidityRefreshMs: intEnv(env, "LIQUIDITY_REFRESH_MS", 10 * 60 * 1000),
     refreshEnabled: env.REFRESH_ENABLED === "true",
     shortlistLimit: intEnv(env, "SHORTLIST_LIMIT", 200),
-    quoteDecimals: quoteDecimals(env),
+    quoteAssets: quoteAssets(env),
     coingeckoBase: env.COINGECKO_API_BASE ?? "https://api.coingecko.com/api/v3",
+    priceRefreshMs: intEnv(env, "PRICE_REFRESH_MS", 30_000),
+    priceMaxAgeMs: intEnv(env, "PRICE_MAX_AGE_MS", 90_000),
+    priceTimeoutMs: intEnv(env, "PRICE_TIMEOUT_MS", 3_000),
     dexscreenerBase: env.DEXSCREENER_API_BASE ?? "https://api.dexscreener.com",
     withdrawAllowlist: (env.OWNER_WITHDRAW_ADDRESSES ?? "")
       .split(",")
@@ -238,6 +256,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       debridgeToken: env.DEBRIDGE_ACCESS_TOKEN ?? null,
       goplus: env.GOPLUS_API_KEY ?? null,
       blockaid: env.BLOCKAID_API_KEY ?? null,
+      coingecko: env.COINGECKO_API_KEY ?? null,
     },
     approvalSeed: approvalSeed(env),
   };
@@ -378,7 +397,7 @@ function mevRpcs(env: NodeJS.ProcessEnv): Record<number, string> {
 }
 
 export function configSecrets(config: AppConfig): string[] {
-  const { zeroEx, jupiter, lifi, oneInch, okxKey, okxSecret, okxPassphrase, acrossKey, relayKey, debridgeToken, goplus, blockaid } = config.keys;
+  const { zeroEx, jupiter, lifi, oneInch, okxKey, okxSecret, okxPassphrase, acrossKey, relayKey, debridgeToken, goplus, blockaid, coingecko } = config.keys;
   return [
     zeroEx,
     jupiter,
@@ -392,6 +411,7 @@ export function configSecrets(config: AppConfig): string[] {
     debridgeToken,
     goplus,
     blockaid,
+    coingecko,
     config.authToken,
     config.adminToken,
     config.notifierUrl,

@@ -27,7 +27,7 @@ export REFRESH_ENABLED=true
 npm run start:resolver
 ```
 
-In a second shell, point the executor at the resolver and describe the balances the hot wallet actually holds. Decimals are required. A native row keeps the gas reserve.
+In a second shell, point the executor at the resolver and describe the balances the hot wallet actually holds. Decimals are required. A native row keeps the gas reserve. Live mode prices each row from CoinGecko, so `usd` is only the dry-run hint.
 
 ```bash
 export PORT=8081
@@ -69,7 +69,10 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `MAX_LEVERAGE` | 1 | HyperCore orders above this are rejected |
 | `DISABLED_CHAINS` | empty | Comma-separated chain keys to remove from the default set |
 | `ENABLED_CHAINS` | empty | Comma-separated chain keys to add. Monad stays off until this list includes `monad` |
-| `QUOTE_DECIMALS_JSON` | `{}` | Quote-asset decimals for an explicit two-hop |
+| `QUOTE_ASSET_ALLOWLIST_JSON` | built-in list | Replaces one chain's two-hop quote assets, for example `{"bnb":[{"address":"0x...","symbol":"USDT","decimals":18}]}`. Pools quoting any other address are dropped |
+| `PRICE_REFRESH_MS` | 30000 | How often the executor reads holding prices from CoinGecko |
+| `PRICE_MAX_AGE_MS` | 90000 | A live buy skips with `holding price stale` when the price is older |
+| `PRICE_TIMEOUT_MS` | 3000 | Timeout for each CoinGecko price call |
 | `OWNER_WITHDRAW_ADDRESSES` | empty | Allowlist. Empty denies every withdraw and every bridge plan |
 | `AUTH_TOKEN` | unset | Required. At least 16 characters. Boot refuses a shorter value |
 | `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |

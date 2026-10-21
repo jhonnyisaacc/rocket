@@ -1,6 +1,6 @@
-import { chainByKey, dexscreenerSlugMap } from "./chains.js";
+import { chainByKey, dexscreenerSlugMap, type QuoteAssets } from "./chains.js";
 import type { HyperliquidMarket, Pool, TokenRecord } from "./domain.js";
-import { buildPairMap } from "./pairs.js";
+import { allowedPools, buildPairMap } from "./pairs.js";
 import { nameMatches, normalizeTicker } from "./match.js";
 
 export type CoinListRow = {
@@ -143,26 +143,19 @@ export function poolsFromDexScreener(body: unknown, slugOverrides: Record<string
   return pools;
 }
 
-export function annotateQuoteDecimals(pools: readonly Pool[], decimalsBySymbol: Readonly<Record<string, number>>): Pool[] {
-  return pools.map((pool) => {
-    const decimals = decimalsBySymbol[pool.quoteSymbol.toUpperCase()];
-    if (decimals === undefined) return pool;
-    return { ...pool, quoteDecimals: decimals };
-  });
-}
-
-export function attachPools(token: TokenRecord, pools: readonly Pool[], refreshedAt: string): TokenRecord {
+export function attachPools(token: TokenRecord, pools: readonly Pool[], refreshedAt: string, quoteAssets: QuoteAssets): TokenRecord {
   const own = pools.filter((pool) => pool.chainKey === token.chainKey && pool.baseAddress.toLowerCase() === token.contract.toLowerCase());
-  return { ...token, pairMap: buildPairMap(own), refreshedAt };
+  return { ...token, pairMap: buildPairMap(allowedPools(own, quoteAssets)), refreshedAt };
 }
 
 export function tokenFromDexSearch(
   body: unknown,
   alert: { ticker: string; projectName: string; chainHint?: string },
   refreshedAt: string,
+  quoteAssets: QuoteAssets,
   slugOverrides: Record<string, string> = {},
 ): { kind: "token"; token: TokenRecord } | { kind: "ambiguous" } | { kind: "none" } {
-  const pools = poolsFromDexScreener(body, slugOverrides).filter((pool) => {
+  const pools = allowedPools(poolsFromDexScreener(body, slugOverrides), quoteAssets).filter((pool) => {
     if (normalizeTicker(pool.baseSymbol) !== normalizeTicker(alert.ticker)) return false;
     if (!pool.baseName) return false;
     if (alert.chainHint && pool.chainKey !== alert.chainHint) return false;

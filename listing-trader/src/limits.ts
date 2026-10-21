@@ -1,5 +1,5 @@
 import type { ChainRef } from "./domain.js";
-import { chainByEvmId, chainByKey } from "./chains.js";
+import { chainByEvmId, chainByKey, type QuoteAssets } from "./chains.js";
 
 export type LimitConfig = {
   maxUsdPerTrade: number;
@@ -11,6 +11,8 @@ export type LimitConfig = {
   killSwitch: boolean;
   enabledChainKeys: ReadonlySet<string>;
   minExecutionSlippageBps?: number;
+  quoteAssets?: QuoteAssets;
+  spendTimezone?: string;
 };
 
 export type LimitInput = {

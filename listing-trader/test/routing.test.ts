@@ -4,6 +4,8 @@ import { combineHopImpact, pickRoute, planRoutes } from "../src/routing.js";
 import { buildPairMap } from "../src/pairs.js";
 import type { Pool } from "../src/domain.js";
 
+const quoteAssets = { solana: [{ address: "sol", symbol: "SOL", decimals: 9 }] };
+
 const pools: Pool[] = [
   {
     poolAddress: "sol-pool",
@@ -30,6 +32,7 @@ test("plans an aggregator hop from USDC and an explicit two hop through SOL", ()
     ],
     minNativeReserve: 0.05,
     notionalUsd: 5,
+    quoteAssets,
   });
   assert.ok(plans.some((plan) => plan.kind === "aggregator" && plan.id === "agg:USDC"));
   assert.ok(plans.some((plan) => plan.kind === "two_hop" && plan.id === "two:USDC:SOL"));
@@ -43,6 +46,7 @@ test("native gas reserve removes a dust SOL balance from the plan", () => {
     holdings: [{ symbol: "SOL", address: "sol", amount: 0.01, usd: 1.5, native: true }],
     minNativeReserve: 0.02,
     notionalUsd: 5,
+    quoteAssets,
   });
   assert.equal(plans.length, 0);
 });
@@ -74,6 +78,7 @@ test("a sized holding becomes base units and leaves the native reserve", () => {
     ],
     minNativeReserve: 0.5,
     notionalUsd: 5,
+    quoteAssets,
   });
   const usdc = plans.find((plan) => plan.kind === "aggregator" && plan.id === "agg:USDC");
   const sol = plans.find((plan) => plan.kind === "aggregator" && plan.id === "agg:SOL");
@@ -86,6 +91,7 @@ test("a sized holding becomes base units and leaves the native reserve", () => {
     holdings: [{ symbol: "SOL", address: "sol", amount: 1, usd: 20, native: true, decimals: 9 }],
     minNativeReserve: 0.8,
     notionalUsd: 5,
+    quoteAssets,
   });
   assert.equal(dust.length, 0);
 });

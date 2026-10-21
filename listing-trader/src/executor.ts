@@ -1,8 +1,10 @@
 import { holdingsForTrade, type BalanceReader } from "./balances.js";
 import type { ChainRef, ExecutionReport, HyperliquidMarket, Latency, RouteLeg, RouteQuote, SendResult, SwapIntent, TxRecord } from "./domain.js";
-import { chainByKey, feeRankOf } from "./chains.js";
+import { QUOTE_ASSETS, chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
 import { stamp } from "./latency.js";
+import type { PriceOf } from "./prices.js";
+import { spendDay } from "./spend.js";
 import { combineHopImpact, pickRoute, planRoutes } from "./routing.js";
 import { acceptDecimals, cachedTokenDecimals, rememberTokenDecimals } from "./token-decimals.js";
 import { buildLeverage, buildOrder, cappedLimitPx, orderSize, wirePrice, type HyperliquidAction } from "./hyperliquid.js";
@@ -58,16 +60,17 @@ export type ExecutorDeps = {
   screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
   readTokenDecimals?: (token: { chainKey: string; chain: ChainRef; address: string }) => Promise<number | null>;
   readBalance?: BalanceReader | null;
+  priceOf?: PriceOf | null;
 };
 
 const reports = new Map<string, ExecutionReport>();
 const flaggedTokens = new Set<string>();
-let spentUsd = 0;
+let spent = { day: "", usd: 0 };
 
 export function resetExecutorState(): void {
   reports.clear();
   flaggedTokens.clear();
-  spentUsd = 0;
+  spent = { day: "", usd: 0 };
 }
 
 function tokenKey(chainKey: string, address: string): string {
@@ -78,12 +81,21 @@ export function tokenFlagged(chainKey: string, address: string): boolean {
   return flaggedTokens.has(tokenKey(chainKey, address));
 }
 
-export function spentToday(): number {
-  return spentUsd;
+export function spentToday(day: string): number {
+  return spent.day === day ? spent.usd : 0;
 }
 
-export function restoreSpent(usd: number): void {
-  spentUsd = usd;
+export function restoreSpent(usd: number, day: string): void {
+  spent = { day, usd };
+}
+
+function today(deps: ExecutorDeps): string {
+  return spendDay(new Date((deps.now ?? Date.now)()), deps.config.spendTimezone ?? "UTC");
+}
+
+function addSpent(deps: ExecutorDeps, usd: number): void {
+  const day = today(deps);
+  spent = { day, usd: spentToday(day) + usd };
 }
 
 function skipped(intent: SwapIntent, latency: Latency, reason: string, venue: string, mode: "dry_run" | "live"): ExecutionReport {
@@ -147,6 +159,7 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
     holdings: intent.holdings,
     minNativeReserve: reserve,
     notionalUsd: intent.notionalUsd,
+    quoteAssets: deps.config.quoteAssets ?? QUOTE_ASSETS,
     chainKey: token.chainKey,
   });
   const context = {
@@ -265,7 +278,7 @@ async function commitLive(
       reports.delete(key);
       return skipped(intent, latency, message, venueKey, deps.mode);
     }
-    spentUsd += intent.notionalUsd;
+    addSpent(deps, intent.notionalUsd);
     const report = skipped(intent, latency, message, venueKey, deps.mode);
     reports.set(key, report);
     return report;
@@ -279,7 +292,7 @@ async function commitLive(
     const why = result.venue === "chain" ? `transaction ${result.outcome}` : "hyperliquid order not filled";
     return { ...skipped(intent, latency, result.note ? `${why}: ${result.note}` : why, venueKey, deps.mode), txs: result.txs };
   }
-  spentUsd += intent.notionalUsd;
+  addSpent(deps, intent.notionalUsd);
   if (filled) {
     await deps.commitSpend?.(key)?.catch(() => undefined);
     latency = stamp(latency, "confirmedMs", now());
@@ -364,7 +377,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     notionalUsd: intent.notionalUsd,
     slippageBps: intent.slippageBps,
     leverage: 1,
-    spentTodayUsd: deps.spentTodayUsd + spentUsd,
+    spentTodayUsd: deps.spentTodayUsd + spentToday(today(deps)),
     chain: venueChain,
     chainKey: venueKey,
     liquidityUsd: useHyper ? null : liquidity,
@@ -443,7 +456,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   const candidates = [intent.token, ...alternates].filter((token) => deps.config.enabledChainKeys.has(token.chainKey));
   const plannedQuotes: RouteQuote[] = [];
   let unsized = false;
-  let unread = false;
+  let unread: string | null = null;
   let sizedAny = false;
   let crashed: unknown;
   for (const token of candidates) {
@@ -452,7 +465,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
       notionalUsd: intent.notionalUsd,
       slippageBps: intent.slippageBps,
       leverage: 1,
-      spentTodayUsd: deps.spentTodayUsd + spentUsd,
+      spentTodayUsd: deps.spentTodayUsd + spentToday(today(deps)),
       chain: token.chain,
       chainKey: token.chainKey,
       liquidityUsd: liquidity,
@@ -462,9 +475,9 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     try {
       let quoted = intent;
       if (deps.mode === "live") {
-        const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey);
+        const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey, deps.priceOf ?? null);
         if (!sized.ok) {
-          unread = true;
+          unread = sized.reason;
           continue;
         }
         sizedAny = true;
@@ -482,7 +495,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   const planned = { quotes: plannedQuotes, unsized };
   if (planned.quotes.length === 0) {
     if (crashed !== undefined) throw crashed;
-    const reason = unread && !sizedAny ? "balance was not read" : planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
+    const reason = unread !== null && !sizedAny ? unread : planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
     const report = skipped(intent, latency, reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;

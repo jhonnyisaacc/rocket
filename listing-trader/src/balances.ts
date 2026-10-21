@@ -4,9 +4,8 @@ import type { Holding } from "./domain.js";
 
 export type BalanceReader = (holding: Holding) => Promise<number | null>;
 
-export function applyBalance(holding: Holding, amount: number): Holding {
-  const price = holding.amount > 0 ? holding.usd / holding.amount : 0;
-  return { ...holding, amount, usd: amount * price };
+export function applyBalance(holding: Holding, amount: number, unitUsd: number): Holding {
+  return { ...holding, amount, usd: amount * unitUsd };
 }
 
 export function scopeHolding(holding: Holding, tradeChainKey: string): Holding {
@@ -92,15 +91,22 @@ export async function holdingsForTrade(
   declared: readonly Holding[],
   read: BalanceReader | null,
   tradeChainKey: string,
+  priceOf: ((holding: Holding) => number | null) | null,
 ): Promise<{ ok: true; holdings: Holding[] } | { ok: false; reason: string }> {
   if (!live) return { ok: true, holdings: [...declared] };
   if (!read || !tradeChainKey) return { ok: false, reason: "balance was not read" };
   const holdings: Holding[] = [];
   let failed = false;
+  let unpriced = false;
   for (const holding of declared) {
     if (holding.chainKey && holding.chainKey !== tradeChainKey) continue;
     if (!holdingFitsChain(holding, tradeChainKey)) continue;
     const scoped = scopeHolding(holding, tradeChainKey);
+    const unitUsd = priceOf?.(scoped) ?? null;
+    if (unitUsd === null || !(unitUsd > 0)) {
+      unpriced = true;
+      continue;
+    }
     let amount: number | null;
     try {
       amount = await read(scoped);
@@ -112,8 +118,9 @@ export async function holdingsForTrade(
       failed = true;
       continue;
     }
-    holdings.push(applyBalance(scoped, amount));
+    holdings.push(applyBalance(scoped, amount, unitUsd));
   }
+  if (holdings.length === 0 && unpriced) return { ok: false, reason: "holding price stale" };
   if (holdings.length === 0 && failed) return { ok: false, reason: "balance was not read" };
   return { ok: true, holdings };
 }

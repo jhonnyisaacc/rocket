@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Alert, TokenRecord } from "./domain.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { matchAlert } from "./match.js";
-import { hyperliquidFromMeta, listedContract, poolMeetsFloor, poolsFromDexScreener, readKoreanName, tokenFromDexSearch, type CoinListRow } from "./parsers.js";
+import { attachPools, hyperliquidFromMeta, listedContract, poolMeetsFloor, poolsFromDexScreener, readKoreanName, tokenFromDexSearch, type CoinListRow } from "./parsers.js";
 import { addressChunks, applyLiquidity, rebuildIdentities, shortlistTokens, withKoreanName } from "./refresh.js";
 import { redactError } from "./redact.js";
 import { MemoryWatchlist, hydrateFromPostgres, saveToPostgres } from "./watchlist.js";
@@ -48,7 +48,7 @@ export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist,
     const body = await getJson(`${config.dexscreenerBase}/latest/dex/tokens/${chunk.join(",")}`, {}, fetchImpl);
     pools.push(...poolsFromDexScreener(body, config.dexscreenerSlugOverrides));
   }
-  let tokens = applyLiquidity(list.records(), pools, new Date().toISOString(), config.quoteDecimals, config.shortlistLimit);
+  let tokens = applyLiquidity(list.records(), pools, new Date().toISOString(), config.quoteAssets, config.shortlistLimit);
   const headers: Record<string, string> = {};
   if (process.env.COINGECKO_API_KEY) headers["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
   for (const token of shortlistTokens(tokens, config.shortlistLimit)) {
@@ -91,7 +91,7 @@ async function liveLookup(
     const response = await fetchImpl(url, { signal: AbortSignal.timeout(config.liveLookupTimeoutMs) });
     if (!response.ok) return { kind: "none" };
     const body = await response.json();
-    const found = tokenFromDexSearch(body, alert, new Date().toISOString(), config.dexscreenerSlugOverrides);
+    const found = tokenFromDexSearch(body, alert, new Date().toISOString(), config.quoteAssets, config.dexscreenerSlugOverrides);
     if (found.kind === "ambiguous") return { kind: "ambiguous" };
     if (found.kind !== "token") return { kind: "none" };
     const token = (await fillTokenDecimals([found.token], config.rpcByChainKey))[0] ?? found.token;
@@ -146,7 +146,10 @@ export async function createResolverApp(config: AppConfig, list: MemoryWatchlist
 async function main(): Promise<void> {
   const config = loadConfig();
   assertBoot(config);
-  if (config.databaseUrl) watchlist.replace(await hydrateFromPostgres(config.databaseUrl));
+  if (config.databaseUrl) {
+    const stored = await hydrateFromPostgres(config.databaseUrl);
+    watchlist.replace(stored.map((token) => attachPools(token, token.pairMap.pools, token.refreshedAt, config.quoteAssets)));
+  }
   let refreshing = false;
   const refresh = (kind: "full" | "liquidity") => {
     if (!config.refreshEnabled || refreshing) return;

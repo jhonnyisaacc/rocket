@@ -1,5 +1,6 @@
+import type { QuoteAssets } from "./chains.js";
 import type { HyperliquidMarket, Pool, TokenRecord } from "./domain.js";
-import { attachHyperliquid, attachPools, annotateQuoteDecimals, tokensFromCoinList, type CoinListRow } from "./parsers.js";
+import { attachHyperliquid, attachPools, tokensFromCoinList, type CoinListRow } from "./parsers.js";
 
 export function mergeWatchlist(previous: readonly TokenRecord[], fresh: readonly TokenRecord[]): TokenRecord[] {
   const prev = new Map(previous.map((token) => [token.id, token]));
@@ -58,10 +59,9 @@ export function applyLiquidity(
   tokens: readonly TokenRecord[],
   pools: readonly Pool[],
   refreshedAt: string,
-  decimalsBySymbol: Readonly<Record<string, number>>,
+  quoteAssets: QuoteAssets,
   limit: number,
 ): TokenRecord[] {
-  const annotated = annotateQuoteDecimals(pools, decimalsBySymbol);
   const chosen = new Set(shortlistTokens(tokens, limit).map((token) => token.id));
-  return tokens.map((token) => (chosen.has(token.id) ? attachPools(token, annotated, refreshedAt) : token));
+  return tokens.map((token) => (chosen.has(token.id) ? attachPools(token, pools, refreshedAt, quoteAssets) : token));
 }

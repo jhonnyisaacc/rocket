@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { QUOTE_ASSETS } from "../src/chains.js";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import { landedSend } from "./fixtures.js";
@@ -123,6 +124,7 @@ test("a holding tagged for another chain is not spent on this chain", () => {
     ],
     minNativeReserve: 0,
     notionalUsd: 5,
+    quoteAssets: QUOTE_ASSETS,
     chainKey: "base",
   });
   const sells = plans.map((plan) => (plan.kind === "aggregator" ? plan.hop.sellAddress : ""));

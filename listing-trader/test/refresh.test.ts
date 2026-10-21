@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { QUOTE_ASSETS } from "../src/chains.js";
 import { applyLiquidity, mergeWatchlist, rebuildIdentities, shortlistTokens } from "../src/refresh.js";
 import { tokenFromDexSearch } from "../src/parsers.js";
 import { buildPairMap } from "../src/pairs.js";
@@ -26,7 +27,7 @@ function token(contract: string, liquidity = 0): TokenRecord {
               baseSymbol: "MPLX",
               baseAddress: contract,
               quoteSymbol: "SOL",
-              quoteAddress: "sol",
+              quoteAddress: "So11111111111111111111111111111111111111112",
               liquidityUsd: liquidity,
               priceUsd: 0.2,
               baseDecimals: 6,
@@ -55,11 +56,10 @@ test("a rebuild keeps the stored pair map and a liquidity refresh replaces it", 
         baseSymbol: "MPLX",
         baseAddress: "mplxMint",
         quoteSymbol: "USDC",
-        quoteAddress: "usdc",
+        quoteAddress: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
         liquidityUsd: 80_000,
         priceUsd: 0.2,
         baseDecimals: 6,
-        quoteDecimals: undefined,
       },
       {
         poolAddress: "pool-sol",
@@ -68,19 +68,18 @@ test("a rebuild keeps the stored pair map and a liquidity refresh replaces it", 
         baseSymbol: "MPLX",
         baseAddress: "mplxMint",
         quoteSymbol: "SOL",
-        quoteAddress: "sol",
+        quoteAddress: "So11111111111111111111111111111111111111112",
         liquidityUsd: 3_000_000,
         priceUsd: 0.21,
         baseDecimals: 6,
       },
     ],
     "2026-10-21T00:00:00.000Z",
-    { SOL: 9 },
+    QUOTE_ASSETS,
     200,
   );
   assert.equal(refreshed[0]?.pairMap.top?.quoteSymbol, "SOL");
   assert.equal(refreshed[0]?.pairMap.pools.length, 2);
-  assert.equal(refreshed[0]?.pairMap.bestByQuote.SOL?.quoteDecimals, 9);
   assert.equal(shortlistTokens([token("thin", 1), token("deep", 50)], 1)[0]?.contract, "deep");
 });
 
@@ -93,7 +92,7 @@ test("a live search keeps one name match and rejects two contracts", () => {
           dexId: "raydium",
           pairAddress: "p",
           baseToken: { address: "mplxMint", symbol: "MPLX", name: "Metaplex" },
-          quoteToken: { address: "sol", symbol: "SOL" },
+          quoteToken: { address: "So11111111111111111111111111111111111111112", symbol: "SOL" },
           liquidity: { usd: 2_000_000 },
           priceUsd: "0.2",
         },
@@ -101,6 +100,7 @@ test("a live search keeps one name match and rejects two contracts", () => {
     },
     { ticker: "mplx", projectName: "Metaplex" },
     "2026-10-21T00:00:00.000Z",
+    QUOTE_ASSETS,
   );
   assert.equal(one.kind, "token");
   if (one.kind === "token") assert.equal(one.token.pairMap.top?.quoteSymbol, "SOL");
@@ -111,20 +111,21 @@ test("a live search keeps one name match and rejects two contracts", () => {
           chainId: "solana",
           pairAddress: "a",
           baseToken: { address: "one", symbol: "MPLX", name: "Metaplex" },
-          quoteToken: { address: "sol", symbol: "SOL" },
+          quoteToken: { address: "So11111111111111111111111111111111111111112", symbol: "SOL" },
           liquidity: { usd: 10 },
         },
         {
           chainId: "base",
           pairAddress: "b",
           baseToken: { address: "two", symbol: "MPLX", name: "Metaplex" },
-          quoteToken: { address: "eth", symbol: "WETH" },
+          quoteToken: { address: "0x4200000000000000000000000000000000000006", symbol: "WETH" },
           liquidity: { usd: 10 },
         },
       ],
     },
     { ticker: "MPLX", projectName: "Metaplex" },
     "2026-10-21T00:00:00.000Z",
+    QUOTE_ASSETS,
   );
   assert.equal(two.kind, "ambiguous");
 });

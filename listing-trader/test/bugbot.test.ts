@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { QUOTE_ASSETS } from "../src/chains.js";
 import { landedSend } from "./fixtures.js";
 import { Keypair, PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
@@ -157,6 +158,7 @@ test("a holding without chainKey is read on the buy chain", async () => {
       return holding.chainKey === "base" ? 4 : null;
     },
     "base",
+    () => 1,
   );
   assert.equal(read.ok, true);
   if (read.ok) {
@@ -171,6 +173,7 @@ test("a holding without chainKey is read on the buy chain", async () => {
       return 2;
     },
     "base",
+    () => 1,
   );
   assert.equal(tagged.ok, true);
   if (tagged.ok) assert.equal(tagged.holdings.length, 0);
@@ -182,6 +185,7 @@ test("a holding without chainKey is read on the buy chain", async () => {
       return 2;
     },
     "solana",
+    () => 1,
   );
   assert.equal(onSolana.ok, true);
   if (onSolana.ok) {
@@ -244,6 +248,7 @@ test("a native holding is read only on chains of its own asset", async () => {
     holdings: [sol, eth, { symbol: "USDC", address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", amount: 20, usd: 20, native: false, decimals: 6 }],
     minNativeReserve: 0,
     notionalUsd: 5,
+    quoteAssets: QUOTE_ASSETS,
     chainKey: "base",
   });
   const sells = plans.map((plan) => (plan.kind === "aggregator" ? plan.hop.sellSymbol : ""));
@@ -252,7 +257,7 @@ test("a native holding is read only on chains of its own asset", async () => {
   const read = await holdingsForTrade(true, [sol, eth], async (holding) => {
     seen.push(`${holding.symbol}:${holding.chainKey}`);
     return 1;
-  }, "base");
+  }, "base", () => 1);
   assert.equal(read.ok, true);
   if (read.ok) assert.deepEqual(read.holdings.map((holding) => holding.symbol), ["ETH"]);
   assert.deepEqual(seen, ["ETH:base"]);
@@ -262,7 +267,7 @@ test("a native holding is read only on chains of its own asset", async () => {
   const onSolana = await holdingsForTrade(true, [sol, eth], async (holding) => {
     seenSol.push(`${holding.symbol}:${holding.chainKey}`);
     return 1;
-  }, "solana");
+  }, "solana", () => 1);
   assert.equal(onSolana.ok, true);
   if (onSolana.ok) assert.deepEqual(onSolana.holdings.map((holding) => holding.symbol), ["SOL"]);
   assert.deepEqual(seenSol, ["SOL:solana"]);
@@ -270,7 +275,7 @@ test("a native holding is read only on chains of its own asset", async () => {
   const taggedOnEthereum = await holdingsForTrade(true, [sol, { ...eth, chainKey: "base" }], async (holding) => {
     seenTagged.push(`${holding.symbol}:${holding.chainKey}`);
     return 1;
-  }, "ethereum");
+  }, "ethereum", () => 1);
   assert.equal(taggedOnEthereum.ok, true);
   if (taggedOnEthereum.ok) assert.deepEqual(taggedOnEthereum.holdings, []);
   assert.deepEqual(seenTagged, []);
@@ -281,6 +286,7 @@ test("a native holding is read only on chains of its own asset", async () => {
     holdings: [sol, { ...eth, chainKey: "base" }],
     minNativeReserve: 0,
     notionalUsd: 5,
+    quoteAssets: QUOTE_ASSETS,
     chainKey: "ethereum",
   });
   assert.deepEqual(taggedAway, []);
@@ -346,6 +352,7 @@ test("an untagged holding funds an alternate chain", async () => {
     markPrice: async () => null,
     send: async () => landedSend(),
     now: () => 1_050,
+    priceOf: () => 1,
   };
   const app = await createExecutorApp(
     config,
@@ -427,6 +434,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
     ],
     async (holding) => (holding.address === evm ? 4 : null),
     "base",
+    () => 1,
   );
   assert.equal(partial.ok, true);
   if (partial.ok) {
@@ -447,6 +455,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
       return 5;
     },
     "solana",
+    () => 1,
   );
   assert.equal(thrown.ok, true);
   if (thrown.ok) {
@@ -456,7 +465,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
   assert.deepEqual(seen, [sol, wsol]);
   const unread = await holdingsForTrade(true, [{ ...row, address: sol }], async () => {
     throw new Error("rpc down");
-  }, "solana");
+  }, "solana", () => 1);
   assert.equal(unread.ok, false);
 
   resetExecutorState();
@@ -512,6 +521,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
       markPrice: async () => null,
       send: async () => landedSend(),
       now: () => 1_050,
+      priceOf: () => 1,
     },
     null,
     [],
