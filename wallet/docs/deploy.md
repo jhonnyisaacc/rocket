@@ -4,7 +4,7 @@ Deploy two services from this directory. Do not point them at the Rocket researc
 
 ## Build
 
-Railway's root directory is `listing-trader`. The Dockerfile pins `node:22-bookworm-slim` by digest and runs `npm ci --ignore-scripts`. The default command is `node dist/src/resolver-server.js`. `railway.json` checks `GET /health`. Do not add a public domain. Boot throws if `RAILWAY_PUBLIC_DOMAIN` is present. Call the services on the private network URL only.
+Railway's root directory is `wallet`. The Dockerfile pins `node:22-bookworm-slim` by digest and runs `npm ci --ignore-scripts`. The default command is `node dist/src/resolver-server.js`. `railway.json` checks `GET /health`. Do not add a public domain. Boot throws if `RAILWAY_PUBLIC_DOMAIN` is present. Call the services on the private network URL only.
 
 `uuid` is overridden to `11.1.1`. `stream-json` is overridden to `3.7.0`. jayson still imports the old `StreamValues` path, so `scripts/patch-jayson-stream-json.mjs` runs after `npm ci` and points that require at the 3.7 stream adapters. The image does not install `@solana/web3.js` 3.
 

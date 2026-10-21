@@ -7,7 +7,7 @@ Use this when you want a dry-run resolver and executor on one machine. For Railw
 The command prints the keystore path and the two public addresses. It does not print the keys.
 
 ```bash
-cd listing-trader
+cd wallet
 export KEYSTORE_PASSPHRASE='a passphrase of at least 12 characters'
 export KEYSTORE_PATH=wallet.keystore.json
 npm run create-wallet

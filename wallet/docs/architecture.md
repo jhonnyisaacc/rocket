@@ -1,6 +1,6 @@
 # How a listing becomes a sized route
 
-The collector is outside this tree. It hears a listing and `POST`s an alert to the executor `/listing` route. The executor asks the resolver, then either logs a dry-run buy or, when live mode is on, signs a transaction. Rocket never sees that path. `rocket/` does not import `listing-trader/`.
+The collector is outside this tree. It hears a listing and `POST`s an alert to the executor `/listing` route. The executor asks the resolver, then either logs a dry-run buy or, when live mode is on, signs a transaction. Rocket never sees that path. `rocket/` does not import `wallet/`.
 
 ## The watchlist is the hot path
 

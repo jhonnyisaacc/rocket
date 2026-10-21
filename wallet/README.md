@@ -12,7 +12,7 @@ Dry-run is the default. A buy is sent only when `LISTING_TRADER_LIVE` is the exa
 Read [the architecture](docs/architecture.md), [fees](docs/fees.md), [the signer decision](docs/adr/0001-turnkey-signer.md), [the service boundaries](docs/adr/0002-service-boundaries.md), [the runbook](docs/runbook.md), [the threat model](docs/threat-model.md), and [how to deploy](docs/deploy.md).
 
 ```bash
-cd listing-trader
+cd wallet
 npm ci --ignore-scripts
 npm test
 npm run create-wallet
