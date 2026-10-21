@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { timeoutSignal } from "./timeout.js";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { configSecrets, drainTimeoutMs, loadConfig, publicConfig, type AppConfig } from "./config.js";
@@ -214,7 +215,7 @@ export async function createExecutorApp(
         method: "POST",
         headers: { "content-type": "application/json", authorization: `Bearer ${config.resolverAuthTokens[0]}` },
         body: JSON.stringify(parsed.data),
-        signal: AbortSignal.timeout(config.resolverTimeoutMs),
+        signal: timeoutSignal(config.resolverTimeoutMs),
       });
       if (!response.ok) return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
       resolution = resolutionSchema.safeParse(await response.json());

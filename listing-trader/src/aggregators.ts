@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { timeoutSignal, anySignal } from "./timeout.js";
 import { z } from "zod";
 import type { AppConfig } from "./config.js";
 import type { ChainRef } from "./domain.js";
@@ -171,7 +172,7 @@ async function callProvider(config: AppConfig, id: string, url: string, init: Re
 }
 
 function firmSignal(config: AppConfig): AbortSignal {
-  return AbortSignal.timeout(config.firmTimeoutMs);
+  return timeoutSignal(config.firmTimeoutMs);
 }
 
 function jupiterHeaders(config: AppConfig, json = false): Record<string, string> {
@@ -407,7 +408,7 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
   if (!validSellAmount(hop.sellAmount)) return empty();
   const ids = providersFor(hop.chain, config);
   if (ids.length === 0) return empty();
-  const deadline = AbortSignal.timeout(config.quoteDeadlineMs);
+  const deadline = timeoutSignal(config.quoteDeadlineMs);
   const slots: Array<HopQuote | undefined> = ids.map(() => undefined);
   await new Promise<void>((resolve) => {
     let pending = ids.length;
@@ -423,7 +424,7 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
     };
     const timer = setTimeout(finish, config.quoteDeadlineMs);
     ids.forEach((id, index) => {
-      quoteOne(config, id, hop, reference, fetchImpl, AbortSignal.any([deadline, AbortSignal.timeout(config.quoteTimeoutMs)]))
+      quoteOne(config, id, hop, reference, fetchImpl, anySignal([deadline, timeoutSignal(config.quoteTimeoutMs)]))
         .catch(() => empty())
         .then((quote) => {
           if (done) return;

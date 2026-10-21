@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { timeoutSignal } from "./timeout.js";
 import type { AppConfig } from "./config.js";
 import type { ChainRef } from "./domain.js";
 
@@ -111,7 +112,7 @@ function goPlusUrl(token: { chain: ChainRef; contract: string }): string | null 
 async function screenGoPlus(config: AppConfig, url: string, contract: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const headers: Record<string, string> = {};
   if (config.keys.goplus) headers.authorization = `Bearer ${config.keys.goplus}`;
-  const response = await fetchImpl(url, { headers, signal: AbortSignal.timeout(config.liveLookupTimeoutMs) });
+  const response = await fetchImpl(url, { headers, signal: timeoutSignal(config.liveLookupTimeoutMs) });
   if (!response.ok) return "unavailable";
   const parsed = goplusSchema.safeParse(await response.json());
   if (!parsed.success || String(parsed.data.code) !== "1" || !parsed.data.result) return "unavailable";
@@ -135,7 +136,7 @@ async function screenBlockaid(config: AppConfig, chain: string, address: string,
     method: "POST",
     headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
     body: JSON.stringify({ chain, address }),
-    signal: AbortSignal.timeout(config.liveLookupTimeoutMs),
+    signal: timeoutSignal(config.liveLookupTimeoutMs),
   });
   if (!response.ok) return "unavailable";
   const parsed = blockaidSchema.safeParse(await response.json());

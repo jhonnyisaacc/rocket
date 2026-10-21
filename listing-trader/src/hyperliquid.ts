@@ -1,4 +1,5 @@
 import { encode } from "@msgpack/msgpack";
+import { timeoutSignal } from "./timeout.js";
 import { keccak256 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { Hex } from "viem";
@@ -102,7 +103,7 @@ export async function assertApprovedAgent(url: string, master: string, agent: st
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ type: "extraAgents", user: master }),
-    signal: AbortSignal.timeout(1500),
+    signal: timeoutSignal(1500),
   });
   if (!response.ok) throw new Error("hyperliquid agent check failed");
   const body: unknown = await response.json();
@@ -216,7 +217,7 @@ export async function fetchSzDecimals(url: string, market: { market: "perp" | "s
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ type: market.market === "spot" ? "spotMeta" : "meta" }),
-    signal: AbortSignal.timeout(1500),
+    signal: timeoutSignal(1500),
   });
   if (!response.ok) return null;
   const body = (await response.json()) as {

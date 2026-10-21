@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { anySignal, timeoutSignal } from "./timeout.js";
 import type { Alert, TokenRecord } from "./domain.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { matchAlert } from "./match.js";
@@ -52,7 +53,7 @@ export function isValidDexAddress(address: string): boolean {
 }
 
 export async function getJson(url: string, init: RequestInit, fetchImpl: typeof fetch, timeoutMs = 5_000, maxBodyBytes = 16 * 1024 * 1024): Promise<unknown> {
-  const signal = init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs);
+  const signal = init.signal ? anySignal([init.signal, timeoutSignal(timeoutMs)]) : timeoutSignal(timeoutMs);
   const aborted = new Promise<never>((_resolve, reject) => {
     signal.addEventListener("abort", () => reject(signal.reason ?? new Error("request timed out")), { once: true });
   });
