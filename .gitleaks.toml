@@ -1,0 +1,10 @@
+title = "listing-trader"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic keys used only by listing-trader unit tests"
+paths = [
+  '''listing-trader/test/redact\.test\.ts''',
+]

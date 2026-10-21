@@ -1,0 +1,413 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { resetApprovals, rememberApproval } from "../src/approvals.js";
+import { PROVIDER_REGISTRY, providersFor, raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
+import { broadcastRoute } from "../src/broadcast.js";
+import { loadConfig } from "../src/config.js";
+import { BroadcastError } from "../src/executor.js";
+import { REDACT_PATHS } from "../src/log.js";
+import { matchAlert, WatchIndex } from "../src/match.js";
+import { assertBoot, loadManagedSigner, withPolicy, type TransactionSigner } from "../src/managed-signer.js";
+import { classifyHttp, ProviderGuard } from "../src/provider-guard.js";
+import { BRIDGE_PROVIDERS, planRebalance } from "../src/rebalance.js";
+import { pickRoute, planRoutes } from "../src/routing.js";
+import { buildPairMap } from "../src/pairs.js";
+import { screenToken } from "../src/screening.js";
+import { assertEvmSigning, assertHyperliquidSigning, DEFAULT_MAX_VALUE_WEI, turnkeyPolicyDocument } from "../src/signing-policy.js";
+import { RESERVE_LOCK_SQL, RESERVE_SUM_SQL, reserveDecision } from "../src/spend.js";
+import { createExecutorApp } from "../src/executor-server.js";
+import type { TokenRecord } from "../src/domain.js";
+import type { ExecutorDeps } from "../src/executor.js";
+
+const tokenAuth = "0123456789abcdef";
+
+function record(chainKey: "solana" | "base" | "ethereum", contract: string, liquidity = 200_000): TokenRecord {
+  const chain = chainKey === "solana" ? { kind: "solana" as const } : { kind: "evm" as const, chainId: chainKey === "base" ? 8453 : 1 };
+  return {
+    id: `${chainKey}:${contract}`,
+    ticker: "MPLX",
+    names: ["Metaplex"],
+    chainKey,
+    chain,
+    contract,
+    decimals: 6,
+    pairMap: buildPairMap([
+      {
+        poolAddress: `${contract}-pool`,
+        dex: "pool",
+        chainKey,
+        baseSymbol: "MPLX",
+        baseAddress: contract,
+        quoteSymbol: "USDC",
+        quoteAddress: "usdc",
+        liquidityUsd: liquidity,
+        priceUsd: 1,
+        baseDecimals: 6,
+      },
+    ]),
+    hyperliquid: null,
+    refreshedAt: "2026-10-21T00:00:00.000Z",
+  };
+}
+
+function signer(calls: string[]): TransactionSigner {
+  return {
+    backend: "keystore",
+    evmAddress: () => "0x2222222222222222222222222222222222222222",
+    solanaAddress: () => null,
+    async signEvm() {
+      calls.push("evm");
+      return "0x";
+    },
+    async signSolana() {
+      calls.push("solana");
+      return new Uint8Array();
+    },
+    async signHyperliquid() {
+      calls.push("hyper");
+      return { r: "0x01", s: "0x02", v: 27 };
+    },
+  };
+}
+
+test("a liquid ticker on two chains hits the cheaper chain and keeps the other", () => {
+  const index = new WatchIndex([record("ethereum", "0xeth"), record("solana", "mint")]);
+  const hit = matchAlert(index, { ticker: "MPLX", projectName: "Metaplex" }, 75_000);
+  assert.equal(hit.kind, "hit");
+  if (hit.kind !== "hit") return;
+  assert.equal(hit.token.chainKey, "solana");
+  assert.equal(hit.alternates[0]?.chainKey, "ethereum");
+});
+
+test("two contracts on the same chain stay ambiguous", () => {
+  const index = new WatchIndex([record("base", "0xone"), record("base", "0xtwo")]);
+  const hit = matchAlert(index, { ticker: "MPLX", projectName: "Metaplex" }, 75_000);
+  assert.equal(hit.kind, "ambiguous");
+});
+
+test("the route picker prefers net output and drops an unsigned quote", () => {
+  const shared = { kind: "aggregator" as const, hops: ["USDC->MPLX"], feeUsd: 0.01, buyAmount: "1" };
+  const picked = pickRoute(
+    [
+      { ...shared, planId: "thin", priceImpactPct: 0.1, netOutputUsd: 1, signable: true },
+      { ...shared, planId: "thick", priceImpactPct: 0.4, netOutputUsd: 4, signable: true },
+      { ...shared, planId: "unsigned", priceImpactPct: 0.01, netOutputUsd: 9, signable: false },
+    ],
+    100,
+  );
+  assert.equal("planId" in picked && picked.planId, "thick");
+});
+
+test("a holding tagged for another chain is not spent on this chain", () => {
+  const plans = planRoutes({
+    tokenSymbol: "MPLX",
+    tokenAddress: "mplx",
+    pairMap: buildPairMap([]),
+    holdings: [
+      { symbol: "USDC", address: "sol-usdc", amount: 20, usd: 20, native: false, decimals: 6, chainKey: "solana" },
+      { symbol: "USDC", address: "base-usdc", amount: 20, usd: 20, native: false, decimals: 6, chainKey: "base" },
+      { symbol: "USDC", address: "shared", amount: 20, usd: 20, native: false, decimals: 6 },
+    ],
+    minNativeReserve: 0,
+    notionalUsd: 5,
+    chainKey: "base",
+  });
+  const sells = plans.map((plan) => (plan.kind === "aggregator" ? plan.hop.sellAddress : ""));
+  assert.deepEqual(sells.sort(), ["base-usdc", "shared"]);
+});
+
+test("a quote that misses the deadline is dropped and a fast quote is kept", async () => {
+  resetProviderGuards();
+  const config = loadConfig({ QUOTE_TIMEOUT_MS: "30", QUOTE_DEADLINE_MS: "60" });
+  const quote = await raceProviderQuotes(
+    config,
+    { sellAddress: "0xusdc", buyAddress: "0xtoken", sellAmount: "5000000", chain: { kind: "evm", chainId: 8453 } },
+    { spentUsd: 5, priceUsd: 1, decimals: 6 },
+    async (input, init) => {
+      const url = String(input);
+      if (!url.includes("api.0x.org")) {
+        await new Promise((resolve, reject) => {
+          const timer = setTimeout(resolve, 400);
+          init?.signal?.addEventListener("abort", () => {
+            clearTimeout(timer);
+            reject(new Error("aborted"));
+          });
+        });
+      }
+      return new Response(JSON.stringify({ buyAmount: "5000000", liquidityAvailable: true }), { status: 200 });
+    },
+  );
+  assert.equal(quote.provider, "zeroex");
+  assert.ok((quote.netOutputUsd ?? 0) > 0);
+});
+
+test("a compliance response opens the breaker and is not retried", async () => {
+  resetProviderGuards();
+  const config = loadConfig({});
+  let calls = 0;
+  const fetchImpl: typeof fetch = async () => {
+    calls += 1;
+    return new Response("restricted jurisdiction", { status: 403 });
+  };
+  const hop = { sellAddress: "usdc", buyAddress: "mplx", sellAmount: "5000000", chain: { kind: "solana" as const } };
+  await raceProviderQuotes(config, hop, null, fetchImpl);
+  await raceProviderQuotes(config, hop, null, fetchImpl);
+  assert.equal(calls, 1);
+  assert.equal(classifyHttp(451, ""), "compliance");
+  assert.equal(classifyHttp(200, "ofac"), "ok");
+});
+
+test("odos is not called and bridges are the four off-path providers", () => {
+  assert.equal(PROVIDER_REGISTRY.odos.calls, false);
+  assert.equal(PROVIDER_REGISTRY.jumper.calls, false);
+  assert.equal(providersFor({ kind: "solana" }, loadConfig({})).includes("odos" as never), false);
+  assert.deepEqual([...BRIDGE_PROVIDERS], ["lifi", "across", "relay", "debridge"]);
+});
+
+test("rebalance refuses an empty allowlist and a foreign destination", () => {
+  const quote = { provider: "lifi" as const, feeUsd: 0.01, amountInUsd: 10, destination: "0xabc" };
+  assert.equal(planRebalance({ quotes: [quote], maxBridgeUsd: 25, maxFeeBps: 50, spentBridgeUsd: 0, dailyBridgeCap: 50, ownAddresses: ["0xabc"], allowlist: [] }).kind, "skip");
+  const foreign = planRebalance({
+    quotes: [quote],
+    maxBridgeUsd: 25,
+    maxFeeBps: 50,
+    spentBridgeUsd: 0,
+    dailyBridgeCap: 50,
+    ownAddresses: ["0xabc"],
+    allowlist: ["0xdef"],
+  });
+  assert.equal(foreign.kind, "skip");
+});
+
+test("the hot path does not plan a bridge", () => {
+  const source = readFileSync(new URL("../../src/executor.ts", import.meta.url), "utf8");
+  assert.equal(source.includes("planRebalance"), false);
+});
+
+test("an uncached erc-20 sell is not signed", async () => {
+  resetApprovals();
+  const calls: string[] = [];
+  const config = loadConfig({
+    AUTH_TOKEN: tokenAuth,
+    RPC_URL_8453: "http://127.0.0.1:9",
+    ROUTER_ALLOWLIST: "0x1111111111111111111111111111111111111111",
+  });
+  const router = "0x1111111111111111111111111111111111111111";
+  const sell = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  await assert.rejects(
+    () =>
+      broadcastRoute(
+        config,
+        withPolicy(signer(calls), config),
+        {
+          kind: "evm",
+          description: "swap",
+          chain: { kind: "evm", chainId: 8453 },
+          provider: "zeroex",
+          hyperliquidActions: [],
+          legs: [{ sellAddress: sell, buyAddress: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", sellAmount: "1000", spentUsd: 5, priceUsd: 1, decimals: 6 }],
+        },
+        1,
+        async () =>
+          new Response(
+            JSON.stringify({
+              buyAmount: "5000000",
+              liquidityAvailable: true,
+              transaction: { to: router, data: "0x", value: "0", gas: "21000" },
+              issues: { allowance: { spender: router, actual: "0" } },
+            }),
+            { status: 200 },
+          ),
+      ),
+    (error: unknown) => error instanceof BroadcastError && error.message === "approval is not cached" && error.broadcast === false,
+  );
+  assert.deepEqual(calls, []);
+  rememberApproval({ chainId: 8453, token: sell, spender: router, owner: "0x2222222222222222222222222222222222222222" }, 1000n);
+  await assert.rejects(
+    () =>
+      broadcastRoute(
+        config,
+        withPolicy(signer(calls), config),
+        {
+          kind: "evm",
+          description: "swap",
+          chain: { kind: "evm", chainId: 8453 },
+          provider: "zeroex",
+          hyperliquidActions: [],
+          legs: [{ sellAddress: sell, buyAddress: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", sellAmount: "1000", spentUsd: 5, priceUsd: 1, decimals: 6 }],
+        },
+        1,
+        async () =>
+          new Response(
+            JSON.stringify({
+              buyAmount: "5000000",
+              liquidityAvailable: true,
+              transaction: { to: router, data: "0x", value: "0", gas: "21000" },
+              issues: { allowance: { spender: router, actual: "0" } },
+            }),
+            { status: 200 },
+          ),
+      ),
+    (error: unknown) => error instanceof BroadcastError && error.message !== "approval is not cached",
+  );
+});
+
+test("signing policy denies an empty router list, a foreign router, and a hyperliquid withdraw", () => {
+  assert.throws(
+    () => assertEvmSigning({ chainId: 8453, to: "0x1111111111111111111111111111111111111111", data: "0x", value: 0n, purpose: "swap", routers: [], withdrawAllowlist: [], maxValueWei: DEFAULT_MAX_VALUE_WEI, allowHotApproval: false }),
+    /router allowlist is empty/,
+  );
+  assert.throws(
+    () =>
+      assertEvmSigning({
+        chainId: 8453,
+        to: "0x2222222222222222222222222222222222222222",
+        data: "0x",
+        value: 0n,
+        purpose: "swap",
+        routers: ["0x1111111111111111111111111111111111111111"],
+        withdrawAllowlist: [],
+        maxValueWei: DEFAULT_MAX_VALUE_WEI,
+        allowHotApproval: false,
+      }),
+    /not an allowlisted router/,
+  );
+  assert.throws(() => assertHyperliquidSigning({ type: "withdraw3" }, 1), /withdraw3/);
+});
+
+test("live mode refuses the local keystore unless it is explicitly allowed", () => {
+  const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
+  assert.throws(() => loadManagedSigner({}, live), /live mode requires Turnkey/);
+  const allowed = loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth });
+  assert.equal(loadManagedSigner({}, allowed), null);
+});
+
+test("a solana native transfer to a stranger is denied before the backend signs", async () => {
+  const payer = Keypair.generate();
+  const stranger = Keypair.generate().publicKey;
+  const message = new TransactionMessage({
+    payerKey: payer.publicKey,
+    recentBlockhash: "11111111111111111111111111111111",
+    instructions: [SystemProgram.transfer({ fromPubkey: payer.publicKey, toPubkey: stranger, lamports: 1 })],
+  }).compileToV0Message();
+  const raw = new VersionedTransaction(message).serialize();
+  const calls: string[] = [];
+  const inner = signer(calls);
+  inner.solanaAddress = () => payer.publicKey.toBase58();
+  const wrapped = withPolicy(inner, loadConfig({}));
+  await assert.rejects(() => wrapped.signSolana(raw), /not allowlisted/);
+  assert.deepEqual(calls, []);
+  const bad = new VersionedTransaction(
+    new TransactionMessage({
+      payerKey: payer.publicKey,
+      recentBlockhash: "11111111111111111111111111111111",
+      instructions: [new TransactionInstruction({ programId: new PublicKey(Keypair.generate().publicKey), keys: [], data: Buffer.alloc(0) })],
+    }).compileToV0Message(),
+  ).serialize();
+  await assert.rejects(() => wrapped.signSolana(bad), /solana program is not allowlisted/);
+});
+
+test("boot requires a long token and refuses a public Railway domain", () => {
+  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: "short" })), /AUTH_TOKEN/);
+  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: tokenAuth }), { RAILWAY_PUBLIC_DOMAIN: "example.up.railway.app" }), /public Railway domain/);
+});
+
+test("mutating routes require a bearer token, a valid body, and a small payload", async () => {
+  const config = loadConfig({ AUTH_TOKEN: tokenAuth });
+  const runtime: ExecutorDeps = {
+    config,
+    mode: "dry_run",
+    spentTodayUsd: 0,
+    quoteHop: async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" }),
+    markPrice: async () => null,
+    send: async () => undefined,
+  };
+  const app = await createExecutorApp(config, runtime, null, [], []);
+  const health = await app.inject({ method: "GET", url: "/health" });
+  assert.equal(health.statusCode, 200);
+  const missing = await app.inject({ method: "POST", url: "/execute", payload: {} });
+  assert.equal(missing.statusCode, 401);
+  const invalid = await app.inject({
+    method: "POST",
+    url: "/execute",
+    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    payload: { side: "buy" },
+  });
+  assert.equal(invalid.statusCode, 400);
+  const huge = await app.inject({
+    method: "POST",
+    url: "/execute",
+    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    payload: { pad: "x".repeat(40_000) },
+  });
+  assert.equal(huge.statusCode, 413);
+  let limited = 0;
+  for (let i = 0; i < 11; i += 1) {
+    const response = await app.inject({
+      method: "POST",
+      url: "/rebalance",
+      headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+      payload: { quotes: [], ownAddresses: [] },
+    });
+    limited = response.statusCode;
+  }
+  assert.equal(limited, 429);
+  await app.close();
+});
+
+test("screening fails closed on a bad body, a honeypot, and a Blockaid warning", async () => {
+  const config = loadConfig({ TOKEN_SCREENING: "true", AUTH_TOKEN: tokenAuth });
+  const token = { chainKey: "base", chain: { kind: "evm" as const, chainId: 8453 }, contract: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
+  assert.equal(await screenToken(config, token, async () => new Response("{}", { status: 200 })), "deny");
+  assert.equal(
+    await screenToken(config, token, async () => new Response(JSON.stringify({ code: 1, result: { [token.contract]: { is_honeypot: "1" } } }), { status: 200 })),
+    "deny",
+  );
+  const benign = loadConfig({ TOKEN_SCREENING: "true", BLOCKAID_API_KEY: "blockaid-test", AUTH_TOKEN: tokenAuth });
+  assert.equal(
+    await screenToken(benign, token, async (input) => {
+      const url = String(input);
+      if (url.includes("gopluslabs.io")) {
+        return new Response(JSON.stringify({ code: 1, result: { [token.contract]: { is_honeypot: "0", cannot_sell_all: "0" } } }), { status: 200 });
+      }
+      return new Response(JSON.stringify({ result_type: "Warning" }), { status: 200 });
+    }),
+    "deny",
+  );
+  assert.equal(await screenToken(loadConfig({ TOKEN_SCREENING: "false" }), token, async () => { throw new Error("offline"); }), "allow");
+});
+
+test("spend reservation locks the day and counts reserved plus committed rows", () => {
+  assert.match(RESERVE_LOCK_SQL, /pg_advisory_xact_lock/);
+  assert.match(RESERVE_SUM_SQL, /reserved/);
+  assert.match(RESERVE_SUM_SQL, /committed/);
+  assert.equal(reserveDecision({ existing: null, spent: 20, usd: 5, cap: 25 }), "reserved");
+  assert.equal(reserveDecision({ existing: null, spent: 21, usd: 5, cap: 25 }), "cap");
+  assert.equal(reserveDecision({ existing: "committed", spent: 0, usd: 5, cap: 25 }), "exists");
+  assert.equal(reserveDecision({ existing: "released", spent: 0, usd: 5, cap: 25 }), "reserved");
+});
+
+test("the checked-in Turnkey policy matches the code", () => {
+  const file = JSON.parse(readFileSync(new URL("../../policies/turnkey.json", import.meta.url), "utf8"));
+  assert.deepEqual(file, turnkeyPolicyDocument());
+});
+
+test("logs redact authorization and exchange signatures", () => {
+  assert.ok(REDACT_PATHS.includes("req.headers.authorization"));
+  assert.ok(REDACT_PATHS.some((path) => path.includes("ok-access-sign")));
+});
+
+test("three provider failures open the circuit", () => {
+  let now = 1_000;
+  const guard = new ProviderGuard({ budget: 30, windowMs: 60_000, failureThreshold: 3, openMs: 30_000, now: () => now });
+  assert.equal(guard.before("kyberswap"), "allow");
+  guard.failure("kyberswap");
+  guard.failure("kyberswap");
+  assert.equal(guard.before("kyberswap"), "allow");
+  guard.failure("kyberswap");
+  assert.equal(guard.before("kyberswap"), "open");
+  now += 30_001;
+  assert.equal(guard.before("kyberswap"), "allow");
+});

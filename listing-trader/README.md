@@ -9,11 +9,11 @@ Dry-run is the default. A buy is sent only when `LISTING_TRADER_LIVE` is the exa
 | Resolver | Watchlist, pair map, name match |
 | Executor | Route, quote, sign, and the copy-trading `POST /execute` entry |
 
-Read [the architecture](docs/architecture.md), [the runbook](docs/runbook.md), [the threat model](docs/threat-model.md), and [how to deploy](docs/deploy.md).
+Read [the architecture](docs/architecture.md), [fees](docs/fees.md), [the signer decision](docs/adr/0001-turnkey-signer.md), [the service boundaries](docs/adr/0002-service-boundaries.md), [the runbook](docs/runbook.md), [the threat model](docs/threat-model.md), and [how to deploy](docs/deploy.md).
 
 ```bash
 cd listing-trader
-npm ci
+npm ci --ignore-scripts
 npm test
 npm run create-wallet
 npm run start:resolver

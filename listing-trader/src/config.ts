@@ -1,5 +1,8 @@
 import { CHAINS, chainByKey } from "./chains.js";
 import type { LimitConfig } from "./limits.js";
+import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "./signing-policy.js";
+
+export type ApprovalSeed = { chainId: number; token: string; spender: string; owner: string; amount: string };
 
 export type AppConfig = LimitConfig & {
   live: boolean;
@@ -23,6 +26,48 @@ export type AppConfig = LimitConfig & {
   quoteDecimals: Record<string, number>;
   coingeckoBase: string;
   dexscreenerBase: string;
+  quoteTimeoutMs: number;
+  quoteDeadlineMs: number;
+  providerBudgetPerMinute: number;
+  providerFailureThreshold: number;
+  providerOpenMs: number;
+  maxBridgeUsd: number;
+  maxBridgeFeeBps: number;
+  dailyBridgeUsdCap: number;
+  targetUsdcUsd: number;
+  targetNativeUsd: number;
+  authToken: string | null;
+  allowLocalSigner: boolean;
+  allowHotApproval: boolean;
+  screening: boolean;
+  routerAllowlist: string[];
+  solanaProgramAllowlist: string[];
+  maxValueWei: bigint;
+  mevRpcByChainId: Record<number, string>;
+  jitoUrl: string | null;
+  oneInchBase: string;
+  kyberBase: string;
+  veloraBase: string;
+  keys: {
+    zeroEx: string | null;
+    jupiter: string | null;
+    lifi: string | null;
+    lifiIntegrator: string | null;
+    oneInch: string | null;
+    okxKey: string | null;
+    okxSecret: string | null;
+    okxPassphrase: string | null;
+    kyberClientId: string;
+    veloraPartner: string | null;
+    acrossKey: string | null;
+    acrossIntegrator: string | null;
+    relayKey: string | null;
+    debridgeToken: string | null;
+    goplus: string | null;
+    blockaid: string | null;
+  };
+  now?: () => number;
+  approvalSeed: ApprovalSeed[];
 };
 
 function intEnv(env: NodeJS.ProcessEnv, name: string, fallback: number): number {
@@ -118,7 +163,84 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
       .filter(Boolean),
     dexscreenerSlugOverrides,
     rpcByChainKey,
+    quoteTimeoutMs: intEnv(env, "QUOTE_TIMEOUT_MS", 350),
+    quoteDeadlineMs: intEnv(env, "QUOTE_DEADLINE_MS", 500),
+    providerBudgetPerMinute: intEnv(env, "PROVIDER_BUDGET_PER_MINUTE", 30),
+    providerFailureThreshold: intEnv(env, "PROVIDER_FAILURE_THRESHOLD", 3),
+    providerOpenMs: intEnv(env, "PROVIDER_OPEN_MS", 30_000),
+    maxBridgeUsd: intEnv(env, "MAX_BRIDGE_USD", 25),
+    maxBridgeFeeBps: intEnv(env, "MAX_BRIDGE_FEE_BPS", 50),
+    dailyBridgeUsdCap: intEnv(env, "DAILY_BRIDGE_USD_CAP", 50),
+    targetUsdcUsd: intEnv(env, "TARGET_USDC_USD", 20),
+    targetNativeUsd: intEnv(env, "TARGET_NATIVE_USD", 2),
+    authToken: env.AUTH_TOKEN ?? null,
+    allowLocalSigner: env.ALLOW_LOCAL_SIGNER === "true",
+    allowHotApproval: env.ALLOW_HOT_APPROVAL === "true",
+    screening: env.TOKEN_SCREENING === "true",
+    routerAllowlist: splitList(env.ROUTER_ALLOWLIST),
+    solanaProgramAllowlist: env.SOLANA_PROGRAM_ALLOWLIST ? splitList(env.SOLANA_PROGRAM_ALLOWLIST) : [...SOLANA_BASE_PROGRAMS],
+    maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),
+    mevRpcByChainId: mevRpcs(env),
+    jitoUrl: env.JITO_ENABLED === "true" ? (env.JITO_BLOCK_ENGINE_URL ?? "https://mainnet.block-engine.jito.wtf/api/v1/transactions") : null,
+    oneInchBase: env.ONEINCH_API_BASE ?? "https://api.1inch.com",
+    kyberBase: env.KYBER_API_BASE ?? "https://aggregator-api.kyberswap.com",
+    veloraBase: env.VELORA_API_BASE ?? "https://api.velora.xyz",
+    keys: {
+      zeroEx: env.ZEROX_API_KEY ?? null,
+      jupiter: env.JUPITER_API_KEY ?? null,
+      lifi: env.LIFI_API_KEY ?? null,
+      lifiIntegrator: env.LIFI_INTEGRATOR ?? null,
+      oneInch: env.ONEINCH_API_KEY ?? null,
+      okxKey: env.OKX_API_KEY ?? null,
+      okxSecret: env.OKX_API_SECRET ?? null,
+      okxPassphrase: env.OKX_API_PASSPHRASE ?? null,
+      kyberClientId: env.KYBERSWAP_CLIENT_ID ?? "listing-trader",
+      veloraPartner: env.VELORA_PARTNER ?? null,
+      acrossKey: env.ACROSS_API_KEY ?? null,
+      acrossIntegrator: env.ACROSS_INTEGRATOR_ID ?? null,
+      relayKey: env.RELAY_API_KEY ?? null,
+      debridgeToken: env.DEBRIDGE_ACCESS_TOKEN ?? null,
+      goplus: env.GOPLUS_API_KEY ?? null,
+      blockaid: env.BLOCKAID_API_KEY ?? null,
+    },
+    approvalSeed: approvalSeed(env),
   };
+}
+
+function approvalSeed(env: NodeJS.ProcessEnv): ApprovalSeed[] {
+  if (!env.APPROVAL_CACHE_JSON) return [];
+  const parsed: unknown = JSON.parse(env.APPROVAL_CACHE_JSON);
+  if (!Array.isArray(parsed)) throw new Error("APPROVAL_CACHE_JSON must be an array");
+  return parsed.flatMap((row) => {
+    if (typeof row !== "object" || row === null) return [];
+    const item = row as Partial<ApprovalSeed>;
+    if (typeof item.chainId !== "number" || typeof item.token !== "string" || typeof item.spender !== "string" || typeof item.owner !== "string" || typeof item.amount !== "string") {
+      throw new Error("APPROVAL_CACHE_JSON row is invalid");
+    }
+    return [{ chainId: item.chainId, token: item.token, spender: item.spender, owner: item.owner, amount: item.amount }];
+  });
+}
+
+function splitList(raw: string | undefined): string[] {
+  return (raw ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function weiEnv(raw: string | undefined): bigint {
+  if (raw === undefined || raw === "") return DEFAULT_MAX_VALUE_WEI;
+  if (!/^\d+$/.test(raw)) throw new Error("invalid MAX_NATIVE_VALUE_WEI");
+  return BigInt(raw);
+}
+
+function mevRpcs(env: NodeJS.ProcessEnv): Record<number, string> {
+  const out: Record<number, string> = {};
+  for (const [name, value] of Object.entries(env)) {
+    const match = /^MEV_RPC_URL_(\d+)$/.exec(name);
+    if (match?.[1] && value) out[Number(match[1])] = value;
+  }
+  return out;
 }
 
 export function publicConfig(config: AppConfig): Record<string, unknown> {
@@ -133,5 +255,9 @@ export function publicConfig(config: AppConfig): Record<string, unknown> {
     enabledChainKeys: [...config.enabledChainKeys],
     refreshEnabled: config.refreshEnabled,
     shortlistLimit: config.shortlistLimit,
+    quoteDeadlineMs: config.quoteDeadlineMs,
+    screening: config.screening,
+    allowLocalSigner: config.allowLocalSigner,
+    jito: config.jitoUrl !== null,
   };
 }

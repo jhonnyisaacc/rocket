@@ -1,29 +1,47 @@
-# What the listing trader refuses to do
+# Threat model
 
-The process can hold a hot-wallet key and talk to aggregators. The controls below are the ones the code enforces. They are not a promise about the exchanges.
+The listing trader can move the funds in the hot wallet. This page uses STRIDE so each control is tied to a threat. The controls are what the code does. They are not a promise about an exchange or a signer vendor.
 
-## Keys stay in the process
+## Spoofing
 
-Wallets are created locally. The keystore is scrypt plus AES-256-GCM. The file stores salt, iv, ciphertext, and public addresses. Logs, JSON responses, and thrown errors run through redaction that replaces the loaded secret, a 64-hex key with or without `0x`, and a long base58 string. The create-wallet command exits if the raw key would appear in the file it writes.
+`AUTH_TOKEN` is required at boot and must be at least 16 characters. Mutating routes compare `Authorization: Bearer` with SHA-256 and `timingSafeEqual`. `GET /health` is the only open route, and it returns `publicConfig` only. Secrets, the router list, and the approval cache are not in that payload.
 
-There is no admin route that returns a key. Withdrawals go only to `OWNER_WITHDRAW_ADDRESSES`, and only as native gas, and only when live mode is on. An empty allowlist denies every withdraw. The executor does not implement a general transfer API.
+The collector and the executor share that token when the executor calls the resolver. A missing or short token refuses boot.
 
-HyperCore uses a separate agent key. The official pages checked describe API wallets as signers for a master account. They do not state that an agent is unable to withdraw. This service still refuses `withdraw3`, `usdSend`, `spotSend`, `sendAsset`, `agentSendAsset`, `usdClassTransfer`, `vaultTransfer`, and `approveAgent`. Load the agent key, not the master key. The action hash follows the Python SDK's L1 scheme, and it has not been checked against a mainnet test vector. A bad signature is an exchange reject, and a reject after the request is sent still counts against the daily cap so a retry cannot double-send.
+## Tampering
 
-## Limits are in the request path
+Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-Every buy passes `checkLimits` before a quote is accepted. The kill switch, the per-trade cap, the daily cap, the slippage cap, the chain allowlist, and the 1x leverage cap are ordinary branches on that path. Dry-run never calls `send` and never increments spend. Live mode will not boot without `DATABASE_URL`, because the spend journal has to survive a restart. A broadcast that throws after the transaction was submitted keeps the journal row. A failure before broadcast deletes it, so a bad quote does not eat the cap.
+App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. An empty `ROUTER_ALLOWLIST` denies EVM swaps. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program transfer must pay the hot wallet or an allowlisted withdraw address.
 
-The in-memory idempotency map is per process. Two replicas can both pass it. Run one executor replica, and rely on the journal's primary key for the live case.
+Pre-sign simulation is viem `simulateCalls` on EVM and `simulateTransaction` on Solana. A revert is `simulation rejected the transaction` and `broadcast` is false, so the spend reservation is released.
 
-## Matching prefers a miss over a lookalike
+`TOKEN_SCREENING=true` rejects a live-lookup token when GoPlus or Blockaid fails, times out, or reports a honeypot, `cannot_sell_all`, or a result other than `Benign`. That path is the unlisted fallback only.
 
-Ticker equality is exact. Name equality is exact after normalization, including a Korean alias when one was stored. A lookalike does not fall through to the live search. The live search itself has a short timeout and returns no trade when the result is late, empty, or ambiguous. Pool rows for an unknown DexScreener slug are dropped.
+## Repudiation
 
-Quotes with no impact are dropped. A firm quote above the slippage cap is not signed. LI.FI is same-chain only. zkSync can be quoted and cannot be sent. Native balances cannot be spent down through the gas reserve.
+pino logs the execution report. Authorization, API keys, and OKX signature headers are redacted. `redactError` still strips a 64-hex key and a long base58 string. The spend journal records the idempotency key, the USD amount, the UTC day, and `reserved`, `committed`, or `released`.
+
+## Information disclosure
+
+With Turnkey, the trading keys are not in this process. The process holds the Turnkey API key, which can request a signature inside the policy. The local keystore decrypts into the process only when `ALLOW_LOCAL_SIGNER=true` or when live mode is off and a keystore is configured for a dry run that never signs. Logs do not print `Secret` values.
+
+Do not attach a Railway public domain. Boot throws when `RAILWAY_PUBLIC_DOMAIN` is set. Use the private network URL for Postgres and for `RESOLVER_URL`.
+
+## Denial of service
+
+Fastify limits the body to 32 KiB. The global rate limit is 60 a minute. Buy, withdraw, rebalance, and watchlist writes are 10 a minute. Provider calls have a per-minute budget, a 350 ms timeout, and a 500 ms deadline. Three failures, or one compliance response, open that provider. A compliance skip is not retried on another host.
+
+## Elevation of privilege
+
+Withdrawals are native transfers to `OWNER_WITHDRAW_ADDRESSES`. Calldata on an EVM withdraw is `0x`. An empty allowlist denies every withdraw and every bridge plan. Bridge plans never broadcast.
+
+HyperCore refuses `withdraw3`, `usdSend`, `spotSend`, `sendAsset`, `agentSendAsset`, `usdClassTransfer`, `vaultTransfer`, and `approveAgent`. Turnkey's Agent policy cannot see those names inside `connectionId`. The ban is in this process, before submit. Load the agent key, not the master key. The signature scheme follows the Python SDK and has not been checked against a mainnet vector.
+
+`KILL_SWITCH=true` skips new buys and live withdraws. It does not delete a key. Revoke the Turnkey API user to stop signing. See the [runbook](runbook.md).
+
+The daily cap is enforced inside a Postgres transaction with an advisory lock. Two replicas can still both pass the in-memory idempotency map. Run one executor.
 
 ## What this does not cover
 
-The hot wallet can still lose the funds it holds if the host is compromised or if a quoted route is a hostile contract the aggregator returned. The caps bound the size. They do not review the contract. Aggregator API keys in the environment are not written to the health payload, and the health payload is the public config only.
-
-Research CI does not run these tests and does not fetch market data for them. The listing-trader workflow runs `npm test` on this tree alone.
+A quoted router can still be a hostile contract the aggregator returned, inside the allowlist you configured. The caps bound the size. Screening does not run on the watchlist hot path. Research CI does not run these tests and does not fetch market data for them.

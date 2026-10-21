@@ -1,0 +1,23 @@
+[
+  {
+    "policyName": "EVM swaps on allowlisted chains and routers",
+    "notes": "Replace <ROUTER_ALLOWLIST> with the router addresses from ROUTER_ALLOWLIST_JSON. Native value cap is 2000000000000000 wei. One-time token approvals are a root-quorum ceremony, not this policy.",
+    "effect": "EFFECT_ALLOW",
+    "consensus": "approvers.any(user, user.id == '<TURNKEY_API_USER_ID>')",
+    "condition": "activity.kind == 'SIGN_TRANSACTION' && (eth.tx.chain_id == 1 || eth.tx.chain_id == 10 || eth.tx.chain_id == 56 || eth.tx.chain_id == 137 || eth.tx.chain_id == 324 || eth.tx.chain_id == 8453 || eth.tx.chain_id == 42161 || eth.tx.chain_id == 59144 || eth.tx.chain_id == 81457 || eth.tx.chain_id == 534352 || eth.tx.chain_id == 4663 || eth.tx.chain_id == 999) && eth.tx.value <= 2000000000000000 && (eth.tx.to == '<ROUTER_ALLOWLIST>')"
+  },
+  {
+    "policyName": "Solana swaps through Jupiter and the base programs",
+    "notes": "Add each DEX program id Jupiter puts in the transaction, or Turnkey denies the sign. Program ids must be static. Address lookup tables cannot supply program ids.",
+    "effect": "EFFECT_ALLOW",
+    "consensus": "approvers.any(user, user.id == '<TURNKEY_API_USER_ID>')",
+    "condition": "activity.kind == 'SIGN_TRANSACTION' && solana.tx.program_keys.all(p, p == 'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4' || p == '11111111111111111111111111111111' || p == 'ComputeBudget111111111111111111111111111111' || p == 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' || p == 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb' || p == 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL')"
+  },
+  {
+    "policyName": "Hyperliquid agent typed data",
+    "notes": "The L1 action is hashed into connectionId before EIP-712, so this policy can pin the Agent domain and cannot see withdraw3. The app rejects non-tradable actions before it submits.",
+    "effect": "EFFECT_ALLOW",
+    "consensus": "approvers.any(user, user.id == '<TURNKEY_API_USER_ID>')",
+    "condition": "eth.eip_712.primary_type == 'Agent' && eth.eip_712.domain.name == 'Exchange' && eth.eip_712.domain.version == '1' && eth.eip_712.domain.chain_id == 1337 && eth.eip_712.message['source'] == 'a'"
+  }
+]

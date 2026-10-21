@@ -1,29 +1,48 @@
-import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { redactError } from "./redact.js";
+import fastifyAuth from "@fastify/auth";
+import rateLimit from "@fastify/rate-limit";
+import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
+import { tokenMatches } from "./managed-signer.js";
+import { createLogger } from "./log.js";
 
-export async function readJson(req: IncomingMessage): Promise<unknown> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of req) chunks.push(Buffer.from(chunk));
-  if (chunks.length === 0) return {};
-  return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+export const BODY_LIMIT = 32 * 1024;
+
+export const mutatingLimit = { rateLimit: { max: 10, timeWindow: "1 minute" } };
+
+declare module "fastify" {
+  interface FastifyInstance {
+    verifyBearer: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+  }
 }
 
-export function sendJson(res: ServerResponse, status: number, body: unknown): void {
-  const payload = JSON.stringify(body);
-  res.writeHead(status, { "content-type": "application/json" });
-  res.end(payload);
-}
-
-export function startServer(
-  port: number,
-  handler: (req: IncomingMessage, res: ServerResponse) => Promise<void>,
-  secrets: readonly string[] = [],
-): ReturnType<typeof createServer> {
-  const server = createServer((req, res) => {
-    handler(req, res).catch((error: unknown) => {
-      sendJson(res, 500, { error: redactError(error, secrets) });
-    });
+export async function buildApp(options: { authToken: string; secrets?: readonly string[]; logger?: boolean }): Promise<FastifyInstance> {
+  const app = Fastify({
+    bodyLimit: BODY_LIMIT,
+    logger: options.logger === false ? false : createLogger(options.secrets ?? []),
   });
-  server.listen(port);
-  return server;
+  await app.register(rateLimit, { global: true, max: 60, timeWindow: "1 minute" });
+  await app.register(fastifyAuth);
+  app.decorate("verifyBearer", async function (request: FastifyRequest, reply: FastifyReply) {
+    const header = request.headers.authorization;
+    const token = typeof header === "string" && header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
+    if (!token || !tokenMatches(token, options.authToken)) {
+      return reply.code(401).send({ error: "unauthorized" });
+    }
+  });
+  app.setErrorHandler((error: unknown, _request, reply) => {
+    const status = typeof error === "object" && error !== null && "statusCode" in error && typeof error.statusCode === "number" ? error.statusCode : 500;
+    if (status === 413) {
+      void reply.code(413).send({ error: "body too large" });
+      return;
+    }
+    if (status === 429) {
+      void reply.code(429).send({ error: "rate limit" });
+      return;
+    }
+    if (status >= 400 && status < 500) {
+      void reply.code(status).send({ error: "invalid request" });
+      return;
+    }
+    void reply.code(500).send({ error: "internal error" });
+  });
+  return app;
 }

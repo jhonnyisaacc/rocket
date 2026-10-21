@@ -55,6 +55,7 @@ export type Holding = {
   usd: number;
   native: boolean;
   decimals?: number;
+  chainKey?: string;
 };
 
 export type Alert = {
@@ -67,7 +68,7 @@ export type Alert = {
   chainHint?: string;
 };
 
-export type MatchHit = { kind: "hit"; token: TokenRecord };
+export type MatchHit = { kind: "hit"; token: TokenRecord; alternates: TokenRecord[] };
 export type MatchReject = {
   kind: "lookalike" | "ambiguous" | "unlisted" | "illiquid";
   ticker: string;
@@ -111,6 +112,14 @@ export type RouteQuote = {
   feeUsd: number;
   buyAmount: string;
   legs?: RouteLeg[];
+  provider?: string;
+  netOutputUsd?: number;
+  gasUsd?: number;
+  chainKey?: string;
+  feeRank?: number;
+  signable?: boolean;
+  note?: string;
+  chain?: ChainRef;
 };
 
 export type SwapIntent = {
@@ -129,6 +138,7 @@ export type SwapIntent = {
   holdings: Holding[];
   hyperliquid: HyperliquidMarket | null;
   receivedAtMs: number;
+  alternates?: Array<SwapIntent["token"]>;
 };
 
 export type Latency = {

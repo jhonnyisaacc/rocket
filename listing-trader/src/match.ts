@@ -1,3 +1,4 @@
+import { feeRankOf } from "./chains.js";
 import type { Alert, MatchOutcome, TokenRecord } from "./domain.js";
 
 export function normalizeTicker(value: string): string {
@@ -41,13 +42,19 @@ export class WatchIndex {
   }
 }
 
+function liquid(token: TokenRecord, minLiquidityUsd: number): boolean {
+  return (token.pairMap.top?.liquidityUsd ?? 0) >= minLiquidityUsd || token.hyperliquid !== null;
+}
+
 export function matchAlert(
   index: WatchIndex,
   alert: Pick<Alert, "ticker" | "projectName" | "chainHint">,
   minLiquidityUsd: number,
+  allowedChains?: ReadonlySet<string>,
 ): MatchOutcome {
   const ticker = normalizeTicker(alert.ticker);
   let candidates = index.lookup(ticker).slice();
+  if (allowedChains) candidates = candidates.filter((token) => allowedChains.has(token.chainKey));
   if (alert.chainHint) {
     candidates = candidates.filter((token) => token.chainKey === alert.chainHint);
   }
@@ -62,13 +69,17 @@ export function matchAlert(
       detail: "ticker matched a different project name",
     };
   }
-  if (named.length > 1) {
-    return { kind: "ambiguous", ticker, detail: "more than one chain matched the name" };
-  }
-  const token = named[0];
-  const liquidity = token.pairMap.top?.liquidityUsd ?? 0;
-  if (liquidity < minLiquidityUsd && !token.hyperliquid) {
+  const ranked = named.slice().sort((a, b) => feeRankOf(a.chainKey) - feeRankOf(b.chainKey) || (b.pairMap.top?.liquidityUsd ?? 0) - (a.pairMap.top?.liquidityUsd ?? 0));
+  const tradable = ranked.filter((token) => liquid(token, minLiquidityUsd));
+  if (tradable.length === 0) {
+    const deepest = ranked[0];
+    const liquidity = deepest?.pairMap.top?.liquidityUsd ?? 0;
     return { kind: "illiquid", ticker, detail: `top pool liquidity ${liquidity} USD` };
   }
-  return { kind: "hit", token };
+  const [token, ...alternates] = tradable;
+  if (!token) return { kind: "illiquid", ticker, detail: "top pool liquidity 0 USD" };
+  if (named.length > 1 && tradable.length > 1 && new Set(tradable.map((item) => item.chainKey)).size === 1) {
+    return { kind: "ambiguous", ticker, detail: "more than one contract matched the name on the same chain" };
+  }
+  return { kind: "hit", token, alternates };
 }

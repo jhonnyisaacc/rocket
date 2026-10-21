@@ -172,6 +172,48 @@ export function chainByEvmId(chainId: number): ChainSpec | undefined {
   return byEvmId.get(chainId);
 }
 
+const FEE_RANK: Record<string, number> = {
+  solana: 10,
+  base: 20,
+  arbitrum: 30,
+  optimism: 40,
+  polygon: 50,
+  bnb: 60,
+  linea: 70,
+  scroll: 80,
+  blast: 90,
+  zksync: 100,
+  robinhood: 110,
+  hyperevm: 120,
+  hypercore: 150,
+  ethereum: 200,
+};
+
+const GAS_CEILING_USD: Record<string, number> = {
+  solana: 0.02,
+  base: 0.03,
+  arbitrum: 0.03,
+  optimism: 0.03,
+  polygon: 0.05,
+  bnb: 0.05,
+  linea: 0.05,
+  scroll: 0.08,
+  blast: 0.08,
+  zksync: 0.1,
+  robinhood: 0.1,
+  hyperevm: 0.1,
+  hypercore: 0,
+  ethereum: 2,
+};
+
+export function feeRankOf(key: string): number {
+  return FEE_RANK[key] ?? 1_000;
+}
+
+export function gasCeilingUsd(key: string): number {
+  return GAS_CEILING_USD[key] ?? 1;
+}
+
 export function dexscreenerSlugMap(overrides: Record<string, string> = {}): Map<string, string> {
   const map = new Map<string, string>();
   for (const chain of CHAINS) {

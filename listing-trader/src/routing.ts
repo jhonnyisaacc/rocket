@@ -40,10 +40,12 @@ export function planRoutes(input: {
   holdings: readonly Holding[];
   minNativeReserve: number;
   notionalUsd: number;
+  chainKey?: string;
 }): RoutePlan[] {
   const plans: RoutePlan[] = [];
   const top = input.pairMap.top;
   for (const holding of input.holdings) {
+    if (input.chainKey && holding.chainKey && holding.chainKey !== input.chainKey) continue;
     const human = sizedHuman(holding, input.minNativeReserve, input.notionalUsd);
     if (!(human > 0)) continue;
     const direct = hop(holding, human, input.tokenSymbol, input.tokenAddress);
@@ -89,8 +91,11 @@ function compareBuy(left: string, right: string): number {
 
 export function pickRoute(quotes: readonly RouteQuote[], slippageCapBps: number): RouteQuote | { kind: "none"; reason: string } {
   const capPct = slippageCapBps / 100;
-  const ok = quotes.filter((quote) => quote.priceImpactPct <= capPct && quote.feeUsd >= 0);
+  const ok = quotes.filter((quote) => quote.priceImpactPct <= capPct && quote.feeUsd >= 0 && quote.signable !== false);
   if (ok.length === 0) return { kind: "none", reason: "no route inside the slippage cap" };
-  ok.sort((a, b) => a.priceImpactPct - b.priceImpactPct || a.feeUsd - b.feeUsd || compareBuy(b.buyAmount, a.buyAmount));
+  ok.sort((a, b) => {
+    if (a.netOutputUsd !== undefined && b.netOutputUsd !== undefined && a.netOutputUsd !== b.netOutputUsd) return b.netOutputUsd - a.netOutputUsd;
+    return a.priceImpactPct - b.priceImpactPct || a.feeUsd - b.feeUsd || (a.feeRank ?? 0) - (b.feeRank ?? 0) || compareBuy(b.buyAmount, a.buyAmount);
+  });
   return ok[0];
 }

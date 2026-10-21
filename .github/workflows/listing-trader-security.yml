@@ -1,0 +1,52 @@
+name: Listing trader security
+on:
+  pull_request:
+    paths:
+      - "listing-trader/**"
+      - ".github/workflows/listing-trader-security.yml"
+      - ".github/workflows/listing-trader.yml"
+      - ".github/dependabot.yml"
+      - ".gitleaks.toml"
+  push:
+    branches: [main]
+    paths:
+      - "listing-trader/**"
+      - ".github/workflows/listing-trader-security.yml"
+      - ".github/workflows/listing-trader.yml"
+      - ".github/dependabot.yml"
+      - ".gitleaks.toml"
+permissions:
+  contents: read
+  security-events: write
+jobs:
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+          config: |
+            paths:
+              - listing-trader
+      - uses: github/codeql-action/analyze@v3
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config p/typescript --config p/security-audit --error --metrics=off listing-trader
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"

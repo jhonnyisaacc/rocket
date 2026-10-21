@@ -1,4 +1,4 @@
-export { CHAINS, chainByEvmId, chainByKey } from "./chains.js";
+export { CHAINS, chainByEvmId, chainByKey, feeRankOf, gasCeilingUsd } from "./chains.js";
 export { loadConfig, publicConfig } from "./config.js";
 export { execute, authorizeWithdraw, resetExecutorState } from "./executor.js";
 export { matchAlert, WatchIndex, normalizeName, normalizeTicker } from "./match.js";
@@ -7,4 +7,7 @@ export { pickRoute, planRoutes, combineHopImpact } from "./routing.js";
 export { checkLimits } from "./limits.js";
 export { redactError, redactText, Secret } from "./redact.js";
 export { buildOrder, buildLeverage, assertTradableAction, floatToWire } from "./hyperliquid.js";
+export { planRebalance, BRIDGE_PROVIDERS } from "./rebalance.js";
+export { assertEvmSigning, assertSolanaSigning, assertHyperliquidSigning, turnkeyPolicyDocument } from "./signing-policy.js";
+export type { TransactionSigner } from "./managed-signer.js";
 export type { SwapIntent, ExecutionReport, TokenRecord, Alert, RouteQuote } from "./domain.js";

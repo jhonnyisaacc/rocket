@@ -1,29 +1,52 @@
-import type { Alert, ExecutionReport, SwapIntent } from "./domain.js";
+import type { FastifyInstance } from "fastify";
+import type { Alert, ExecutionReport, SwapIntent, TokenRecord } from "./domain.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { authorizeWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
-import { readJson, sendJson, startServer } from "./http.js";
+import { buildApp, mutatingLimit } from "./http.js";
 import { fetchHyperliquidMid, quoteHop } from "./clients.js";
 import { redactError } from "./redact.js";
 import { broadcastRoute, withdrawNative } from "./broadcast.js";
-import { loadSigner, signerSecrets } from "./signer.js";
-import { recordSpend, releaseSpend, spentOnDay, utcDay } from "./spend.js";
+import { assertBoot, loadManagedSigner, signingSecrets, type TransactionSigner } from "./managed-signer.js";
+import { seedApprovals } from "./approvals.js";
+import { loadSigner } from "./signer.js";
+import { commitSpend, recordSpend, releaseSpend, spentOnDay, utcDay } from "./spend.js";
+import { planRebalance } from "./rebalance.js";
+import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
 
-export function intentFromResolution(alert: Alert, resolution: { kind: string; token?: SwapIntent["token"] & { hyperliquid?: SwapIntent["hyperliquid"] } }, holdings: SwapIntent["holdings"], notionalUsd: number, slippageBps: number): SwapIntent | null {
+function intentToken(token: TokenRecord): SwapIntent["token"] {
+  return {
+    symbol: token.ticker,
+    address: token.contract,
+    decimals: token.decimals,
+    chain: token.chain,
+    chainKey: token.chainKey,
+    pairMap: token.pairMap,
+  };
+}
+
+export function intentFromResolution(
+  alert: Alert,
+  resolution: { kind: string; token?: TokenRecord; alternates?: TokenRecord[] },
+  holdings: SwapIntent["holdings"],
+  notionalUsd: number,
+  slippageBps: number,
+): SwapIntent | null {
   if (resolution.kind !== "hit" || !resolution.token) return null;
   return {
     idempotencyKey: alert.id,
     side: "buy",
     notionalUsd,
     slippageBps,
-    token: resolution.token,
+    token: intentToken(resolution.token),
     holdings,
     hyperliquid: resolution.token.hyperliquid ?? null,
     receivedAtMs: Date.parse(alert.receivedAt),
+    alternates: (resolution.alternates ?? []).map(intentToken),
   };
 }
 
-async function notify(config: AppConfig, report: ExecutionReport): Promise<void> {
+async function notify(config: AppConfig, report: ExecutionReport, secrets: readonly string[]): Promise<void> {
   if (!config.notifierUrl) return;
   await fetch(config.notifierUrl, {
     method: "POST",
@@ -37,10 +60,12 @@ async function notify(config: AppConfig, report: ExecutionReport): Promise<void>
       route: report.route,
       latency: latencyLog(report.latency),
     }),
+  }).catch((error: unknown) => {
+    console.log(JSON.stringify({ notifier: redactError(error, secrets) }));
   });
 }
 
-function deps(config: AppConfig, signer: ReturnType<typeof loadSigner>): ExecutorDeps {
+function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[]): ExecutorDeps {
   return {
     config,
     mode: config.live ? "live" : "dry_run",
@@ -53,95 +78,96 @@ function deps(config: AppConfig, signer: ReturnType<typeof loadSigner>): Executo
       return quoteHop(config, { ...hop, sellAmount: hop.sellAmount }, reference);
     },
     markPrice: (coin) => fetchHyperliquidMid(config.hyperliquidUrl, coin),
-    send: (request) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100),
-    recordSpend: config.live && config.databaseUrl ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd) : undefined,
+    send: (request) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100, fetch, secrets),
+    recordSpend:
+      config.live && config.databaseUrl
+        ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd, utcDay(), config.dailyUsdCap)
+        : undefined,
+    commitSpend: config.live && config.databaseUrl ? (key) => commitSpend(config.databaseUrl as string, key) : undefined,
     releaseSpend: config.live && config.databaseUrl ? (key) => releaseSpend(config.databaseUrl as string, key) : undefined,
   };
 }
 
+export async function createExecutorApp(
+  config: AppConfig,
+  runtime: ExecutorDeps,
+  signer: TransactionSigner | null,
+  secrets: readonly string[],
+  holdings: SwapIntent["holdings"],
+  logger = false,
+): Promise<FastifyInstance> {
+  const app = await buildApp({ authToken: config.authToken ?? "", secrets, logger });
+  const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
+  app.get("/health", async () => ({ ok: true, service: "executor", ...publicConfig(config) }));
+  app.post("/execute", guard, async (request, reply) => {
+    const parsed = intentSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
+    const report = await execute(parsed.data, runtime);
+    console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
+    await notify(config, report, secrets);
+    return report;
+  });
+  app.post("/listing", guard, async (request, reply) => {
+    const parsed = alertSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
+    if (!config.resolverUrl || !config.authToken) return reply.code(503).send({ error: "RESOLVER_URL is not set" });
+    const response = await fetch(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${config.authToken}` },
+      body: JSON.stringify(parsed.data),
+    });
+    const resolution = resolutionSchema.safeParse(await response.json());
+    if (!resolution.success) return reply.code(200).send({ decision: "skipped", reason: "resolver response did not match the schema" });
+    const intent = intentFromResolution(parsed.data, resolution.data, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
+    if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
+    const report = await execute(intent, runtime);
+    console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
+    await notify(config, report, secrets);
+    return report;
+  });
+  app.post("/withdraw", guard, async (request, reply) => {
+    const parsed = withdrawSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
+    const allowed = authorizeWithdraw(parsed.data.to, config.withdrawAllowlist);
+    if (!allowed.ok) return reply.code(403).send({ error: allowed.reason });
+    if (config.killSwitch || !config.live) return { decision: "would_send", to: parsed.data.to, mode: config.live ? "live" : "dry_run" };
+    if (!signer || !parsed.data.chainKey || !(parsed.data.amount && parsed.data.amount > 0)) {
+      return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
+    }
+    await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets });
+    return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey };
+  });
+  app.post("/rebalance", guard, async (request, reply) => {
+    const parsed = rebalanceSchema.safeParse(request.body);
+    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
+    return planRebalance({
+      quotes: parsed.data.quotes,
+      maxBridgeUsd: config.maxBridgeUsd,
+      maxFeeBps: config.maxBridgeFeeBps,
+      spentBridgeUsd: parsed.data.spentBridgeUsd,
+      dailyBridgeCap: config.dailyBridgeUsdCap,
+      ownAddresses: parsed.data.ownAddresses,
+      allowlist: config.withdrawAllowlist,
+    });
+  });
+  return app;
+}
+
 async function main(): Promise<void> {
   const config = loadConfig();
-  const signer = loadSigner(process.env);
-  if (config.live && !signer) throw new Error("live mode requires a keystore or wallet secrets");
+  assertBoot(config);
+  seedApprovals(config.approvalSeed);
+  const signer = loadManagedSigner(process.env, config);
+  if (config.live && !signer) throw new Error("live mode requires Turnkey or an allowed local signer");
   if (config.live && !config.databaseUrl) throw new Error("live mode requires DATABASE_URL so the daily cap survives restart");
   if (config.databaseUrl) restoreSpent(await spentOnDay(config.databaseUrl, utcDay()));
-  const secrets = signerSecrets(signer);
-  const runtime = deps(config, signer);
-  const server = startServer(
-    config.port,
-    async (req, res) => {
-    const url = new URL(req.url ?? "/", "http://localhost");
-    if (req.method === "GET" && url.pathname === "/health") {
-      sendJson(res, 200, { ok: true, service: "executor", ...publicConfig(config) });
-      return;
-    }
-    if (req.method === "POST" && url.pathname === "/execute") {
-      const intent = (await readJson(req)) as SwapIntent;
-      const report = await execute(intent, runtime);
-      console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
-      await notify(config, report).catch((error: unknown) => {
-        console.log(JSON.stringify({ notifier: redactError(error, secrets) }));
-      });
-      sendJson(res, 200, report);
-      return;
-    }
-    if (req.method === "POST" && url.pathname === "/listing") {
-      const alert = (await readJson(req)) as Alert;
-      if (!config.resolverUrl) {
-        sendJson(res, 503, { error: "RESOLVER_URL is not set" });
-        return;
-      }
-      const response = await fetch(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(alert),
-      });
-      const resolution = (await response.json()) as { kind: string; token?: SwapIntent["token"] & { hyperliquid?: SwapIntent["hyperliquid"] } };
-      const holdings = JSON.parse(process.env.WALLET_HOLDINGS_JSON ?? "[]") as SwapIntent["holdings"];
-      const intent = intentFromResolution(alert, resolution, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
-      if (!intent) {
-        sendJson(res, 200, { decision: "skipped", reason: resolution.kind, latency: { alertReceivedMs: 0 } });
-        return;
-      }
-      const report = await execute(intent, runtime);
-      console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
-      await notify(config, report).catch((error: unknown) => {
-        console.log(JSON.stringify({ notifier: redactError(error, secrets) }));
-      });
-      sendJson(res, 200, report);
-      return;
-    }
-    if (req.method === "POST" && url.pathname === "/withdraw") {
-      const body = (await readJson(req)) as { to?: string; chainKey?: string; amount?: number };
-      if (!body.to) {
-        sendJson(res, 400, { error: "to is required" });
-        return;
-      }
-      const allowed = authorizeWithdraw(body.to, config.withdrawAllowlist);
-      if (!allowed.ok) {
-        sendJson(res, 403, { error: allowed.reason });
-        return;
-      }
-      if (config.killSwitch || !config.live) {
-        sendJson(res, 200, { decision: "would_send", to: body.to, mode: config.live ? "live" : "dry_run" });
-        return;
-      }
-      if (!signer || !body.chainKey || !(body.amount && body.amount > 0)) {
-        sendJson(res, 409, { error: "live withdraw needs a signer, chainKey, and amount" });
-        return;
-      }
-      await withdrawNative({ config, material: signer, chainKey: body.chainKey, to: body.to, amount: body.amount });
-      sendJson(res, 200, { decision: "sent", to: body.to, chainKey: body.chainKey });
-      return;
-    }
-    sendJson(res, 404, { error: "not found" });
-    },
-    secrets,
-  );
+  const holdingsParsed = holdingsSchema.safeParse(JSON.parse(process.env.WALLET_HOLDINGS_JSON ?? "[]"));
+  if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
+  const secrets = signingSecrets(process.env, loadSigner(process.env));
+  const runtime = deps(config, signer, secrets);
+  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true);
+  await app.listen({ port: config.port, host: "0.0.0.0" });
   console.log(JSON.stringify({ service: "executor", port: config.port, ...publicConfig(config) }));
-  server.on("error", (error) => {
-    console.error(JSON.stringify({ error: redactError(error, secrets) }));
-  });
 }
 
 const entry = process.argv[1] ?? "";
