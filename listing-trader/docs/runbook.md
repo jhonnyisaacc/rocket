@@ -21,7 +21,8 @@ A HyperCore agent key is separate. Approving that agent is a manual step on the 
 
 ```bash
 export PORT=8080
-export AUTH_TOKEN='a token of at least 16 characters'
+export RESOLVER_AUTH_TOKEN='a token of at least 16 characters'
+export EXECUTOR_AUTH_TOKEN='a different token of at least 16 characters'
 export DATABASE_URL=postgres://listing:listing@127.0.0.1:5432/listing
 export REFRESH_ENABLED=true
 npm run start:resolver
@@ -31,14 +32,15 @@ In a second shell, point the executor at the resolver and describe the balances 
 
 ```bash
 export PORT=8081
-export AUTH_TOKEN='a token of at least 16 characters'
+export EXECUTOR_AUTH_TOKEN='a token of at least 16 characters'
+export RESOLVER_AUTH_TOKEN='the resolver token of at least 16 characters'
 export RESOLVER_URL=http://127.0.0.1:8080
 export WALLET_HOLDINGS_JSON='[{"symbol":"USDC","address":"<mint>","amount":20,"usd":20,"native":false,"decimals":6}]'
 export NOTIFIER_WEBHOOK_URL=http://127.0.0.1:9/hook
 npm run start:executor
 ```
 
-Leave `LISTING_TRADER_LIVE` unset. `GET /health` on each port returns `live: false`.
+Leave `LISTING_TRADER_LIVE` unset. `GET /health` on each port returns only `{"ok":true}`. The public config is on `GET /status` with that service's Bearer token.
 
 Omit `chainKey` when that balance may fund a buy on any chain where the address is valid. Native gas follows its asset. SOL funds only Solana. ETH funds only an EVM chain whose native asset is ETH. BNB, POL, MON, and HYPE fund only their own chain. An untagged native row that does not name one of those assets is rejected at load. Live mode then reads and sizes an eligible holding on each of those chains. A failed read skips that holding. A failed chain leaves the other chains. Set `chainKey` to a known chain key when the address belongs to one chain. An unknown key stops boot.
 
@@ -49,13 +51,13 @@ The collector, or a curl stand-in, posts the alert to the executor.
 ```bash
 curl -s -X POST http://127.0.0.1:8081/listing \
   -H 'content-type: application/json' \
-  -H "authorization: Bearer $AUTH_TOKEN" \
+  -H "authorization: Bearer $EXECUTOR_AUTH_TOKEN" \
   -d '{"id":"alert-1","ticker":"MPLX","projectName":"Metaplex","source":"upbit","publishedAt":"2026-10-21T00:00:00Z","receivedAt":"2026-10-21T00:00:00.300Z"}'
 ```
 
 A hit responds with `decision: would_send`, the route, and latency stamps measured from `receivedAt`. The same `id` returns the stored report and does not quote again. A lookalike, a thin pool with no Hyperliquid market, or a missed live lookup responds with `skipped`.
 
-`POST /execute` accepts a `SwapIntent` and always returns a dry-run report, including when the process is live. Live broadcast is only `POST /listing`, which rebuilds the intent from the resolver.
+`POST /execute` with the executor token accepts a `SwapIntent` and always returns a dry-run report, including when the process is live. With a strategy token from `STRATEGY_CAPS_JSON` it runs in the process mode instead, under that strategy's caps, and the report key is `<strategyId>:<idempotencyKey>`. Live broadcast is `POST /listing`, which rebuilds the intent from the resolver, or the strategy `/execute`.
 
 ## Turn the knobs
 
@@ -74,11 +76,14 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `PRICE_MAX_AGE_MS` | 90000 | A live buy skips with `holding price stale` when the price is older |
 | `PRICE_TIMEOUT_MS` | 3000 | Timeout for each CoinGecko price call |
 | `OWNER_WITHDRAW_ADDRESSES` | empty | Allowlist. Empty denies every withdraw and every bridge plan |
-| `AUTH_TOKEN` | unset | Required. At least 16 characters. Boot refuses a shorter value |
+| `EXECUTOR_AUTH_TOKEN` / `RESOLVER_AUTH_TOKEN` | unset | Required, different from each other and from every strategy token. At least 16 characters. Boot refuses a shorter value and refuses the old `AUTH_TOKEN` name |
+| `STRATEGY_CAPS_JSON` | empty | Per-strategy `{dailyUsdCap, maxUsdPerTrade, token}` for copy-trading on `/execute` |
+| `LISTING_RATE_LIMIT_PER_MIN` | 60 | Rate limit for `POST /listing` |
+| `RESOLVER_TIMEOUT_MS` | 300 | How long `/listing` waits for the resolver before answering `resolver_error` |
 | `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |
 | `SOLANA_PROGRAM_ALLOWLIST` | empty | Extra Solana program ids added to the base set. The base programs stay allowed |
 | `TOKEN_SCREENING` | on in live, off in dry-run | `false` turns screening off. `true` turns it on. Refresh and a live buy both use it |
-| `MAX_TOKEN_TAX` | 0.1 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
+| `MAX_TOKEN_TAX` | 0 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
 | `RACE_GRACE_MS` | 60 | After the first signable quote, wait this long for others, then rank. Quote-only providers never extend the wait |
@@ -129,3 +134,41 @@ In Turnkey, delete the API key or set the API user to a policy with no allows. S
 5. Write down the UTC time, the report reason, and whether `broadcast` was true. A pre-sign failure releases the reservation. A failure after send keeps it so a retry cannot double-send.
 
 `npm test` does not call an exchange. Do not point research CI at this tree.
+
+## Kill switch from SQL
+
+The database flag blocks `/listing` and `/execute` (including strategy tokens) without a restart. `/withdraw` is not blocked by this flag; it stays reachable as the incident escape hatch.
+
+```sql
+INSERT INTO control_flags (name, enabled) VALUES ('kill_switch', true)
+ON CONFLICT (name) DO UPDATE SET enabled = EXCLUDED.enabled;
+-- clear it with enabled = false
+```
+
+The env `KILL_SWITCH=true` does the same at boot and also holds a live withdraw at `would_send`.
+
+## Turnkey outage
+
+Signing requests fail before broadcast, so spend reservations are released and nothing is sent. Buys skip with the signer error. Wait for Turnkey status to clear, then check `signed_tx` for rows still `pending`; do not re-send an id whose journal row is `reserved` with a `tx_hash`. If the outage lasts, set the SQL kill switch so alerts stop quoting.
+
+## Stuck or dropped EVM transaction
+
+Find the row first: `SELECT idempotency_key, tx_hash, chain_key, outcome FROM spend_journal WHERE tx_hash = '<hash>'`. The sender replaces a timed-out receipt once at the same nonce with a fee bump. If the hash is unknown on chain after the replacement window, the boot reconciliation releases reservations older than `RECONCILE_AFTER_MINUTES` that have no landed hash. Never delete a `committed` row to force a retry; a retry of the same id returns `exists`.
+
+## Drained wallet
+
+1. Set the SQL kill switch and revoke the Turnkey API key.
+2. Withdraw what remains to an `OWNER_WITHDRAW_ADDRESSES` address. The route stays open under the database flag on purpose.
+3. Treat the wallet as burned: new wallet, new router approvals, new `APPROVAL_CACHE_JSON`, then fund it.
+
+## Token and API key rotation
+
+Service tokens rotate with overlap: set `EXECUTOR_AUTH_TOKEN='old-token, new-token'` (the same for `RESOLVER_AUTH_TOKEN` or a strategy `token` list), restart, move callers to the new token, restart again with only the new one. Turnkey API keys follow the key ceremony: add the new key to the same API user, set the Railway variables, restart, then delete the old key. Provider keys rotate the same way, one provider at a time, with a dry-run alert between restarts.
+
+## Hyperliquid agent-key expiry
+
+An expired or revoked agent makes order submits fail the signature recovery check or the venue call. Re-approve the agent from the master account in the Hyperliquid UI, update `TURNKEY_HYPERLIQUID_ADDRESS` if the agent changed, restart, and send a dry-run HyperCore alert before going live. The service never signs `approveAgent`.
+
+## Postgres backup and restore
+
+Railway Postgres keeps its own backups; check they are enabled on the service. In addition, dump weekly from a trusted host: `pg_dump "$DATABASE_URL" > listing-$(date -u +%F).sql` and keep the file encrypted off Railway. Restore into an empty database with `psql "$DATABASE_URL" < listing-<date>.sql`, then boot the resolver first so `verified_tokens` hydrates, and only then the executor. After a restore, run one dry-run alert and check the spend journal day totals before live mode.

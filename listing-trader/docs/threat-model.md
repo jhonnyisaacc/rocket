@@ -4,15 +4,15 @@ The listing trader can move the funds in the hot wallet. This page uses STRIDE s
 
 ## Spoofing
 
-`AUTH_TOKEN` is required at boot and must be at least 16 characters. Mutating routes compare `Authorization: Bearer` with SHA-256 and `timingSafeEqual`. `GET /health` is the only open route, and it returns `publicConfig` only. Secrets, the router list, and the approval cache are not in that payload.
+`EXECUTOR_AUTH_TOKEN` and `RESOLVER_AUTH_TOKEN` are required at boot, must differ from each other and from every strategy token, and must be at least 16 characters. Mutating routes compare `Authorization: Bearer` with SHA-256 and `timingSafeEqual`. `GET /health` is the only open route and returns only `{"ok":true}`. The public config moved to an authenticated `GET /status`. Secrets, the router list, and the approval cache are not in either payload.
 
-The collector and the executor share that token when the executor calls the resolver. A missing or short token refuses boot.
+The collector holds the executor token. The executor calls the resolver with the resolver token, so one leaked token does not open both services. A strategy token from `STRATEGY_CAPS_JSON` opens only that strategy's live `/execute`, under its own caps and namespaced idempotency keys. A missing, short, or reused token refuses boot.
 
 ## Tampering
 
 Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. Each Turnkey policy is scoped to one wallet with `wallet.id`. The checked-in file is `policies/turnkey.json`, a template with placeholder ids. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
+App policy constrains the destination token account, chain, native value, and Solana instructions. The Turnkey EVM policy constrains only the router in `eth.tx.to`, the chain, the native value cap, and the selector prefix; it cannot see the swap's destination token account, so that check lives in the app policy and the pre-sign simulation. The Turnkey Solana policy constrains native transfer recipients and program ids. Each Turnkey policy is scoped to one wallet with `wallet.id`. The checked-in file is `policies/turnkey.json`, a template with placeholder ids. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
 
 The app decodes every top-level instruction of a base program against a default-deny table in `signing-policy.ts`. An instruction that is not in the table is denied. The table allows these:
 
@@ -50,9 +50,11 @@ Withdrawals are native transfers to `OWNER_WITHDRAW_ADDRESSES`. Calldata on an E
 
 HyperCore refuses `withdraw3`, `usdSend`, `spotSend`, `sendAsset`, `agentSendAsset`, `usdClassTransfer`, `vaultTransfer`, and `approveAgent`. Turnkey's Agent policy cannot see those names inside `connectionId`. The ban is in this process, before submit. Load the agent key, not the master key. The signature scheme follows the Python SDK and has not been checked against a mainnet vector.
 
-`KILL_SWITCH=true` skips new buys and live withdraws. It does not delete a key. Revoke the Turnkey API user to stop signing. See the [runbook](runbook.md).
+`KILL_SWITCH=true`, or the `kill_switch` row in `control_flags`, skips new buys on `/listing` and `/execute`. `/withdraw` is not blocked by the database flag; it stays open as the incident escape hatch, and the env switch holds a live withdraw at `would_send`. Neither deletes a key. Revoke the Turnkey API user to stop signing. See the [runbook](runbook.md).
 
-The daily cap is enforced inside a Postgres transaction with an advisory lock. Two replicas can still both pass the in-memory idempotency map. Run one executor.
+The daily cap is enforced inside a Postgres transaction with an advisory lock. A second executor cannot pass the boot advisory lock, and `railway.json` runs one replica, so the in-memory idempotency map is never shared.
+
+A compromised or mispriced Hyperliquid agent could try to drain the account through IOC orders crossed far from the mark. The app bounds that path before signing: the order size comes from the per-trade USD cap, and the limit price is the mark moved by at most the slippage cap, rounded to the venue wire format. An order the venue reports as an error, or that fills nothing, releases the spend reservation.
 
 ## What this does not cover
 

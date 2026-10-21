@@ -24,7 +24,7 @@ Set `REFRESH_ENABLED=true` on the resolver. Leave it unset on a laptop if you do
 
 ## Secrets
 
-Set these as Railway variables, not in the repo. Both services need `AUTH_TOKEN` (16 characters or more).
+Set these as Railway variables, not in the repo. The resolver needs `RESOLVER_AUTH_TOKEN`, the executor needs `EXECUTOR_AUTH_TOKEN`, and the two must differ (16 characters or more each). The executor also needs `RESOLVER_AUTH_TOKEN` to call the resolver. Boot refuses the old shared `AUTH_TOKEN` name.
 
 Turnkey, on the executor:
 
@@ -44,10 +44,10 @@ Provider keys, only where you want that quote:
 - `GOPLUS_API_KEY`, `BLOCKAID_API_KEY` only if `TOKEN_SCREENING=true`
 - `COINGECKO_API_KEY` on the resolver and the executor. The public API takes one contract per price call, so the executor makes one call per token holding and chain every `PRICE_REFRESH_MS`
 
-Live mode requires `ZEROX_API_KEY` and a `KYBERSWAP_CLIENT_ID` of your own. Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL` (add fallbacks with `RPC_URLS_<chainId>` and `SOLANA_RPC_URLS`; in live mode every one must be `https` or a `railway.internal` host), and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. In live mode `RESOLVER_URL` and `NOTIFIER_WEBHOOK_URL` must be `https` or a `railway.internal` host. `WALLET_HOLDINGS_JSON` names the mints. Live mode reads the amounts from chain and skips the trade when that read fails. `OWNER_WITHDRAW_ADDRESSES` is required before `WITHDRAW_ENABLED=true`. Withdraw also needs `ADMIN_TOKEN`, separate from `AUTH_TOKEN`. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
+Live mode requires `ZEROX_API_KEY` and a `KYBERSWAP_CLIENT_ID` of your own. Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL` (add fallbacks with `RPC_URLS_<chainId>` and `SOLANA_RPC_URLS`; in live mode every one must be `https` or a `railway.internal` host), and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. In live mode `RESOLVER_URL` and `NOTIFIER_WEBHOOK_URL` must be `https` or a `railway.internal` host. `WALLET_HOLDINGS_JSON` names the mints. Live mode reads the amounts from chain and skips the trade when that read fails. `OWNER_WITHDRAW_ADDRESSES` is required before `WITHDRAW_ENABLED=true`. Withdraw also needs `ADMIN_TOKEN`, separate from both service tokens. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
 
 Do not set `LISTING_TRADER_LIVE`. Health should show `live: false`. The collector posts alerts to `/listing` with the bearer token.
 
 ## Live mode
 
-Set `LISTING_TRADER_LIVE` to the exact string `true` only after Turnkey and `DATABASE_URL` are present. The process exits on boot if either is missing, if `AUTH_TOKEN` is short, or if a public domain variable is set. `KILL_SWITCH=true` stops new buys without deleting the key. Run one executor replica. The ceremony, rotation, and revocation steps are in the [runbook](runbook.md).
+Set `LISTING_TRADER_LIVE` to the exact string `true` only after Turnkey and `DATABASE_URL` are present. The process exits on boot if either is missing, if a service token is short or reused, or if a public domain variable is set. `KILL_SWITCH=true` stops new buys without deleting the key. Run one executor replica: `railway.json` sets `numReplicas: 1` and a 20 second draining window, and the executor takes a Postgres advisory lock at boot so a second replica refuses to start. The ceremony, rotation, and revocation steps are in the [runbook](runbook.md).
