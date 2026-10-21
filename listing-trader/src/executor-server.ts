@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
-import type { BalanceReader } from "./balances.js";
+import { holdingFitsChain, type BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
 import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
@@ -242,13 +242,19 @@ function chainReader(config: AppConfig, signer: TransactionSigner | null): Balan
     if (!spec || !rpc) return null;
     const decimals = holding.decimals ?? (holding.native ? (spec.chain.kind === "solana" ? 9 : 18) : null);
     if (decimals === null) return null;
+    if (holding.chainKey && !holdingFitsChain(holding, holding.chainKey)) return null;
     if (spec.chain.kind === "solana") {
       const owner = signer.solanaAddress();
       if (!owner) return null;
       const { Connection, PublicKey } = await import("@solana/web3.js");
       const connection = new Connection(rpc, "confirmed");
       if (holding.native) return (await connection.getBalance(new PublicKey(owner))) / 10 ** decimals;
-      const mint = new PublicKey(holding.address);
+      let mint;
+      try {
+        mint = new PublicKey(holding.address);
+      } catch {
+        return null;
+      }
       const accounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(owner), { mint });
       const ui = accounts.value[0]?.account.data.parsed?.info?.tokenAmount?.uiAmountString;
       return typeof ui === "string" ? Number(ui) : null;

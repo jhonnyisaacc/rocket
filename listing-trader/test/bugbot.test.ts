@@ -142,7 +142,7 @@ test("an evm quote uses cached erc-20 decimals and skips when they stay unknown"
 });
 
 test("a holding without chainKey is read on the buy chain", async () => {
-  const row = { symbol: "USDC", address: "usdc", amount: 20, usd: 20, native: false, decimals: 6 };
+  const row = { symbol: "USDC", address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", amount: 20, usd: 20, native: false, decimals: 6 };
   assert.equal(holdingsSchema.safeParse([row]).success, true);
   assert.equal(holdingsSchema.safeParse([{ ...row, chainKey: "base" }]).success, true);
   assert.equal(holdingsSchema.safeParse([{ ...row, chainKey: "nope" }]).success, false);
@@ -174,7 +174,7 @@ test("a holding without chainKey is read on the buy chain", async () => {
   if (tagged.ok) assert.equal(tagged.holdings.length, 0);
   const onSolana = await holdingsForTrade(
     true,
-    [{ ...row, chainKey: "solana" }],
+    [{ ...row, address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v", chainKey: "solana" }],
     async (holding) => {
       seen.push(holding.chainKey);
       return 2;
@@ -195,12 +195,13 @@ test("an untagged holding funds an alternate chain", async () => {
   const auth = "0123456789abcdef";
   const holding: { symbol: string; address: string; amount: number; usd: number; native: boolean; decimals: number; chainKey?: string } = {
     symbol: "USDC",
-    address: "usdc",
+    address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
     amount: 20,
     usd: 20,
     native: false,
     decimals: 6,
   };
+  const solHolding = { ...holding, address: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" };
   const config = loadConfig({
     AUTH_TOKEN: auth,
     LISTING_TRADER_LIVE: "true",
@@ -255,7 +256,7 @@ test("an untagged holding funds an alternate chain", async () => {
     runtime,
     null,
     [],
-    [holding],
+    [holding, solHolding],
     false,
     async () => 20,
     async () => new Response(JSON.stringify(resolution), { status: 200 }),
@@ -276,6 +277,7 @@ test("an untagged holding funds an alternate chain", async () => {
   assert.equal(response.statusCode, 200);
   assert.deepEqual(kinds.slice().sort(), ["evm", "solana"]);
   assert.equal(holding.chainKey, undefined);
+  assert.equal(solHolding.chainKey, undefined);
   await app.close();
 
   resetExecutorState();
@@ -313,6 +315,135 @@ test("an untagged holding funds an alternate chain", async () => {
   assert.equal(taggedResponse.json().decision, "sent");
   assert.deepEqual(taggedKinds, ["evm"]);
   await taggedApp.close();
+});
+
+test("a null or thrown read skips that holding and the other chain still quotes", async () => {
+  const evm = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+  const other = "0xcccccccccccccccccccccccccccccccccccccccc";
+  const sol = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v";
+  const row = { symbol: "USDC", amount: 20, usd: 20, native: false, decimals: 6 };
+  const seen: string[] = [];
+  const partial = await holdingsForTrade(
+    true,
+    [
+      { ...row, address: evm },
+      { ...row, address: other },
+    ],
+    async (holding) => (holding.address === evm ? 4 : null),
+    "base",
+  );
+  assert.equal(partial.ok, true);
+  if (partial.ok) {
+    assert.equal(partial.holdings.length, 1);
+    assert.equal(partial.holdings[0]?.amount, 4);
+  }
+  const wsol = "So11111111111111111111111111111111111111112";
+  const thrown = await holdingsForTrade(
+    true,
+    [
+      { ...row, address: evm },
+      { ...row, address: sol },
+      { ...row, address: wsol },
+    ],
+    async (holding) => {
+      seen.push(holding.address);
+      if (holding.address === sol) throw new Error("invalid public key");
+      return 5;
+    },
+    "solana",
+  );
+  assert.equal(thrown.ok, true);
+  if (thrown.ok) {
+    assert.equal(thrown.holdings.length, 1);
+    assert.equal(thrown.holdings[0]?.address, wsol);
+  }
+  assert.deepEqual(seen, [sol, wsol]);
+  const unread = await holdingsForTrade(true, [{ ...row, address: sol }], async () => {
+    throw new Error("rpc down");
+  }, "solana");
+  assert.equal(unread.ok, false);
+
+  resetExecutorState();
+  const auth = "0123456789abcdef";
+  const config = loadConfig({
+    AUTH_TOKEN: auth,
+    LISTING_TRADER_LIVE: "true",
+    RESOLVER_URL: "http://resolver.railway.internal:8080",
+  });
+  const resolution = {
+    kind: "hit",
+    token: evmToken(6),
+    alternates: [
+      {
+        id: "solana:mint",
+        ticker: "MPLX",
+        names: ["Metaplex"],
+        chainKey: "solana",
+        chain: { kind: "solana" },
+        contract: "mint",
+        decimals: 6,
+        pairMap: buildPairMap([
+          {
+            poolAddress: "pool",
+            dex: "raydium",
+            chainKey: "solana",
+            baseSymbol: "MPLX",
+            baseAddress: "mint",
+            quoteSymbol: "USDC",
+            quoteAddress: sol,
+            liquidityUsd: 200_000,
+            priceUsd: 0.2,
+            baseDecimals: 6,
+          },
+        ]),
+        hyperliquid: null,
+        refreshedAt: "2026-10-21T00:00:00.000Z",
+      },
+    ],
+  };
+  const kinds: string[] = [];
+  const app = await createExecutorApp(
+    config,
+    {
+      config,
+      mode: "live",
+      spentTodayUsd: 0,
+      quoteHop: async (hop) => {
+        if (hop.chain.kind === "solana") throw new Error("solana quote failed");
+        kinds.push(hop.chain.kind);
+        return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
+      },
+      markPrice: async () => null,
+      send: async () => {},
+      now: () => 1_050,
+    },
+    null,
+    [],
+    [
+      { ...row, address: evm },
+      { ...row, address: sol },
+    ],
+    false,
+    async () => 20,
+    async () => new Response(JSON.stringify(resolution), { status: 200 }),
+  );
+  const response = await app.inject({
+    method: "POST",
+    url: "/listing",
+    headers: { authorization: `Bearer ${auth}`, "content-type": "application/json" },
+    payload: {
+      id: "chain-failure",
+      ticker: "MPLX",
+      projectName: "Metaplex",
+      source: "test",
+      publishedAt: "2026-10-21T00:00:00.000Z",
+      receivedAt: "2026-10-21T00:00:00.000Z",
+    },
+  });
+  assert.equal(response.statusCode, 200);
+  assert.equal(response.json().decision, "sent");
+  assert.deepEqual(kinds, ["evm"]);
+  await app.close();
 });
 
 test("SOLANA_PROGRAM_ALLOWLIST adds to the base programs", () => {

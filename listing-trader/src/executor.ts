@@ -389,6 +389,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   let unsized = false;
   let unread = false;
   let sizedAny = false;
+  let crashed: unknown;
   for (const token of candidates) {
     const liquidity = token.pairMap.top?.liquidityUsd ?? null;
     const allowed = checkLimits(deps.config, {
@@ -402,23 +403,29 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     });
     if (!allowed.ok) continue;
     if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") continue;
-    let quoted = intent;
-    if (deps.mode === "live") {
-      const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey);
-      if (!sized.ok) {
-        unread = true;
-        continue;
+    try {
+      let quoted = intent;
+      if (deps.mode === "live") {
+        const sized = await holdingsForTrade(true, intent.holdings, deps.readBalance ?? null, token.chainKey);
+        if (!sized.ok) {
+          unread = true;
+          continue;
+        }
+        sizedAny = true;
+        quoted = { ...intent, holdings: sized.holdings };
       }
-      sizedAny = true;
-      quoted = { ...intent, holdings: sized.holdings };
+      const planned = await quotePlan(quoted, token, deps);
+      plannedQuotes.push(...planned.quotes);
+      unsized = unsized || planned.unsized;
+    } catch (error) {
+      crashed = error;
+      continue;
     }
-    const planned = await quotePlan(quoted, token, deps);
-    plannedQuotes.push(...planned.quotes);
-    unsized = unsized || planned.unsized;
   }
   latency = stamp(latency, "quotedMs", now());
   const planned = { quotes: plannedQuotes, unsized };
   if (planned.quotes.length === 0) {
+    if (crashed !== undefined) throw crashed;
     const reason = unread && !sizedAny ? "balance was not read" : planned.unsized ? "holding decimals missing" : "no route inside the slippage cap";
     const report = skipped(intent, latency, reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
