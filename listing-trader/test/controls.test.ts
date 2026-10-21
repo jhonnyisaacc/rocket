@@ -15,7 +15,17 @@ import { BRIDGE_PROVIDERS, planRebalance } from "../src/rebalance.js";
 import { pickRoute, planRoutes } from "../src/routing.js";
 import { buildPairMap } from "../src/pairs.js";
 import { screenToken } from "../src/screening.js";
-import { assertEvmSigning, assertHyperliquidSigning, DEFAULT_MAX_VALUE_WEI, JITO_TIP_ACCOUNTS, JUPITER_PROGRAM_ID, turnkeyPolicyDocument, wrappedSolAccount } from "../src/signing-policy.js";
+import {
+  assertEvmSigning,
+  assertHyperliquidSigning,
+  associatedTokenAddress,
+  DEFAULT_MAX_VALUE_WEI,
+  JITO_TIP_ACCOUNTS,
+  JUPITER_PROGRAM_ID,
+  turnkeyPolicyDocument,
+  turnkeyPolicyTemplate,
+  wrappedSolAccount,
+} from "../src/signing-policy.js";
 import { RESERVE_LOCK_SQL, RESERVE_SUM_SQL, reserveDecision } from "../src/spend.js";
 import { createExecutorApp } from "../src/executor-server.js";
 import type { TokenRecord } from "../src/domain.js";
@@ -316,6 +326,8 @@ test("a jupiter swap may wrap SOL to the owner account and tip a jito account", 
   const tip = new PublicKey(JITO_TIP_ACCOUNTS[0]);
   const mint = new PublicKey("So11111111111111111111111111111111111111112");
   const tokenProgram = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+  const outMint = Keypair.generate().publicKey;
+  const outAta = new PublicKey(associatedTokenAddress(payer.publicKey.toBase58(), outMint.toBase58(), tokenProgram.toBase58()));
   const budget = Buffer.alloc(5);
   budget.writeUInt8(2, 0);
   budget.writeUInt32LE(200_000, 1);
@@ -348,10 +360,26 @@ test("a jupiter swap may wrap SOL to the owner account and tip a jito account", 
       new TransactionInstruction({
         programId: new PublicKey(JUPITER_PROGRAM_ID),
         keys: [
+          { pubkey: tokenProgram, isSigner: false, isWritable: false },
           { pubkey: payer.publicKey, isSigner: true, isWritable: true },
           { pubkey: ata, isSigner: false, isWritable: true },
+          { pubkey: outAta, isSigner: false, isWritable: true },
+          { pubkey: new PublicKey(JUPITER_PROGRAM_ID), isSigner: false, isWritable: false },
+          { pubkey: outMint, isSigner: false, isWritable: false },
+          { pubkey: new PublicKey(JUPITER_PROGRAM_ID), isSigner: false, isWritable: false },
+          { pubkey: Keypair.generate().publicKey, isSigner: false, isWritable: false },
+          { pubkey: new PublicKey(JUPITER_PROGRAM_ID), isSigner: false, isWritable: false },
         ],
-        data: Buffer.from([1, 2, 3, 4]),
+        data: Buffer.concat([Buffer.from("e517cb977ae3ad2a", "hex"), Buffer.alloc(24)]),
+      }),
+      new TransactionInstruction({
+        programId: tokenProgram,
+        keys: [
+          { pubkey: ata, isSigner: false, isWritable: true },
+          { pubkey: payer.publicKey, isSigner: false, isWritable: true },
+          { pubkey: payer.publicKey, isSigner: true, isWritable: false },
+        ],
+        data: Buffer.from([9]),
       }),
       SystemProgram.transfer({ fromPubkey: payer.publicKey, toPubkey: tip, lamports: 1000 }),
     ],
@@ -464,16 +492,23 @@ test("spend reservation locks the day and counts reserved plus committed rows", 
 
 test("the checked-in Turnkey policy matches the code", () => {
   const file = JSON.parse(readFileSync(new URL("../../policies/turnkey.json", import.meta.url), "utf8"));
-  const sample = { userId: "api-user", routers: {} };
-  assert.deepEqual(file, turnkeyPolicyDocument(sample));
+  assert.deepEqual(file, turnkeyPolicyTemplate());
   const base = "0x1111111111111111111111111111111111111111";
   const other = "0x2222222222222222222222222222222222222222";
-  const filled = JSON.stringify(turnkeyPolicyDocument({ userId: "api-user", routers: { 8453: [base], 1: [other] } }));
-  assert.equal(filled.includes("<ROUTER_ALLOWLIST>"), false);
-  assert.equal(filled.includes("<TURNKEY_API_USER_ID>"), false);
+  const sample = {
+    userId: "6f1c2a9e-4b7d-4c1e-9a3f-2d8e5b7c1a40",
+    wallets: { evm: "0b5d7e2c-1a3f-4e6b-8c9d-7f2a1b3c4d5e", solana: "1c6e8f3d-2b4a-4f7c-9d0e-8a3b2c4d5e6f", hyperliquid: "2d7f9a4e-3c5b-4a8d-8e1f-9b4c3d5e6f70" },
+    solanaAddress: Keypair.generate().publicKey.toBase58(),
+    routers: { 8453: [base], 1: [other] },
+    maxValueWei: 123_456n,
+  };
+  const filled = JSON.stringify(turnkeyPolicyDocument(sample));
+  assert.equal(/<[A-Z_]+>/.test(filled), false);
   assert.match(filled, /eth\.tx\.chain_id == 8453 && \(eth\.tx\.to == '0x1111111111111111111111111111111111111111'\)/);
   assert.match(filled, /eth\.tx\.chain_id == 1 && \(eth\.tx\.to == '0x2222222222222222222222222222222222222222'\)/);
-  assert.throws(() => turnkeyPolicyDocument({ userId: "<TURNKEY_API_USER_ID>", routers: {} }), /placeholder/);
+  assert.throws(() => turnkeyPolicyDocument({ ...sample, userId: "<TURNKEY_API_USER_ID>" }), /placeholder/);
+  assert.throws(() => turnkeyPolicyDocument({ ...sample, userId: "api-user" }), /placeholder/);
+  assert.throws(() => turnkeyPolicyDocument({ ...sample, wallets: { ...sample.wallets, evm: "00000000-0000-0000-0000-000000000000" } }), /placeholder/);
 });
 
 test("logs redact authorization and exchange signatures", () => {

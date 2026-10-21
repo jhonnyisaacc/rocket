@@ -14,7 +14,8 @@
     "test": "node scripts/patch-jayson-stream-json.mjs && tsc -p tsconfig.json && node --test dist/test/*.test.js",
     "start:resolver": "node dist/src/resolver-server.js",
     "start:executor": "node dist/src/executor-server.js",
-    "create-wallet": "node dist/src/create-wallet.js"
+    "create-wallet": "node dist/src/create-wallet.js",
+    "policy:turnkey": "tsc -p tsconfig.json && node scripts/write-turnkey-policy.mjs"
   },
   "dependencies": {
     "@fastify/auth": "^5.0.3",

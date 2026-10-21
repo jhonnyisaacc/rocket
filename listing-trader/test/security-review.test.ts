@@ -520,7 +520,7 @@ test("keystore headers are authenticated, buffers zero, and the passphrase promp
   zeroLoadedSecrets();
   assert.equal(secret.reveal(), "");
   const env = { KEYSTORE_PASSPHRASE: "correct horse battery", ALLOW_LOCAL_SIGNER: "true" };
-  assert.throws(() => loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth })), /live mode requires Turnkey/);
+  assert.throws(() => loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth })), /refuses raw key material in KEYSTORE_PASSPHRASE/);
   assert.equal(env.KEYSTORE_PASSPHRASE, undefined);
   let written = "";
   const listeners = new Set<(chunk: Buffer) => void>();

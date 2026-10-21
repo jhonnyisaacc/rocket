@@ -28,7 +28,10 @@ export async function readHiddenLine(stdin: HiddenStream, stdout: { write(chunk:
           return;
         }
         if (char === "\u0003") {
+          stdin.setRawMode(previous);
+          stdin.pause();
           stdin.off("data", onData);
+          stdout.write("\n");
           reject(new Error("passphrase prompt cancelled"));
           return;
         }
@@ -42,6 +45,11 @@ export async function readHiddenLine(stdin: HiddenStream, stdout: { write(chunk:
     stdin.on("data", onData);
   });
   return line;
+}
+
+export function writeKeystoreFile(path: string, contents: string): void {
+  writeFileSync(path, contents, { mode: 0o600, flag: "wx" });
+  chmodSync(path, 0o600);
 }
 
 async function main(): Promise<void> {
@@ -58,10 +66,12 @@ async function main(): Promise<void> {
     console.error("Refusing to write a keystore that contains a raw key.");
     process.exit(1);
   }
-  writeFileSync(outPath, `${JSON.stringify(file, null, 2)}\n`, { mode: 0o600 });
-  chmodSync(outPath, 0o600);
-  material.evmPrivateKey.zero();
-  material.solanaSecretKey.zero();
+  try {
+    writeKeystoreFile(outPath, `${JSON.stringify(file, null, 2)}\n`);
+  } finally {
+    material.evmPrivateKey.zero();
+    material.solanaSecretKey.zero();
+  }
   console.log(JSON.stringify({ path: outPath, evmAddress: file.addresses.evm, solanaAddress: file.addresses.solana }));
 }
 

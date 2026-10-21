@@ -1,11 +1,11 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 import { VersionedTransaction } from "@solana/web3.js";
-import { type Hex } from "viem";
+import { recoverTypedDataAddress, type Hex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { AppConfig } from "./config.js";
 import { actionHash, signL1Action, type HyperliquidAction } from "./hyperliquid.js";
 import { loadSigner, signerSecrets, solanaSigner, type SignerMaterial } from "./signer.js";
-import { assertEvmSigning, assertHyperliquidSigning, assertSolanaSigning, routersForChain, type EvmPurpose } from "./signing-policy.js";
+import { assertEvmSigning, assertHyperliquidSigning, assertSolanaSigning, routersForChain, type EvmApproval, type EvmPurpose, type SolanaMessage } from "./signing-policy.js";
 import { assertLiveEdges } from "./config.js";
 
 export type EvmSignInput = {
@@ -19,6 +19,7 @@ export type EvmSignInput = {
   maxPriorityFeePerGas: bigint;
   purpose: EvmPurpose;
   nativeSell?: boolean;
+  approval?: EvmApproval;
 };
 
 export interface TransactionSigner {
@@ -63,42 +64,12 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
       return inner.signEvm(input);
     },
     async signSolana(serialized) {
-      const tx = VersionedTransaction.deserialize(serialized);
-      const keys = tx.message.staticAccountKeys;
-      const instructions = tx.message.compiledInstructions;
-      const programIds = instructions.map((ix) => keys[ix.programIdIndex]?.toBase58() ?? "");
       const expected = inner.solanaAddress();
       if (!expected) throw new Error("solana signer is not loaded");
-      const nativeTransferTo = instructions.flatMap((ix) => {
-        const program = keys[ix.programIdIndex]?.toBase58();
-        if (program !== "11111111111111111111111111111111") return [];
-        const data = Buffer.from(ix.data);
-        const indexes = ix.accountKeyIndexes;
-        if (data.length < 12 || data.readUInt32LE(0) !== 2 || indexes.length < 2) return [];
-        return [keys[indexes[1]]?.toBase58() ?? ""];
-      });
-      const tokenPrograms = new Set(["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"]);
-      const tokenTransferTo = instructions.flatMap((ix) => {
-        const program = keys[ix.programIdIndex]?.toBase58() ?? "";
-        if (!tokenPrograms.has(program)) return [];
-        const data = Buffer.from(ix.data);
-        const indexes = ix.accountKeyIndexes;
-        if (data.length < 1) return [];
-        if (data[0] === 3 && indexes.length >= 2) {
-          return [{ destination: keys[indexes[1]]?.toBase58() ?? "", mint: "", program }];
-        }
-        if (data[0] === 12 && indexes.length >= 3) {
-          return [{ destination: keys[indexes[2]]?.toBase58() ?? "", mint: keys[indexes[1]]?.toBase58() ?? "", program }];
-        }
-        return [];
-      });
       assertSolanaSigning({
-        programIds,
-        allowlist: policy.solanaPrograms,
-        feePayer: keys[0]?.toBase58() ?? "",
+        message: solanaMessage(serialized),
         expectedFeePayer: expected,
-        nativeTransferTo,
-        tokenTransferTo,
+        allowlist: policy.solanaPrograms,
         withdrawAllowlist: policy.withdrawAllowlist,
       });
       return inner.signSolana(serialized);
@@ -107,6 +78,20 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
       assertHyperliquidSigning(action, policy.maxLeverage);
       return inner.signHyperliquid(action, nonce, isMainnet);
     },
+  };
+}
+
+function solanaMessage(serialized: Uint8Array): SolanaMessage {
+  const { message } = VersionedTransaction.deserialize(serialized);
+  const keys = message.staticAccountKeys.map((key) => key.toBase58());
+  return {
+    feePayer: keys[0] ?? "",
+    staticKeys: keys,
+    instructions: message.compiledInstructions.map((ix) => ({
+      program: keys[ix.programIdIndex] ?? "",
+      accounts: ix.accountKeyIndexes.map((index) => keys[index] ?? null),
+      data: ix.data,
+    })),
   };
 }
 
@@ -160,15 +145,17 @@ export function turnkeySigner(api: TurnkeyApi, addresses: { evm: string | null; 
     },
     async signHyperliquid(action, nonce, isMainnet) {
       if (!addresses.hyperliquid) throw new Error("hyperliquid agent key is not loaded");
-      const connectionId = actionHash(action, null, nonce, null);
-      const payload = JSON.stringify({
-        domain: { name: "Exchange", version: "1", chainId: 1337, verifyingContract: "0x0000000000000000000000000000000000000000" },
+      const typed = {
+        domain: { name: "Exchange", version: "1", chainId: 1337, verifyingContract: "0x0000000000000000000000000000000000000000" as Hex },
         types: { Agent: [{ name: "source", type: "string" }, { name: "connectionId", type: "bytes32" }] },
-        primaryType: "Agent",
-        message: { source: isMainnet ? "a" : "b", connectionId },
-      });
-      const signature = await api.signEip712(payload, addresses.hyperliquid);
-      return { r: signature.r as Hex, s: signature.s as Hex, v: recoveryId(signature.v) };
+        primaryType: "Agent" as const,
+        message: { source: isMainnet ? "a" : "b", connectionId: actionHash(action, null, nonce, null) },
+      };
+      const raw = await api.signEip712(JSON.stringify(typed), addresses.hyperliquid);
+      const signature = { r: word(raw.r), s: word(raw.s), v: recoveryId(raw.v) };
+      const signer = await recoverTypedDataAddress({ ...typed, signature: { r: signature.r, s: signature.s, v: BigInt(signature.v) } });
+      if (signer.toLowerCase() !== addresses.hyperliquid.toLowerCase()) throw new Error("hyperliquid signature does not recover to the agent");
+      return signature;
     },
   };
 }
@@ -236,47 +223,51 @@ export function turnkeyApiFromEnv(env: NodeJS.ProcessEnv): TurnkeyApi | null {
   };
 }
 
-export function loadManagedSigner(env: NodeJS.ProcessEnv, config: AppConfig): TransactionSigner | null {
+const RAW_KEY_ENV = ["EVM_PRIVATE_KEY", "SOLANA_SECRET_KEY", "HYPERLIQUID_AGENT_KEY", "KEYSTORE_PATH", "KEYSTORE_PASSPHRASE"] as const;
+
+export type ManagedSigner = { signer: TransactionSigner | null; secrets: string[] };
+
+export function loadManagedSigner(env: NodeJS.ProcessEnv, config: AppConfig): ManagedSigner {
+  if (config.live) {
+    const present = RAW_KEY_ENV.filter((name) => env[name]);
+    scrubRawKeys(env);
+    if (present.length > 0) throw new Error(`live mode refuses raw key material in ${present.join(", ")}`);
+  }
+  const turnkey = [env.TURNKEY_API_PRIVATE_KEY, env.TURNKEY_API_PUBLIC_KEY].filter((item): item is string => Boolean(item));
   const api = turnkeyApiFromEnv(env);
   if (api && env.TURNKEY_EVM_ADDRESS) {
-    delete env.KEYSTORE_PASSPHRASE;
-    return withPolicy(
-      turnkeySigner(api, {
-        evm: env.TURNKEY_EVM_ADDRESS,
-        solana: env.TURNKEY_SOLANA_ADDRESS ?? null,
-        hyperliquid: env.TURNKEY_HYPERLIQUID_ADDRESS ?? null,
-      }),
-      config,
-    );
+    scrubRawKeys(env);
+    const signer = turnkeySigner(api, {
+      evm: env.TURNKEY_EVM_ADDRESS,
+      solana: env.TURNKEY_SOLANA_ADDRESS ?? null,
+      hyperliquid: env.TURNKEY_HYPERLIQUID_ADDRESS ?? null,
+    });
+    return { signer: withPolicy(signer, config), secrets: turnkey };
   }
-  if (config.live) {
-    delete env.KEYSTORE_PASSPHRASE;
-    throw new Error("live mode requires Turnkey");
+  if (config.live) throw new Error("live mode requires Turnkey");
+  let material: SignerMaterial | null;
+  try {
+    material = loadSigner(env);
+  } finally {
+    scrubRawKeys(env);
   }
-  const material = loadSigner(env);
-  delete env.KEYSTORE_PASSPHRASE;
-  if (!material) return null;
-  return withPolicy(keystoreSigner(material), config);
+  return { signer: material ? withPolicy(keystoreSigner(material), config) : null, secrets: [...turnkey, ...signerSecrets(material)] };
 }
 
-export function hyperliquidAgentAddress(env: NodeJS.ProcessEnv): string | null {
-  if (env.TURNKEY_HYPERLIQUID_ADDRESS) return env.TURNKEY_HYPERLIQUID_ADDRESS;
-  if (!env.HYPERLIQUID_AGENT_KEY) return null;
-  const raw = env.HYPERLIQUID_AGENT_KEY;
-  const hex = (raw.startsWith("0x") ? raw : `0x${raw}`) as Hex;
-  return privateKeyToAccount(hex).address;
-}
-
-export function signingSecrets(env: NodeJS.ProcessEnv, material: SignerMaterial | null): string[] {
-  return [env.TURNKEY_API_PRIVATE_KEY, env.TURNKEY_API_PUBLIC_KEY, env.OKX_API_SECRET, env.OKX_API_PASSPHRASE, ...signerSecrets(material)].filter(
-    (item): item is string => Boolean(item),
-  );
+function scrubRawKeys(env: NodeJS.ProcessEnv): void {
+  for (const name of RAW_KEY_ENV) delete env[name];
 }
 
 export function tokenMatches(left: string, right: string): boolean {
   const a = createHash("sha256").update(left).digest();
   const b = createHash("sha256").update(right).digest();
   return timingSafeEqual(a, b);
+}
+
+function word(value: string): Hex {
+  const hex = value.replace(/^0x/i, "");
+  if (!/^[0-9a-fA-F]{1,64}$/.test(hex)) throw new Error("turnkey hyperliquid signature is not hex");
+  return `0x${hex.padStart(64, "0")}`;
 }
 
 function recoveryId(v: string): number {

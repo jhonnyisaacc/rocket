@@ -8,6 +8,6 @@ export { checkLimits } from "./limits.js";
 export { redactError, redactText, Secret } from "./redact.js";
 export { buildOrder, buildLeverage, assertTradableAction, floatToWire } from "./hyperliquid.js";
 export { planRebalance, BRIDGE_PROVIDERS } from "./rebalance.js";
-export { assertEvmSigning, assertSolanaSigning, assertHyperliquidSigning, turnkeyPolicyDocument } from "./signing-policy.js";
+export { assertEvmSigning, assertSolanaSigning, assertHyperliquidSigning, turnkeyPolicyDocument, turnkeyPolicyTemplate } from "./signing-policy.js";
 export type { TransactionSigner } from "./managed-signer.js";
 export type { SwapIntent, ExecutionReport, TokenRecord, Alert, RouteQuote } from "./domain.js";

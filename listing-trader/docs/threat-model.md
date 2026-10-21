@@ -12,7 +12,19 @@ The collector and the executor share that token when the executor calls the reso
 
 Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program transfer must pay the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account. An SPL transfer must pay an allowlisted withdraw address or that owner's associated token account for the mint. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
+App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. Each Turnkey policy is scoped to one wallet with `wallet.id`. The checked-in file is `policies/turnkey.json`, a template with placeholder ids. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. `SOLANA_PROGRAM_ALLOWLIST` adds program ids. It does not replace the base set.
+
+The app decodes every top-level instruction of a base program against a default-deny table in `signing-policy.ts`. An instruction that is not in the table is denied. The table allows these:
+
+- System Program Transfer from the hot wallet to the hot wallet, an allowlisted withdraw address, the hot wallet's wrapped SOL account, or a published Jito tip account. Assign, CreateAccount, TransferWithSeed, AdvanceNonceAccount, and every other System instruction are denied.
+- Token and Token-2022 SyncNative, CloseAccount that pays the hot wallet, InitializeAccount3 owned by the hot wallet, and Transfer or TransferChecked into an associated token account of the hot wallet or an allowlisted withdraw address. Approve, ApproveChecked, SetAuthority, and the rest are denied.
+- Associated Token Account CreateIdempotent funded by the hot wallet for the hot wallet or an allowlisted withdraw address.
+- Compute Budget unit limit, unit price, and loaded-data limit.
+- Jupiter `route`, `routeWithTokenLedger`, `sharedAccountsRoute`, `sharedAccountsRouteWithTokenLedger`, and `sharedAccountsExactOutRoute`. The transfer authority must be the hot wallet, the platform fee account must be unset, and the destination must be the hot wallet's token account for the output mint. Other Jupiter instructions, such as `exactOutRoute` and newer v2 routes, are denied until they are added to the table.
+
+An account that comes from an address lookup table cannot be checked offline, so a rule that needs it denies the signature. Instructions of an extra program from `SOLANA_PROGRAM_ALLOWLIST` are not decoded. Only add a program you trust with the hot wallet's signature.
+
+The Turnkey Solana policy allows native transfers only to the hot wallet, its wrapped SOL account, or a Jito tip account, and denies every top-level SPL transfer. Turnkey's policy language has no condition that derives an owner's associated token account for an arbitrary mint, so SPL recovery under Turnkey needs a root-quorum approval. The Turnkey EVM policy checks chain, router, native value, and, when `selectors` is passed, the first four bytes of calldata through `eth.tx.data[0..10]`. `eth.tx.function_name` needs an ABI uploaded to Turnkey for each router, so the policy does not use it. The app does not check router selectors.
 
 Pre-sign simulation is viem `simulateCalls` on EVM and `simulateTransaction` on Solana. A revert is `simulation rejected the transaction` and `broadcast` is false, so the spend reservation is released.
 
@@ -24,7 +36,7 @@ pino logs the execution report. Authorization, API keys, and OKX signature heade
 
 ## Information disclosure
 
-With Turnkey, the trading keys are not in this process. The process holds the Turnkey API key, which can request a signature inside the policy. The local keystore decrypts into the process only for a dry-run. Live mode does not accept it. Logs do not print `Secret` values.
+With Turnkey, the trading keys are not in this process. The process holds the Turnkey API key, which can request a signature inside the policy. The local keystore decrypts into the process only for a dry-run. Live mode does not accept it. Live boot refuses to start when `EVM_PRIVATE_KEY`, `SOLANA_SECRET_KEY`, `HYPERLIQUID_AGENT_KEY`, `KEYSTORE_PATH`, or `KEYSTORE_PASSPHRASE` is set. A dry-run deletes those variables from `process.env` after it loads them. Every config API key, the auth and admin tokens, the notifier URL, and the Turnkey key are redacted from error text. A Hyperliquid signature from Turnkey must recover to the agent address before it is submitted. Logs do not print `Secret` values.
 
 Do not attach a Railway public domain. Boot throws when `RAILWAY_PUBLIC_DOMAIN` is set. Use the private network URL for Postgres and for `RESOLVER_URL`.
 

@@ -372,6 +372,30 @@ function mevRpcs(env: NodeJS.ProcessEnv): Record<number, string> {
   return out;
 }
 
+export function configSecrets(config: AppConfig): string[] {
+  const { zeroEx, jupiter, lifi, oneInch, okxKey, okxSecret, okxPassphrase, acrossKey, relayKey, debridgeToken, goplus, blockaid } = config.keys;
+  return [
+    zeroEx,
+    jupiter,
+    lifi,
+    oneInch,
+    okxKey,
+    okxSecret,
+    okxPassphrase,
+    acrossKey,
+    relayKey,
+    debridgeToken,
+    goplus,
+    blockaid,
+    config.authToken,
+    config.adminToken,
+    config.notifierUrl,
+    config.databaseUrl,
+    ...Object.values(config.rpcByChainKey),
+    ...Object.values(config.mevRpcByChainId),
+  ].filter((item): item is string => typeof item === "string" && item.length >= 8);
+}
+
 export function publicConfig(config: AppConfig): Record<string, unknown> {
   return {
     live: config.live,

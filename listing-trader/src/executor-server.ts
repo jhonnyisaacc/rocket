@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
-import { loadConfig, publicConfig, type AppConfig } from "./config.js";
+import { configSecrets, loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { holdingFitsChain, type BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
 import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
@@ -11,9 +11,8 @@ import { fetchHyperliquidMid, quoteHop } from "./clients.js";
 import { redactError, zeroLoadedSecrets } from "./redact.js";
 import { broadcastRoute, recoverToken, withdrawNative } from "./broadcast.js";
 import { assertApprovedAgent } from "./hyperliquid.js";
-import { assertBoot, hyperliquidAgentAddress, loadManagedSigner, signingSecrets, tokenMatches, type TransactionSigner } from "./managed-signer.js";
+import { assertBoot, loadManagedSigner, tokenMatches, type TransactionSigner } from "./managed-signer.js";
 import { seedApprovals } from "./approvals.js";
-import { loadSigner } from "./signer.js";
 import { commitSpend, readKillSwitch, recordSpend, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
@@ -205,12 +204,11 @@ async function main(): Promise<void> {
   const config = loadConfig();
   assertBoot(config);
   seedApprovals(config.approvalSeed);
-  const material = loadSigner(process.env);
-  const signer = loadManagedSigner(process.env, config);
+  const { signer, secrets: signerSecrets } = loadManagedSigner(process.env, config);
   if (config.live && !signer) throw new Error("live mode requires Turnkey");
   if (config.live && !config.databaseUrl) throw new Error("live mode requires DATABASE_URL so the daily cap survives restart");
   if (config.live) {
-    const agent = hyperliquidAgentAddress(process.env);
+    const agent = process.env.TURNKEY_HYPERLIQUID_ADDRESS;
     if (agent) {
       if (!config.hyperliquidAccount) throw new Error("live mode requires HYPERLIQUID_ACCOUNT_ADDRESS to verify the agent");
       await assertApprovedAgent(config.hyperliquidUrl, config.hyperliquidAccount, agent, fetch);
@@ -219,9 +217,7 @@ async function main(): Promise<void> {
   if (config.databaseUrl) restoreSpent(await spentOnDay(config.databaseUrl, spendDay(new Date(), config.spendTimezone)));
   const holdingsParsed = holdingsSchema.safeParse(JSON.parse(process.env.WALLET_HOLDINGS_JSON ?? "[]"));
   if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
-  const secrets = [...signingSecrets(process.env, material), config.databaseUrl ?? "", ...Object.values(config.rpcByChainKey), ...Object.values(config.mevRpcByChainId)].filter(
-    (item) => item.length >= 8,
-  );
+  const secrets = [...signerSecrets, ...configSecrets(config)].filter((item) => item.length >= 8);
   const runtime = deps(config, signer, secrets);
   const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, config.live ? chainReader(config, signer) : null);
   const stop = () => {
