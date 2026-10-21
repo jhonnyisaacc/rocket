@@ -40,3 +40,4 @@ jobs:
           cache-dependency-path: wallet/package-lock.json
       - run: npm ci --ignore-scripts
       - run: npm test
+      - run: node scripts/turnkey-policy.mjs --manifest policies/deployment.example.json --out policies/turnkey.example.json --check
