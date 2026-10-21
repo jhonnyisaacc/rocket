@@ -366,7 +366,7 @@ export async function runLegs(prepare: PrepareLeg, legs: readonly RouteLeg[], ca
 }
 
 
-export type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; reads: EvmRpc[]; senders: EvmRpc[] };
+export type EvmCtx = Ctx & { chainId: number; chainKey: string; owner: Hex; read: EvmRpc; reads: EvmRpc[]; senders: EvmRpc[]; privateSend: boolean };
 export type EvmTx = { to: Hex; data: Hex; value: bigint; gas: bigint | null; purpose: EvmSignInput["purpose"]; nativeSell?: boolean };
 
 // A lookup that must prove absence asks every RPC: one lagging node must not hide a transaction another has.
@@ -387,7 +387,7 @@ export function evmContext(ctx: Ctx, chainKey: string, rpcs: readonly string[]):
   const chainId = spec.chain.chainId;
   const mev = ctx.config.mevRpcByChainId[chainId];
   const reads = rpcs.map((rpc) => ctx.io.evm(chainId, [rpc]));
-  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpcs), reads, senders: mev ? [ctx.io.evm(chainId, [mev])] : reads };
+  return { ...ctx, chainId, chainKey, owner: owner as Hex, read: ctx.io.evm(chainId, rpcs), reads, senders: mev ? [ctx.io.evm(chainId, [mev])] : reads, privateSend: Boolean(mev) };
 }
 
 export function solanaContext(ctx: Ctx, rpcs: readonly string[]): SolanaCtx {

@@ -30,13 +30,14 @@ export async function sendOnce(rpc: EvmRpc, signed: Hex): Promise<void> {
 // Only a rejection every sender gave before its mempool proves the transaction is nowhere; a timeout or
 // 5xx from any of them leaves it possibly broadcast, so the spend stays reserved for reconcile. A provider
 // that retried internally can report "nonce too low" for a transaction it accepted, so the hash is looked up too.
+// A private relay's mempool is invisible to the public reads, so its rejections are never taken as definite.
 export async function broadcastEvm(ctx: EvmCtx, signed: Hex): Promise<void> {
   try {
     await Promise.any(ctx.senders.map((rpc) => sendOnce(rpc, signed)));
   } catch (error) {
     const reasons: unknown[] = error instanceof AggregateError ? error.errors : [error];
     const messages = reasons.map((reason) => redactError(reason, ctx.secrets));
-    const definite = messages.every(isDefiniteRejection) && !(await seenAnywhere(ctx, keccak256(signed)));
+    const definite = !ctx.privateSend && messages.every(isDefiniteRejection) && !(await seenAnywhere(ctx, keccak256(signed)));
     throw new BroadcastError(messages[0] ?? "no rpc is configured", !definite);
   }
 }

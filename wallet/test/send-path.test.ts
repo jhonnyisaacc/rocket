@@ -747,3 +747,13 @@ test("a definite rejection for a hash some RPC already has is treated as broadca
   };
   await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && error.broadcast, "a lookup that fails cannot prove the hash is nowhere");
 });
+
+test("a definite rejection from a private relay keeps the send counted as broadcast", async () => {
+  const chain = fakeChain();
+  chain.rpc.sendRaw = async () => {
+    throw new Error("nonce too low");
+  };
+  const config = loadConfig({ RPC_URL_8453: "http://fake.invalid", MEV_RPC_URL_8453: "http://relay.invalid", ZEROX_API_KEY: "zeroex-key" });
+  const send = () => withdrawNative({ config, signer: evmSigner([]), chainKey: "base", to: DEST, amount: 0.0001, io: clockIo(chain.rpc) });
+  await assert.rejects(send, (error: unknown) => error instanceof BroadcastError && error.broadcast);
+});
