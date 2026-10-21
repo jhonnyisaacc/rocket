@@ -6,7 +6,7 @@ import type { AppConfig } from "./config.js";
 import { actionHash, signL1Action, type HyperliquidAction } from "./hyperliquid.js";
 import { loadSigner, signerSecrets, solanaSigner, type SignerMaterial } from "./signer.js";
 import { assertEvmSigning, assertHyperliquidSigning, assertSolanaSigning, routersForChain, type EvmApproval, type EvmPurpose, type SolanaMessage } from "./signing-policy.js";
-import { assertLiveEdges } from "./config.js";
+import { assertLiveEdges, drainTimeoutMs, serviceTokens } from "./config.js";
 
 export type EvmSignInput = {
   chainId: number;
@@ -277,8 +277,22 @@ function recoveryId(v: string): number {
   throw new Error("turnkey hyperliquid signature v is not a recovery id");
 }
 
-export function assertBoot(config: AppConfig, env: NodeJS.ProcessEnv = process.env): void {
-  if (!config.authToken || config.authToken.length < 16) throw new Error("AUTH_TOKEN must be at least 16 characters");
+function assertTokens(name: string, tokens: readonly string[], required: boolean): void {
+  if (required && tokens.length === 0) throw new Error(`${name} is required`);
+  if (tokens.some((token) => token.length < 16)) throw new Error(`${name} must be at least 16 characters`);
+}
+
+export function assertBoot(config: AppConfig, service: "executor" | "resolver", env: NodeJS.ProcessEnv = process.env): void {
+  assertTokens("RESOLVER_AUTH_TOKEN", config.resolverAuthTokens, service === "resolver" || config.resolverUrl !== null);
+  if (service === "executor") {
+    assertTokens("EXECUTOR_AUTH_TOKEN", config.executorAuthTokens, true);
+    for (const [id, strategy] of Object.entries(config.strategies)) assertTokens(`STRATEGY_CAPS_JSON token for ${id}`, strategy.tokens, true);
+    const all = serviceTokens(config);
+    if (new Set(all).size !== all.length) throw new Error("EXECUTOR_AUTH_TOKEN, RESOLVER_AUTH_TOKEN and strategy tokens must all differ");
+    if (config.live && config.reconcileAfterMinutes * 60_000 <= drainTimeoutMs(config)) {
+      throw new Error("RECONCILE_AFTER_MINUTES must exceed the send bound so reconcile never touches an in-flight send");
+    }
+  }
   if (env.RAILWAY_PUBLIC_DOMAIN) throw new Error("a public Railway domain is set. Remove it and use the private network.");
   assertLiveEdges(config, env);
 }

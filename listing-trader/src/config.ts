@@ -6,6 +6,8 @@ import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "./signing-policy.js
 
 export const DEFAULT_KYBER_CLIENT_ID = "listing-trader";
 
+export type StrategyCap = { dailyUsdCap: number; maxUsdPerTrade: number; tokens: string[] };
+
 export type ApprovalSeed = { chainId: number; token: string; spender: string; owner: string; amount: string };
 
 export type AppConfig = LimitConfig & {
@@ -52,7 +54,14 @@ export type AppConfig = LimitConfig & {
   dailyBridgeUsdCap: number;
   targetUsdcUsd: number;
   targetNativeUsd: number;
-  authToken: string | null;
+  executorAuthTokens: string[];
+  resolverAuthTokens: string[];
+  strategies: Record<string, StrategyCap>;
+  listingRateLimitPerMin: number;
+  resolverTimeoutMs: number;
+  resolverFetchTimeoutMs: number;
+  resolverMaxBodyBytes: number;
+  reconcileIntervalMs: number;
   adminToken: string | null;
   withdrawEnabled: boolean;
   maxWithdrawAmount: number;
@@ -165,6 +174,7 @@ function quoteAssets(env: NodeJS.ProcessEnv): QuoteAssets {
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
+  if (env.AUTH_TOKEN) throw new Error("AUTH_TOKEN was split into EXECUTOR_AUTH_TOKEN and RESOLVER_AUTH_TOKEN. Set those and unset AUTH_TOKEN.");
   const maxSlippageBps = intEnv(env, "MAX_SLIPPAGE_BPS", 100);
   const slippageHardMaxBps = intEnv(env, "SLIPPAGE_HARD_MAX_BPS", 300);
   if (maxSlippageBps > slippageHardMaxBps) {
@@ -235,7 +245,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     dailyBridgeUsdCap: intEnv(env, "DAILY_BRIDGE_USD_CAP", 50),
     targetUsdcUsd: intEnv(env, "TARGET_USDC_USD", 20),
     targetNativeUsd: intEnv(env, "TARGET_NATIVE_USD", 2),
-    authToken: env.AUTH_TOKEN ?? null,
+    executorAuthTokens: splitList(env.EXECUTOR_AUTH_TOKEN),
+    resolverAuthTokens: splitList(env.RESOLVER_AUTH_TOKEN),
+    strategies: strategyCaps(env.STRATEGY_CAPS_JSON),
+    listingRateLimitPerMin: intEnv(env, "LISTING_RATE_LIMIT_PER_MIN", 60),
+    resolverTimeoutMs: intEnv(env, "RESOLVER_TIMEOUT_MS", 300),
+    resolverFetchTimeoutMs: intEnv(env, "RESOLVER_FETCH_TIMEOUT_MS", 5_000),
+    resolverMaxBodyBytes: intEnv(env, "RESOLVER_MAX_BODY_BYTES", 16 * 1024 * 1024),
+    reconcileIntervalMs: intEnv(env, "RECONCILE_INTERVAL_MS", 5 * 60 * 1000),
     adminToken: env.ADMIN_TOKEN ?? null,
     withdrawEnabled: env.WITHDRAW_ENABLED === "true",
     maxWithdrawAmount: intEnv(env, "MAX_WITHDRAW_AMOUNT", 1),
@@ -433,6 +450,39 @@ function assertServiceUrl(value: string | null): void {
   throw new Error("notifier and resolver URLs must be https or a railway.internal host");
 }
 
+const STRATEGY_ID = /^[a-z0-9][a-z0-9_-]{0,39}$/;
+
+function strategyCaps(raw: string | undefined): Record<string, StrategyCap> {
+  if (!raw) return {};
+  const parsed: unknown = JSON.parse(raw);
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("STRATEGY_CAPS_JSON must be an object");
+  const out: Record<string, StrategyCap> = {};
+  for (const [id, row] of Object.entries(parsed)) {
+    const item = (typeof row === "object" && row !== null ? row : {}) as { dailyUsdCap?: unknown; maxUsdPerTrade?: unknown; token?: unknown };
+    const tokens = Array.isArray(item.token) ? item.token.filter((value): value is string => typeof value === "string") : splitList(typeof item.token === "string" ? item.token : "");
+    const positive = (value: unknown): value is number => typeof value === "number" && Number.isFinite(value) && value > 0;
+    if (!STRATEGY_ID.test(id) || !positive(item.dailyUsdCap) || !positive(item.maxUsdPerTrade) || tokens.length === 0) {
+      throw new Error(`STRATEGY_CAPS_JSON has an invalid entry for ${id}`);
+    }
+    out[id] = { dailyUsdCap: item.dailyUsdCap, maxUsdPerTrade: item.maxUsdPerTrade, tokens };
+  }
+  return out;
+}
+
+// Worst case for one send: two legs, each waiting up to 3x CONFIRM_TIMEOUT_MS (the Solana bound; EVM is 2x),
+// plus the firm build and a few RPC round trips per leg.
+export function sendBoundMs(config: Pick<AppConfig, "confirmTimeoutMs" | "firmTimeoutMs">): number {
+  return 2 * (3 * config.confirmTimeoutMs + config.firmTimeoutMs + 5_000);
+}
+
+export function drainTimeoutMs(config: Pick<AppConfig, "confirmTimeoutMs" | "firmTimeoutMs" | "quoteDeadlineMs">): number {
+  return sendBoundMs(config) + config.quoteDeadlineMs + 5_000;
+}
+
+export function serviceTokens(config: AppConfig): string[] {
+  return [...config.executorAuthTokens, ...config.resolverAuthTokens, ...Object.values(config.strategies).flatMap((strategy) => strategy.tokens)];
+}
+
 function splitList(raw: string | undefined): string[] {
   return (raw ?? "")
     .split(",")
@@ -471,7 +521,7 @@ export function configSecrets(config: AppConfig): string[] {
     goplus,
     blockaid,
     coingecko,
-    config.authToken,
+    ...serviceTokens(config),
     config.adminToken,
     config.notifierUrl,
     config.databaseUrl,
@@ -496,5 +546,6 @@ export function publicConfig(config: AppConfig): Record<string, unknown> {
     screening: config.screening,
     maxTokenTax: config.maxTokenTax,
     jito: config.jitoUrl !== null,
+    strategies: Object.entries(config.strategies).map(([id, strategy]) => ({ id, dailyUsdCap: strategy.dailyUsdCap, maxUsdPerTrade: strategy.maxUsdPerTrade })),
   };
 }

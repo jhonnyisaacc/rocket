@@ -5,24 +5,95 @@ import { tokenMatches } from "./managed-signer.js";
 import { createLogger } from "./log.js";
 
 export const BODY_LIMIT = 32 * 1024;
+// Node applies requestTimeout only while the request is still arriving, so it guards slow uploads and never
+// cuts off a handler that is waiting on a send confirmation.
 export const REQUEST_TIMEOUT_MS = 10_000;
 
 export const mutatingLimit = { rateLimit: { max: 10, timeWindow: "1 minute" } };
 
+export function perMinute(max: number) {
+  return { rateLimit: { max, timeWindow: "1 minute" } };
+}
+
+export type Drain = {
+  readonly draining: boolean;
+  readonly inFlight: number;
+  start(): void;
+  track<T>(work: () => Promise<T>): Promise<T>;
+  idle(timeoutMs: number): Promise<boolean>;
+};
+
+export function createDrain(): Drain {
+  let draining = false;
+  let inFlight = 0;
+  let waiters: Array<() => void> = [];
+  const settle = () => {
+    if (inFlight > 0) return;
+    const done = waiters;
+    waiters = [];
+    for (const wake of done) wake();
+  };
+  return {
+    get draining() {
+      return draining;
+    },
+    get inFlight() {
+      return inFlight;
+    },
+    start() {
+      draining = true;
+    },
+    async track(work) {
+      inFlight += 1;
+      try {
+        return await work();
+      } finally {
+        inFlight -= 1;
+        settle();
+      }
+    },
+    idle(timeoutMs) {
+      if (inFlight === 0) return Promise.resolve(true);
+      return new Promise((resolve) => {
+        const timer = setTimeout(() => resolve(false), timeoutMs);
+        waiters.push(() => {
+          clearTimeout(timer);
+          resolve(true);
+        });
+      });
+    },
+  };
+}
+
 declare module "fastify" {
   interface FastifyInstance {
     verifyBearer: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+    drain: Drain;
   }
 }
 
-export async function buildApp(options: { authToken: string; secrets?: readonly string[]; logger?: boolean }): Promise<FastifyInstance> {
+export function bearerOf(request: FastifyRequest): string {
+  const header = request.headers.authorization;
+  return typeof header === "string" && header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
+}
+
+export function anyTokenMatches(presented: string, tokens: readonly string[]): boolean {
+  if (!presented) return false;
+  return tokens.map((token) => tokenMatches(presented, token)).includes(true);
+}
+
+export async function buildApp(options: { authTokens: readonly string[]; secrets?: readonly string[]; logger?: boolean }): Promise<FastifyInstance> {
   const app = Fastify({
     bodyLimit: BODY_LIMIT,
     requestTimeout: REQUEST_TIMEOUT_MS,
+    return503OnClosing: false,
     logger: options.logger === false ? false : createLogger(options.secrets ?? []),
   });
+  const drain = createDrain();
+  app.decorate("drain", drain);
   app.addHook("onRequest", async (request, reply) => {
     if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") return;
+    if (drain.draining) return reply.code(503).header("connection", "close").send({ error: "draining" });
     const type = request.headers["content-type"];
     if (typeof type !== "string" || !type.toLowerCase().includes("application/json")) {
       return reply.code(415).send({ error: "unsupported media type" });
@@ -31,9 +102,7 @@ export async function buildApp(options: { authToken: string; secrets?: readonly 
   await app.register(rateLimit, { global: true, max: 60, timeWindow: "1 minute" });
   await app.register(fastifyAuth);
   app.decorate("verifyBearer", async function (request: FastifyRequest, reply: FastifyReply) {
-    const header = request.headers.authorization;
-    const token = typeof header === "string" && header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
-    if (!token || !tokenMatches(token, options.authToken)) {
+    if (!anyTokenMatches(bearerOf(request), options.authTokens)) {
       return reply.code(401).send({ error: "unauthorized" });
     }
   });
@@ -58,4 +127,14 @@ export async function buildApp(options: { authToken: string; secrets?: readonly 
     void reply.code(500).send({ error: "internal error" });
   });
   return app;
+}
+
+// Stop taking mutating work, let in-flight sends finish inside the drain window, then release resources.
+export async function shutdown(app: FastifyInstance, timeoutMs: number, cleanup: () => Promise<void>): Promise<boolean> {
+  app.drain.start();
+  const closed = app.close();
+  const idle = await app.drain.idle(timeoutMs);
+  await Promise.race([closed, new Promise((resolve) => setTimeout(resolve, 1_000).unref())]);
+  await cleanup();
+  return idle;
 }
