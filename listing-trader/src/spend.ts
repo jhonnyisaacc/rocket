@@ -237,3 +237,28 @@ export async function closeSpendPools(): Promise<void> {
   ready.clear();
   await Promise.all(open.map((pool) => pool.end()));
 }
+
+export const EXECUTOR_LOCK_SQL = "SELECT pg_try_advisory_lock($1) AS locked";
+export const EXECUTOR_LOCK_KEY = 74_104;
+
+export function lockAcquired(rows: readonly { locked?: unknown }[]): boolean {
+  return rows[0]?.locked === true;
+}
+
+export async function acquireExecutorLock(databaseUrl: string): Promise<() => Promise<void>> {
+  const { default: pg } = await import("pg");
+  const client = new pg.Client({ connectionString: databaseUrl });
+  await client.connect();
+  const result = await client.query<{ locked: boolean }>(EXECUTOR_LOCK_SQL, [EXECUTOR_LOCK_KEY]);
+  if (!lockAcquired(result.rows)) {
+    await client.end();
+    throw new Error("another executor already holds the boot lock; refusing to start a second replica");
+  }
+  let released = false;
+  return async () => {
+    if (released) return;
+    released = true;
+    await client.query("SELECT pg_advisory_unlock($1)", [EXECUTOR_LOCK_KEY]).catch(() => undefined);
+    await client.end();
+  };
+}

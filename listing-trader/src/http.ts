@@ -132,9 +132,8 @@ export async function buildApp(options: { authTokens: readonly string[]; secrets
 // Stop taking mutating work, let in-flight sends finish inside the drain window, then release resources.
 export async function shutdown(app: FastifyInstance, timeoutMs: number, cleanup: () => Promise<void>): Promise<boolean> {
   app.drain.start();
-  const closed = app.close();
   const idle = await app.drain.idle(timeoutMs);
-  await Promise.race([closed, new Promise((resolve) => setTimeout(resolve, 1_000).unref())]);
+  await Promise.race([app.close(), new Promise((resolve) => setTimeout(resolve, 1_000).unref())]);
   await cleanup();
   return idle;
 }

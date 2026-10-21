@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
-import { configSecrets, loadConfig, publicConfig, type AppConfig } from "./config.js";
+import { configSecrets, drainTimeoutMs, loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { createBalanceCache, holdingFitsChain, type BalanceCache, type BalanceReader } from "./balances.js";
 import { resolveTokenDecimals } from "./token-decimals.js";
-import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
+import { createExecutorState, decideWithdraw, execute, restoreSpent, type ExecutorDeps, type ExecutorState, type SpendScope } from "./executor.js";
 import { latencyLog } from "./latency.js";
-import { buildApp, mutatingLimit } from "./http.js";
+import { anyTokenMatches, bearerOf, buildApp, mutatingLimit, perMinute, shutdown } from "./http.js";
 import { fetchHyperliquidMid, quoteHop } from "./clients.js";
 import { redactError, zeroLoadedSecrets } from "./redact.js";
 import { broadcastRoute, lookupAgedTx, recoverToken, withdrawNative } from "./broadcast.js";
@@ -14,7 +14,7 @@ import { assertApprovedAgent, fetchSzDecimals } from "./hyperliquid.js";
 import { createLogger } from "./log.js";
 import { assertBoot, loadManagedSigner, tokenMatches, type TransactionSigner } from "./managed-signer.js";
 import { seedApprovals } from "./approvals.js";
-import { commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
+import { acquireExecutorLock, closeSpendPools, commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
 import { evmReadClient, firstOk, solanaConnection } from "./rpc.js";
@@ -86,7 +86,9 @@ function deps(
   journal: ReturnType<typeof txJournal>,
   priceOf: PriceOf,
   balances: BalanceCache | null,
+  opts: { state?: ExecutorState; spendScope?: SpendScope; databaseUrl?: string | null } = {},
 ): ExecutorDeps {
+  const databaseUrl = opts.databaseUrl !== undefined ? opts.databaseUrl : config.databaseUrl;
   const spent = (tx: TxRecord) => balances?.invalidate(tx.chainKey);
   return {
     config,
@@ -108,19 +110,45 @@ function deps(
       await journal(key, tx);
     },
     szDecimals: (market) => fetchSzDecimals(config.hyperliquidUrl, market),
+    state: opts.state ?? createExecutorState(),
+    spendScope: opts.spendScope,
     recordSpend:
-      config.live && config.databaseUrl
-        ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd, spendDay(new Date(), config.spendTimezone), config.dailyUsdCap)
+      config.live && databaseUrl
+        ? (key, usd, scope) => recordSpend(databaseUrl, key, usd, spendDay(new Date(), config.spendTimezone), scope?.capUsd ?? config.dailyUsdCap)
         : undefined,
     killSwitchEnabled: async () => {
       if (config.killSwitch) return true;
-      if (!config.databaseUrl) return false;
-      return readKillSwitch(config.databaseUrl);
+      if (!databaseUrl) return false;
+      return readKillSwitch(databaseUrl);
     },
-    commitSpend: config.live && config.databaseUrl ? (key) => commitSpend(config.databaseUrl as string, key) : undefined,
-    releaseSpend: config.live && config.databaseUrl ? (key) => releaseSpend(config.databaseUrl as string, key) : undefined,
+    commitSpend: config.live && databaseUrl ? (key) => commitSpend(databaseUrl, key) : undefined,
+    releaseSpend: config.live && databaseUrl ? (key) => releaseSpend(databaseUrl, key) : undefined,
     screenToken: config.screening ? (token) => screenToken(config, token) : undefined,
     readTokenDecimals: (token) => resolveTokenDecimals(token.chainKey, token.address, token.chain, config.rpcByChainKey[token.chainKey]),
+  };
+}
+
+export type ExecutorInstance = {
+  config: AppConfig;
+  state: ExecutorState;
+  deps: ExecutorDeps;
+  execute: (intent: SwapIntent, overrides?: Partial<ExecutorDeps>) => Promise<ExecutionReport>;
+};
+
+export function createExecutor(
+  config: AppConfig,
+  signer: TransactionSigner | null,
+  db: string | null,
+  opts: { priceOf?: PriceOf; balances?: BalanceCache | null; secrets?: readonly string[] } = {},
+): ExecutorInstance {
+  const state = createExecutorState();
+  const secrets = opts.secrets ?? configSecrets(config).filter((item) => item.length >= 8);
+  const runtime = deps(config, signer, secrets, txJournal(config, () => undefined), opts.priceOf ?? (() => null), opts.balances ?? null, { state, databaseUrl: db });
+  return {
+    config,
+    state,
+    deps: runtime,
+    execute: (intent, overrides = {}) => execute(intent, { ...runtime, ...overrides, state }),
   };
 }
 
@@ -134,34 +162,72 @@ export async function createExecutorApp(
   readBalance: BalanceReader | null = null,
   fetchImpl: typeof fetch = fetch,
 ): Promise<FastifyInstance> {
-  const app = await buildApp({ authToken: config.authToken ?? "", secrets, logger });
+  const app = await buildApp({ authTokens: config.executorAuthTokens, secrets, logger });
   const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
-  app.get("/health", async () => ({ ok: true, service: "executor", ...publicConfig(config) }));
-  app.post("/execute", guard, async (request, reply) => {
+  const listingGuard = { preHandler: app.auth([app.verifyBearer]), config: perMinute(config.listingRateLimitPerMin) };
+  app.get("/health", async () => ({ ok: true }));
+  app.get("/status", { preHandler: app.auth([app.verifyBearer]) }, async () => ({ ok: true, service: "executor", ...publicConfig(config) }));
+  app.post("/execute", { config: mutatingLimit }, async (request, reply) => {
+    const presented = bearerOf(request);
+    const strategyPeek = Object.values(config.strategies).some((strategy) => anyTokenMatches(presented, strategy.tokens));
+    if (!anyTokenMatches(presented, config.executorAuthTokens) && !strategyPeek) return reply.code(401).send({ error: "unauthorized" });
     const parsed = intentSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    const report = await execute(parsed.data, { ...runtime, mode: "dry_run" });
+    if (anyTokenMatches(presented, config.executorAuthTokens)) {
+      const report = await app.drain.track(() => execute(parsed.data, { ...runtime, mode: "dry_run" }));
+      console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
+      await notify(config, report, secrets);
+      return report;
+    }
+    const strategyEntry = Object.entries(config.strategies).find(([, strategy]) => anyTokenMatches(presented, strategy.tokens));
+    if (!strategyEntry) return reply.code(401).send({ error: "unauthorized" });
+    const [strategyId, strategy] = strategyEntry;
+    const intent: SwapIntent = { ...parsed.data, idempotencyKey: `${strategyId}:${parsed.data.idempotencyKey}` };
+    if (parsed.data.notionalUsd > strategy.maxUsdPerTrade) {
+      return {
+        idempotencyKey: intent.idempotencyKey,
+        mode: runtime.mode,
+        decision: "skipped",
+        reason: `strategy ${strategyId} maxUsdPerTrade cap ${strategy.maxUsdPerTrade} USD`,
+        venue: parsed.data.token.chainKey,
+        route: null,
+        latency: { alertReceivedMs: parsed.data.receivedAtMs },
+      };
+    }
+    const report = await app.drain.track(() =>
+      execute(intent, { ...runtime, spendScope: { strategyId, capUsd: strategy.dailyUsdCap } }),
+    );
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;
   });
-  app.post("/listing", guard, async (request, reply) => {
+  app.post("/listing", listingGuard, async (request, reply) => {
     const parsed = alertSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    if (!config.resolverUrl || !config.authToken) return reply.code(503).send({ error: "RESOLVER_URL is not set" });
-    const response = await fetchImpl(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
-      method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${config.authToken}` },
-      body: JSON.stringify(parsed.data),
-    });
-    const resolution = resolutionSchema.safeParse(await response.json());
+    if (config.killSwitch || (runtime.killSwitchEnabled ? await runtime.killSwitchEnabled().catch(() => true) : false)) {
+      return reply.code(200).send({ decision: "skipped", reason: "kill switch is on", latency: { alertReceivedMs: 0 } });
+    }
+    if (!config.resolverUrl || config.resolverAuthTokens.length === 0) return reply.code(503).send({ error: "RESOLVER_URL is not set" });
+    let resolution;
+    try {
+      const response = await fetchImpl(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${config.resolverAuthTokens[0]}` },
+        body: JSON.stringify(parsed.data),
+        signal: AbortSignal.timeout(config.resolverTimeoutMs),
+      });
+      if (!response.ok) return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
+      resolution = resolutionSchema.safeParse(await response.json());
+    } catch {
+      return reply.code(200).send({ decision: "skipped", reason: "resolver_error" });
+    }
     if (!resolution.success) return reply.code(200).send({ decision: "skipped", reason: "resolver response did not match the schema" });
     if (resolution.data.kind !== "hit" || !resolution.data.token) {
       return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
     }
     const intent = intentFromResolution(parsed.data, resolution.data, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
     if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
-    const report = await execute(intent, { ...runtime, readBalance });
+    const report = await app.drain.track(() => execute(intent, { ...runtime, readBalance }));
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;
@@ -230,7 +296,7 @@ export async function createExecutorApp(
 
 async function main(): Promise<void> {
   const config = loadConfig();
-  assertBoot(config);
+  assertBoot(config, "executor");
   seedApprovals(config.approvalSeed);
   const { signer, secrets: signerSecrets } = loadManagedSigner(process.env, config);
   if (config.live && !signer) throw new Error("live mode requires Turnkey");
@@ -246,23 +312,40 @@ async function main(): Promise<void> {
   if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
   const secrets = [...signerSecrets, ...configSecrets(config)].filter((item) => item.length >= 8);
   const logger = createLogger(secrets);
-  if (config.databaseUrl) {
+  const releaseLock = config.databaseUrl ? await acquireExecutorLock(config.databaseUrl) : null;
+  const state = createExecutorState();
+  const reconcile = async () => {
+    if (!config.databaseUrl) return;
     await reconcileReserved(config.databaseUrl, config.reconcileAfterMinutes, (chainKey, hash) => lookupAgedTx(config, chainKey, hash), (entry) =>
       logger.info({ reconcile: entry }, "reconciled reserved spend"),
     );
+  };
+  if (config.databaseUrl) {
+    await reconcile();
     const day = spendDay(new Date(), config.spendTimezone);
-    restoreSpent(await spentOnDay(config.databaseUrl, day), day);
+    restoreSpent(state, await spentOnDay(config.databaseUrl, day), day);
   }
   const prices = createPriceCache(coingeckoLoader(config, pricedHoldings(holdingsParsed.data, config.enabledChainKeys)), config.priceMaxAgeMs);
   const refreshPrices = () => prices.refresh().catch((error: unknown) => logger.warn({ err: error }, "price refresh failed"));
   await refreshPrices();
-  setInterval(refreshPrices, config.priceRefreshMs).unref();
+  const priceTimer = setInterval(refreshPrices, config.priceRefreshMs);
+  priceTimer.unref();
+  const reconcileTimer = config.databaseUrl ? setInterval(() => void reconcile().catch((error: unknown) => logger.warn({ err: error }, "reconcile failed")), config.reconcileIntervalMs) : null;
+  reconcileTimer?.unref();
   const balances = config.live ? createBalanceCache(chainReader(config, signer), config.balanceCacheMs) : null;
-  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding), balances);
+  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")), (holding) => prices.priceOf(holding), balances, { state });
   const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, balances?.read ?? null);
+  let stopping = false;
   const stop = () => {
-    zeroLoadedSecrets();
-    process.exit(0);
+    if (stopping) return;
+    stopping = true;
+    void shutdown(app, Math.min(drainTimeoutMs(config), 20_000), async () => {
+      clearInterval(priceTimer);
+      if (reconcileTimer) clearInterval(reconcileTimer);
+      zeroLoadedSecrets();
+      await closeSpendPools();
+      await releaseLock?.();
+    }).then(() => process.exit(0));
   };
   process.once("SIGINT", stop);
   process.once("SIGTERM", stop);

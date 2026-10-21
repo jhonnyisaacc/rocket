@@ -203,7 +203,7 @@ test("an uncached erc-20 sell is not signed", async () => {
   resetApprovals();
   const calls: string[] = [];
   const config = loadConfig({
-    AUTH_TOKEN: tokenAuth,
+    EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
     RPC_URL_8453: "http://127.0.0.1:9",
     ZEROX_API_KEY: "zeroex-key",
     ROUTER_ALLOWLIST: "0x1111111111111111111111111111111111111111",
@@ -294,9 +294,9 @@ test("signing policy denies an empty router list, a foreign router, and a hyperl
 });
 
 test("live mode refuses the local keystore", () => {
-  const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
+  const live = loadConfig({ LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   assert.throws(() => loadManagedSigner({}, live), /live mode requires Turnkey/);
-  const flagged = loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth });
+  const flagged = loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   assert.throws(() => loadManagedSigner({ ALLOW_LOCAL_SIGNER: "true" }, flagged), /live mode requires Turnkey/);
 });
 
@@ -407,12 +407,12 @@ test("a jupiter swap may wrap SOL to the owner account and tip a jito account", 
 });
 
 test("boot requires a long token and refuses a public Railway domain", () => {
-  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: "short" })), /AUTH_TOKEN/);
-  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: tokenAuth }), { RAILWAY_PUBLIC_DOMAIN: "example.up.railway.app" }), /public Railway domain/);
+  assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: "short", RESOLVER_AUTH_TOKEN: "resolver-token-123456" }), "executor"), /EXECUTOR_AUTH_TOKEN/);
+  assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" }), "executor", { RAILWAY_PUBLIC_DOMAIN: "example.up.railway.app" }), /public Railway domain/);
 });
 
 test("mutating routes require a bearer token, a valid body, and a small payload", async () => {
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const runtime: ExecutorDeps = {
     config,
     mode: "dry_run",
@@ -455,14 +455,14 @@ test("mutating routes require a bearer token, a valid body, and a small payload"
 });
 
 test("screening fails closed on a bad body, a honeypot, and a Blockaid warning", async () => {
-  const config = loadConfig({ TOKEN_SCREENING: "true", AUTH_TOKEN: tokenAuth });
+  const config = loadConfig({ TOKEN_SCREENING: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const token = { chainKey: "base", chain: { kind: "evm" as const, chainId: 8453 }, contract: "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" };
   assert.equal(await screenToken(config, token, async () => new Response("{}", { status: 200 })), "deny");
   assert.equal(
     await screenToken(config, token, async () => new Response(JSON.stringify({ code: 1, result: { [token.contract]: { is_honeypot: "1" } } }), { status: 200 })),
     "deny",
   );
-  const benign = loadConfig({ TOKEN_SCREENING: "true", BLOCKAID_API_KEY: "blockaid-test", AUTH_TOKEN: tokenAuth });
+  const benign = loadConfig({ TOKEN_SCREENING: "true", BLOCKAID_API_KEY: "blockaid-test", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   assert.equal(
     await screenToken(benign, token, async (input) => {
       if (new URL(String(input)).hostname === "api.gopluslabs.io") {
@@ -481,9 +481,9 @@ test("screening fails closed on a bad body, a honeypot, and a Blockaid warning",
     ),
     "deny",
   );
-  const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
+  const live = loadConfig({ LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   assert.equal(live.screening, true);
-  assert.equal(loadConfig({ AUTH_TOKEN: tokenAuth }).screening, false);
+  assert.equal(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" }).screening, false);
 });
 
 test("spend reservation locks the day and counts reserved plus committed rows", () => {

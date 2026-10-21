@@ -146,7 +146,7 @@ test("an approval must be exact, carry no value, target the sold token, and pay 
 });
 
 test("live boot refuses raw key env even next to Turnkey, and dev scrubs raw keys after load", () => {
-  const live = loadConfig({ LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth });
+  const live = loadConfig({ LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const turnkey = { TURNKEY_ORGANIZATION_ID: "org", TURNKEY_API_PUBLIC_KEY: "pub", TURNKEY_API_PRIVATE_KEY: "priv", TURNKEY_EVM_ADDRESS: "0x2222222222222222222222222222222222222222" };
   for (const name of ["EVM_PRIVATE_KEY", "SOLANA_SECRET_KEY", "HYPERLIQUID_AGENT_KEY", "KEYSTORE_PATH", "KEYSTORE_PASSPHRASE"]) {
     const env: NodeJS.ProcessEnv = { ...turnkey, [name]: "value" };
@@ -170,7 +170,7 @@ test("config api keys, tokens, and the notifier url are redaction secrets", () =
     BLOCKAID_API_KEY: "blockaid-secret-key",
     GOPLUS_API_KEY: "goplus-secret-key",
     LIFI_API_KEY: "lifi-secret-key",
-    AUTH_TOKEN: tokenAuth,
+    EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
     ADMIN_TOKEN: "admin-token-value",
     NOTIFIER_WEBHOOK_URL: "https://hooks.example.com/secret-path",
     KYBERSWAP_CLIENT_ID: "listing-trader",

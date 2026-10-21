@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import test from "node:test";
 import pg from "pg";
 import type { TxOutcome, TxRecord } from "../src/domain.js";
-import { closeSpendPools, commitSpend, reconcileReserved, recordSpend, recordTx, releaseSpend } from "../src/spend.js";
+import { acquireExecutorLock, closeSpendPools, commitSpend, reconcileReserved, recordSpend, recordTx, releaseSpend } from "../src/spend.js";
 
 const url = process.env.TEST_DATABASE_URL;
 
@@ -71,4 +71,15 @@ test("spend journal records tx hashes and boot reconciliation settles aged reser
     await client.end();
     await closeSpendPools();
   }
+});
+
+test("a second executor cannot take the boot lock", { skip: !url }, async () => {
+  const release = await acquireExecutorLock(url as string);
+  try {
+    await assert.rejects(() => acquireExecutorLock(url as string), /second replica/);
+  } finally {
+    await release();
+  }
+  const again = await acquireExecutorLock(url as string);
+  await again();
 });

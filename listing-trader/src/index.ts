@@ -1,6 +1,9 @@
 export { CHAINS, chainByEvmId, chainByKey, feeRankOf, gasCeilingUsd } from "./chains.js";
 export { loadConfig, publicConfig } from "./config.js";
-export { execute, authorizeWithdraw, resetExecutorState } from "./executor.js";
+export { execute, authorizeWithdraw, resetExecutorState, createExecutorState, spentToday, restoreSpent } from "./executor.js";
+export type { ExecutorDeps, ExecutorState, SpendScope } from "./executor.js";
+export { createExecutor } from "./executor-server.js";
+export type { ExecutorInstance } from "./executor-server.js";
 export { matchAlert, WatchIndex, normalizeName, normalizeTicker } from "./match.js";
 export { buildPairMap } from "./pairs.js";
 export { pickRoute, planRoutes, combineHopImpact } from "./routing.js";

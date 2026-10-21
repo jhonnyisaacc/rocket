@@ -118,7 +118,7 @@ function runtime(config: ReturnType<typeof loadConfig>, sends: string[], quote: 
 }
 
 test("mutating routes reject a missing bearer token and /replace is gone", async () => {
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const list = new MemoryWatchlist();
   const resolver = await createResolverApp(config, list, false, lookupFetch(Date.now(), 100_000));
   const missing = await resolver.inject({ method: "POST", url: "/alert", payload: alertBody() });
@@ -126,7 +126,7 @@ test("mutating routes reject a missing bearer token and /replace is gone", async
   const replaced = await resolver.inject({
     method: "POST",
     url: "/replace",
-    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer resolver-token-123456`, "content-type": "application/json" },
     payload: { tokens: [] },
   });
   assert.equal(replaced.statusCode, 404);
@@ -135,13 +135,13 @@ test("mutating routes reject a missing bearer token and /replace is gone", async
 });
 
 test("a live lookup does not upsert and a dry-run hit stays out of the watchlist", async () => {
-  const live = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true" });
+  const live = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", LISTING_TRADER_LIVE: "true" });
   const liveList = new MemoryWatchlist();
   const liveApp = await createResolverApp(live, liveList, false, lookupFetch(Date.now() - 48 * 3_600_000, 100_000));
   const liveResponse = await liveApp.inject({
     method: "POST",
     url: "/alert",
-    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer resolver-token-123456`, "content-type": "application/json" },
     payload: alertBody(),
   });
   assert.equal(liveResponse.statusCode, 200);
@@ -150,13 +150,13 @@ test("a live lookup does not upsert and a dry-run hit stays out of the watchlist
   assert.equal(liveList.records().length, 0);
   await liveApp.close();
 
-  const dry = loadConfig({ AUTH_TOKEN: tokenAuth });
+  const dry = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const dryList = new MemoryWatchlist();
   const dryApp = await createResolverApp(dry, dryList, false, lookupFetch(Date.now() - 48 * 3_600_000, 100_000));
   const dryResponse = await dryApp.inject({
     method: "POST",
     url: "/alert",
-    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer resolver-token-123456`, "content-type": "application/json" },
     payload: alertBody(),
   });
   assert.equal(dryResponse.json().kind, "hit");
@@ -165,7 +165,7 @@ test("a live lookup does not upsert and a dry-run hit stays out of the watchlist
   const youngResponse = await young.inject({
     method: "POST",
     url: "/alert",
-    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer resolver-token-123456`, "content-type": "application/json" },
     payload: alertBody(),
   });
   assert.equal(youngResponse.json().kind, "unlisted");
@@ -175,13 +175,13 @@ test("a live lookup does not upsert and a dry-run hit stays out of the watchlist
 });
 
 test("a live honeypot stays unlisted and a refresh drops it", async () => {
-  const live = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true" });
+  const live = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", LISTING_TRADER_LIVE: "true" });
   const list = new MemoryWatchlist();
   const app = await createResolverApp(live, list, false, lookupFetch(Date.now() - 48 * 3_600_000, 100_000, "1"));
   const response = await app.inject({
     method: "POST",
     url: "/alert",
-    headers: { authorization: `Bearer ${tokenAuth}`, "content-type": "application/json" },
+    headers: { authorization: `Bearer resolver-token-123456`, "content-type": "application/json" },
     payload: alertBody(),
   });
   assert.equal(response.json().kind, "unlisted");
@@ -217,7 +217,7 @@ test("a live honeypot stays unlisted and a refresh drops it", async () => {
       refreshedAt: "2026-10-21T00:00:00.000Z",
     },
   ]);
-  await refreshLiquidity(loadConfig({ TOKEN_SCREENING: "true", AUTH_TOKEN: tokenAuth }), refreshList, async (input) => {
+  await refreshLiquidity(loadConfig({ TOKEN_SCREENING: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" }), refreshList, async (input) => {
     const url = new URL(String(input), "https://api.dexscreener.com");
     if (url.hostname === "api.gopluslabs.io") {
       return new Response(JSON.stringify({ code: 1, result: { mint: { is_honeypot: "1", buy_tax: "0", sell_tax: "0" } } }), { status: 200 });
@@ -229,7 +229,7 @@ test("a live honeypot stays unlisted and a refresh drops it", async () => {
 
 test("live mode does not send a token the screener denies", async () => {
   resetExecutorState();
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true" });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", LISTING_TRADER_LIVE: "true" });
   const sends: string[] = [];
   const report = await execute(intent(), {
     ...runtime(config, sends, async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10" })),
@@ -259,7 +259,7 @@ test("/execute stays dry-run, a thrown quote is a generic 500, and plain text is
   resetExecutorState();
   const databaseUrl = "postgres://listing:s3cret-db@db.internal:5432/listing";
   const rpc = "https://rpc.example/v2/secret-rpc-key";
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" });
   const sends: string[] = [];
   const app = await createExecutorApp(config, runtime(config, sends, async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10" })), null, [databaseUrl, rpc], []);
   const denied = await app.inject({ method: "POST", url: "/listing", payload: alertBody() });
@@ -309,7 +309,7 @@ test("/execute stays dry-run, a thrown quote is a generic 500, and plain text is
 
 test("withdraw requires the admin token, the enable flag, the cap, and the allowlist", async () => {
   const config = loadConfig({
-    AUTH_TOKEN: tokenAuth,
+    EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
     ADMIN_TOKEN: adminAuth,
     WITHDRAW_ENABLED: "true",
     OWNER_WITHDRAW_ADDRESSES: owner,
@@ -331,7 +331,7 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
     payload: { to: owner, amount: 1, chainKey: "base" },
   });
   assert.equal(noBearer.statusCode, 401);
-  const disabled = await createExecutorApp(loadConfig({ AUTH_TOKEN: tokenAuth, ADMIN_TOKEN: adminAuth }), runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), null, [], []);
+  const disabled = await createExecutorApp(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", ADMIN_TOKEN: adminAuth }), runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), null, [], []);
   const off = await disabled.inject({
     method: "POST",
     url: "/withdraw",
@@ -371,8 +371,8 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
   assert.equal(planned.json().decision, "would_send");
   await app.close();
   await disabled.close();
-  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: tokenAuth, WITHDRAW_ENABLED: "true" })), /OWNER_WITHDRAW_ADDRESSES/);
-  assert.throws(() => assertBoot(loadConfig({ AUTH_TOKEN: tokenAuth, WITHDRAW_ENABLED: "true", OWNER_WITHDRAW_ADDRESSES: "not-an-address" })), /invalid address/);
+  assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", WITHDRAW_ENABLED: "true" }), "executor"), /OWNER_WITHDRAW_ADDRESSES/);
+  assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", WITHDRAW_ENABLED: "true", OWNER_WITHDRAW_ADDRESSES: "not-an-address" }), "executor"), /invalid address/);
 });
 
 test("two reservations that share a lock cannot both pass the daily cap", async () => {
@@ -432,16 +432,16 @@ test("a router allowed on one chain is denied on another, and a token sell canno
 });
 
 test("live mode pins aggregator hosts and private service URLs", () => {
-  const live = { LISTING_TRADER_LIVE: "true", AUTH_TOKEN: tokenAuth, ZEROX_API_KEY: "zeroex-key", KYBERSWAP_CLIENT_ID: "listing-trader-test" };
-  assert.throws(() => assertBoot(loadConfig({ ...live, JUPITER_API_BASE: "https://evil.example/swap/v1" })), /pins jupiterBase/);
-  assert.throws(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://evil.example/alert" })), /https or a railway.internal host/);
-  assert.doesNotThrow(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://resolver.railway.internal:8080" })));
-  assert.doesNotThrow(() => assertLiveEdges(loadConfig({ AUTH_TOKEN: tokenAuth, RESOLVER_URL: "http://127.0.0.1:8080" }), {}));
+  const live = { LISTING_TRADER_LIVE: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", ZEROX_API_KEY: "zeroex-key", KYBERSWAP_CLIENT_ID: "listing-trader-test" };
+  assert.throws(() => assertBoot(loadConfig({ ...live, JUPITER_API_BASE: "https://evil.example/swap/v1" }), "executor"), /pins jupiterBase/);
+  assert.throws(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://evil.example/alert" }), "executor"), /https or a railway.internal host/);
+  assert.doesNotThrow(() => assertBoot(loadConfig({ ...live, RESOLVER_URL: "http://resolver.railway.internal:8080" }), "executor"));
+  assert.doesNotThrow(() => assertLiveEdges(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", RESOLVER_URL: "http://127.0.0.1:8080" }), {}));
 });
 
 test("the kill switch skips a live buy and a missing balance read does not trade", async () => {
   resetExecutorState();
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth, LISTING_TRADER_LIVE: "true", RESOLVER_URL: "http://resolver.railway.internal:8080" });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", LISTING_TRADER_LIVE: "true", RESOLVER_URL: "http://resolver.railway.internal:8080" });
   const sends: string[] = [];
   const stopped = await execute(intent(), { ...runtime(config, sends, async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10" })), killSwitchEnabled: async () => true });
   assert.equal(stopped.decision, "skipped");
@@ -522,7 +522,7 @@ test("keystore headers are authenticated, buffers zero, and the passphrase promp
   zeroLoadedSecrets();
   assert.equal(secret.reveal(), "");
   const env = { KEYSTORE_PASSPHRASE: "correct horse battery", ALLOW_LOCAL_SIGNER: "true" };
-  assert.throws(() => loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", AUTH_TOKEN: tokenAuth })), /refuses raw key material in KEYSTORE_PASSPHRASE/);
+  assert.throws(() => loadManagedSigner(env, loadConfig({ LISTING_TRADER_LIVE: "true", ALLOW_LOCAL_SIGNER: "true", EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456" })), /refuses raw key material in KEYSTORE_PASSPHRASE/);
   assert.equal(env.KEYSTORE_PASSPHRASE, undefined);
   let written = "";
   const listeners = new Set<(chunk: Buffer) => void>();
@@ -560,7 +560,7 @@ test("the image digest is pinned and jayson can load its json parser", () => {
 
 test("jupiter quotes with the slippage left after impact and refuses a quote without a minimum", async () => {
   resetProviderGuards();
-  const config = loadConfig({ AUTH_TOKEN: tokenAuth, SOLANA_RPC_URL: "http://127.0.0.1:9", MAX_SLIPPAGE_BPS: "100" });
+  const config = loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", SOLANA_RPC_URL: "http://127.0.0.1:9", MAX_SLIPPAGE_BPS: "100" });
   const quotes: string[] = [];
   const swaps: string[] = [];
   const signer: TransactionSigner = {

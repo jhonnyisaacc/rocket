@@ -4,9 +4,10 @@ import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { matchAlert } from "./match.js";
 import { attachPools, hyperliquidFromMeta, listedContract, poolMeetsFloor, poolsFromDexScreener, readKoreanName, tokenFromDexSearch, type CoinListRow } from "./parsers.js";
 import { addressChunks, applyLiquidity, rebuildIdentities, shortlistTokens, withKoreanName } from "./refresh.js";
-import { redactError } from "./redact.js";
+import { redactError, zeroLoadedSecrets } from "./redact.js";
+import { isSolanaAddress } from "./signer.js";
 import { MemoryWatchlist, hydrateFromPostgres, saveToPostgres } from "./watchlist.js";
-import { buildApp, mutatingLimit } from "./http.js";
+import { buildApp, mutatingLimit, shutdown } from "./http.js";
 import { assertBoot } from "./managed-signer.js";
 import { alertSchema } from "./schemas.js";
 import { screenToken } from "./screening.js";
@@ -21,20 +22,32 @@ export function resolveAlert(alert: Alert, minLiquidityUsd: number, allowedChain
 
 const coinListSchema = z.array(z.object({ id: z.string(), symbol: z.string(), name: z.string() }).passthrough());
 
-async function getJson(url: string, init: RequestInit, fetchImpl: typeof fetch): Promise<unknown> {
-  const response = await fetchImpl(url, init);
+export function isValidDexAddress(address: string): boolean {
+  return /^0x[0-9a-fA-F]{40}$/.test(address) || isSolanaAddress(address) || /^[A-Za-z0-9_-]{1,128}$/.test(address);
+}
+
+export async function getJson(url: string, init: RequestInit, fetchImpl: typeof fetch, timeoutMs = 5_000, maxBodyBytes = 16 * 1024 * 1024): Promise<unknown> {
+  const signal = init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs);
+  const aborted = new Promise<never>((_resolve, reject) => {
+    signal.addEventListener("abort", () => reject(signal.reason ?? new Error("request timed out")), { once: true });
+  });
+  const response = await Promise.race([fetchImpl(url, { ...init, signal }), aborted]);
   if (!response.ok) throw new Error(`lookup failed ${response.status}`);
-  return response.json();
+  const text = await response.text();
+  if (new TextEncoder().encode(text).byteLength > maxBodyBytes) throw new Error("response body too large");
+  return JSON.parse(text) as unknown;
 }
 
 export async function refreshWatchlist(config: AppConfig, list: MemoryWatchlist, fetchImpl: typeof fetch = fetch): Promise<void> {
   const headers: Record<string, string> = {};
   if (process.env.COINGECKO_API_KEY) headers["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
-  const coinList = coinListSchema.parse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl));
+  const coinList = coinListSchema.parse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl, config.resolverFetchTimeoutMs, config.resolverMaxBodyBytes));
   const metaBody = await getJson(
     `${config.hyperliquidUrl.replace(/\/$/, "")}/info`,
     { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ type: "meta" }) },
     fetchImpl,
+    config.resolverFetchTimeoutMs,
+    config.resolverMaxBodyBytes,
   );
   const markets = hyperliquidFromMeta(metaBody);
   list.setMarkets(markets);
@@ -45,7 +58,9 @@ export async function refreshWatchlist(config: AppConfig, list: MemoryWatchlist,
 export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist, fetchImpl: typeof fetch = fetch): Promise<void> {
   const pools = [];
   for (const chunk of addressChunks(list.records(), config.shortlistLimit)) {
-    const body = await getJson(`${config.dexscreenerBase}/latest/dex/tokens/${chunk.join(",")}`, {}, fetchImpl);
+    const safe = chunk.filter(isValidDexAddress);
+    if (safe.length === 0) continue;
+    const body = await getJson(`${config.dexscreenerBase}/latest/dex/tokens/${safe.join(",")}`, {}, fetchImpl, config.resolverFetchTimeoutMs, config.resolverMaxBodyBytes);
     pools.push(...poolsFromDexScreener(body, config.dexscreenerSlugOverrides));
   }
   let tokens = applyLiquidity(list.records(), pools, new Date().toISOString(), config.quoteAssets, config.shortlistLimit);
@@ -58,6 +73,8 @@ export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist,
         `${config.coingeckoBase}/coins/${encodeURIComponent(token.sourceId)}?localization=true&tickers=false&market_data=false&community_data=false&developer_data=false&sparkline=false`,
         { headers },
         fetchImpl,
+        config.resolverFetchTimeoutMs,
+        config.resolverMaxBodyBytes,
       );
       tokens = tokens.map((item) => (item.id === token.id ? withKoreanName(item, readKoreanName(detail)) : item));
     } catch {
@@ -104,7 +121,7 @@ async function liveLookup(
     if (!poolMeetsFloor(pools, Date.now(), config.minPoolAgeHours, config.minVolume24hUsd)) return { kind: "young" };
     const headers: Record<string, string> = {};
     if (process.env.COINGECKO_API_KEY) headers["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
-    const listed = coinListSchema.safeParse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl));
+    const listed = coinListSchema.safeParse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl, config.resolverFetchTimeoutMs, config.resolverMaxBodyBytes));
     if (!listed.success || !listedContract(listed.data, alert, token.chainKey, token.contract)) return { kind: "unlisted_contract" };
     return { kind: "qualified", token };
   } catch {
@@ -113,13 +130,14 @@ async function liveLookup(
 }
 
 export async function createResolverApp(config: AppConfig, list: MemoryWatchlist = watchlist, logger = false, fetchImpl: typeof fetch = fetch): Promise<FastifyInstance> {
-  const app = await buildApp({ authToken: config.authToken ?? "", logger });
+  const app = await buildApp({ authTokens: config.resolverAuthTokens, logger });
   const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
-  app.get("/health", async () => ({ ok: true, service: "resolver", tokens: list.records().length, ...publicConfig(config) }));
+  app.get("/health", async () => ({ ok: true }));
+  app.get("/status", { preHandler: app.auth([app.verifyBearer]) }, async () => ({ ok: true, service: "resolver", tokens: list.records().length, ...publicConfig(config) }));
   app.post("/alert", guard, async (request, reply) => {
     const parsed = alertSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    let outcome = resolveAlert(parsed.data, config.minLiquidityUsd, config.enabledChainKeys);
+    let outcome = await app.drain.track(async () => resolveAlert(parsed.data, config.minLiquidityUsd, config.enabledChainKeys));
     if (outcome.kind === "unlisted") {
       const found = await liveLookup(config, parsed.data, fetchImpl);
       if (found.kind === "qualified") return { kind: "hit", token: found.token, alternates: [] };
@@ -145,7 +163,7 @@ export async function createResolverApp(config: AppConfig, list: MemoryWatchlist
 
 async function main(): Promise<void> {
   const config = loadConfig();
-  assertBoot(config);
+  assertBoot(config, "resolver");
   if (config.databaseUrl) {
     const stored = await hydrateFromPostgres(config.databaseUrl);
     watchlist.replace(stored.map((token) => attachPools(token, token.pairMap.pools, token.refreshedAt, config.quoteAssets)));
@@ -167,8 +185,15 @@ async function main(): Promise<void> {
   await app.listen({ port: config.port, host: "0.0.0.0" });
   console.log(JSON.stringify({ service: "resolver", port: config.port, ...publicConfig(config) }));
   refresh("full");
-  setInterval(() => refresh("liquidity"), config.liquidityRefreshMs);
-  setInterval(() => refresh("full"), config.fullRefreshMs);
+  const timers = [setInterval(() => refresh("liquidity"), config.liquidityRefreshMs), setInterval(() => refresh("full"), config.fullRefreshMs)];
+  let stopping = false;
+  const stop = () => {
+    if (stopping) return;
+    stopping = true;
+    void shutdown(app, 20_000, async () => { for (const timer of timers) clearInterval(timer); zeroLoadedSecrets(); }).then(() => process.exit(0));
+  };
+  process.once("SIGINT", stop);
+  process.once("SIGTERM", stop);
 }
 
 const entry = process.argv[1] ?? "";

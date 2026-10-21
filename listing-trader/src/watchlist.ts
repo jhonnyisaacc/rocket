@@ -1,6 +1,7 @@
 import type { HyperliquidMarket, TokenRecord } from "./domain.js";
 import { WatchIndex } from "./match.js";
 import { attachHyperliquid } from "./parsers.js";
+import { tokenRecordSchema } from "./schemas.js";
 
 export const TOKEN_SCHEMA = `
 CREATE TABLE IF NOT EXISTS verified_tokens (
@@ -43,7 +44,7 @@ export async function hydrateFromPostgres(databaseUrl: string): Promise<TokenRec
   try {
     await pool.query(TOKEN_SCHEMA);
     const result = await pool.query<{ payload: TokenRecord }>("SELECT payload FROM verified_tokens");
-    return result.rows.map((row) => row.payload);
+    return parseTokenRecords(result.rows.map((row) => row.payload));
   } finally {
     await pool.end();
   }
@@ -73,4 +74,13 @@ export async function saveToPostgres(databaseUrl: string, tokens: readonly Token
     client.release();
     await pool.end();
   }
+}
+
+export function parseTokenRecords(payloads: readonly unknown[]): TokenRecord[] {
+  const out: TokenRecord[] = [];
+  for (const payload of payloads) {
+    const parsed = tokenRecordSchema.safeParse(payload);
+    if (parsed.success) out.push(parsed.data as TokenRecord);
+  }
+  return out;
 }
