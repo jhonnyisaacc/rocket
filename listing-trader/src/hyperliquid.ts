@@ -173,7 +173,89 @@ export async function signL1Action(privateKey: Secret, action: HyperliquidAction
   };
 }
 
-export function orderSize(notionalUsd: number, markPx: number): number {
+export function orderSize(notionalUsd: number, markPx: number, szDecimals: number): number {
   if (!(markPx > 0)) throw new Error("mark price missing");
-  return notionalUsd / markPx;
+  if (!Number.isInteger(szDecimals) || szDecimals < 0) throw new Error("hyperliquid szDecimals missing");
+  const factor = 10 ** szDecimals;
+  const size = Math.floor(Number(((notionalUsd / markPx) * factor).toPrecision(12))) / factor;
+  if (!(size > 0)) throw new Error("hyperliquid order size rounds to zero");
+  return Number(size.toFixed(szDecimals));
+}
+
+export function wirePrice(px: number, szDecimals: number, market: "perp" | "spot", isBuy: boolean): number {
+  if (!(px > 0)) throw new Error("limit price is not positive");
+  if (Number.isInteger(px)) return px;
+  const maxDecimals = Math.max(0, (market === "spot" ? 8 : 6) - szDecimals);
+  const sigDecimals = 5 - (Math.floor(Math.log10(px)) + 1);
+  const decimals = Math.max(0, Math.min(maxDecimals, sigDecimals));
+  const factor = 10 ** decimals;
+  const scaled = Number((px * factor).toPrecision(12));
+  const rounded = (isBuy ? Math.floor(scaled) : Math.ceil(scaled)) / factor;
+  if (!(rounded > 0)) throw new Error("limit price rounds to zero");
+  return Number(rounded.toFixed(decimals));
+}
+
+let lastNonce = 0;
+
+export function nextHyperliquidNonce(now = Date.now()): number {
+  lastNonce = Math.max(now, lastNonce + 1);
+  return lastNonce;
+}
+
+const szCache = new Map<string, number>();
+
+export function resetSzDecimals(): void {
+  szCache.clear();
+}
+
+export async function fetchSzDecimals(url: string, market: { market: "perp" | "spot"; assetIndex: number }, fetchImpl: typeof fetch = fetch): Promise<number | null> {
+  const key = `${url}|${market.market}|${market.assetIndex}`;
+  const cached = szCache.get(key);
+  if (cached !== undefined) return cached;
+  const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ type: market.market === "spot" ? "spotMeta" : "meta" }),
+    signal: AbortSignal.timeout(1500),
+  });
+  if (!response.ok) return null;
+  const body = (await response.json()) as {
+    universe?: Array<{ szDecimals?: number; tokens?: number[]; index?: number }>;
+    tokens?: Array<{ szDecimals?: number; index?: number }>;
+  };
+  let value: number | undefined;
+  if (market.market === "perp") {
+    value = body.universe?.[market.assetIndex]?.szDecimals;
+  } else {
+    const spotIndex = market.assetIndex >= 10_000 ? market.assetIndex - 10_000 : market.assetIndex;
+    const pair = body.universe?.find((row) => row.index === spotIndex);
+    const base = pair?.tokens?.[0];
+    value = body.tokens?.find((token) => token.index === base)?.szDecimals;
+  }
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) return null;
+  szCache.set(key, value);
+  return value;
+}
+
+export type ExchangeOutcome =
+  | { status: "err"; error: string }
+  | { status: "ok"; statuses: Array<{ filled?: { totalSz: string; avgPx: string }; error?: string; resting?: unknown }> };
+
+export function readExchangeResponse(body: unknown): ExchangeOutcome {
+  if (typeof body !== "object" || body === null) return { status: "err", error: "hyperliquid response is not an object" };
+  const row = body as { status?: unknown; response?: unknown };
+  if (row.status !== "ok") return { status: "err", error: typeof row.response === "string" ? row.response : "hyperliquid rejected the action" };
+  const data = (row.response as { data?: { statuses?: unknown } } | undefined)?.data;
+  const raw = Array.isArray(data?.statuses) ? data.statuses : [];
+  const statuses = raw.map((item: unknown) => {
+    if (typeof item !== "object" || item === null) return { error: "unknown order status" };
+    const entry = item as { filled?: { totalSz?: unknown; avgPx?: unknown }; error?: unknown; resting?: unknown };
+    if (typeof entry.error === "string") return { error: entry.error };
+    if (entry.filled && typeof entry.filled.totalSz === "string" && typeof entry.filled.avgPx === "string") {
+      return { filled: { totalSz: entry.filled.totalSz, avgPx: entry.filled.avgPx } };
+    }
+    if (entry.resting !== undefined) return { resting: entry.resting };
+    return { error: "unknown order status" };
+  });
+  return { status: "ok", statuses };
 }

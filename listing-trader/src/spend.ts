@@ -1,3 +1,5 @@
+import type { TxOutcome, TxRecord } from "./domain.js";
+
 export const SPEND_SCHEMA = `
 CREATE TABLE IF NOT EXISTS spend_journal (
   idempotency_key text PRIMARY KEY,
@@ -11,17 +13,48 @@ DO $$ BEGIN
 EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
+ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS reserved_at timestamptz;
+ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS tx_hash text;
+ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS chain_key text;
+ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS outcome text;
+ALTER TABLE spend_journal ADD COLUMN IF NOT EXISTS note text;
+CREATE TABLE IF NOT EXISTS signed_tx (
+  tx_hash text PRIMARY KEY,
+  idempotency_key text,
+  chain_key text NOT NULL,
+  from_address text NOT NULL,
+  to_address text NOT NULL,
+  value text NOT NULL,
+  outcome text NOT NULL,
+  note text,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
 `;
 
 export const RESERVE_LOCK_SQL = "SELECT pg_advisory_xact_lock(hashtext($1))";
 export const RESERVE_SUM_SQL =
   "SELECT COALESCE(SUM(usd), 0)::text AS total FROM spend_journal WHERE spent_on = $1::date AND status IN ('reserved', 'committed')";
 export const RESERVE_UPSERT_SQL = `
-INSERT INTO spend_journal (idempotency_key, usd, spent_on, status)
-VALUES ($1, $2, $3::date, 'reserved')
+INSERT INTO spend_journal (idempotency_key, usd, spent_on, status, reserved_at)
+VALUES ($1, $2, $3::date, 'reserved', now())
 ON CONFLICT (idempotency_key) DO UPDATE
-SET usd = EXCLUDED.usd, spent_on = EXCLUDED.spent_on, status = 'reserved'
+SET usd = EXCLUDED.usd, spent_on = EXCLUDED.spent_on, status = 'reserved', reserved_at = now(),
+  tx_hash = NULL, chain_key = NULL, outcome = NULL, note = NULL
 WHERE spend_journal.status = 'released'
+`;
+export const SIGNED_TX_SQL = `
+INSERT INTO signed_tx (tx_hash, idempotency_key, chain_key, from_address, to_address, value, outcome, note)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+ON CONFLICT (tx_hash) DO UPDATE SET outcome = EXCLUDED.outcome, note = EXCLUDED.note, updated_at = now()
+`;
+export const SPEND_TX_SQL = `
+UPDATE spend_journal SET tx_hash = $2, chain_key = $3, outcome = $4, note = $5
+WHERE idempotency_key = $1 AND (tx_hash IS NULL OR tx_hash = $2 OR $4 IN ('pending', 'landed'))
+`;
+export const RESERVED_SQL = `
+SELECT idempotency_key, tx_hash, chain_key, reserved_at IS NULL AS legacy FROM spend_journal
+WHERE status = 'reserved' AND (reserved_at IS NULL OR reserved_at < now() - make_interval(mins => $1::int))
 `;
 export const COMMIT_SQL = "UPDATE spend_journal SET status = 'committed' WHERE idempotency_key = $1 AND status = 'reserved'";
 export const RELEASE_SQL = "UPDATE spend_journal SET status = 'released' WHERE idempotency_key = $1 AND status = 'reserved'";
@@ -34,6 +67,16 @@ CREATE TABLE IF NOT EXISTS control_flags (
 export const KILL_SWITCH_SQL = "SELECT enabled FROM control_flags WHERE name = 'kill_switch'";
 
 export type SpendStatus = "reserved" | "committed" | "released";
+
+export type ReservedRow = { idempotencyKey: string; txHash: string | null; chainKey: string | null; legacy: boolean };
+
+export function reconcileDecision(row: ReservedRow, outcome: TxOutcome | null): "commit" | "release" | "keep" {
+  if (row.legacy) return "keep";
+  if (!row.txHash) return "release";
+  if (outcome === "landed") return "commit";
+  if (outcome === "reverted" || outcome === "expired") return "release";
+  return "keep";
+}
 
 export function reserveDecision(input: {
   existing: SpendStatus | null;
@@ -161,4 +204,36 @@ export async function readKillSwitch(databaseUrl: string): Promise<boolean> {
   const pool = await poolFor(databaseUrl);
   const result = await pool.query<{ enabled: boolean }>(KILL_SWITCH_SQL);
   return result.rows[0]?.enabled === true;
+}
+
+export async function recordTx(databaseUrl: string, idempotencyKey: string | null, tx: TxRecord): Promise<void> {
+  const pool = await poolFor(databaseUrl);
+  await pool.query(SIGNED_TX_SQL, [tx.txHash, idempotencyKey, tx.chainKey, tx.from, tx.to, tx.value, tx.outcome, tx.note ?? null]);
+  if (idempotencyKey) await pool.query(SPEND_TX_SQL, [idempotencyKey, tx.txHash, tx.chainKey, tx.outcome, tx.note ?? null]);
+}
+
+export async function reconcileReserved(
+  databaseUrl: string,
+  olderThanMinutes: number,
+  lookup: (chainKey: string, txHash: string) => Promise<TxOutcome | null>,
+  log: (entry: { idempotencyKey: string; txHash: string | null; action: "commit" | "release" | "keep"; outcome: TxOutcome | null }) => void,
+): Promise<number> {
+  const pool = await poolFor(databaseUrl);
+  const result = await pool.query<{ idempotency_key: string; tx_hash: string | null; chain_key: string | null; legacy: boolean }>(RESERVED_SQL, [olderThanMinutes]);
+  for (const raw of result.rows) {
+    const row: ReservedRow = { idempotencyKey: raw.idempotency_key, txHash: raw.tx_hash, chainKey: raw.chain_key, legacy: raw.legacy };
+    const outcome = row.txHash && row.chainKey ? await lookup(row.chainKey, row.txHash).catch(() => null) : null;
+    const action = reconcileDecision(row, outcome);
+    if (action === "commit") await pool.query(COMMIT_SQL, [row.idempotencyKey]);
+    if (action === "release") await pool.query(RELEASE_SQL, [row.idempotencyKey]);
+    log({ idempotencyKey: row.idempotencyKey, txHash: row.txHash, action, outcome });
+  }
+  return result.rows.length;
+}
+
+export async function closeSpendPools(): Promise<void> {
+  const open = [...pools.values()];
+  pools.clear();
+  ready.clear();
+  await Promise.all(open.map((pool) => pool.end()));
 }

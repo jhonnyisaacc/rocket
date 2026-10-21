@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { landedSend } from "./fixtures.js";
 import { Keypair, PublicKey, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
 import { holdingFitsChain, holdingsForTrade } from "../src/balances.js";
@@ -343,7 +344,7 @@ test("an untagged holding funds an alternate chain", async () => {
       return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
     },
     markPrice: async () => null,
-    send: async () => {},
+    send: async () => landedSend(),
     now: () => 1_050,
   };
   const app = await createExecutorApp(
@@ -509,7 +510,7 @@ test("a null or thrown read skips that holding and the other chain still quotes"
         return { priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
       },
       markPrice: async () => null,
-      send: async () => {},
+      send: async () => landedSend(),
       now: () => 1_050,
     },
     null,

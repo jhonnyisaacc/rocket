@@ -49,6 +49,8 @@ export type AppConfig = LimitConfig & {
   allowHotApproval: boolean;
   screening: boolean;
   maxTokenTax: number;
+  confirmTimeoutMs: number;
+  reconcileAfterMinutes: number;
   routerAllowlist: Record<number, string[]>;
   solanaProgramAllowlist: string[];
   maxValueWei: bigint;
@@ -87,7 +89,7 @@ function screeningEnabled(env: NodeJS.ProcessEnv, live: boolean): boolean {
 
 function taxCap(env: NodeJS.ProcessEnv): number {
   const raw = env.MAX_TOKEN_TAX;
-  if (raw === undefined || raw === "") return 0.1;
+  if (raw === undefined || raw === "") return 0;
   const value = Number(raw);
   if (!Number.isFinite(value) || value < 0 || value > 1) throw new Error("invalid MAX_TOKEN_TAX");
   return value;
@@ -208,6 +210,9 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     allowHotApproval: env.ALLOW_HOT_APPROVAL === "true",
     screening: screeningEnabled(env, env.LISTING_TRADER_LIVE === "true"),
     maxTokenTax: taxCap(env),
+    confirmTimeoutMs: intEnv(env, "CONFIRM_TIMEOUT_MS", 30_000),
+    reconcileAfterMinutes: intEnv(env, "RECONCILE_AFTER_MINUTES", 10),
+    minExecutionSlippageBps: intEnv(env, "MIN_EXECUTION_SLIPPAGE_BPS", 20),
     routerAllowlist: routerAllowlist(env),
     solanaProgramAllowlist: [...new Set([...SOLANA_BASE_PROGRAMS, ...splitList(env.SOLANA_PROGRAM_ALLOWLIST)])],
     maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),

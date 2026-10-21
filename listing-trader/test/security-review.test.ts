@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { landedSend } from "./fixtures.js";
 import { Keypair } from "@solana/web3.js";
 import { encodeFunctionData, erc20Abi } from "viem";
 import { resetProviderGuards } from "../src/aggregators.js";
@@ -110,6 +111,7 @@ function runtime(config: ReturnType<typeof loadConfig>, sends: string[], quote: 
     markPrice: async () => 1,
     send: async (action) => {
       sends.push(action.kind);
+      return landedSend();
     },
     now: () => 1_050,
   };
@@ -556,10 +558,11 @@ test("the image digest is pinned and jayson can load its json parser", () => {
   execFileSync(process.execPath, ["-e", "require('jayson/lib/utils')"], { cwd: new URL("../..", import.meta.url) });
 });
 
-test("jupiter swap build sends the slippage cap", async () => {
+test("jupiter quotes with the slippage left after impact and refuses a quote without a minimum", async () => {
   resetProviderGuards();
   const config = loadConfig({ AUTH_TOKEN: tokenAuth, SOLANA_RPC_URL: "http://127.0.0.1:9", MAX_SLIPPAGE_BPS: "100" });
-  const bodies: Array<{ slippageBps?: number }> = [];
+  const quotes: string[] = [];
+  const swaps: string[] = [];
   const signer: TransactionSigner = {
     backend: "keystore",
     evmAddress: () => null,
@@ -574,27 +577,31 @@ test("jupiter swap build sends the slippage cap", async () => {
       return { r: "0x01", s: "0x02", v: 27 };
     },
   };
-  await assert.rejects(() =>
-    broadcastRoute(
-      config,
-      signer,
-      {
-        kind: "solana",
-        description: "swap",
-        chain: { kind: "solana" },
-        hyperliquidActions: [],
-        legs: [{ sellAddress: "usdc", buyAddress: "mint", sellAmount: "1000", spentUsd: 5, priceUsd: 1, decimals: 6 }],
-      },
-      1,
-      async (input, init) => {
-        const url = String(input);
-        if (url.endsWith("/swap")) {
-          bodies.push(JSON.parse(String(init?.body)) as { slippageBps?: number });
-          return new Response(JSON.stringify({ swapTransaction: "aaaa" }), { status: 200 });
-        }
-        return new Response(JSON.stringify({ outAmount: "10", priceImpactPct: "0.001" }), { status: 200 });
-      },
-    ),
+  await assert.rejects(
+    () =>
+      broadcastRoute(
+        config,
+        signer,
+        {
+          kind: "solana",
+          description: "swap",
+          chain: { kind: "solana" },
+          hyperliquidActions: [],
+          legs: [{ sellAddress: "usdc", buyAddress: "mint", sellAmount: "1000", spentUsd: 5, priceUsd: 1, decimals: 6, impactPct: 0.3 }],
+        },
+        1,
+        async (input) => {
+          const url = String(input);
+          if (url.endsWith("/swap")) {
+            swaps.push(url);
+            return new Response(JSON.stringify({ swapTransaction: "aaaa" }), { status: 200 });
+          }
+          quotes.push(url);
+          return new Response(JSON.stringify({ outAmount: "4990000", priceImpactPct: "0.001" }), { status: 200 });
+        },
+      ),
+    /no checkable minimum output/,
   );
-  assert.equal(bodies[0]?.slippageBps, 100);
+  assert.equal(new URL(quotes[0] ?? "http://x").searchParams.get("slippageBps"), "70");
+  assert.deepEqual(swaps, []);
 });

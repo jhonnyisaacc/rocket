@@ -104,6 +104,7 @@ export type RouteLeg = {
   spentUsd: number;
   priceUsd: number | null;
   decimals: number | null;
+  impactPct?: number;
 };
 
 export type RouteQuote = {
@@ -152,6 +153,26 @@ export type Latency = {
   confirmedMs?: number;
 };
 
+export type TxOutcome = "pending" | "landed" | "reverted" | "expired";
+
+export type TxRecord = {
+  chainKey: string;
+  txHash: string;
+  from: string;
+  to: string;
+  value: string;
+  outcome: TxOutcome;
+  note?: string;
+};
+
+export type Fill = { totalSz: string; avgPx: string };
+
+export type Held = { token: string; amount: string };
+
+export type SendResult =
+  | { venue: "chain"; outcome: TxOutcome; txs: TxRecord[]; held: Held | null; shortfall: boolean; note?: string }
+  | { venue: "hypercore"; txs: TxRecord[]; fill: Fill | null; note?: string };
+
 export type ExecutionReport = {
   idempotencyKey: string;
   mode: "dry_run" | "live";
@@ -160,4 +181,7 @@ export type ExecutionReport = {
   venue: string;
   route: RouteQuote | null;
   latency: Latency;
+  txs?: TxRecord[];
+  held?: Held;
+  fill?: Fill;
 };

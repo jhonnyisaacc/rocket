@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from "./domain.js";
+import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord, TxRecord } from "./domain.js";
 import { chainByKey } from "./chains.js";
 import { configSecrets, loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { holdingFitsChain, type BalanceReader } from "./balances.js";
@@ -9,11 +9,12 @@ import { latencyLog } from "./latency.js";
 import { buildApp, mutatingLimit } from "./http.js";
 import { fetchHyperliquidMid, quoteHop } from "./clients.js";
 import { redactError, zeroLoadedSecrets } from "./redact.js";
-import { broadcastRoute, recoverToken, withdrawNative } from "./broadcast.js";
-import { assertApprovedAgent } from "./hyperliquid.js";
+import { broadcastRoute, lookupAgedTx, recoverToken, withdrawNative } from "./broadcast.js";
+import { assertApprovedAgent, fetchSzDecimals } from "./hyperliquid.js";
+import { createLogger } from "./log.js";
 import { assertBoot, loadManagedSigner, tokenMatches, type TransactionSigner } from "./managed-signer.js";
 import { seedApprovals } from "./approvals.js";
-import { commitSpend, readKillSwitch, recordSpend, releaseSpend, spendDay, spentOnDay } from "./spend.js";
+import { commitSpend, readKillSwitch, reconcileReserved, recordSpend, recordTx, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { screenToken } from "./screening.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
@@ -69,7 +70,14 @@ async function notify(config: AppConfig, report: ExecutionReport, secrets: reado
   });
 }
 
-function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[]): ExecutorDeps {
+export function txJournal(config: AppConfig, log: (entry: { idempotencyKey: string | null; tx: TxRecord }) => void) {
+  return async (idempotencyKey: string | null, tx: TxRecord): Promise<void> => {
+    log({ idempotencyKey, tx });
+    if (config.databaseUrl) await recordTx(config.databaseUrl, idempotencyKey, tx);
+  };
+}
+
+function deps(config: AppConfig, signer: TransactionSigner | null, secrets: readonly string[], journal: ReturnType<typeof txJournal>): ExecutorDeps {
   return {
     config,
     mode: config.live ? "live" : "dry_run",
@@ -82,7 +90,9 @@ function deps(config: AppConfig, signer: TransactionSigner | null, secrets: read
       return quoteHop(config, { ...hop, sellAmount: hop.sellAmount }, reference);
     },
     markPrice: (coin) => fetchHyperliquidMid(config.hyperliquidUrl, coin),
-    send: (request) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100, fetch, secrets),
+    send: (request, onTx) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100, fetch, secrets, { onTx }),
+    recordTx: journal,
+    szDecimals: (market) => fetchSzDecimals(config.hyperliquidUrl, market),
     recordSpend:
       config.live && config.databaseUrl
         ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd, spendDay(new Date(), config.spendTimezone), config.dailyUsdCap)
@@ -167,11 +177,13 @@ export async function createExecutorApp(
     if (decision.error) return reply.code(decision.http).send({ error: decision.error });
     if (decision.decision === "would_send") return { decision: "would_send", to: parsed.data.to, mode: config.live ? "live" : "dry_run" };
     if (!signer || !parsed.data.chainKey || parsed.data.amount === undefined) return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
+    const onTx = async (tx: TxRecord) => runtime.recordTx?.(null, tx);
+    let tx: TxRecord;
     if (!parsed.data.mint) {
-      await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets });
+      tx = await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets, onTx });
     } else {
       if (parsed.data.decimals === undefined) return reply.code(409).send({ error: "token withdraw needs decimals" });
-      await recoverToken({
+      tx = await recoverToken({
         config,
         signer,
         chainKey: parsed.data.chainKey,
@@ -180,9 +192,10 @@ export async function createExecutorApp(
         mint: parsed.data.mint,
         decimals: parsed.data.decimals,
         secrets,
+        onTx,
       });
     }
-    return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint };
+    return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint, tx };
   });
   app.post("/rebalance", guard, async (request, reply) => {
     const parsed = rebalanceSchema.safeParse(request.body);
@@ -214,11 +227,17 @@ async function main(): Promise<void> {
       await assertApprovedAgent(config.hyperliquidUrl, config.hyperliquidAccount, agent, fetch);
     }
   }
-  if (config.databaseUrl) restoreSpent(await spentOnDay(config.databaseUrl, spendDay(new Date(), config.spendTimezone)));
   const holdingsParsed = holdingsSchema.safeParse(JSON.parse(process.env.WALLET_HOLDINGS_JSON ?? "[]"));
   if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
   const secrets = [...signerSecrets, ...configSecrets(config)].filter((item) => item.length >= 8);
-  const runtime = deps(config, signer, secrets);
+  const logger = createLogger(secrets);
+  if (config.databaseUrl) {
+    await reconcileReserved(config.databaseUrl, config.reconcileAfterMinutes, (chainKey, hash) => lookupAgedTx(config, chainKey, hash), (entry) =>
+      logger.info({ reconcile: entry }, "reconciled reserved spend"),
+    );
+    restoreSpent(await spentOnDay(config.databaseUrl, spendDay(new Date(), config.spendTimezone)));
+  }
+  const runtime = deps(config, signer, secrets, txJournal(config, (entry) => logger.info(entry, "signed tx")));
   const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, config.live ? chainReader(config, signer) : null);
   const stop = () => {
     zeroLoadedSecrets();

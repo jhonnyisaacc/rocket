@@ -69,6 +69,7 @@ async function screenGoPlus(config: AppConfig, token: { chainKey: string; chain:
   const row = parsed.data.result[token.contract] ?? parsed.data.result[token.contract.toLowerCase()];
   if (!row) return "deny";
   if (row.is_honeypot === "1" || row.cannot_sell_all === "1") return "deny";
+  if (config.live && (!row.buy_tax || !row.sell_tax)) return "deny";
   if (taxTooHigh(row.buy_tax, config.maxTokenTax) || taxTooHigh(row.sell_tax, config.maxTokenTax)) return "deny";
   return "allow";
 }

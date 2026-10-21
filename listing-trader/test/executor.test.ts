@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { landedSend } from "./fixtures.js";
 import { execute, resetExecutorState, spentToday, authorizeWithdraw, type ExecutorDeps } from "../src/executor.js";
 import type { SwapIntent } from "../src/domain.js";
 import { buildPairMap } from "../src/pairs.js";
@@ -63,8 +64,10 @@ function deps(sends: string[]): ExecutorDeps {
       buyAmount: "10",
     }),
     markPrice: async () => 1,
+    szDecimals: async () => 2,
     send: async (action) => {
       sends.push(action.kind);
+      return landedSend();
     },
     now: () => 1_050,
   };

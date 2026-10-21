@@ -1,11 +1,11 @@
 import { holdingsForTrade, type BalanceReader } from "./balances.js";
-import type { ChainRef, ExecutionReport, Latency, RouteLeg, RouteQuote, SwapIntent } from "./domain.js";
+import type { ChainRef, ExecutionReport, HyperliquidMarket, Latency, RouteLeg, RouteQuote, SendResult, SwapIntent, TxRecord } from "./domain.js";
 import { chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
 import { stamp } from "./latency.js";
 import { combineHopImpact, pickRoute, planRoutes } from "./routing.js";
 import { acceptDecimals, cachedTokenDecimals, rememberTokenDecimals } from "./token-decimals.js";
-import { buildLeverage, buildOrder, cappedLimitPx, orderSize, type HyperliquidAction } from "./hyperliquid.js";
+import { buildLeverage, buildOrder, cappedLimitPx, orderSize, wirePrice, type HyperliquidAction } from "./hyperliquid.js";
 
 export type HopQuote = {
   priceImpactPct: number | null;
@@ -47,7 +47,9 @@ export type ExecutorDeps = {
     context: { spentUsd: number; priceUsd: number | null; decimals: number | null },
   ) => Promise<HopQuote>;
   markPrice: (coin: string) => Promise<number | null>;
-  send: (action: SendRequest) => Promise<void>;
+  send: (action: SendRequest, onTx: (tx: TxRecord) => Promise<void>) => Promise<SendResult>;
+  recordTx?: (idempotencyKey: string | null, tx: TxRecord) => Promise<void>;
+  szDecimals?: (market: HyperliquidMarket) => Promise<number | null>;
   recordSpend?: (idempotencyKey: string, usd: number) => Promise<"inserted" | "exists" | "reserved" | "cap">;
   commitSpend?: (idempotencyKey: string) => Promise<void>;
   releaseSpend?: (idempotencyKey: string) => Promise<void>;
@@ -59,11 +61,21 @@ export type ExecutorDeps = {
 };
 
 const reports = new Map<string, ExecutionReport>();
+const flaggedTokens = new Set<string>();
 let spentUsd = 0;
 
 export function resetExecutorState(): void {
   reports.clear();
+  flaggedTokens.clear();
   spentUsd = 0;
+}
+
+function tokenKey(chainKey: string, address: string): string {
+  return `${chainKey}:${address.toLowerCase()}`;
+}
+
+export function tokenFlagged(chainKey: string, address: string): boolean {
+  return flaggedTokens.has(tokenKey(chainKey, address));
 }
 
 export function spentToday(): number {
@@ -89,6 +101,7 @@ function skipped(intent: SwapIntent, latency: Latency, reason: string, venue: st
 function legOf(
   hop: { sellAddress: string; buyAddress: string; sellAmount: string },
   context: { spentUsd: number; priceUsd: number | null; decimals: number | null },
+  impactPct: number,
 ): RouteLeg {
   return {
     sellAddress: hop.sellAddress,
@@ -97,6 +110,7 @@ function legOf(
     spentUsd: context.spentUsd,
     priceUsd: context.priceUsd,
     decimals: context.decimals,
+    impactPct,
   };
 }
 
@@ -152,7 +166,7 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
         priceImpactPct: hop.priceImpactPct,
         feeUsd: hop.feeUsd,
         buyAmount: hop.buyAmount,
-        legs: [legOf(plan.hop, context)],
+        legs: [legOf(plan.hop, context, hop.priceImpactPct)],
         provider: hop.provider,
         netOutputUsd: hop.netOutputUsd,
         gasUsd: hop.gasUsd,
@@ -178,12 +192,13 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
     );
     if (second.priceImpactPct === null) continue;
     const gasUsd = (first.gasUsd ?? 0) + (second.gasUsd ?? 0);
+    const routeImpact = combineHopImpact(first.priceImpactPct, second.priceImpactPct);
     const netOutputUsd = second.netOutputUsd === undefined ? undefined : second.netOutputUsd - first.feeUsd - (first.gasUsd ?? 0);
     quotes.push(decorate({
       planId: plan.id,
       kind: "two_hop",
       hops: [`${plan.first.sellSymbol}->${plan.first.buySymbol}`, `${plan.second.sellSymbol}->${plan.second.buySymbol}`],
-      priceImpactPct: combineHopImpact(first.priceImpactPct, second.priceImpactPct),
+      priceImpactPct: routeImpact,
       feeUsd: first.feeUsd + second.feeUsd,
       buyAmount: second.buyAmount,
       gasUsd,
@@ -192,8 +207,8 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
       signable: first.signable !== false && second.signable !== false,
       note: second.note ?? first.note,
       legs: [
-        legOf(plan.first, firstContext),
-        legOf({ ...plan.second, sellAmount: first.buyAmount }, { spentUsd: secondSpent, priceUsd: context.priceUsd, decimals: context.decimals }),
+        legOf(plan.first, firstContext, first.priceImpactPct),
+        legOf({ ...plan.second, sellAmount: first.buyAmount }, { spentUsd: intent.notionalUsd, priceUsd: context.priceUsd, decimals: context.decimals }, routeImpact),
       ],
     }, token));
   }
@@ -232,37 +247,64 @@ async function commitLive(
       return skipped(intent, latency, message, venueKey, deps.mode);
     }
   }
+  const key = intent.idempotencyKey;
+  const onTx = async (tx: TxRecord) => {
+    if (tx.outcome === "pending" && latency.sentMs === undefined) latency = stamp(latency, "sentMs", now());
+    await deps.recordTx?.(key, tx);
+    if (tx.outcome === "landed" && request.kind !== "hypercore") await deps.commitSpend?.(key);
+  };
+  let result: SendResult;
   try {
     latency = stamp(latency, "signedMs", now());
-    await deps.send(request);
+    result = await deps.send(request, onTx);
   } catch (error) {
     const broadcast = error instanceof BroadcastError && error.broadcast;
     const message = error instanceof Error ? error.message : "send failed";
     if (!broadcast) {
-      await deps.releaseSpend?.(intent.idempotencyKey)?.catch(() => undefined);
-      reports.delete(intent.idempotencyKey);
+      await deps.releaseSpend?.(key)?.catch(() => undefined);
+      reports.delete(key);
       return skipped(intent, latency, message, venueKey, deps.mode);
     }
     spentUsd += intent.notionalUsd;
-    latency = stamp(latency, "sentMs", now());
     const report = skipped(intent, latency, message, venueKey, deps.mode);
-    reports.set(intent.idempotencyKey, report);
+    reports.set(key, report);
     return report;
   }
+  const landed = result.txs.some((tx) => tx.outcome === "landed");
+  const filled = result.venue === "hypercore" ? result.fill !== null : landed;
+  const pending = result.venue === "chain" && !landed && result.txs.some((tx) => tx.outcome === "pending");
+  if (!filled && !pending) {
+    await deps.releaseSpend?.(key)?.catch(() => undefined);
+    reports.delete(key);
+    const why = result.venue === "chain" ? `transaction ${result.outcome}` : "hyperliquid order not filled";
+    return { ...skipped(intent, latency, result.note ? `${why}: ${result.note}` : why, venueKey, deps.mode), txs: result.txs };
+  }
   spentUsd += intent.notionalUsd;
-  await deps.commitSpend?.(intent.idempotencyKey)?.catch(() => undefined);
-  latency = stamp(latency, "sentMs", now());
-  latency = stamp(latency, "confirmedMs", now());
+  if (filled) {
+    await deps.commitSpend?.(key)?.catch(() => undefined);
+    latency = stamp(latency, "confirmedMs", now());
+  }
+  const notes = [reason];
+  if (pending) notes.push("unconfirmed");
+  if (result.venue === "chain" && result.held) notes.push(`holding ${result.held.amount} of ${result.held.token}${result.note ? `: ${result.note}` : ""}`);
+  if (result.venue === "chain" && result.shortfall) {
+    const last = request.legs[request.legs.length - 1];
+    if (last) flaggedTokens.add(tokenKey(venueKey, last.buyAddress));
+    notes.push("received less than the minimum output, token flagged");
+  }
   const report: ExecutionReport = {
-    idempotencyKey: intent.idempotencyKey,
+    idempotencyKey: key,
     mode: "live",
     decision: "sent",
-    reason,
+    reason: notes.join("; "),
     venue: venueKey,
     route,
     latency,
+    txs: result.txs,
   };
-  reports.set(intent.idempotencyKey, report);
+  if (result.venue === "chain" && result.held) report.held = result.held;
+  if (result.venue === "hypercore" && result.fill) report.fill = result.fill;
+  reports.set(key, report);
   return report;
 }
 
@@ -295,6 +337,11 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   }
   if (stopped) {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "kill switch is on", intent.token.chainKey, deps.mode);
+    reports.set(intent.idempotencyKey, report);
+    return report;
+  }
+  if (tokenFlagged(intent.token.chainKey, intent.token.address)) {
+    const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "token flagged for a transfer shortfall", intent.token.chainKey, deps.mode);
     reports.set(intent.idempotencyKey, report);
     return report;
   }
@@ -337,21 +384,30 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   }
 
   if (useHyper && intent.hyperliquid) {
-    const mark = await deps.markPrice(intent.hyperliquid.coin);
+    const market = intent.hyperliquid;
+    const [mark, szDecimals] = await Promise.all([deps.markPrice(market.coin), deps.szDecimals ? deps.szDecimals(market).catch(() => null) : Promise.resolve(null)]);
     latency = stamp(latency, "quotedMs", now());
     if (mark === null) {
       const report = skipped(intent, latency, "hyperliquid mark price unverifiable", "hypercore", deps.mode);
       reports.set(intent.idempotencyKey, report);
       return report;
     }
-    const leverage = buildLeverage(intent.hyperliquid.assetIndex, 1);
-    const limitPx = cappedLimitPx(mark, intent.side === "buy", intent.slippageBps);
-    const order = buildOrder({
-      asset: intent.hyperliquid.assetIndex,
-      isBuy: intent.side === "buy",
-      limitPx,
-      size: orderSize(intent.notionalUsd, mark),
-    });
+    const isBuy = intent.side === "buy";
+    let order;
+    try {
+      if (szDecimals === null) throw new Error("hyperliquid szDecimals unknown");
+      order = buildOrder({
+        asset: market.assetIndex,
+        isBuy,
+        limitPx: wirePrice(cappedLimitPx(mark, isBuy, intent.slippageBps), szDecimals, market.market, isBuy),
+        size: orderSize(intent.notionalUsd, mark, szDecimals),
+      });
+    } catch (error) {
+      const report = skipped(intent, latency, error instanceof Error ? error.message : "hyperliquid order sizing failed", "hypercore", deps.mode);
+      reports.set(intent.idempotencyKey, report);
+      return report;
+    }
+    const leverage = buildLeverage(market.assetIndex, 1);
     const actions: HyperliquidAction[] = [leverage, order];
     if (deps.mode === "dry_run") {
       const report: ExecutionReport = {
@@ -431,7 +487,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reports.set(intent.idempotencyKey, report);
     return report;
   }
-  const picked = pickRoute(planned.quotes, intent.slippageBps);
+  const picked = pickRoute(planned.quotes, intent.slippageBps, deps.config.minExecutionSlippageBps ?? 0);
   if ("kind" in picked && picked.kind === "none") {
     const report = skipped(intent, latency, picked.reason, venueKey, deps.mode);
     reports.set(intent.idempotencyKey, report);

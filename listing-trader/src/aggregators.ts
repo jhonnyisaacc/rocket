@@ -81,7 +81,7 @@ const kyberSchema = z
   })
   .passthrough();
 const kyberBuildSchema = z
-  .object({ data: z.object({ data: z.string(), routerAddress: z.string(), transactionValue: z.string().optional() }) })
+  .object({ data: z.object({ data: z.string(), routerAddress: z.string(), transactionValue: z.string().optional(), amountOut: z.string().optional() }) })
   .passthrough();
 const veloraSchema = z.object({ priceRoute: z.object({ destAmount: z.string(), gasCostUSD: z.string().optional() }).passthrough() }).passthrough();
 const okxSchema = z
@@ -339,14 +339,37 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
   return chooseQuote(quotes);
 }
 
-export async function firmZeroEx(config: AppConfig, hop: QuoteHop, chainId: number, taker: string, reference: Reference | null, fetchImpl: typeof fetch): Promise<HopQuote> {
+export async function firmJupiter(config: AppConfig, hop: QuoteHop, slippageBps: number, reference: Reference | null, fetchImpl: typeof fetch): Promise<HopQuote> {
+  const url = new URL(`${config.jupiterBase}/quote`);
+  url.searchParams.set("inputMint", hop.sellAddress);
+  url.searchParams.set("outputMint", hop.buyAddress);
+  url.searchParams.set("amount", hop.sellAmount);
+  url.searchParams.set("slippageBps", String(slippageBps));
+  const headers: Record<string, string> = {};
+  if (config.keys.jupiter) headers["x-api-key"] = config.keys.jupiter;
+  const response = await fetchImpl(url, { headers });
+  if (!response.ok) return empty();
+  const body: unknown = await response.json();
+  const parsed = readJupiter(body as Parameters<typeof readJupiter>[0], config.jupiterImpactUnit);
+  return { priceImpactPct: parsed.priceImpactPct, feeUsd: 0, buyAmount: parsed.buyAmount, raw: body, provider: "jupiter", signable: true };
+}
+
+export async function firmZeroEx(
+  config: AppConfig,
+  hop: QuoteHop,
+  chainId: number,
+  taker: string,
+  reference: Reference | null,
+  fetchImpl: typeof fetch,
+  slippageBps = config.maxSlippageBps,
+): Promise<HopQuote> {
   const url = new URL(`${config.zeroExBase}/swap/allowance-holder/quote`);
   url.searchParams.set("chainId", String(chainId));
   url.searchParams.set("sellToken", hop.sellAddress);
   url.searchParams.set("buyToken", hop.buyAddress);
   url.searchParams.set("sellAmount", hop.sellAmount);
   url.searchParams.set("taker", taker);
-  url.searchParams.set("slippageBps", String(config.maxSlippageBps));
+  url.searchParams.set("slippageBps", String(slippageBps));
   const headers: Record<string, string> = { "0x-version": "v2" };
   if (config.keys.zeroEx) headers["0x-api-key"] = config.keys.zeroEx;
   const response = await fetchImpl(url, { headers });
@@ -363,6 +386,7 @@ export async function firmLifi(
   taker: string,
   reference: Reference | null,
   fetchImpl: typeof fetch,
+  slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
   const url = new URL(`${config.lifiBase}/quote`);
   url.searchParams.set("fromChain", String(chainId));
@@ -371,6 +395,7 @@ export async function firmLifi(
   url.searchParams.set("toToken", hop.buyAddress);
   url.searchParams.set("fromAmount", hop.sellAmount);
   url.searchParams.set("fromAddress", taker);
+  url.searchParams.set("slippage", String(slippageBps / 10_000));
   if (config.keys.lifiIntegrator) url.searchParams.set("integrator", config.keys.lifiIntegrator);
   const headers: Record<string, string> = {};
   if (config.keys.lifi) headers["x-lifi-api-key"] = config.keys.lifi;
@@ -389,6 +414,7 @@ export async function firmKyber(
   sender: string,
   reference: Reference | null,
   fetchImpl: typeof fetch,
+  slippageBps = config.maxSlippageBps,
 ): Promise<HopQuote> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return empty();
@@ -401,7 +427,7 @@ export async function firmKyber(
   const body: unknown = await response.json();
   const parsed = kyberSchema.safeParse(body);
   if (!parsed.success) return empty();
-  const built = await buildKyberSwap(config, chainId, parsed.data.data.routeSummary, sender, fetchImpl);
+  const built = await buildKyberSwap(config, chainId, parsed.data.data.routeSummary, sender, fetchImpl, slippageBps);
   if (!built) return empty();
   const summary = parsed.data.data.routeSummary;
   const gas = summary.gasUsd ? Number(summary.gasUsd) : null;
@@ -412,22 +438,30 @@ export async function firmKyber(
     buyAmount: summary.amountOut,
     provider: "kyberswap",
     signable: true,
-    raw: body,
+    raw: { route: body, build: built },
     gasUsd: Number.isFinite(gas ?? NaN) ? (gas as number) : undefined,
     prepared: { to: built.to, data: built.data, value: built.value },
   };
 }
 
-export async function buildKyberSwap(config: AppConfig, chainId: number, routeSummary: unknown, sender: string, fetchImpl: typeof fetch): Promise<{ to: string; data: string; value: string } | null> {
+export async function buildKyberSwap(
+  config: AppConfig,
+  chainId: number,
+  routeSummary: unknown,
+  sender: string,
+  fetchImpl: typeof fetch,
+  slippageBps = config.maxSlippageBps,
+): Promise<{ to: string; data: string; value: string; amountOut: string | null; slippageBps: number } | null> {
   const slug = KYBER_SLUG[chainId];
   if (!slug) return null;
   const response = await fetchImpl(`${config.kyberBase}/${slug}/api/v1/route/build`, {
     method: "POST",
     headers: { "content-type": "application/json", "x-client-id": config.keys.kyberClientId },
-    body: JSON.stringify({ routeSummary, sender, recipient: sender, slippageTolerance: config.maxSlippageBps, source: config.keys.kyberClientId }),
+    body: JSON.stringify({ routeSummary, sender, recipient: sender, slippageTolerance: slippageBps, source: config.keys.kyberClientId }),
   });
   if (!response.ok) return null;
   const parsed = kyberBuildSchema.safeParse(await response.json());
   if (!parsed.success) return null;
-  return { to: parsed.data.data.routerAddress, data: parsed.data.data.data, value: parsed.data.data.transactionValue ?? "0" };
+  const built = parsed.data.data;
+  return { to: built.routerAddress, data: built.data, value: built.transactionValue ?? "0", amountOut: built.amountOut ?? null, slippageBps };
 }

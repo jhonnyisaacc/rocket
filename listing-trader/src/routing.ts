@@ -91,8 +91,8 @@ function compareBuy(left: string, right: string): number {
   return left.localeCompare(right);
 }
 
-export function pickRoute(quotes: readonly RouteQuote[], slippageCapBps: number): RouteQuote | { kind: "none"; reason: string } {
-  const capPct = slippageCapBps / 100;
+export function pickRoute(quotes: readonly RouteQuote[], slippageCapBps: number, executionReserveBps = 0): RouteQuote | { kind: "none"; reason: string } {
+  const capPct = Math.max(0, slippageCapBps - executionReserveBps) / 100;
   const ok = quotes.filter((quote) => quote.priceImpactPct <= capPct && quote.feeUsd >= 0 && quote.signable !== false);
   if (ok.length === 0) return { kind: "none", reason: "no route inside the slippage cap" };
   ok.sort((a, b) => {

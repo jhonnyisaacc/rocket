@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
+import { landedSend } from "./fixtures.js";
 import { Keypair, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
 import { resetApprovals, rememberApproval } from "../src/approvals.js";
 import { PROVIDER_REGISTRY, providersFor, raceProviderQuotes, resetProviderGuards } from "../src/aggregators.js";
@@ -224,6 +225,7 @@ test("an uncached erc-20 sell is not signed", async () => {
           new Response(
             JSON.stringify({
               buyAmount: "5000000",
+              minBuyAmount: "4975000",
               liquidityAvailable: true,
               transaction: { to: router, data: "0x", value: "0", gas: "21000" },
               issues: { allowance: { spender: router, actual: "0" } },
@@ -253,6 +255,7 @@ test("an uncached erc-20 sell is not signed", async () => {
           new Response(
             JSON.stringify({
               buyAmount: "5000000",
+              minBuyAmount: "4975000",
               liquidityAvailable: true,
               transaction: { to: router, data: "0x", value: "0", gas: "21000" },
               issues: { allowance: { spender: router, actual: "0" } },
@@ -413,7 +416,7 @@ test("mutating routes require a bearer token, a valid body, and a small payload"
     spentTodayUsd: 0,
     quoteHop: async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" }),
     markPrice: async () => null,
-    send: async () => undefined,
+    send: async () => landedSend(),
   };
   const app = await createExecutorApp(config, runtime, null, [], []);
   const health = await app.inject({ method: "GET", url: "/health" });

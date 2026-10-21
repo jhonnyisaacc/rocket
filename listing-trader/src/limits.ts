@@ -10,6 +10,7 @@ export type LimitConfig = {
   minLiquidityUsd: number;
   killSwitch: boolean;
   enabledChainKeys: ReadonlySet<string>;
+  minExecutionSlippageBps?: number;
 };
 
 export type LimitInput = {
