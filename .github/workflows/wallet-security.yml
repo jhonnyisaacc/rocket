@@ -1,18 +1,18 @@
-name: Listing trader security
+name: Wallet security
 on:
   pull_request:
     paths:
-      - "listing-trader/**"
-      - ".github/workflows/listing-trader-security.yml"
-      - ".github/workflows/listing-trader.yml"
+      - "wallet/**"
+      - ".github/workflows/wallet-security.yml"
+      - ".github/workflows/wallet.yml"
       - ".github/dependabot.yml"
       - ".gitleaks.toml"
   push:
     branches: [main]
     paths:
-      - "listing-trader/**"
-      - ".github/workflows/listing-trader-security.yml"
-      - ".github/workflows/listing-trader.yml"
+      - "wallet/**"
+      - ".github/workflows/wallet-security.yml"
+      - ".github/workflows/wallet.yml"
       - ".github/dependabot.yml"
       - ".gitleaks.toml"
 permissions:
@@ -32,7 +32,7 @@ jobs:
           languages: javascript-typescript
           config: |
             paths:
-              - listing-trader
+              - wallet
       - uses: github/codeql-action/analyze@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
   semgrep:
     name: Semgrep
@@ -41,7 +41,7 @@ jobs:
       image: semgrep/semgrep:latest@sha256:81474464c1f07483ba0682a44787fd93c91397419762a04abe2bafaae396304b # verified against Docker Hub 2026-10-21
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - run: semgrep scan --config p/typescript --config p/security-audit --error --metrics=off listing-trader
+      - run: semgrep scan --config p/typescript --config p/security-audit --error --metrics=off wallet
   gitleaks:
     name: Gitleaks
     runs-on: ubuntu-latest

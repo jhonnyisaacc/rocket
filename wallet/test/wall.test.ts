@@ -22,14 +22,14 @@ function files(dir: string, suffix: string): string[] {
   return out;
 }
 
-test("the rocket package does not import the listing trader", () => {
+test("the rocket package does not import the wallet", () => {
   const root = repoRoot(import.meta.dirname);
   const hits: string[] = [];
   for (const file of files(path.join(root, "rocket"), ".py")) {
     const text = readFileSync(file, "utf8");
-    if (text.includes("listing-trader") || text.includes("listing_trader")) hits.push(file);
+    if (text.includes("listing_trader") || text.includes("from wallet") || text.includes("import wallet")) hits.push(file);
   }
-  for (const file of files(path.join(root, "listing-trader", "src"), ".ts")) {
+  for (const file of files(path.join(root, "wallet", "src"), ".ts")) {
     const text = readFileSync(file, "utf8");
     if (text.includes("from \"../rocket") || text.includes("from 'rocket")) hits.push(file);
   }
