@@ -209,7 +209,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     screening: screeningEnabled(env, env.LISTING_TRADER_LIVE === "true"),
     maxTokenTax: taxCap(env),
     routerAllowlist: routerAllowlist(env),
-    solanaProgramAllowlist: env.SOLANA_PROGRAM_ALLOWLIST ? splitList(env.SOLANA_PROGRAM_ALLOWLIST) : [...SOLANA_BASE_PROGRAMS],
+    solanaProgramAllowlist: [...new Set([...SOLANA_BASE_PROGRAMS, ...splitList(env.SOLANA_PROGRAM_ALLOWLIST)])],
     maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),
     mevRpcByChainId: mevRpcs(env),
     jitoUrl: env.JITO_ENABLED === "true" ? (env.JITO_BLOCK_ENGINE_URL ?? "https://mainnet.block-engine.jito.wtf/api/v1/transactions") : null,

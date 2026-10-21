@@ -449,7 +449,7 @@ test("the kill switch skips a live buy and a missing balance read does not trade
   const holding = { symbol: "USDC", address: "usdc", amount: 20, usd: 20, native: false, decimals: 6 };
   assert.equal(applyBalance(holding, 1).amount, 1);
   assert.equal(applyBalance(holding, 1).usd, 1);
-  const unread = await holdingsForTrade(true, [holding], null);
+  const unread = await holdingsForTrade(true, [holding], null, "solana");
   assert.equal(unread.ok, false);
   const app = await createExecutorApp(
     config,

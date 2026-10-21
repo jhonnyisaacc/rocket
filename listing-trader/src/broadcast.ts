@@ -397,6 +397,51 @@ export async function withdrawNative(input: {
 
 const TOKEN_PROGRAM = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
 const TOKEN_2022_PROGRAM = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+const ATA_PROGRAM = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+
+export function associatedTokenAccount(owner: PublicKey, mint: PublicKey, program: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync([owner.toBuffer(), program.toBuffer(), mint.toBuffer()], ATA_PROGRAM)[0];
+}
+
+export function tokenRecoveryInstructions(input: {
+  payer: PublicKey;
+  destinationOwner: PublicKey;
+  mint: PublicKey;
+  source: PublicKey;
+  program: PublicKey;
+  amount: bigint;
+  decimals: number;
+}): TransactionInstruction[] {
+  const ata = associatedTokenAccount(input.destinationOwner, input.mint, input.program);
+  const data = Buffer.alloc(10);
+  data.writeUInt8(12, 0);
+  data.writeBigUInt64LE(input.amount, 1);
+  data.writeUInt8(input.decimals, 9);
+  return [
+    new TransactionInstruction({
+      programId: ATA_PROGRAM,
+      data: Buffer.from([1]),
+      keys: [
+        { pubkey: input.payer, isSigner: true, isWritable: true },
+        { pubkey: ata, isSigner: false, isWritable: true },
+        { pubkey: input.destinationOwner, isSigner: false, isWritable: false },
+        { pubkey: input.mint, isSigner: false, isWritable: false },
+        { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        { pubkey: input.program, isSigner: false, isWritable: false },
+      ],
+    }),
+    new TransactionInstruction({
+      programId: input.program,
+      keys: [
+        { pubkey: input.source, isSigner: false, isWritable: true },
+        { pubkey: input.mint, isSigner: false, isWritable: false },
+        { pubkey: ata, isSigner: false, isWritable: true },
+        { pubkey: input.payer, isSigner: true, isWritable: false },
+      ],
+      data,
+    }),
+  ];
+}
 
 export async function recoverToken(input: {
   config: AppConfig;
@@ -440,20 +485,17 @@ export async function recoverToken(input: {
   const found = await tokenAccount(connection, ownerKey, mintKey);
   if (!found) throw new Error("token account was not found");
   const raw = BigInt(sellBaseUnits(input.amount, input.decimals));
-  const data = Buffer.alloc(9);
-  data.writeUInt8(3, 0);
-  data.writeBigUInt64LE(raw, 1);
-  const instruction = new TransactionInstruction({
-    programId: found.program,
-    keys: [
-      { pubkey: found.source, isSigner: false, isWritable: true },
-      { pubkey: new PublicKey(input.to), isSigner: false, isWritable: true },
-      { pubkey: ownerKey, isSigner: true, isWritable: false },
-    ],
-    data,
+  const instructions = tokenRecoveryInstructions({
+    payer: ownerKey,
+    destinationOwner: new PublicKey(input.to),
+    mint: mintKey,
+    source: found.source,
+    program: found.program,
+    amount: raw,
+    decimals: input.decimals,
   });
   const { blockhash } = await connection.getLatestBlockhash();
-  const message = new TransactionMessage({ payerKey: ownerKey, recentBlockhash: blockhash, instructions: [instruction] }).compileToV0Message();
+  const message = new TransactionMessage({ payerKey: ownerKey, recentBlockhash: blockhash, instructions }).compileToV0Message();
   const signed = await input.signer.signSolana(new VersionedTransaction(message).serialize());
   await connection.sendRawTransaction(signed);
 }

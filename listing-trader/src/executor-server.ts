@@ -3,6 +3,7 @@ import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from ".
 import { chainByKey } from "./chains.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { holdingsForTrade, type BalanceReader } from "./balances.js";
+import { resolveTokenDecimals } from "./token-decimals.js";
 import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
 import { buildApp, mutatingLimit } from "./http.js";
@@ -95,6 +96,7 @@ function deps(config: AppConfig, signer: TransactionSigner | null, secrets: read
     commitSpend: config.live && config.databaseUrl ? (key) => commitSpend(config.databaseUrl as string, key) : undefined,
     releaseSpend: config.live && config.databaseUrl ? (key) => releaseSpend(config.databaseUrl as string, key) : undefined,
     screenToken: config.screening ? (token) => screenToken(config, token) : undefined,
+    readTokenDecimals: (token) => resolveTokenDecimals(token.chainKey, token.address, token.chain, config.rpcByChainKey[token.chainKey]),
   };
 }
 
@@ -133,7 +135,7 @@ export async function createExecutorApp(
     if (resolution.data.kind !== "hit" || !resolution.data.token) {
       return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
     }
-    const sized = await holdingsForTrade(config.live, holdings, readBalance);
+    const sized = await holdingsForTrade(config.live, holdings, readBalance, resolution.data.token.chainKey);
     if (!sized.ok) return reply.code(200).send({ decision: "skipped", reason: sized.reason, latency: { alertReceivedMs: 0 } });
     const intent = intentFromResolution(parsed.data, resolution.data, sized.holdings, config.maxUsdPerTrade, config.maxSlippageBps);
     if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });

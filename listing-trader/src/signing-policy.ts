@@ -37,6 +37,28 @@ export function wrappedSolAccount(owner: string): string {
   )[0].toBase58();
 }
 
+export function associatedTokenAddress(owner: string, mint: string, program: string): string {
+  return PublicKey.findProgramAddressSync(
+    [new PublicKey(owner).toBuffer(), new PublicKey(program).toBuffer(), new PublicKey(mint).toBuffer()],
+    ATA_PROGRAM_ID,
+  )[0].toBase58();
+}
+
+export type SolanaTokenTransfer = { destination: string; mint: string; program: string };
+
+function tokenDestinationAllowed(transfer: SolanaTokenTransfer, withdrawAllowlist: readonly string[]): boolean {
+  if (withdrawAllowlist.includes(transfer.destination)) return true;
+  if (!transfer.mint || !transfer.program) return false;
+  for (const owner of withdrawAllowlist) {
+    try {
+      if (associatedTokenAddress(owner, transfer.mint, transfer.program) === transfer.destination) return true;
+    } catch {
+      continue;
+    }
+  }
+  return false;
+}
+
 export type EvmPurpose = "swap" | "approve" | "withdraw";
 
 export function evmChainIds(): number[] {
@@ -112,7 +134,7 @@ export function assertSolanaSigning(input: {
   feePayer: string;
   expectedFeePayer: string;
   nativeTransferTo: readonly string[];
-  tokenTransferTo?: readonly string[];
+  tokenTransferTo?: readonly SolanaTokenTransfer[];
   withdrawAllowlist: readonly string[];
 }): void {
   if (input.feePayer !== input.expectedFeePayer) throw new Error("solana fee payer is not the hot wallet");
@@ -127,8 +149,8 @@ export function assertSolanaSigning(input: {
   for (const dest of input.nativeTransferTo) {
     if (!owners.has(dest) && dest !== wrap && !tips.has(dest)) throw new Error("solana native transfer destination is not allowlisted");
   }
-  for (const dest of input.tokenTransferTo ?? []) {
-    if (!input.withdrawAllowlist.includes(dest)) throw new Error("solana token transfer destination is not allowlisted");
+  for (const transfer of input.tokenTransferTo ?? []) {
+    if (!tokenDestinationAllowed(transfer, input.withdrawAllowlist)) throw new Error("solana token transfer destination is not allowlisted");
   }
 }
 

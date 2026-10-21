@@ -10,6 +10,7 @@ import { buildApp, mutatingLimit } from "./http.js";
 import { assertBoot } from "./managed-signer.js";
 import { alertSchema } from "./schemas.js";
 import { screenToken } from "./screening.js";
+import { fillTokenDecimals } from "./token-decimals.js";
 import { z } from "zod";
 
 export const watchlist = new MemoryWatchlist();
@@ -75,6 +76,7 @@ export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist,
     }
     tokens = kept;
   }
+  tokens = await fillTokenDecimals(tokens, config.rpcByChainKey);
   list.replace(tokens);
   if (config.databaseUrl) await saveToPostgres(config.databaseUrl, list.records());
 }
@@ -92,18 +94,19 @@ async function liveLookup(
     const found = tokenFromDexSearch(body, alert, new Date().toISOString(), config.dexscreenerSlugOverrides);
     if (found.kind === "ambiguous") return { kind: "ambiguous" };
     if (found.kind !== "token") return { kind: "none" };
+    const token = (await fillTokenDecimals([found.token], config.rpcByChainKey))[0] ?? found.token;
     if (config.screening) {
-      const verdict = await screenToken(config, { chainKey: found.token.chainKey, chain: found.token.chain, contract: found.token.contract }, fetchImpl);
+      const verdict = await screenToken(config, { chainKey: token.chainKey, chain: token.chain, contract: token.contract }, fetchImpl);
       if (verdict !== "allow") return { kind: "screened" };
     }
     if (config.live) return { kind: "report" };
-    const pools = found.token.pairMap.pools;
+    const pools = token.pairMap.pools;
     if (!poolMeetsFloor(pools, Date.now(), config.minPoolAgeHours, config.minVolume24hUsd)) return { kind: "young" };
     const headers: Record<string, string> = {};
     if (process.env.COINGECKO_API_KEY) headers["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
     const listed = coinListSchema.safeParse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl));
-    if (!listed.success || !listedContract(listed.data, alert, found.token.chainKey, found.token.contract)) return { kind: "unlisted_contract" };
-    return { kind: "qualified", token: found.token };
+    if (!listed.success || !listedContract(listed.data, alert, token.chainKey, token.contract)) return { kind: "unlisted_contract" };
+    return { kind: "qualified", token };
   } catch {
     return { kind: "timed_out" };
   }

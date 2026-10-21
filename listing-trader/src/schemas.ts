@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { chainByKey } from "./chains.js";
 
 export const chainSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("solana") }),
@@ -50,7 +51,11 @@ const holdingSchema = z.object({
   usd: z.number(),
   native: z.boolean(),
   decimals: z.number().int().optional(),
-  chainKey: z.string().optional(),
+  chainKey: z
+    .string()
+    .min(1)
+    .optional()
+    .refine((value) => value === undefined || chainByKey(value) !== undefined, { message: "unknown chain" }),
 });
 
 export const intentSchema = z.object({

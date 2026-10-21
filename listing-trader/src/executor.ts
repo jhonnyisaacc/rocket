@@ -3,6 +3,7 @@ import { chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
 import { stamp } from "./latency.js";
 import { combineHopImpact, pickRoute, planRoutes } from "./routing.js";
+import { acceptDecimals, cachedTokenDecimals, rememberTokenDecimals } from "./token-decimals.js";
 import { buildLeverage, buildOrder, cappedLimitPx, orderSize, type HyperliquidAction } from "./hyperliquid.js";
 
 export type HopQuote = {
@@ -52,6 +53,7 @@ export type ExecutorDeps = {
   now?: () => number;
   killSwitchEnabled?: () => Promise<boolean>;
   screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
+  readTokenDecimals?: (token: { chainKey: string; chain: ChainRef; address: string }) => Promise<number | null>;
 };
 
 const reports = new Map<string, ExecutionReport>();
@@ -100,6 +102,25 @@ function decorate(quote: RouteQuote, token: SwapIntent["token"]): RouteQuote {
   return { ...quote, chainKey: token.chainKey, feeRank: feeRankOf(token.chainKey), chain: token.chain };
 }
 
+async function buyDecimals(token: SwapIntent["token"], deps: ExecutorDeps): Promise<number | null> {
+  const known = acceptDecimals(token.decimals);
+  if (known !== null) {
+    rememberTokenDecimals(token.chainKey, token.address, known);
+    return known;
+  }
+  const cached = cachedTokenDecimals(token.chainKey, token.address);
+  if (cached !== null) return cached;
+  if (!deps.readTokenDecimals) return null;
+  try {
+    const read = acceptDecimals(await deps.readTokenDecimals({ chainKey: token.chainKey, chain: token.chain, address: token.address }));
+    if (read === null) return null;
+    rememberTokenDecimals(token.chainKey, token.address, read);
+    return read;
+  } catch {
+    return null;
+  }
+}
+
 async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: ExecutorDeps): Promise<{ quotes: RouteQuote[]; unsized: boolean }> {
   const spec = chainByKey(token.chainKey);
   const reserve = spec?.minNativeReserve ?? 0;
@@ -115,7 +136,7 @@ async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: E
   const context = {
     spentUsd: intent.notionalUsd,
     priceUsd: intent.token.pairMap.top?.priceUsd ?? null,
-    decimals: token.decimals,
+    decimals: await buyDecimals(token, deps),
   };
   const quotes: RouteQuote[] = [];
   for (const plan of plans) {

@@ -328,7 +328,13 @@ export async function raceProviderQuotes(config: AppConfig, hop: QuoteHop, refer
   if (ids.length === 0) return empty();
   const deadline = AbortSignal.timeout(config.quoteDeadlineMs);
   const quotes = await Promise.all(
-    ids.map((id) => quoteOne(config, id, hop, reference, fetchImpl, AbortSignal.any([deadline, AbortSignal.timeout(config.quoteTimeoutMs)]))),
+    ids.map(async (id) => {
+      try {
+        return await quoteOne(config, id, hop, reference, fetchImpl, AbortSignal.any([deadline, AbortSignal.timeout(config.quoteTimeoutMs)]));
+      } catch {
+        return empty();
+      }
+    }),
   );
   return chooseQuote(quotes);
 }

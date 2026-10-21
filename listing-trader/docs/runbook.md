@@ -40,6 +40,8 @@ npm run start:executor
 
 Leave `LISTING_TRADER_LIVE` unset. `GET /health` on each port returns `live: false`.
 
+Omit `chainKey` when that balance may fund a buy on any chain. Live mode then reads it on the chain of the buy. Set `chainKey` to a known chain key when the address belongs to one chain. An unknown key stops boot.
+
 ## Send a fake alert
 
 The collector, or a curl stand-in, posts the alert to the executor.
@@ -71,13 +73,14 @@ A hit responds with `decision: would_send`, the route, and latency stamps measur
 | `OWNER_WITHDRAW_ADDRESSES` | empty | Allowlist. Empty denies every withdraw and every bridge plan |
 | `AUTH_TOKEN` | unset | Required. At least 16 characters. Boot refuses a shorter value |
 | `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |
+| `SOLANA_PROGRAM_ALLOWLIST` | empty | Extra Solana program ids added to the base set. The base programs stay allowed |
 | `TOKEN_SCREENING` | on in live, off in dry-run | `false` turns screening off. `true` turns it on. Refresh and a live buy both use it |
 | `MAX_TOKEN_TAX` | 0.1 | GoPlus buy or sell tax above this fraction is a deny. This is a service safety floor, not a research price |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
 | `MAX_BRIDGE_USD` | 25 | Largest inventory move `planRebalance` will accept |
 
-`POST /withdraw` uses the same bearer hook as the other mutating routes, then checks `x-admin-token` against `ADMIN_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. `POST /rebalance` plans a bridge and does not broadcast. This service has no bridge send.
+`POST /withdraw` uses the same bearer hook as the other mutating routes, then checks `x-admin-token` against `ADMIN_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. An SPL recovery creates the destination owner's associated token account when it is missing and transfers the tokens there. `POST /rebalance` plans a bridge and does not broadcast. This service has no bridge send.
 
 To run live, set `LISTING_TRADER_LIVE` to the exact string `true`, set `DATABASE_URL`, and load Turnkey. Live mode refuses to boot without the database and without a Turnkey signer. The local keystore cannot override that. The daily cap is a reservation in `spend_journal`. A restart does not zero committed or reserved rows. Dry-run does not write that table.
 

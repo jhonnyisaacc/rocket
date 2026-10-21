@@ -84,8 +84,12 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
         const data = Buffer.from(ix.data);
         const indexes = ix.accountKeyIndexes;
         if (data.length < 1) return [];
-        if (data[0] === 3 && indexes.length >= 2) return [keys[indexes[1]]?.toBase58() ?? ""];
-        if (data[0] === 12 && indexes.length >= 3) return [keys[indexes[2]]?.toBase58() ?? ""];
+        if (data[0] === 3 && indexes.length >= 2) {
+          return [{ destination: keys[indexes[1]]?.toBase58() ?? "", mint: "", program }];
+        }
+        if (data[0] === 12 && indexes.length >= 3) {
+          return [{ destination: keys[indexes[2]]?.toBase58() ?? "", mint: keys[indexes[1]]?.toBase58() ?? "", program }];
+        }
         return [];
       });
       assertSolanaSigning({
