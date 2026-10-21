@@ -5,7 +5,8 @@ import { privateKeyToAccount } from "viem/accounts";
 import type { AppConfig } from "./config.js";
 import { actionHash, signL1Action, type HyperliquidAction } from "./hyperliquid.js";
 import { loadSigner, signerSecrets, solanaSigner, type SignerMaterial } from "./signer.js";
-import { assertEvmSigning, assertHyperliquidSigning, assertSolanaSigning, type EvmPurpose } from "./signing-policy.js";
+import { assertEvmSigning, assertHyperliquidSigning, assertSolanaSigning, routersForChain, type EvmPurpose } from "./signing-policy.js";
+import { assertLiveEdges } from "./config.js";
 
 export type EvmSignInput = {
   chainId: number;
@@ -17,6 +18,7 @@ export type EvmSignInput = {
   maxFeePerGas: bigint;
   maxPriorityFeePerGas: bigint;
   purpose: EvmPurpose;
+  nativeSell?: boolean;
 };
 
 export interface TransactionSigner {
@@ -36,12 +38,12 @@ export type TurnkeyApi = {
 
 function policyConfig(config: AppConfig) {
   return {
-    routers: config.routerAllowlist,
     withdrawAllowlist: config.withdrawAllowlist,
     maxValueWei: config.maxValueWei,
     allowHotApproval: config.allowHotApproval,
     solanaPrograms: config.solanaProgramAllowlist,
     maxLeverage: config.maxLeverage,
+    recoveryTokens: config.tokenRecoveryAllowlist,
   };
 }
 
@@ -52,7 +54,12 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
     evmAddress: () => inner.evmAddress(),
     solanaAddress: () => inner.solanaAddress(),
     async signEvm(input) {
-      assertEvmSigning({ ...input, ...policy });
+      assertEvmSigning({
+        ...input,
+        ...policy,
+        routers: routersForChain(config.routerAllowlist, input.chainId),
+        nativeSell: input.nativeSell === true,
+      });
       return inner.signEvm(input);
     },
     async signSolana(serialized) {
@@ -70,12 +77,24 @@ export function withPolicy(inner: TransactionSigner, config: AppConfig): Transac
         if (data.length < 12 || data.readUInt32LE(0) !== 2 || indexes.length < 2) return [];
         return [keys[indexes[1]]?.toBase58() ?? ""];
       });
+      const tokenPrograms = new Set(["TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA", "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"]);
+      const tokenTransferTo = instructions.flatMap((ix) => {
+        const program = keys[ix.programIdIndex]?.toBase58() ?? "";
+        if (!tokenPrograms.has(program)) return [];
+        const data = Buffer.from(ix.data);
+        const indexes = ix.accountKeyIndexes;
+        if (data.length < 1) return [];
+        if (data[0] === 3 && indexes.length >= 2) return [keys[indexes[1]]?.toBase58() ?? ""];
+        if (data[0] === 12 && indexes.length >= 3) return [keys[indexes[2]]?.toBase58() ?? ""];
+        return [];
+      });
       assertSolanaSigning({
         programIds,
         allowlist: policy.solanaPrograms,
         feePayer: keys[0]?.toBase58() ?? "",
         expectedFeePayer: expected,
         nativeTransferTo,
+        tokenTransferTo,
         withdrawAllowlist: policy.withdrawAllowlist,
       });
       return inner.signSolana(serialized);
@@ -216,6 +235,7 @@ export function turnkeyApiFromEnv(env: NodeJS.ProcessEnv): TurnkeyApi | null {
 export function loadManagedSigner(env: NodeJS.ProcessEnv, config: AppConfig): TransactionSigner | null {
   const api = turnkeyApiFromEnv(env);
   if (api && env.TURNKEY_EVM_ADDRESS) {
+    delete env.KEYSTORE_PASSPHRASE;
     return withPolicy(
       turnkeySigner(api, {
         evm: env.TURNKEY_EVM_ADDRESS,
@@ -226,11 +246,21 @@ export function loadManagedSigner(env: NodeJS.ProcessEnv, config: AppConfig): Tr
     );
   }
   if (config.live && !config.allowLocalSigner) {
+    delete env.KEYSTORE_PASSPHRASE;
     throw new Error("live mode requires Turnkey. Set ALLOW_LOCAL_SIGNER=true to use the local keystore.");
   }
   const material = loadSigner(env);
+  delete env.KEYSTORE_PASSPHRASE;
   if (!material) return null;
   return withPolicy(keystoreSigner(material), config);
+}
+
+export function hyperliquidAgentAddress(env: NodeJS.ProcessEnv): string | null {
+  if (env.TURNKEY_HYPERLIQUID_ADDRESS) return env.TURNKEY_HYPERLIQUID_ADDRESS;
+  if (!env.HYPERLIQUID_AGENT_KEY) return null;
+  const raw = env.HYPERLIQUID_AGENT_KEY;
+  const hex = (raw.startsWith("0x") ? raw : `0x${raw}`) as Hex;
+  return privateKeyToAccount(hex).address;
 }
 
 export function signingSecrets(env: NodeJS.ProcessEnv, material: SignerMaterial | null): string[] {
@@ -255,4 +285,5 @@ function recoveryId(v: string): number {
 export function assertBoot(config: AppConfig, env: NodeJS.ProcessEnv = process.env): void {
   if (!config.authToken || config.authToken.length < 16) throw new Error("AUTH_TOKEN must be at least 16 characters");
   if (env.RAILWAY_PUBLIC_DOMAIN) throw new Error("a public Railway domain is set. Remove it and use the private network.");
+  assertLiveEdges(config, env);
 }

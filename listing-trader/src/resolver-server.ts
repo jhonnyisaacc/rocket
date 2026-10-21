@@ -2,13 +2,13 @@ import type { FastifyInstance } from "fastify";
 import type { Alert, TokenRecord } from "./domain.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
 import { matchAlert } from "./match.js";
-import { hyperliquidFromMeta, poolsFromDexScreener, readKoreanName, tokenFromDexSearch, type CoinListRow } from "./parsers.js";
+import { hyperliquidFromMeta, listedContract, poolMeetsFloor, poolsFromDexScreener, readKoreanName, tokenFromDexSearch, type CoinListRow } from "./parsers.js";
 import { addressChunks, applyLiquidity, rebuildIdentities, shortlistTokens, withKoreanName } from "./refresh.js";
 import { redactError } from "./redact.js";
 import { MemoryWatchlist, hydrateFromPostgres, saveToPostgres } from "./watchlist.js";
 import { buildApp, mutatingLimit } from "./http.js";
 import { assertBoot } from "./managed-signer.js";
-import { alertSchema, replaceSchema } from "./schemas.js";
+import { alertSchema } from "./schemas.js";
 import { screenToken } from "./screening.js";
 import { z } from "zod";
 
@@ -67,25 +67,37 @@ export async function refreshLiquidity(config: AppConfig, list: MemoryWatchlist,
   if (config.databaseUrl) await saveToPostgres(config.databaseUrl, list.records());
 }
 
-async function liveLookup(config: AppConfig, alert: Alert, fetchImpl: typeof fetch): Promise<TokenRecord | "ambiguous" | "none" | "timed_out" | "screened"> {
+async function liveLookup(
+  config: AppConfig,
+  alert: Alert,
+  fetchImpl: typeof fetch,
+): Promise<{ kind: "ambiguous" | "none" | "timed_out" | "screened" | "young" | "unlisted_contract" | "report" } | { kind: "qualified"; token: TokenRecord }> {
   const url = `${config.dexscreenerBase}/latest/dex/search?q=${encodeURIComponent(alert.ticker)}`;
   try {
     const response = await fetchImpl(url, { signal: AbortSignal.timeout(config.liveLookupTimeoutMs) });
-    if (!response.ok) return "none";
-    const found = tokenFromDexSearch(await response.json(), alert, new Date().toISOString(), config.dexscreenerSlugOverrides);
-    if (found.kind === "ambiguous") return "ambiguous";
-    if (found.kind !== "token") return "none";
+    if (!response.ok) return { kind: "none" };
+    const body = await response.json();
+    const found = tokenFromDexSearch(body, alert, new Date().toISOString(), config.dexscreenerSlugOverrides);
+    if (found.kind === "ambiguous") return { kind: "ambiguous" };
+    if (found.kind !== "token") return { kind: "none" };
     if (config.screening) {
       const verdict = await screenToken(config, { chainKey: found.token.chainKey, chain: found.token.chain, contract: found.token.contract }, fetchImpl);
-      if (verdict !== "allow") return "screened";
+      if (verdict !== "allow") return { kind: "screened" };
     }
-    return found.token;
+    if (config.live) return { kind: "report" };
+    const pools = found.token.pairMap.pools;
+    if (!poolMeetsFloor(pools, Date.now(), config.minPoolAgeHours, config.minVolume24hUsd)) return { kind: "young" };
+    const headers: Record<string, string> = {};
+    if (process.env.COINGECKO_API_KEY) headers["x-cg-demo-api-key"] = process.env.COINGECKO_API_KEY;
+    const listed = coinListSchema.safeParse(await getJson(`${config.coingeckoBase}/coins/list?include_platform=true`, { headers }, fetchImpl));
+    if (!listed.success || !listedContract(listed.data, alert, found.token.chainKey, found.token.contract)) return { kind: "unlisted_contract" };
+    return { kind: "qualified", token: found.token };
   } catch {
-    return "timed_out";
+    return { kind: "timed_out" };
   }
 }
 
-export async function createResolverApp(config: AppConfig, list: MemoryWatchlist = watchlist, logger = false): Promise<FastifyInstance> {
+export async function createResolverApp(config: AppConfig, list: MemoryWatchlist = watchlist, logger = false, fetchImpl: typeof fetch = fetch): Promise<FastifyInstance> {
   const app = await buildApp({ authToken: config.authToken ?? "", logger });
   const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
   app.get("/health", async () => ({ ok: true, service: "resolver", tokens: list.records().length, ...publicConfig(config) }));
@@ -94,23 +106,24 @@ export async function createResolverApp(config: AppConfig, list: MemoryWatchlist
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
     let outcome = resolveAlert(parsed.data, config.minLiquidityUsd, config.enabledChainKeys);
     if (outcome.kind === "unlisted") {
-      const found = await liveLookup(config, parsed.data, fetch);
-      if (found === "ambiguous") return { kind: "ambiguous", ticker: parsed.data.ticker, detail: "live lookup matched more than one contract" };
-      if (found === "timed_out") return { kind: "unlisted", ticker: parsed.data.ticker, detail: "live lookup timed out or failed" };
-      if (found === "screened") return { kind: "unlisted", ticker: parsed.data.ticker, detail: "token screening rejected the contract" };
-      if (found !== "none") {
-        list.upsert(found);
-        outcome = resolveAlert(parsed.data, config.minLiquidityUsd, config.enabledChainKeys);
-      }
+      const found = await liveLookup(config, parsed.data, fetchImpl);
+      if (found.kind === "qualified") return { kind: "hit", token: found.token, alternates: [] };
+      if (found.kind === "none") return outcome;
+      const detail =
+        found.kind === "ambiguous"
+          ? "live lookup matched more than one contract"
+          : found.kind === "timed_out"
+            ? "live lookup timed out or failed"
+            : found.kind === "screened"
+              ? "token screening rejected the contract"
+              : found.kind === "young"
+                ? "pool is younger than the age floor or below the volume floor"
+                : found.kind === "unlisted_contract"
+                  ? "contract is not on the coin list for that name"
+                  : "live lookup is report-only";
+      return { kind: "unlisted", ticker: parsed.data.ticker, detail };
     }
     return outcome;
-  });
-  app.post("/replace", guard, async (request, reply) => {
-    const parsed = replaceSchema.safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    list.replace(parsed.data.tokens as TokenRecord[]);
-    if (config.databaseUrl) await saveToPostgres(config.databaseUrl, list.records());
-    return { count: list.records().length };
   });
   return app;
 }

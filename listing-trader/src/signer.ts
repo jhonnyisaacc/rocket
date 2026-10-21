@@ -4,7 +4,7 @@ import bs58 from "bs58";
 import { privateKeyToAccount } from "viem/accounts";
 import type { Hex } from "viem";
 import { decryptWallet, type KeystoreFile } from "./keystore.js";
-import { Secret } from "./redact.js";
+import { Secret, trackSecret } from "./redact.js";
 
 export type SignerMaterial = {
   evm: Secret | null;
@@ -26,21 +26,21 @@ function solanaKeypair(secret: Secret): Keypair {
 
 export function loadSigner(env: NodeJS.ProcessEnv = process.env): SignerMaterial | null {
   try {
-    const hyper = env.HYPERLIQUID_AGENT_KEY ? new Secret(env.HYPERLIQUID_AGENT_KEY) : null;
+    const hyper = env.HYPERLIQUID_AGENT_KEY ? trackSecret(new Secret(env.HYPERLIQUID_AGENT_KEY)) : null;
     if (env.KEYSTORE_PATH && env.KEYSTORE_PASSPHRASE) {
       const file = JSON.parse(readFileSync(env.KEYSTORE_PATH, "utf8")) as KeystoreFile;
       const wallet = decryptWallet(file, env.KEYSTORE_PASSPHRASE);
       return {
-        evm: wallet.evmPrivateKey,
-        solana: wallet.solanaSecretKey,
+        evm: trackSecret(wallet.evmPrivateKey),
+        solana: trackSecret(wallet.solanaSecretKey),
         hyperliquid: hyper,
         evmAddress: wallet.evmAddress,
         solanaAddress: wallet.solanaAddress,
       };
     }
     if (!env.EVM_PRIVATE_KEY && !env.SOLANA_SECRET_KEY && !hyper) return null;
-    const evm = env.EVM_PRIVATE_KEY ? new Secret(env.EVM_PRIVATE_KEY) : null;
-    const solana = env.SOLANA_SECRET_KEY ? new Secret(env.SOLANA_SECRET_KEY) : null;
+    const evm = env.EVM_PRIVATE_KEY ? trackSecret(new Secret(env.EVM_PRIVATE_KEY)) : null;
+    const solana = env.SOLANA_SECRET_KEY ? trackSecret(new Secret(env.SOLANA_SECRET_KEY)) : null;
     return {
       evm,
       solana,

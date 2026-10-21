@@ -3,7 +3,7 @@ import { chainByKey, feeRankOf } from "./chains.js";
 import { checkLimits, type LimitConfig } from "./limits.js";
 import { stamp } from "./latency.js";
 import { combineHopImpact, pickRoute, planRoutes } from "./routing.js";
-import { buildLeverage, buildOrder, orderSize, type HyperliquidAction } from "./hyperliquid.js";
+import { buildLeverage, buildOrder, cappedLimitPx, orderSize, type HyperliquidAction } from "./hyperliquid.js";
 
 export type HopQuote = {
   priceImpactPct: number | null;
@@ -50,6 +50,7 @@ export type ExecutorDeps = {
   commitSpend?: (idempotencyKey: string) => Promise<void>;
   releaseSpend?: (idempotencyKey: string) => Promise<void>;
   now?: () => number;
+  killSwitchEnabled?: () => Promise<boolean>;
 };
 
 const reports = new Map<string, ExecutionReport>();
@@ -245,6 +246,17 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   const existing = reports.get(intent.idempotencyKey);
   if (existing) return existing;
   const now = deps.now ?? Date.now;
+  let stopped = false;
+  try {
+    stopped = (await deps.killSwitchEnabled?.()) === true;
+  } catch {
+    stopped = true;
+  }
+  if (stopped) {
+    const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "kill switch is on", intent.token.chainKey, deps.mode);
+    reports.set(intent.idempotencyKey, report);
+    return report;
+  }
   let latency: Latency = { alertReceivedMs: intent.receivedAtMs };
   latency = stamp(latency, "resolvedMs", now());
   const spec = chainByKey(intent.token.chainKey);
@@ -285,10 +297,11 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
       return report;
     }
     const leverage = buildLeverage(intent.hyperliquid.assetIndex, 1);
+    const limitPx = cappedLimitPx(mark, intent.side === "buy", intent.slippageBps);
     const order = buildOrder({
       asset: intent.hyperliquid.assetIndex,
       isBuy: intent.side === "buy",
-      limitPx: mark,
+      limitPx,
       size: orderSize(intent.notionalUsd, mark),
     });
     const actions: HyperliquidAction[] = [leverage, order];
@@ -297,7 +310,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
         idempotencyKey: intent.idempotencyKey,
         mode: "dry_run",
         decision: "would_send",
-        reason: `hypercore ${intent.hyperliquid.coin} leverage 1 actions ${actions.map((item) => item.type).join(",")}`,
+        reason: `hypercore ${intent.hyperliquid.coin} leverage 1 isolated limit ${order.orders[0].p} actions ${actions.map((item) => item.type).join(",")}`,
         venue: "hypercore",
         route: null,
         latency,
@@ -391,6 +404,36 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     route.planId,
     now,
   );
+}
+
+export function decideWithdraw(input: {
+  adminOk: boolean;
+  enabled: boolean;
+  amount: number | undefined;
+  cap: number;
+  destinationAllowed: boolean;
+  mint: string | undefined;
+  recoveryAllowlist: readonly string[];
+  live: boolean;
+  killSwitch: boolean;
+  signerReady: boolean;
+  chainKey: string | undefined;
+  decimals: number | undefined;
+}): { http: number; error?: string; decision?: "would_send" | "send" } {
+  if (!input.adminOk) return { http: 401, error: "unauthorized" };
+  if (!input.enabled) return { http: 403, error: "withdraw is disabled" };
+  if (input.amount !== undefined && !(input.amount > 0 && input.amount <= input.cap)) return { http: 403, error: "withdraw exceeds the per-call cap" };
+  if (!input.destinationAllowed) return { http: 403, error: "destination is not allowlisted" };
+  if (input.mint) {
+    const allowed = input.recoveryAllowlist.some((item) => item.toLowerCase() === input.mint?.toLowerCase());
+    if (!allowed) return { http: 403, error: "token is not in the recovery allowlist" };
+    if (input.decimals === undefined) return { http: 409, error: "token withdraw needs decimals" };
+  }
+  if (!input.live || input.killSwitch) return { http: 200, decision: "would_send" };
+  if (!input.signerReady || !input.chainKey || !(input.amount && input.amount > 0)) {
+    return { http: 409, error: "live withdraw needs a signer, chainKey, and amount" };
+  }
+  return { http: 200, decision: "send" };
 }
 
 export function authorizeWithdraw(to: string, allowlist: readonly string[]): { ok: true } | { ok: false; reason: string } {

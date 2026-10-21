@@ -5,6 +5,7 @@ import { tokenMatches } from "./managed-signer.js";
 import { createLogger } from "./log.js";
 
 export const BODY_LIMIT = 32 * 1024;
+export const REQUEST_TIMEOUT_MS = 10_000;
 
 export const mutatingLimit = { rateLimit: { max: 10, timeWindow: "1 minute" } };
 
@@ -17,7 +18,15 @@ declare module "fastify" {
 export async function buildApp(options: { authToken: string; secrets?: readonly string[]; logger?: boolean }): Promise<FastifyInstance> {
   const app = Fastify({
     bodyLimit: BODY_LIMIT,
+    requestTimeout: REQUEST_TIMEOUT_MS,
     logger: options.logger === false ? false : createLogger(options.secrets ?? []),
+  });
+  app.addHook("onRequest", async (request, reply) => {
+    if (request.method === "GET" || request.method === "HEAD" || request.method === "OPTIONS") return;
+    const type = request.headers["content-type"];
+    if (typeof type !== "string" || !type.toLowerCase().includes("application/json")) {
+      return reply.code(415).send({ error: "unsupported media type" });
+    }
   });
   await app.register(rateLimit, { global: true, max: 60, timeWindow: "1 minute" });
   await app.register(fastifyAuth);
@@ -30,6 +39,10 @@ export async function buildApp(options: { authToken: string; secrets?: readonly 
   });
   app.setErrorHandler((error: unknown, _request, reply) => {
     const status = typeof error === "object" && error !== null && "statusCode" in error && typeof error.statusCode === "number" ? error.statusCode : 500;
+    if (status === 415) {
+      void reply.code(415).send({ error: "unsupported media type" });
+      return;
+    }
     if (status === 413) {
       void reply.code(413).send({ error: "body too large" });
       return;

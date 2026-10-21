@@ -13,7 +13,7 @@ export KEYSTORE_PATH=wallet.keystore.json
 npm run create-wallet
 ```
 
-The file mode is `0600`. `*.keystore.json` is gitignored. On a laptop this is the fallback signer. Live mode will not use it unless `ALLOW_LOCAL_SIGNER=true`. The production signer is Turnkey. See [the ceremony](#key-ceremony) below.
+The file mode is `0600`. `*.keystore.json` is gitignored. That file is the export. Decrypt it with the same passphrase. The command does not print the keys, and a terminal prompt does not echo them. On a laptop this is the fallback signer. Live mode will not use it unless `ALLOW_LOCAL_SIGNER=true`. The production signer is Turnkey. See [the ceremony](#key-ceremony) below.
 
 A HyperCore agent key is separate. Approving that agent is a manual step on the master account. This service does not sign `approveAgent`.
 
@@ -53,30 +53,30 @@ curl -s -X POST http://127.0.0.1:8081/listing \
 
 A hit responds with `decision: would_send`, the route, and latency stamps measured from `receivedAt`. The same `id` returns the stored report and does not quote again. A lookalike, a thin pool with no Hyperliquid market, or a missed live lookup responds with `skipped`.
 
-`POST /execute` accepts a `SwapIntent` directly. That is the entry a copy-trading process uses.
+`POST /execute` accepts a `SwapIntent` and always returns a dry-run report, including when the process is live. Live broadcast is only `POST /listing`, which rebuilds the intent from the resolver.
 
 ## Turn the knobs
 
 | Variable | Default | Effect |
 | --- | --- | --- |
 | `MAX_USD_PER_TRADE` | 5 | Reject a larger notional |
-| `DAILY_USD_CAP` | 25 | UTC day, counted only after a live broadcast |
+| `DAILY_USD_CAP` | 25 | Counted only after a live broadcast. Day boundary is `SPEND_TIMEZONE`, default `UTC` |
 | `MAX_SLIPPAGE_BPS` | 100 | Cap for route selection. Cannot exceed `SLIPPAGE_HARD_MAX_BPS` (300) |
 | `MIN_LIQUIDITY_USD` | 75000 | Floor for the top pool |
-| `KILL_SWITCH` | off | `1` or `true` skips every trade |
+| `KILL_SWITCH` | off | `1` or `true` skips every trade. A `control_flags` row named `kill_switch` does the same without a restart |
 | `MAX_LEVERAGE` | 1 | HyperCore orders above this are rejected |
 | `DISABLED_CHAINS` | empty | Comma-separated chain keys |
 | `QUOTE_DECIMALS_JSON` | `{}` | Quote-asset decimals for an explicit two-hop |
 | `OWNER_WITHDRAW_ADDRESSES` | empty | Allowlist. Empty denies every withdraw and every bridge plan |
 | `AUTH_TOKEN` | unset | Required. At least 16 characters. Boot refuses a shorter value |
-| `ROUTER_ALLOWLIST` | empty | EVM routers. Empty denies every swap |
+| `ROUTER_ALLOWLIST_JSON` | empty | Per-chain EVM routers, for example `{"8453":["0x..."]}`. Empty denies every swap |
 | `ALLOW_LOCAL_SIGNER` | off | `true` lets live mode use the keystore |
 | `TOKEN_SCREENING` | off | `true` screens the unlisted lookup only |
 | `JITO_ENABLED` | off | `true` sends Solana through the Jito block engine |
 | `QUOTE_DEADLINE_MS` | 500 | Stop waiting for aggregator quotes |
 | `MAX_BRIDGE_USD` | 25 | Largest inventory move `planRebalance` will accept |
 
-`POST /withdraw` with `{ "to", "chainKey", "amount" }` returns `would_send` while dry-run or the kill switch is on. Live mode sends native gas only when the destination is allowlisted and the leftover balance stays above the reserve. `POST /rebalance` plans a bridge and does not broadcast.
+`POST /withdraw` uses `ADMIN_TOKEN`, not `AUTH_TOKEN`. It stays disabled until `WITHDRAW_ENABLED=true`. The body is `{ "to", "chainKey", "amount" }` for native gas, or the same fields plus `mint` and `decimals` for an allowlisted ERC-20 or SPL recovery. `MAX_WITHDRAW_AMOUNT` defaults to 1 human unit. Dry-run returns `would_send`. Live mode sends only when the destination is allowlisted and a native send leaves the gas reserve. `POST /rebalance` plans a bridge and does not broadcast.
 
 To run live, set `LISTING_TRADER_LIVE` to the exact string `true`, set `DATABASE_URL`, and load Turnkey. Live mode refuses to boot without the database and without a Turnkey signer, unless `ALLOW_LOCAL_SIGNER=true`. The daily cap is a reservation in `spend_journal`. A restart does not zero committed or reserved rows. Dry-run does not write that table.
 

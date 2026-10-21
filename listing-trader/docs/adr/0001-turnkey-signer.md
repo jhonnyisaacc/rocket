@@ -25,7 +25,7 @@ Turnkey latency is one HTTPS round trip after the quote. That cost is accepted. 
 
 The encrypted keystore remains for laptops and for an incident where Turnkey is unreachable. Live mode throws unless `ALLOW_LOCAL_SIGNER=true`.
 
-Policies are code. `assertEvmSigning`, `assertSolanaSigning`, and `assertHyperliquidSigning` run in `withPolicy` before the backend is called. `policies/turnkey.json` is `turnkeyPolicyDocument()` and a test fails if the file drifts. The operator replaces `<TURNKEY_API_USER_ID>` and `<ROUTER_ALLOWLIST>` in the Turnkey console with the same values as `ROUTER_ALLOWLIST`. An empty router allowlist denies every EVM swap. Native value is capped at `2000000000000000` wei (0.002 of the native token). That number is a service policy, not a price.
+Policies are code. `assertEvmSigning`, `assertSolanaSigning`, and `assertHyperliquidSigning` run in `withPolicy` before the backend is called. `policies/turnkey.json` is `turnkeyPolicyDocument()` and a test fails if the file drifts. The operator replaces `<TURNKEY_API_USER_ID>` and `<ROUTER_ALLOWLIST>` in the Turnkey console with the same router addresses as `ROUTER_ALLOWLIST_JSON`. An empty router list for a chain denies every EVM swap on that chain. Native value is capped at `2000000000000000` wei (0.002 of the native token). That number is a service policy, not a price. A token sell must send value 0.
 
 ## Hyperliquid limit
 

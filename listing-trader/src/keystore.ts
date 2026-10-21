@@ -23,12 +23,24 @@ export type WalletMaterial = {
   solanaAddress: string;
 };
 
-const N = 16384;
+const N = 131072;
 const R = 8;
 const P = 1;
+const SCRYPT_MAXMEM = 256 * 1024 * 1024;
 
-function keyFromPassphrase(passphrase: string, salt: Buffer): Buffer {
-  return scryptSync(passphrase, salt, 32, { N, r: R, p: P });
+function scryptOptions(n: number, r: number, p: number): { N: number; r: number; p: number; maxmem: number } {
+  if (!Number.isInteger(n) || n < 16384 || n > 1_048_576 || (n & (n - 1)) !== 0) throw new Error("scrypt n is outside the allowed bounds");
+  if (!Number.isInteger(r) || r < 1 || r > 32) throw new Error("scrypt r is outside the allowed bounds");
+  if (!Number.isInteger(p) || p < 1 || p > 8) throw new Error("scrypt p is outside the allowed bounds");
+  return { N: n, r, p, maxmem: SCRYPT_MAXMEM };
+}
+
+function keyFromPassphrase(passphrase: string, salt: Buffer, n: number, r: number, p: number): Buffer {
+  return scryptSync(passphrase, salt, 32, scryptOptions(n, r, p));
+}
+
+function headerAad(file: Pick<KeystoreFile, "version" | "kdf" | "n" | "r" | "p" | "addresses">): Buffer {
+  return Buffer.from(JSON.stringify({ version: file.version, kdf: file.kdf, n: file.n, r: file.r, p: file.p, addresses: file.addresses }));
 }
 
 export function createWalletMaterial(): WalletMaterial {
@@ -47,8 +59,10 @@ export function encryptWallet(material: WalletMaterial, passphrase: string): Key
   if (passphrase.length < 12) throw new Error("passphrase must be at least 12 characters");
   const salt = randomBytes(16);
   const iv = randomBytes(12);
-  const key = keyFromPassphrase(passphrase, salt);
+  const key = keyFromPassphrase(passphrase, salt, N, R, P);
   const cipher = createCipheriv("aes-256-gcm", key, iv);
+  const fileHeader = { version: 1 as const, kdf: "scrypt" as const, n: N, r: R, p: P, addresses: { evm: material.evmAddress, solana: material.solanaAddress } };
+  cipher.setAAD(headerAad(fileHeader));
   const payload = JSON.stringify({
     evmPrivateKey: material.evmPrivateKey.reveal(),
     solanaSecretKey: material.solanaSecretKey.reveal(),
@@ -56,15 +70,10 @@ export function encryptWallet(material: WalletMaterial, passphrase: string): Key
   const ciphertext = Buffer.concat([cipher.update(payload, "utf8"), cipher.final()]);
   const tag = cipher.getAuthTag();
   return {
-    version: 1,
-    kdf: "scrypt",
-    n: N,
-    r: R,
-    p: P,
+    ...fileHeader,
     salt: salt.toString("hex"),
     iv: iv.toString("hex"),
     ciphertext: Buffer.concat([ciphertext, tag]).toString("hex"),
-    addresses: { evm: material.evmAddress, solana: material.solanaAddress },
   };
 }
 
@@ -74,17 +83,26 @@ export function decryptWallet(file: KeystoreFile, passphrase: string): WalletMat
   const blob = Buffer.from(file.ciphertext, "hex");
   const tag = blob.subarray(blob.length - 16);
   const data = blob.subarray(0, blob.length - 16);
-  const key = keyFromPassphrase(passphrase, salt);
+  const key = keyFromPassphrase(passphrase, salt, file.n, file.r, file.p);
   const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  decipher.setAAD(headerAad(file));
   decipher.setAuthTag(tag);
-  const json = Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
+  let json: string;
+  try {
+    json = Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
+  } catch {
+    throw new Error("keystore did not decrypt");
+  }
   const parsed = JSON.parse(json) as { evmPrivateKey: string; solanaSecretKey: string };
   const account = privateKeyToAccount(parsed.evmPrivateKey as `0x${string}`);
+  if (account.address.toLowerCase() !== file.addresses.evm.toLowerCase()) throw new Error("keystore address does not match");
+  const solanaAddress = Keypair.fromSecretKey(bs58.decode(parsed.solanaSecretKey)).publicKey.toBase58();
+  if (solanaAddress !== file.addresses.solana) throw new Error("keystore address does not match");
   return {
     evmPrivateKey: new Secret(parsed.evmPrivateKey),
     evmAddress: account.address,
     solanaSecretKey: new Secret(parsed.solanaSecretKey),
-    solanaAddress: file.addresses.solana,
+    solanaAddress,
   };
 }
 

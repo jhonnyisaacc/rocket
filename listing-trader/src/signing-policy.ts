@@ -21,6 +21,10 @@ export function evmChainIds(): number[] {
   return CHAINS.flatMap((chain) => (chain.chain.kind === "evm" ? [chain.chain.chainId] : []));
 }
 
+export function routersForChain(allowlist: Readonly<Record<number, readonly string[]>>, chainId: number): readonly string[] {
+  return allowlist[chainId] ?? [];
+}
+
 export function assertEvmSigning(input: {
   chainId: number;
   to: string;
@@ -31,14 +35,35 @@ export function assertEvmSigning(input: {
   withdrawAllowlist: readonly string[];
   maxValueWei: bigint;
   allowHotApproval: boolean;
+  nativeSell?: boolean;
+  recoveryTokens?: readonly string[];
 }): void {
   if (!evmChainIds().includes(input.chainId)) throw new Error("chain is not in the signing policy");
   if (input.value < 0n || input.value > input.maxValueWei) throw new Error("native value exceeds the signing policy");
   const to = input.to.toLowerCase();
+  const allowlisted = (address: string) => input.withdrawAllowlist.some((item) => item.toLowerCase() === address.toLowerCase());
   if (input.purpose === "withdraw") {
-    if (!input.withdrawAllowlist.some((item) => item.toLowerCase() === to)) throw new Error("withdraw destination is not allowlisted");
-    if (input.data !== "0x") throw new Error("withdraw calldata is not a native transfer");
+    if (input.data === "0x") {
+      if (!allowlisted(to)) throw new Error("withdraw destination is not allowlisted");
+      return;
+    }
+    if (input.value !== 0n) throw new Error("token withdraw must not attach native value");
+    let destination = "";
+    try {
+      const decoded = decodeFunctionData({ abi: erc20Abi, data: input.data });
+      if (decoded.functionName !== "transfer") throw new Error("withdraw calldata is not a transfer");
+      destination = String(decoded.args[0]);
+    } catch (error) {
+      if (error instanceof Error && error.message === "withdraw calldata is not a transfer") throw error;
+      throw new Error("withdraw calldata is not a transfer");
+    }
+    if (!allowlisted(destination)) throw new Error("withdraw destination is not allowlisted");
+    const recovery = new Set((input.recoveryTokens ?? []).map((item) => item.toLowerCase()));
+    if (!recovery.has(to)) throw new Error("token is not in the recovery allowlist");
     return;
+  }
+  if (input.purpose === "swap" && input.nativeSell !== true && input.value !== 0n) {
+    throw new Error("token sell must not attach native value");
   }
   const routers = new Set(input.routers.map((item) => item.toLowerCase()));
   if (routers.size === 0) throw new Error("router allowlist is empty");
@@ -65,6 +90,7 @@ export function assertSolanaSigning(input: {
   feePayer: string;
   expectedFeePayer: string;
   nativeTransferTo: readonly string[];
+  tokenTransferTo?: readonly string[];
   withdrawAllowlist: readonly string[];
 }): void {
   if (input.feePayer !== input.expectedFeePayer) throw new Error("solana fee payer is not the hot wallet");
@@ -76,6 +102,9 @@ export function assertSolanaSigning(input: {
   owners.add(input.expectedFeePayer);
   for (const dest of input.nativeTransferTo) {
     if (!owners.has(dest)) throw new Error("solana native transfer destination is not allowlisted");
+  }
+  for (const dest of input.tokenTransferTo ?? []) {
+    if (!input.withdrawAllowlist.includes(dest)) throw new Error("solana token transfer destination is not allowlisted");
   }
 }
 

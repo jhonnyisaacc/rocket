@@ -24,6 +24,36 @@ const PLATFORM_TO_CHAIN: Record<string, string> = {
   solana: "solana",
 };
 
+export function coingeckoPlatform(chainKey: string): string | null {
+  const found = Object.entries(PLATFORM_TO_CHAIN).find(([, key]) => key === chainKey);
+  return found?.[0] ?? null;
+}
+
+export function listedContract(
+  rows: readonly CoinListRow[],
+  alert: { ticker: string; projectName: string },
+  chainKey: string,
+  contract: string,
+): boolean {
+  const platform = coingeckoPlatform(chainKey);
+  if (!platform) return false;
+  const target = contract.toLowerCase();
+  return rows.some((row) => {
+    if (normalizeTicker(row.symbol) !== normalizeTicker(alert.ticker)) return false;
+    if (!nameMatches(alert.projectName, [row.name])) return false;
+    const listed = row.platforms?.[platform];
+    return typeof listed === "string" && listed.toLowerCase() === target;
+  });
+}
+
+export function poolMeetsFloor(pools: readonly Pool[], nowMs: number, minAgeHours: number, minVolumeUsd: number): boolean {
+  if (pools.length === 0) return false;
+  const top = [...pools].sort((left, right) => right.liquidityUsd - left.liquidityUsd)[0];
+  if (top.createdAtMs == null || top.volume24hUsd == null) return false;
+  const ageHours = (nowMs - top.createdAtMs) / 3_600_000;
+  return ageHours >= minAgeHours && top.volume24hUsd >= minVolumeUsd;
+}
+
 export function readKoreanName(detail: unknown): string | null {
   if (typeof detail !== "object" || detail === null) return null;
   const localization = (detail as { localization?: unknown }).localization;
@@ -74,6 +104,8 @@ type DexPair = {
   liquidity?: { usd?: number };
   priceUsd?: string;
   priceNative?: string;
+  pairCreatedAt?: number;
+  volume?: { h24?: number };
 };
 
 export function poolsFromDexScreener(body: unknown, slugOverrides: Record<string, string> = {}): Pool[] {
@@ -104,6 +136,8 @@ export function poolsFromDexScreener(body: unknown, slugOverrides: Record<string
       baseDecimals: null,
       baseName: pair.baseToken.name,
       quotePriceUsd,
+      createdAtMs: typeof pair.pairCreatedAt === "number" ? pair.pairCreatedAt : null,
+      volume24hUsd: typeof pair.volume?.h24 === "number" ? pair.volume.h24 : null,
     });
   }
   return pools;

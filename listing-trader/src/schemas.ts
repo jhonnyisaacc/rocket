@@ -79,6 +79,8 @@ export const withdrawSchema = z.object({
   to: z.string().min(1).max(128),
   chainKey: z.string().min(1).max(40).optional(),
   amount: z.number().positive().optional(),
+  mint: z.string().min(1).max(128).optional(),
+  decimals: z.number().int().nonnegative().max(18).optional(),
 });
 
 export const rebalanceSchema = z.object({
@@ -110,10 +112,6 @@ export const tokenRecordSchema = z
     refreshedAt: z.string(),
   })
   .passthrough();
-
-export const replaceSchema = z.object({
-  tokens: z.array(tokenRecordSchema).max(5000).default([]),
-});
 
 export const resolutionSchema = z.object({
   kind: z.string(),

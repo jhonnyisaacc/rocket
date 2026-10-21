@@ -16,7 +16,7 @@ CoinGecko platform ids are mapped only where the key is the usual public id (`et
 
 ## The executor spends what the wallet holds
 
-`WALLET_HOLDINGS_JSON` lists symbol, address, human amount, USD value, whether the balance is the native gas token, and decimals. Set `chainKey` when the same symbol exists on more than one chain. A holding with no `chainKey` is still eligible on every chain. The planner drops a native balance that would cross the reserve (0.01 SOL, 0.001 of the native token on EVM). It sizes the sell to the trade notional, default 5 USD, and converts it with the holding's decimals. Missing decimals skip the route with `holding decimals missing` rather than a guessed unit size.
+`WALLET_HOLDINGS_JSON` lists symbol, address, a USD hint, whether the balance is the native gas token, decimals, and `chainKey` when the same symbol exists on more than one chain. Dry-run uses the JSON amount. Live mode replaces that amount with the chain balance and skips the buy when the read fails. A holding with no `chainKey` is still eligible on every chain. The planner drops a native balance that would cross the reserve (0.01 SOL, 0.001 of the native token on EVM). It sizes the sell to the trade notional, default 5 USD, and converts it with the holding's decimals. Missing decimals skip the route with `holding decimals missing` rather than a guessed unit size.
 
 For each spendable holding the planner builds two candidates.
 

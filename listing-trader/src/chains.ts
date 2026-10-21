@@ -137,7 +137,7 @@ export const CHAINS: readonly ChainSpec[] = [
     defaultRpc: null,
     dexscreenerSlug: "solana",
     sources: ["https://developers.jup.ag/docs/api-reference/swap/v1/quote"],
-    gap: "Jupiter's published quote page says Metis Swap V1 is superseded by Swap V2. The default URL remains the V1 path that page documents. Set JUPITER_API_BASE to the V2 origin when you adopt it.",
+    gap: "Jupiter's published quote page says Metis Swap V1 is superseded by Swap V2. The default URL remains the V1 path that page documents. Live mode refuses any other host.",
   },
   {
     key: "hypercore",

@@ -25,6 +25,13 @@ WHERE spend_journal.status = 'released'
 `;
 export const COMMIT_SQL = "UPDATE spend_journal SET status = 'committed' WHERE idempotency_key = $1 AND status = 'reserved'";
 export const RELEASE_SQL = "UPDATE spend_journal SET status = 'released' WHERE idempotency_key = $1 AND status = 'reserved'";
+export const CONTROL_SCHEMA = `
+CREATE TABLE IF NOT EXISTS control_flags (
+  name text PRIMARY KEY,
+  enabled boolean NOT NULL
+);
+`;
+export const KILL_SWITCH_SQL = "SELECT enabled FROM control_flags WHERE name = 'kill_switch'";
 
 export type SpendStatus = "reserved" | "committed" | "released";
 
@@ -39,14 +46,60 @@ export function reserveDecision(input: {
   return "reserved";
 }
 
-export function utcDay(now = new Date()): string {
-  return now.toISOString().slice(0, 10);
+export function spendDay(now = new Date(), timeZone = "UTC"): string {
+  return new Intl.DateTimeFormat("en-CA", { timeZone, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
 }
+
+export function utcDay(now = new Date()): string {
+  return spendDay(now, "UTC");
+}
+
+export function killSwitchOn(envOn: boolean, rowEnabled: boolean | null): boolean {
+  return envOn || rowEnabled === true;
+}
+
+export function createMemoryJournal() {
+  const rows = new Map<string, { usd: number; day: string; status: SpendStatus }>();
+  let tail = Promise.resolve();
+  const lock = <T>(fn: () => T): Promise<T> => {
+    const run = tail.then(fn, fn);
+    tail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  };
+  return {
+    reserve(key: string, usd: number, day: string, cap: number) {
+      return lock(() => {
+        const existing = rows.get(key)?.status ?? null;
+        let spent = 0;
+        for (const row of rows.values()) {
+          if (row.day === day && (row.status === "reserved" || row.status === "committed")) spent += row.usd;
+        }
+        const decision = reserveDecision({ existing, spent, usd, cap });
+        if (decision === "reserved") rows.set(key, { usd, day, status: "reserved" });
+        return decision;
+      });
+    },
+  };
+}
+
+const pools = new Map<string, import("pg").Pool>();
+const ready = new Set<string>();
 
 async function poolFor(databaseUrl: string) {
   const { default: pg } = await import("pg");
-  const pool = new pg.Pool({ connectionString: databaseUrl });
-  await pool.query(SPEND_SCHEMA);
+  let pool = pools.get(databaseUrl);
+  if (!pool) {
+    pool = new pg.Pool({ connectionString: databaseUrl, max: 4 });
+    pools.set(databaseUrl, pool);
+  }
+  if (!ready.has(databaseUrl)) {
+    await pool.query(SPEND_SCHEMA);
+    await pool.query(CONTROL_SCHEMA);
+    ready.add(databaseUrl);
+  }
   return pool;
 }
 
@@ -56,8 +109,9 @@ export async function spentOnDay(databaseUrl: string, day: string): Promise<numb
     const result = await pool.query<{ total: string | null }>(RESERVE_SUM_SQL, [day]);
     const total = Number(result.rows[0]?.total ?? 0);
     return Number.isFinite(total) ? total : 0;
-  } finally {
-    await pool.end();
+  } catch (error) {
+    ready.delete(databaseUrl);
+    throw error;
   }
 }
 
@@ -90,24 +144,21 @@ export async function recordSpend(
     throw error;
   } finally {
     client.release();
-    await pool.end();
   }
 }
 
 export async function commitSpend(databaseUrl: string, idempotencyKey: string): Promise<void> {
   const pool = await poolFor(databaseUrl);
-  try {
-    await pool.query(COMMIT_SQL, [idempotencyKey]);
-  } finally {
-    await pool.end();
-  }
+  await pool.query(COMMIT_SQL, [idempotencyKey]);
 }
 
 export async function releaseSpend(databaseUrl: string, idempotencyKey: string): Promise<void> {
   const pool = await poolFor(databaseUrl);
-  try {
-    await pool.query(RELEASE_SQL, [idempotencyKey]);
-  } finally {
-    await pool.end();
-  }
+  await pool.query(RELEASE_SQL, [idempotencyKey]);
+}
+
+export async function readKillSwitch(databaseUrl: string): Promise<boolean> {
+  const pool = await poolFor(databaseUrl);
+  const result = await pool.query<{ enabled: boolean }>(KILL_SWITCH_SQL);
+  return result.rows[0]?.enabled === true;
 }

@@ -12,7 +12,7 @@ The collector and the executor share that token when the executor calls the reso
 
 Zod parses every request and every aggregator or screening body this service acts on. A mismatch is a 400 or a null quote. Firm quotes are checked again against the slippage cap before sign.
 
-App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. An empty `ROUTER_ALLOWLIST` denies EVM swaps. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program transfer must pay the hot wallet or an allowlisted withdraw address.
+App policy and the Turnkey policy both constrain destination, chain, native value, and Solana program ids. The checked-in file is `policies/turnkey.json`. `ROUTER_ALLOWLIST_JSON` is a map of chain id to router addresses. A router allowed on one chain is denied on another. An empty list for that chain denies the swap. A token sell with a non-zero native value is denied. Solana program ids outside the base set plus `SOLANA_PROGRAM_ALLOWLIST` deny the signature. A System Program or SPL transfer must pay the hot wallet or an allowlisted withdraw address.
 
 Pre-sign simulation is viem `simulateCalls` on EVM and `simulateTransaction` on Solana. A revert is `simulation rejected the transaction` and `broadcast` is false, so the spend reservation is released.
 

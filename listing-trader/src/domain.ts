@@ -19,6 +19,8 @@ export type Pool = {
   baseName?: string;
   quotePriceUsd?: number | null;
   quoteDecimals?: number | null;
+  createdAtMs?: number | null;
+  volume24hUsd?: number | null;
 };
 
 export type PairMap = {

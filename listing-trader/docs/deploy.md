@@ -6,7 +6,7 @@ Deploy two services from this directory. Do not point them at the Rocket researc
 
 Railway's root directory is `listing-trader`. The Dockerfile pins `node:22-bookworm-slim` by digest and runs `npm ci --ignore-scripts`. The default command is `node dist/src/resolver-server.js`. `railway.json` checks `GET /health`. Do not add a public domain. Boot throws if `RAILWAY_PUBLIC_DOMAIN` is present. Call the services on the private network URL only.
 
-`uuid` is overridden to `11.1.1`. jayson, which `@solana/web3.js` 1.x uses for RPC, still calls `require('uuid').v4`, and that export exists on 11.1.1. `stream-json` stays on the 1.9 line jayson imports as `streamers/StreamValues.js`. The 3.6 release that clears the moderate advisories renamed that file, so the require fails on Linux. `npm audit fix` without `--force` does not replace it. `--force` would install `@solana/web3.js` 3, a different client. The remaining reports are moderate denial-of-service issues in that RPC parser.
+`uuid` is overridden to `11.1.1`. `stream-json` is overridden to `3.7.0`. jayson still imports the old `StreamValues` path, so `scripts/patch-jayson-stream-json.mjs` runs after `npm ci` and points that require at the 3.7 stream adapters. The image does not install `@solana/web3.js` 3.
 
 Create a second service from the same root and set its start command to:
 
@@ -30,7 +30,7 @@ Turnkey, on the executor:
 
 - `TURNKEY_ORGANIZATION_ID`, `TURNKEY_API_PUBLIC_KEY`, `TURNKEY_API_PRIVATE_KEY`
 - `TURNKEY_EVM_ADDRESS`, `TURNKEY_SOLANA_ADDRESS`, `TURNKEY_HYPERLIQUID_ADDRESS`
-- `ROUTER_ALLOWLIST` and, after the ceremony, `APPROVAL_CACHE_JSON`
+- `ROUTER_ALLOWLIST_JSON` as a map of chain id to router addresses, and, after the ceremony, `APPROVAL_CACHE_JSON`
 
 The keystore is not the live signer. Leave `ALLOW_LOCAL_SIGNER` unset.
 
@@ -44,7 +44,7 @@ Provider keys, only where you want that quote:
 - `GOPLUS_API_KEY`, `BLOCKAID_API_KEY` only if `TOKEN_SCREENING=true`
 - `COINGECKO_API_KEY` on the resolver
 
-Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL`, and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. `RESOLVER_URL` is the resolver's private URL. `WALLET_HOLDINGS_JSON` includes decimals and `chainKey` when a symbol exists on more than one chain. `OWNER_WITHDRAW_ADDRESSES` is required before any withdraw or bridge plan. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
+Also set `RPC_URL_<chainId>`, `SOLANA_RPC_URL`, and `MEV_RPC_URL_1=https://rpc.flashbots.net` if you want private Ethereum delivery. In live mode `RESOLVER_URL` and `NOTIFIER_WEBHOOK_URL` must be `https` or a `railway.internal` host. `WALLET_HOLDINGS_JSON` names the mints. Live mode reads the amounts from chain and skips the trade when that read fails. `OWNER_WITHDRAW_ADDRESSES` is required before `WITHDRAW_ENABLED=true`. Withdraw also needs `ADMIN_TOKEN`, separate from `AUTH_TOKEN`. `NOTIFIER_WEBHOOK_URL` receives the public report and nothing else.
 
 Do not set `LISTING_TRADER_LIVE`. Health should show `live: false`. The collector posts alerts to `/listing` with the bearer token.
 

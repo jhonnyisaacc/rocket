@@ -85,7 +85,43 @@ export function buildOrder(input: {
 
 export function buildLeverage(asset: number, leverage: number): LeverageAction {
   if (!Number.isInteger(leverage) || leverage < 1) throw new Error("leverage must be an integer >= 1");
-  return { type: "updateLeverage", asset, isCross: true, leverage };
+  return { type: "updateLeverage", asset, isCross: false, leverage };
+}
+
+export function cappedLimitPx(mark: number, isBuy: boolean, capBps: number): number {
+  if (!(mark > 0)) throw new Error("mark price missing");
+  if (!Number.isInteger(capBps) || capBps < 0) throw new Error("slippage cap is negative");
+  const factor = capBps / 10_000;
+  const raw = isBuy ? mark * (1 + factor) : mark * (1 - factor);
+  if (!(raw > 0)) throw new Error("capped limit is not positive");
+  return Number(raw.toFixed(8));
+}
+
+export async function assertApprovedAgent(url: string, master: string, agent: string, fetchImpl: typeof fetch, nowMs = Date.now()): Promise<void> {
+  const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ type: "extraAgents", user: master }),
+    signal: AbortSignal.timeout(1500),
+  });
+  if (!response.ok) throw new Error("hyperliquid agent check failed");
+  const body: unknown = await response.json();
+  if (!Array.isArray(body)) throw new Error("hyperliquid agent is not approved");
+  const agents = body.flatMap((row) => {
+    if (typeof row !== "object" || row === null || typeof (row as { address?: unknown }).address !== "string") return [];
+    const validUntil = (row as { validUntil?: unknown }).validUntil;
+    return [{ address: (row as { address: string }).address, validUntil: typeof validUntil === "number" ? validUntil : null }];
+  });
+  if (!agentIsApproved(agents, agent, nowMs)) throw new Error("hyperliquid agent is not approved");
+}
+
+export function agentIsApproved(agents: readonly { address?: string; validUntil?: number | null }[], address: string, nowMs = Date.now()): boolean {
+  const target = address.toLowerCase();
+  return agents.some((agent) => {
+    if (typeof agent.address !== "string" || agent.address.toLowerCase() !== target) return false;
+    if (agent.validUntil == null) return true;
+    return agent.validUntil > nowMs;
+  });
 }
 
 function addressToBytes(address: string): Uint8Array {

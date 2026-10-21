@@ -1,5 +1,6 @@
 import { CHAINS, chainByKey } from "./chains.js";
 import type { LimitConfig } from "./limits.js";
+import { isSolanaAddress } from "./signer.js";
 import { DEFAULT_MAX_VALUE_WEI, SOLANA_BASE_PROGRAMS } from "./signing-policy.js";
 
 export type ApprovalSeed = { chainId: number; token: string; spender: string; owner: string; amount: string };
@@ -37,10 +38,18 @@ export type AppConfig = LimitConfig & {
   targetUsdcUsd: number;
   targetNativeUsd: number;
   authToken: string | null;
+  adminToken: string | null;
+  withdrawEnabled: boolean;
+  maxWithdrawAmount: number;
+  tokenRecoveryAllowlist: string[];
+  spendTimezone: string;
+  minPoolAgeHours: number;
+  minVolume24hUsd: number;
+  hyperliquidAccount: string | null;
   allowLocalSigner: boolean;
   allowHotApproval: boolean;
   screening: boolean;
-  routerAllowlist: string[];
+  routerAllowlist: Record<number, string[]>;
   solanaProgramAllowlist: string[];
   maxValueWei: bigint;
   mevRpcByChainId: Record<number, string>;
@@ -174,10 +183,18 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     targetUsdcUsd: intEnv(env, "TARGET_USDC_USD", 20),
     targetNativeUsd: intEnv(env, "TARGET_NATIVE_USD", 2),
     authToken: env.AUTH_TOKEN ?? null,
+    adminToken: env.ADMIN_TOKEN ?? null,
+    withdrawEnabled: env.WITHDRAW_ENABLED === "true",
+    maxWithdrawAmount: intEnv(env, "MAX_WITHDRAW_AMOUNT", 1),
+    tokenRecoveryAllowlist: splitList(env.TOKEN_RECOVERY_ALLOWLIST),
+    spendTimezone: spendTimezone(env.SPEND_TIMEZONE),
+    minPoolAgeHours: intEnv(env, "MIN_POOL_AGE_HOURS", 24),
+    minVolume24hUsd: intEnv(env, "MIN_VOLUME_24H_USD", 10_000),
+    hyperliquidAccount: env.HYPERLIQUID_ACCOUNT_ADDRESS ?? null,
     allowLocalSigner: env.ALLOW_LOCAL_SIGNER === "true",
     allowHotApproval: env.ALLOW_HOT_APPROVAL === "true",
     screening: env.TOKEN_SCREENING === "true",
-    routerAllowlist: splitList(env.ROUTER_ALLOWLIST),
+    routerAllowlist: routerAllowlist(env),
     solanaProgramAllowlist: env.SOLANA_PROGRAM_ALLOWLIST ? splitList(env.SOLANA_PROGRAM_ALLOWLIST) : [...SOLANA_BASE_PROGRAMS],
     maxValueWei: weiEnv(env.MAX_NATIVE_VALUE_WEI),
     mevRpcByChainId: mevRpcs(env),
@@ -219,6 +236,104 @@ function approvalSeed(env: NodeJS.ProcessEnv): ApprovalSeed[] {
     }
     return [{ chainId: item.chainId, token: item.token, spender: item.spender, owner: item.owner, amount: item.amount }];
   });
+}
+
+export const OFFICIAL_HTTP = {
+  zeroExBase: "https://api.0x.org",
+  jupiterBase: "https://api.jup.ag/swap/v1",
+  lifiBase: "https://li.quest/v1",
+  oneInchBase: "https://api.1inch.com",
+  kyberBase: "https://aggregator-api.kyberswap.com",
+  veloraBase: "https://api.velora.xyz",
+  hyperliquidUrl: "https://api.hyperliquid.xyz",
+  coingeckoBase: "https://api.coingecko.com/api/v3",
+  dexscreenerBase: "https://api.dexscreener.com",
+  jitoUrl: "https://mainnet.block-engine.jito.wtf/api/v1/transactions",
+  turnkey: "https://api.turnkey.com",
+} as const;
+
+function sameBase(actual: string, official: string): boolean {
+  try {
+    const left = new URL(actual);
+    const right = new URL(official);
+    if (left.origin !== right.origin) return false;
+    return left.pathname === right.pathname || left.pathname.startsWith(`${right.pathname}/`);
+  } catch {
+    return false;
+  }
+}
+
+function spendTimezone(raw: string | undefined): string {
+  const timeZone = raw && raw.length > 0 ? raw : "UTC";
+  try {
+    new Intl.DateTimeFormat("en-CA", { timeZone }).format(new Date());
+  } catch {
+    throw new Error("invalid SPEND_TIMEZONE");
+  }
+  return timeZone;
+}
+
+function routerAllowlist(env: NodeJS.ProcessEnv): Record<number, string[]> {
+  if (env.ROUTER_ALLOWLIST_JSON) {
+    const parsed: unknown = JSON.parse(env.ROUTER_ALLOWLIST_JSON);
+    if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) throw new Error("ROUTER_ALLOWLIST_JSON must be an object");
+    const map: Record<number, string[]> = {};
+    for (const [id, list] of Object.entries(parsed)) {
+      if (!/^\d+$/.test(id) || !Array.isArray(list) || list.some((item) => typeof item !== "string" || item.length === 0)) {
+        throw new Error("ROUTER_ALLOWLIST_JSON is invalid");
+      }
+      map[Number(id)] = list;
+    }
+    return map;
+  }
+  const global = splitList(env.ROUTER_ALLOWLIST);
+  const map: Record<number, string[]> = {};
+  if (global.length === 0) return map;
+  for (const chain of CHAINS) {
+    if (chain.chain.kind === "evm") map[chain.chain.chainId] = [...global];
+  }
+  return map;
+}
+
+function isOwnerAddress(value: string): boolean {
+  return /^0x[0-9a-fA-F]{40}$/.test(value) || isSolanaAddress(value);
+}
+
+export function assertLiveEdges(config: AppConfig, env: NodeJS.ProcessEnv): void {
+  if (config.withdrawEnabled) {
+    if (config.withdrawAllowlist.length === 0) throw new Error("WITHDRAW_ENABLED requires OWNER_WITHDRAW_ADDRESSES");
+    for (const address of config.withdrawAllowlist) {
+      if (!isOwnerAddress(address)) throw new Error("OWNER_WITHDRAW_ADDRESSES has an invalid address");
+    }
+    for (const token of config.tokenRecoveryAllowlist) {
+      if (!isOwnerAddress(token)) throw new Error("TOKEN_RECOVERY_ALLOWLIST has an invalid address");
+    }
+  }
+  if (!config.live) return;
+  const fields = ["zeroExBase", "jupiterBase", "lifiBase", "oneInchBase", "kyberBase", "veloraBase", "hyperliquidUrl", "coingeckoBase", "dexscreenerBase"] as const;
+  for (const field of fields) {
+    if (!sameBase(config[field], OFFICIAL_HTTP[field])) throw new Error(`live mode pins ${field} to ${OFFICIAL_HTTP[field]}`);
+  }
+  if (config.jitoUrl && !sameBase(config.jitoUrl, OFFICIAL_HTTP.jitoUrl)) throw new Error(`live mode pins jitoUrl to ${OFFICIAL_HTTP.jitoUrl}`);
+  if (env.TURNKEY_API_BASE && !sameBase(env.TURNKEY_API_BASE, OFFICIAL_HTTP.turnkey)) {
+    throw new Error(`live mode pins TURNKEY_API_BASE to ${OFFICIAL_HTTP.turnkey}`);
+  }
+  assertServiceUrl(config.notifierUrl);
+  assertServiceUrl(config.resolverUrl);
+}
+
+function assertServiceUrl(value: string | null): void {
+  if (!value) return;
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw new Error("notifier and resolver URLs must be https or a railway.internal host");
+  }
+  const railway = url.hostname === "railway.internal" || url.hostname.endsWith(".railway.internal");
+  if (url.protocol === "https:") return;
+  if (url.protocol === "http:" && railway) return;
+  throw new Error("notifier and resolver URLs must be https or a railway.internal host");
 }
 
 function splitList(raw: string | undefined): string[] {

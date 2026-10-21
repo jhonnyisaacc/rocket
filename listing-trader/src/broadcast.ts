@@ -1,5 +1,5 @@
-import { Connection, PublicKey, SystemProgram, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
-import { createPublicClient, defineChain, http, type Hex } from "viem";
+import { Connection, PublicKey, SystemProgram, TransactionInstruction, TransactionMessage, VersionedTransaction } from "@solana/web3.js";
+import { createPublicClient, defineChain, encodeFunctionData, erc20Abi, http, parseUnits, type Hex } from "viem";
 import { z } from "zod";
 import type { AppConfig } from "./config.js";
 import type { RouteLeg } from "./domain.js";
@@ -83,6 +83,7 @@ async function jupiterTransaction(
     body: JSON.stringify({
       quoteResponse: quoted.raw,
       userPublicKey: user,
+      slippageBps: config.maxSlippageBps,
       wrapAndUnwrapSol: true,
       dynamicComputeUnitLimit: true,
     }),
@@ -320,15 +321,17 @@ export async function broadcastRoute(
   }
   combinedImpact(txs.map((item) => item.impact), capPct);
   let sent = false;
-  for (const tx of txs) {
+  for (const [index, tx] of txs.entries()) {
     try {
       const prepared = await prepareEvm(request.chain.chainId, rpc, owner as Hex, tx);
+      const sell = request.legs[index]?.sellAddress.toLowerCase() ?? "";
       const signed = await signer.signEvm({
         chainId: request.chain.chainId,
         to: tx.to,
         data: tx.data,
         value: tx.value,
         purpose: "swap",
+        nativeSell: NATIVE_SELL.has(sell),
         ...prepared,
       });
       await sendRawEvm(request.chain.chainId, sendRpc, signed, secrets);
@@ -390,4 +393,76 @@ export async function withdrawNative(input: {
     ...prepared,
   });
   await sendRawEvm(spec.chain.chainId, rpc, signed, secrets);
+}
+
+const TOKEN_PROGRAM = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+const TOKEN_2022_PROGRAM = new PublicKey("TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb");
+
+export async function recoverToken(input: {
+  config: AppConfig;
+  signer: TransactionSigner;
+  chainKey: string;
+  to: string;
+  amount: number;
+  mint: string;
+  decimals: number;
+  secrets?: readonly string[];
+}): Promise<void> {
+  const spec = chainByKey(input.chainKey);
+  if (!spec) throw new Error("unknown chain");
+  const rpc = input.config.rpcByChainKey[input.chainKey];
+  if (!rpc) throw new Error("rpc is not configured");
+  const secrets = input.secrets ?? [];
+  if (spec.chain.kind === "evm") {
+    const owner = input.signer.evmAddress();
+    if (!owner || !/^0x[0-9a-fA-F]{40}$/.test(input.to) || !/^0x[0-9a-fA-F]{40}$/.test(input.mint)) throw new Error("destination is not an evm address");
+    const data = encodeFunctionData({ abi: erc20Abi, functionName: "transfer", args: [input.to as Hex, parseUnits(String(input.amount), input.decimals)] });
+    const prepared = await prepareEvm(spec.chain.chainId, rpc, owner as Hex, { to: input.mint as Hex, data, value: 0n, gas: null });
+    const signed = await input.signer.signEvm({
+      chainId: spec.chain.chainId,
+      to: input.mint as Hex,
+      data,
+      value: 0n,
+      purpose: "withdraw",
+      nativeSell: false,
+      ...prepared,
+    });
+    await sendRawEvm(spec.chain.chainId, rpc, signed, secrets);
+    return;
+  }
+  if (spec.chain.kind !== "solana" || !input.signer.solanaAddress() || !isSolanaAddress(input.to) || !isSolanaAddress(input.mint)) {
+    throw new Error("destination is not a solana address");
+  }
+  const owner = input.signer.solanaAddress() as string;
+  const connection = new Connection(rpc, "confirmed");
+  const ownerKey = new PublicKey(owner);
+  const mintKey = new PublicKey(input.mint);
+  const found = await tokenAccount(connection, ownerKey, mintKey);
+  if (!found) throw new Error("token account was not found");
+  const raw = BigInt(sellBaseUnits(input.amount, input.decimals));
+  const data = Buffer.alloc(9);
+  data.writeUInt8(3, 0);
+  data.writeBigUInt64LE(raw, 1);
+  const instruction = new TransactionInstruction({
+    programId: found.program,
+    keys: [
+      { pubkey: found.source, isSigner: false, isWritable: true },
+      { pubkey: new PublicKey(input.to), isSigner: false, isWritable: true },
+      { pubkey: ownerKey, isSigner: true, isWritable: false },
+    ],
+    data,
+  });
+  const { blockhash } = await connection.getLatestBlockhash();
+  const message = new TransactionMessage({ payerKey: ownerKey, recentBlockhash: blockhash, instructions: [instruction] }).compileToV0Message();
+  const signed = await input.signer.signSolana(new VersionedTransaction(message).serialize());
+  await connection.sendRawTransaction(signed);
+}
+
+async function tokenAccount(connection: Connection, owner: PublicKey, mint: PublicKey): Promise<{ source: PublicKey; program: PublicKey } | null> {
+  for (const program of [TOKEN_PROGRAM, TOKEN_2022_PROGRAM]) {
+    const accounts = await connection.getParsedTokenAccountsByOwner(owner, { mint, programId: program });
+    const source = accounts.value[0]?.pubkey;
+    if (source) return { source, program };
+  }
+  return null;
 }

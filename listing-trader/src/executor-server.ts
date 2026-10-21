@@ -1,16 +1,19 @@
 import type { FastifyInstance } from "fastify";
-import type { Alert, ExecutionReport, SwapIntent, TokenRecord } from "./domain.js";
+import type { Alert, ExecutionReport, Holding, SwapIntent, TokenRecord } from "./domain.js";
+import { chainByKey } from "./chains.js";
 import { loadConfig, publicConfig, type AppConfig } from "./config.js";
-import { authorizeWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
+import { holdingsForTrade, type BalanceReader } from "./balances.js";
+import { decideWithdraw, execute, restoreSpent, type ExecutorDeps } from "./executor.js";
 import { latencyLog } from "./latency.js";
 import { buildApp, mutatingLimit } from "./http.js";
 import { fetchHyperliquidMid, quoteHop } from "./clients.js";
-import { redactError } from "./redact.js";
-import { broadcastRoute, withdrawNative } from "./broadcast.js";
-import { assertBoot, loadManagedSigner, signingSecrets, type TransactionSigner } from "./managed-signer.js";
+import { redactError, zeroLoadedSecrets } from "./redact.js";
+import { broadcastRoute, recoverToken, withdrawNative } from "./broadcast.js";
+import { assertApprovedAgent } from "./hyperliquid.js";
+import { assertBoot, hyperliquidAgentAddress, loadManagedSigner, signingSecrets, tokenMatches, type TransactionSigner } from "./managed-signer.js";
 import { seedApprovals } from "./approvals.js";
 import { loadSigner } from "./signer.js";
-import { commitSpend, recordSpend, releaseSpend, spentOnDay, utcDay } from "./spend.js";
+import { commitSpend, readKillSwitch, recordSpend, releaseSpend, spendDay, spentOnDay } from "./spend.js";
 import { planRebalance } from "./rebalance.js";
 import { alertSchema, holdingsSchema, intentSchema, rebalanceSchema, resolutionSchema, withdrawSchema } from "./schemas.js";
 
@@ -81,8 +84,13 @@ function deps(config: AppConfig, signer: TransactionSigner | null, secrets: read
     send: (request) => broadcastRoute(config, signer, request, config.maxSlippageBps / 100, fetch, secrets),
     recordSpend:
       config.live && config.databaseUrl
-        ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd, utcDay(), config.dailyUsdCap)
+        ? (key, usd) => recordSpend(config.databaseUrl as string, key, usd, spendDay(new Date(), config.spendTimezone), config.dailyUsdCap)
         : undefined,
+    killSwitchEnabled: async () => {
+      if (config.killSwitch) return true;
+      if (!config.databaseUrl) return false;
+      return readKillSwitch(config.databaseUrl);
+    },
     commitSpend: config.live && config.databaseUrl ? (key) => commitSpend(config.databaseUrl as string, key) : undefined,
     releaseSpend: config.live && config.databaseUrl ? (key) => releaseSpend(config.databaseUrl as string, key) : undefined,
   };
@@ -95,6 +103,8 @@ export async function createExecutorApp(
   secrets: readonly string[],
   holdings: SwapIntent["holdings"],
   logger = false,
+  readBalance: BalanceReader | null = null,
+  fetchImpl: typeof fetch = fetch,
 ): Promise<FastifyInstance> {
   const app = await buildApp({ authToken: config.authToken ?? "", secrets, logger });
   const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
@@ -102,7 +112,7 @@ export async function createExecutorApp(
   app.post("/execute", guard, async (request, reply) => {
     const parsed = intentSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    const report = await execute(parsed.data, runtime);
+    const report = await execute(parsed.data, { ...runtime, mode: "dry_run" });
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;
@@ -111,31 +121,67 @@ export async function createExecutorApp(
     const parsed = alertSchema.safeParse(request.body);
     if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
     if (!config.resolverUrl || !config.authToken) return reply.code(503).send({ error: "RESOLVER_URL is not set" });
-    const response = await fetch(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
+    const response = await fetchImpl(`${config.resolverUrl.replace(/\/$/, "")}/alert`, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${config.authToken}` },
       body: JSON.stringify(parsed.data),
     });
     const resolution = resolutionSchema.safeParse(await response.json());
     if (!resolution.success) return reply.code(200).send({ decision: "skipped", reason: "resolver response did not match the schema" });
-    const intent = intentFromResolution(parsed.data, resolution.data, holdings, config.maxUsdPerTrade, config.maxSlippageBps);
+    if (resolution.data.kind !== "hit" || !resolution.data.token) {
+      return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
+    }
+    const sized = await holdingsForTrade(config.live, holdings, readBalance);
+    if (!sized.ok) return reply.code(200).send({ decision: "skipped", reason: sized.reason, latency: { alertReceivedMs: 0 } });
+    const intent = intentFromResolution(parsed.data, resolution.data, sized.holdings, config.maxUsdPerTrade, config.maxSlippageBps);
     if (!intent) return reply.code(200).send({ decision: "skipped", reason: resolution.data.kind, latency: { alertReceivedMs: 0 } });
     const report = await execute(intent, runtime);
     console.log(JSON.stringify({ report: { ...report, latency: latencyLog(report.latency) } }));
     await notify(config, report, secrets);
     return report;
   });
-  app.post("/withdraw", guard, async (request, reply) => {
+  app.post("/withdraw", { config: mutatingLimit }, async (request, reply) => {
+    const header = request.headers.authorization;
+    const presented = typeof header === "string" && header.startsWith("Bearer ") ? header.slice("Bearer ".length) : "";
     const parsed = withdrawSchema.safeParse(request.body);
-    if (!parsed.success) return reply.code(400).send({ error: "invalid request" });
-    const allowed = authorizeWithdraw(parsed.data.to, config.withdrawAllowlist);
-    if (!allowed.ok) return reply.code(403).send({ error: allowed.reason });
-    if (config.killSwitch || !config.live) return { decision: "would_send", to: parsed.data.to, mode: config.live ? "live" : "dry_run" };
-    if (!signer || !parsed.data.chainKey || !(parsed.data.amount && parsed.data.amount > 0)) {
-      return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
+    if (!parsed.success) {
+      const adminOk = Boolean(config.adminToken) && tokenMatches(presented, config.adminToken ?? "");
+      if (!adminOk) return reply.code(401).send({ error: "unauthorized" });
+      return reply.code(400).send({ error: "invalid request" });
     }
-    await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets });
-    return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey };
+    const decision = decideWithdraw({
+      adminOk: Boolean(config.adminToken) && tokenMatches(presented, config.adminToken ?? ""),
+      enabled: config.withdrawEnabled,
+      amount: parsed.data.amount,
+      cap: config.maxWithdrawAmount,
+      destinationAllowed: config.withdrawAllowlist.some((item) => item.toLowerCase() === parsed.data.to.toLowerCase()),
+      mint: parsed.data.mint,
+      recoveryAllowlist: config.tokenRecoveryAllowlist,
+      live: config.live,
+      killSwitch: config.killSwitch,
+      signerReady: signer !== null,
+      chainKey: parsed.data.chainKey,
+      decimals: parsed.data.decimals,
+    });
+    if (decision.error) return reply.code(decision.http).send({ error: decision.error });
+    if (decision.decision === "would_send") return { decision: "would_send", to: parsed.data.to, mode: config.live ? "live" : "dry_run" };
+    if (!signer || !parsed.data.chainKey || parsed.data.amount === undefined) return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
+    if (!parsed.data.mint) {
+      await withdrawNative({ config, signer, chainKey: parsed.data.chainKey, to: parsed.data.to, amount: parsed.data.amount, secrets });
+    } else {
+      if (parsed.data.decimals === undefined) return reply.code(409).send({ error: "token withdraw needs decimals" });
+      await recoverToken({
+        config,
+        signer,
+        chainKey: parsed.data.chainKey,
+        to: parsed.data.to,
+        amount: parsed.data.amount,
+        mint: parsed.data.mint,
+        decimals: parsed.data.decimals,
+        secrets,
+      });
+    }
+    return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint };
   });
   app.post("/rebalance", guard, async (request, reply) => {
     const parsed = rebalanceSchema.safeParse(request.body);
@@ -157,17 +203,67 @@ async function main(): Promise<void> {
   const config = loadConfig();
   assertBoot(config);
   seedApprovals(config.approvalSeed);
+  const material = loadSigner(process.env);
   const signer = loadManagedSigner(process.env, config);
   if (config.live && !signer) throw new Error("live mode requires Turnkey or an allowed local signer");
   if (config.live && !config.databaseUrl) throw new Error("live mode requires DATABASE_URL so the daily cap survives restart");
-  if (config.databaseUrl) restoreSpent(await spentOnDay(config.databaseUrl, utcDay()));
+  if (config.live) {
+    const agent = hyperliquidAgentAddress(process.env);
+    if (agent) {
+      if (!config.hyperliquidAccount) throw new Error("live mode requires HYPERLIQUID_ACCOUNT_ADDRESS to verify the agent");
+      await assertApprovedAgent(config.hyperliquidUrl, config.hyperliquidAccount, agent, fetch);
+    }
+  }
+  if (config.databaseUrl) restoreSpent(await spentOnDay(config.databaseUrl, spendDay(new Date(), config.spendTimezone)));
   const holdingsParsed = holdingsSchema.safeParse(JSON.parse(process.env.WALLET_HOLDINGS_JSON ?? "[]"));
   if (!holdingsParsed.success) throw new Error("WALLET_HOLDINGS_JSON is invalid");
-  const secrets = signingSecrets(process.env, loadSigner(process.env));
+  const secrets = [...signingSecrets(process.env, material), config.databaseUrl ?? "", ...Object.values(config.rpcByChainKey), ...Object.values(config.mevRpcByChainId)].filter(
+    (item) => item.length >= 8,
+  );
   const runtime = deps(config, signer, secrets);
-  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true);
+  const app = await createExecutorApp(config, runtime, signer, secrets, holdingsParsed.data, true, config.live ? chainReader(config, signer) : null);
+  const stop = () => {
+    zeroLoadedSecrets();
+    process.exit(0);
+  };
+  process.once("SIGINT", stop);
+  process.once("SIGTERM", stop);
   await app.listen({ port: config.port, host: "0.0.0.0" });
   console.log(JSON.stringify({ service: "executor", port: config.port, ...publicConfig(config) }));
+}
+
+function chainReader(config: AppConfig, signer: TransactionSigner | null): BalanceReader {
+  return async (holding: Holding) => {
+    if (!signer || !holding.chainKey) return null;
+    const spec = chainByKey(holding.chainKey);
+    const rpc = config.rpcByChainKey[holding.chainKey];
+    if (!spec || !rpc) return null;
+    const decimals = holding.decimals ?? (holding.native ? (spec.chain.kind === "solana" ? 9 : 18) : null);
+    if (decimals === null) return null;
+    if (spec.chain.kind === "solana") {
+      const owner = signer.solanaAddress();
+      if (!owner) return null;
+      const { Connection, PublicKey } = await import("@solana/web3.js");
+      const connection = new Connection(rpc, "confirmed");
+      if (holding.native) return (await connection.getBalance(new PublicKey(owner))) / 10 ** decimals;
+      const mint = new PublicKey(holding.address);
+      const accounts = await connection.getParsedTokenAccountsByOwner(new PublicKey(owner), { mint });
+      const ui = accounts.value[0]?.account.data.parsed?.info?.tokenAmount?.uiAmountString;
+      return typeof ui === "string" ? Number(ui) : null;
+    }
+    if (spec.chain.kind !== "evm") return null;
+    const owner = signer.evmAddress();
+    if (!owner) return null;
+    const { createPublicClient, erc20Abi, formatUnits, http } = await import("viem");
+    const client = createPublicClient({ transport: http(rpc, { retryCount: 0, timeout: 1500 }) });
+    if (holding.native) {
+      const raw = await client.getBalance({ address: owner as `0x${string}` });
+      return Number(formatUnits(raw, decimals));
+    }
+    if (!/^0x[0-9a-fA-F]{40}$/.test(holding.address)) return null;
+    const raw = await client.readContract({ address: holding.address as `0x${string}`, abi: erc20Abi, functionName: "balanceOf", args: [owner as `0x${string}`] });
+    return Number(formatUnits(raw, decimals));
+  };
 }
 
 const entry = process.argv[1] ?? "";
