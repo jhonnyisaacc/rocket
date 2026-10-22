@@ -28,6 +28,34 @@ test("a live listing under always_approve parks at pending_approval", async () =
   assert.equal(value.action, "passkey");
 });
 
+test("the listing matrix reaches the executor only on an allowed cell", async () => {
+  const calls: string[] = [];
+  const matrixDeps = (mode: McpDeps["approvalMode"], live: boolean, screened: boolean): McpDeps => ({
+    ...deps(mode, live),
+    screenedLiveListing: screened,
+    fetchImpl: async (url) => {
+      calls.push(String(url));
+      return new Response(JSON.stringify({ url: String(url) }), { status: 200 });
+    },
+  });
+  const call = async (mode: McpDeps["approvalMode"], live: boolean, screened: boolean) => {
+    calls.length = 0;
+    const handle = createHandler(matrixDeps(mode, live, screened));
+    const reply = (await handle({ jsonrpc: "2.0", id: 9, method: "tools/call", params: { name: "request_listing", arguments: {} } })) as { result: { content: { text: string }[] } };
+    return JSON.parse(reply.result.content[0].text) as { status?: string; url?: string };
+  };
+  assert.equal((await call("autonomous", true, true)).url, "http://executor/listing");
+  assert.deepEqual(calls, ["http://executor/listing"]);
+  assert.equal((await call("autonomous", true, false)).status, "pending_approval");
+  assert.deepEqual(calls, []);
+  assert.equal((await call("iframe", true, true)).status, "pending_approval");
+  assert.deepEqual(calls, []);
+  assert.equal((await call("always_approve", true, true)).status, "pending_approval");
+  assert.deepEqual(calls, []);
+  assert.equal((await call("iframe", false, false)).url, "http://executor/listing");
+  assert.equal((await call("always_approve", false, false)).url, "http://executor/listing");
+});
+
 test("a dry-run listing reaches the executor", async () => {
   const handle = createHandler(deps("always_approve", false));
   const reply = (await handle({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "request_listing", arguments: {} } })) as { result: { content: { text: string }[] } };
