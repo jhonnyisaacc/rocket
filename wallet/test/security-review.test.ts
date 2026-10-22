@@ -21,7 +21,8 @@ import { redactError, Secret, trackSecret, zeroLoadedSecrets } from "../src/reda
 import { createResolverApp, refreshLiquidity } from "../src/resolver-server.js";
 import { MemoryWatchlist } from "../src/watchlist.js";
 import { assertEvmSigning, DEFAULT_MAX_VALUE_WEI, JUPITER_PROGRAM_ID, SOLANA_BASE_PROGRAMS } from "../src/signing-policy.js";
-import { createMemoryJournal, createMemoryWithdrawJournal, spendDay } from "../src/spend.js";
+import { createMemoryJournal, spendDay } from "../src/spend.js";
+import { createMemoryWithdrawJournal } from "../src/withdraw-journal.js";
 import type { SwapIntent } from "../src/domain.js";
 
 const tokenAuth = "0123456789abcdef";
