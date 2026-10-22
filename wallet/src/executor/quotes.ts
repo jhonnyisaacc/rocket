@@ -114,6 +114,23 @@ async function quoteOnePlan(
   }, token);
 }
 
+export function publicRoute(route: RouteQuote | null): RouteQuote | null {
+  if (!route?.legs) return route;
+  return { ...route, legs: route.legs.map(({ quote: _quote, ...leg }) => leg) };
+}
+
+type Screened = { ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> };
+
+export async function keepScreened(intent: SwapIntent, deps: ExecutorDeps): Promise<Screened> {
+  const alternates = intent.alternates ?? [];
+  if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates };
+  const screen = deps.screenToken;
+  const verdict = (token: SwapIntent["token"]) => screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address }).catch(() => "deny" as const);
+  const [primary, ...rest] = await Promise.all([intent.token, ...alternates].map(verdict));
+  if (primary !== "allow") return { ok: false };
+  return { ok: true, alternates: alternates.filter((_, index) => rest[index] === "allow") };
+}
+
 export async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: ExecutorDeps): Promise<{ quotes: RouteQuote[]; unsized: boolean }> {
   const spec = chainByKey(token.chainKey);
   const reserve = spec?.minNativeReserve ?? 0;

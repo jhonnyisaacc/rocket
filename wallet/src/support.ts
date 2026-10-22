@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { chainByKey } from "./chains.js";
 
 export const supportTierSchema = z.enum(["live", "dry_run", "disabled"]);
 export type SupportTier = z.infer<typeof supportTierSchema>;
@@ -28,4 +29,13 @@ export function supportTierFor(support: Readonly<Record<string, SupportTier>>, c
 
 export function liveTierBlocked(mode: "live" | "dry_run", tierFor: ((chainKey: string) => SupportTier) | undefined, chainKey: string): boolean {
   return mode === "live" && tierFor !== undefined && tierFor(chainKey) !== "live";
+}
+
+export function sendBlock(mode: "live" | "dry_run", tierFor: ((chainKey: string) => SupportTier) | undefined, venue: string, enabled: ReadonlySet<string>, isFlagged: boolean): string | null {
+  if (mode !== "live") return null;
+  if (!enabled.has(venue)) return `chain ${venue} is disabled`;
+  const spec = chainByKey(venue);
+  if (spec?.liveSend === "disabled") return spec.gap ?? "live send disabled for this chain";
+  if (liveTierBlocked(mode, tierFor, venue)) return "chain is not enabled for live sends";
+  return isFlagged ? "token flagged for a transfer shortfall" : null;
 }
