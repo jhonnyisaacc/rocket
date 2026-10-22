@@ -8,6 +8,7 @@ import { spendDay, type SpendScope } from "./spend.js";
 import { pickRoute } from "./routing.js";
 import { buildLeverage, buildOrder, cappedLimitPx, orderSize, wirePrice, type HyperliquidAction } from "./hyperliquid.js";
 import { quotePlan } from "./executor/quotes.js";
+import { liveTierBlocked, type SupportTier } from "./support.js";
 
 export type HopQuote = {
   priceImpactPct: number | null;
@@ -60,7 +61,7 @@ export type ExecutorDeps = {
   now?: () => number;
   killSwitchEnabled?: () => Promise<boolean>;
   screenToken?: (token: { chainKey: string; chain: ChainRef; contract: string }) => Promise<"allow" | "deny">;
-  supportTierFor?: (chainKey: string) => "live" | "dry_run" | "disabled";
+  supportTierFor?: (chainKey: string) => SupportTier;
   readTokenDecimals?: (token: { chainKey: string; chain: ChainRef; address: string }) => Promise<number | null>;
   readBalance?: BalanceReader | null;
   priceOf?: PriceOf | null;
@@ -148,7 +149,6 @@ function publicRoute(route: RouteQuote | null): RouteQuote | null {
   if (!route?.legs) return route;
   return { ...route, legs: route.legs.map(({ quote: _quote, ...leg }) => leg) };
 }
-
 
 async function commitLive(
   intent: SwapIntent,
@@ -268,6 +268,7 @@ async function quoteCandidate(intent: SwapIntent, token: SwapIntent["token"], de
   });
   if (!allowed.ok) return none;
   if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") return none;
+  if (liveTierBlocked(deps.mode, deps.supportTierFor, token.chainKey)) return none;
   try {
     let quoted = intent;
     if (deps.mode === "live") {
@@ -294,11 +295,6 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   }
   if (stopped) {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "kill switch is on", intent.token.chainKey, deps.mode);
-    reportsOf(deps).set(intent.idempotencyKey, report);
-    return report;
-  }
-  if (deps.mode === "live" && deps.supportTierFor && deps.supportTierFor(intent.token.chainKey) !== "live") {
-    const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "chain is not enabled for live sends", intent.token.chainKey, deps.mode);
     reportsOf(deps).set(intent.idempotencyKey, report);
     return report;
   }
@@ -343,14 +339,16 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     return report;
   }
   if (!limits.ok) primaryBlocked = limits.reason;
-  if (spec?.liveSend === "disabled" && deps.mode === "live" && !useHyper) {
-    const other = alternates.some((token) => chainByKey(token.chainKey)?.liveSend !== "disabled");
+  const tierOff = liveTierBlocked(deps.mode, deps.supportTierFor, intent.token.chainKey);
+  if (deps.mode === "live" && !useHyper && (spec?.liveSend === "disabled" || tierOff)) {
+    const other = alternates.some((token) => chainByKey(token.chainKey)?.liveSend !== "disabled" && !liveTierBlocked(deps.mode, deps.supportTierFor, token.chainKey));
+    const reason = tierOff ? "chain is not enabled for live sends" : (spec?.gap ?? "live send disabled for this chain");
     if (!other) {
-      const report = skipped(intent, latency, spec.gap ?? "live send disabled for this chain", venueKey, deps.mode);
+      const report = skipped(intent, latency, reason, venueKey, deps.mode);
       reportsOf(deps).set(intent.idempotencyKey, report);
       return report;
     }
-    primaryBlocked = spec.gap ?? "live send disabled for this chain";
+    primaryBlocked = reason;
   }
 
   if (useHyper && intent.hyperliquid) {

@@ -25,3 +25,7 @@ export function supportByChain(chainKeys: Iterable<string>, raw: string | undefi
 export function supportTierFor(support: Readonly<Record<string, SupportTier>>, chainKey: string): SupportTier {
   return support[chainKey] ?? defaultSupportTier(chainKey);
 }
+
+export function liveTierBlocked(mode: "live" | "dry_run", tierFor: ((chainKey: string) => SupportTier) | undefined, chainKey: string): boolean {
+  return mode === "live" && tierFor !== undefined && tierFor(chainKey) !== "live";
+}
