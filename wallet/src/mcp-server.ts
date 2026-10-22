@@ -8,6 +8,7 @@ export type McpDeps = {
   resolverAuthToken: string | null;
   approvalMode: ApprovalMode;
   live: boolean;
+  screenedLiveListing?: boolean;
   fetchImpl?: typeof fetch;
 };
 
@@ -48,7 +49,7 @@ export async function callTool(deps: McpDeps, name: string, args: Record<string,
   if (name === "request_swap") return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/execute", args);
   if (name === "plan_rebalance") return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/rebalance", args);
   if (name === "request_listing") {
-    const gate = approvalGate(deps.approvalMode, { live: deps.live, screened: true });
+    const gate = approvalGate(deps.approvalMode, { live: deps.live, screened: deps.screenedLiveListing ?? false });
     if (gate.action !== "sign") return { status: "pending_approval", action: gate.action, reason: gate.reason };
     return callHttp(deps, deps.executorUrl, deps.executorAuthToken, "/listing", args);
   }
@@ -87,6 +88,7 @@ if (entry.endsWith("mcp-server.js")) {
     resolverAuthToken: process.env.RESOLVER_AUTH_TOKEN ?? process.env.AUTH_TOKEN ?? null,
     approvalMode: parseApprovalMode(process.env.WALLET_APPROVAL_MODE),
     live: process.env.LISTING_TRADER_LIVE === "true",
+    screenedLiveListing: process.env.TOKEN_SCREENING === "true" || (process.env.LISTING_TRADER_LIVE === "true" && process.env.TOKEN_SCREENING !== "false"),
   };
   const handle = createHandler(deps);
   const lines = createInterface({ input: process.stdin });
