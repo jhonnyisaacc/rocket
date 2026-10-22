@@ -653,6 +653,128 @@ test("live support tiers fall through to a live alternate and never quote a non-
   assert.deepEqual(blockedSends, []);
 });
 
+test("a flagged alternate is never quoted or sent, and a disabled hypercore route is never sent", async () => {
+  const holdings = ["ethereum", "base"].map((chainKey) => ({
+    symbol: "USDC",
+    address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    amount: 20,
+    usd: 20,
+    native: false,
+    decimals: 6,
+    chainKey,
+  }));
+  const baseDeps = (quoted: number[], sends: string[], shortfall: boolean): ExecutorDeps => ({
+    config: {
+      maxUsdPerTrade: 5,
+      dailyUsdCap: 25,
+      maxSlippageBps: 100,
+      slippageHardMaxBps: 300,
+      maxLeverage: 1,
+      minLiquidityUsd: 75_000,
+      killSwitch: false,
+      enabledChainKeys: new Set(["ethereum", "base"]),
+    },
+    mode: "live",
+    spentTodayUsd: 0,
+    quoteHop: async (hop) => {
+      const chainId = hop.chain.kind === "evm" ? hop.chain.chainId : 0;
+      quoted.push(chainId);
+      return { priceImpactPct: chainId === 8453 ? 0.1 : 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
+    },
+    markPrice: async () => null,
+    send: async (request) => {
+      sends.push(request.chain.kind === "evm" ? String(request.chain.chainId) : request.chain.kind);
+      return { venue: "chain", outcome: "landed", txs: [{ chainKey: "base", txHash: "0x01", from: "owner", to: "router", value: "0", outcome: "landed" }], held: null, shortfall };
+    },
+    readBalance: async () => 20,
+    priceOf: () => 1,
+    now: () => 1_050,
+  });
+  const swap = (key: string, primary: SwapIntent["token"], alternates: SwapIntent["alternates"]): SwapIntent => ({
+    idempotencyKey: key,
+    side: "buy",
+    notionalUsd: 5,
+    slippageBps: 50,
+    token: primary,
+    holdings,
+    hyperliquid: null,
+    receivedAtMs: 0,
+    alternates,
+  });
+
+  resetExecutorState();
+  const flagQuoted: number[] = [];
+  const flagSends: string[] = [];
+  const flagged = await execute(swap("flag-source", tierToken("base", 8453), []), baseDeps(flagQuoted, flagSends, true));
+  assert.equal(flagged.decision, "sent");
+  const altQuoted: number[] = [];
+  const altSends: string[] = [];
+  const picked = await execute(swap("flag-alternate", tierToken("ethereum", 1), [tierToken("base", 8453)]), baseDeps(altQuoted, altSends, false));
+  assert.equal(picked.decision, "sent");
+  assert.equal(picked.venue, "ethereum");
+  assert.deepEqual(altQuoted, [1]);
+  assert.deepEqual(altSends, ["1"]);
+
+  const hyperToken: SwapIntent["token"] = {
+    symbol: "TKN",
+    address: "mint",
+    decimals: 6,
+    chain: { kind: "solana" },
+    chainKey: "solana",
+    pairMap: buildPairMap([
+      { poolAddress: "p", dex: "raydium", chainKey: "solana", baseSymbol: "TKN", baseAddress: "mint", quoteSymbol: "SOL", quoteAddress: "So11111111111111111111111111111111111111112", liquidityUsd: 100, priceUsd: 0.5, baseDecimals: 6 },
+    ]),
+  };
+  const hyperIntent = (key: string): SwapIntent => ({
+    idempotencyKey: key,
+    side: "buy",
+    notionalUsd: 5,
+    slippageBps: 50,
+    token: hyperToken,
+    holdings: [{ symbol: "USDC", address: "usdc", amount: 20, usd: 20, native: false, decimals: 6, chainKey: "solana" }],
+    hyperliquid: { coin: "TKN", assetIndex: 4, market: "perp", maxLeverage: 5 },
+    receivedAtMs: 0,
+    alternates: [{ ...tierToken("base", 8453), pairMap: buildPairMap([{ poolAddress: "p", dex: "uniswap", chainKey: "base", baseSymbol: "TKN", baseAddress: contract, quoteSymbol: "USDC", quoteAddress: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", liquidityUsd: 100, priceUsd: 0.5, baseDecimals: 6 }]) }],
+  });
+  const hyperDeps = (sends: string[], enabled: string[], tier: "live" | "disabled"): ExecutorDeps => ({
+    config: {
+      maxUsdPerTrade: 5,
+      dailyUsdCap: 25,
+      maxSlippageBps: 100,
+      slippageHardMaxBps: 300,
+      maxLeverage: 1,
+      minLiquidityUsd: 75_000,
+      killSwitch: false,
+      enabledChainKeys: new Set(enabled),
+    },
+    mode: "live",
+    spentTodayUsd: 0,
+    quoteHop: async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true }),
+    markPrice: async () => 1,
+    szDecimals: async () => 2,
+    send: async () => {
+      sends.push("hypercore");
+      return { venue: "hypercore", txs: [], fill: { totalSz: "1", avgPx: "1" } };
+    },
+    readBalance: async () => 20,
+    priceOf: () => 1,
+    supportTierFor: (chainKey) => (chainKey === "hypercore" ? tier : "live"),
+    now: () => 1_050,
+  });
+
+  resetExecutorState();
+  const tierSends: string[] = [];
+  const tierOff = await execute(hyperIntent("hyper-tier-off"), hyperDeps(tierSends, ["solana", "base", "hypercore"], "disabled"));
+  assert.equal(tierOff.decision, "skipped");
+  assert.deepEqual(tierSends, []);
+
+  resetExecutorState();
+  const disabledSends: string[] = [];
+  const disabled = await execute(hyperIntent("hyper-disabled"), hyperDeps(disabledSends, ["solana", "base"], "live"));
+  assert.equal(disabled.decision, "skipped");
+  assert.deepEqual(disabledSends, []);
+});
+
 test("SOLANA_PROGRAM_ALLOWLIST adds to the base programs", () => {
   const extra = "Extra111111111111111111111111111111111111";
   const config = loadConfig({ SOLANA_PROGRAM_ALLOWLIST: extra });

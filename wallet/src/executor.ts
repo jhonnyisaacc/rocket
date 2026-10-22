@@ -7,8 +7,8 @@ import type { PriceOf } from "./prices.js";
 import { spendDay, type SpendScope } from "./spend.js";
 import { pickRoute } from "./routing.js";
 import { buildLeverage, buildOrder, cappedLimitPx, orderSize, wirePrice, type HyperliquidAction } from "./hyperliquid.js";
-import { quotePlan } from "./executor/quotes.js";
-import { liveTierBlocked, type SupportTier } from "./support.js";
+import { keepScreened, publicRoute, quotePlan } from "./executor/quotes.js";
+import { liveTierBlocked, sendBlock, type SupportTier } from "./support.js";
 
 export type HopQuote = {
   priceImpactPct: number | null;
@@ -69,7 +69,7 @@ export type ExecutorDeps = {
   spendScope?: SpendScope;
 };
 
-// Reports are per mode so a dry-run preview never answers for a live trade with the same key.
+// Reports are per mode.
 export type ExecutorState = {
   reports: Record<ExecutorDeps["mode"], Map<string, ExecutionReport>>;
   spent: { day: string; usd: number };
@@ -143,11 +143,6 @@ function skipped(intent: SwapIntent, latency: Latency, reason: string, venue: st
     route: null,
     latency,
   };
-}
-
-function publicRoute(route: RouteQuote | null): RouteQuote | null {
-  if (!route?.legs) return route;
-  return { ...route, legs: route.legs.map(({ quote: _quote, ...leg }) => leg) };
 }
 
 async function commitLive(
@@ -241,16 +236,14 @@ async function commitLive(
   return report;
 }
 
-type Screened = { ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> };
+function flagged(deps: ExecutorDeps, chainKey: string, address: string): boolean {
+  return stateOf(deps).flagged.has(tokenKey(chainKey, address)) || tokenFlagged(chainKey, address);
+}
 
-async function keepScreened(intent: SwapIntent, deps: ExecutorDeps): Promise<Screened> {
-  const alternates = intent.alternates ?? [];
-  if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates };
-  const screen = deps.screenToken;
-  const verdict = (token: SwapIntent["token"]) => screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address }).catch(() => "deny" as const);
-  const [primary, ...rest] = await Promise.all([intent.token, ...alternates].map(verdict));
-  if (primary !== "allow") return { ok: false };
-  return { ok: true, alternates: alternates.filter((_, index) => rest[index] === "allow") };
+function blockReport(intent: SwapIntent, deps: ExecutorDeps, latency: Latency, venue: string, reason: string): ExecutionReport {
+  const report = skipped(intent, latency, reason, venue, deps.mode);
+  reportsOf(deps).set(intent.idempotencyKey, report);
+  return report;
 }
 
 type CandidateQuotes = { quotes: RouteQuote[]; unsized: boolean; unread: string | null; sized: boolean; crashed?: unknown };
@@ -267,6 +260,7 @@ async function quoteCandidate(intent: SwapIntent, token: SwapIntent["token"], de
     liquidityUsd: token.pairMap.top?.liquidityUsd ?? null,
   });
   if (!allowed.ok) return none;
+  if (flagged(deps, token.chainKey, token.address)) return none;
   if (deps.mode === "live" && chainByKey(token.chainKey)?.liveSend === "disabled") return none;
   if (liveTierBlocked(deps.mode, deps.supportTierFor, token.chainKey)) return none;
   try {
@@ -298,7 +292,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reportsOf(deps).set(intent.idempotencyKey, report);
     return report;
   }
-  if (stateOf(deps).flagged.has(tokenKey(intent.token.chainKey, intent.token.address)) || tokenFlagged(intent.token.chainKey, intent.token.address)) {
+  if (flagged(deps, intent.token.chainKey, intent.token.address)) {
     const report = skipped(intent, { alertReceivedMs: intent.receivedAtMs }, "token flagged for a transfer shortfall", intent.token.chainKey, deps.mode);
     reportsOf(deps).set(intent.idempotencyKey, report);
     return report;
@@ -389,6 +383,8 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
       reportsOf(deps).set(intent.idempotencyKey, report);
       return report;
     }
+    const hyperBlock = sendBlock(deps.mode, deps.supportTierFor, "hypercore", deps.config.enabledChainKeys, false);
+    if (hyperBlock) return blockReport(intent, deps, latency, "hypercore", hyperBlock);
     return commitLive(
       intent,
       deps,
@@ -450,6 +446,9 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
     reportsOf(deps).set(intent.idempotencyKey, report);
     return report;
   }
+  const lastBuy = route.legs?.[route.legs.length - 1]?.buyAddress;
+  const finalBlock = sendBlock(deps.mode, deps.supportTierFor, routeVenue, deps.config.enabledChainKeys, lastBuy ? flagged(deps, routeVenue, lastBuy) : false);
+  if (finalBlock) return blockReport(intent, deps, latency, routeVenue, finalBlock);
   return commitLive(
     intent,
     deps,
