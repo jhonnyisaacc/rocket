@@ -10,7 +10,7 @@ export async function vendorResponse(fetchImpl: typeof fetch, url: string, init:
     if (!location || !followSameHost) return response;
     if (hops === 3) throw new Error("vendor redirect limit reached");
     const next = new URL(location, current);
-    if (next.host !== origin.host || (next.protocol !== "https:" && next.protocol !== "http:")) throw new Error("vendor redirect left the vendor host");
+    if (next.host !== origin.host || next.protocol !== origin.protocol) throw new Error("vendor redirect left the vendor host");
     current = next.toString();
   }
   throw new Error("vendor redirect limit reached");

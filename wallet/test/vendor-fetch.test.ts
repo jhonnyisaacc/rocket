@@ -22,6 +22,11 @@ test("a vendor redirect to another host is rejected and a same-host redirect is 
   assert.deepEqual(modes, ["manual", "manual"]);
 });
 
+test("a vendor redirect that drops to plaintext is rejected", async () => {
+  const downgrade = async () => new Response(null, { status: 302, headers: { location: "http://vendor.example/v2/quote" } });
+  await assert.rejects(() => vendorResponse(downgrade as typeof fetch, "https://vendor.example/quote", {}), /left the vendor host/);
+});
+
 test("a vendor body over the cap is rejected", async () => {
   const response = new Response("x".repeat(64), { status: 200 });
   await assert.rejects(() => readVendorText(response, 16), /too large/);

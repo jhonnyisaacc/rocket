@@ -137,12 +137,17 @@ function taxTooHigh(raw: string | undefined, cap: number): boolean {
 
 async function screenBlockaid(config: AppConfig, chain: string, address: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const body = await withTimeout(config.liveLookupTimeoutMs, async (signal) => {
-    const response = await vendorResponse(fetchImpl, "https://api.blockaid.io/v0/token/scan", {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
-      body: JSON.stringify({ chain, address }),
-      signal,
-    });
+    const response = await vendorResponse(
+      fetchImpl,
+      "https://api.blockaid.io/v0/token/scan",
+      {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
+        body: JSON.stringify({ chain, address }),
+        signal,
+      },
+      false,
+    );
     return response.ok ? (JSON.parse(await readVendorText(response)) as unknown) : null;
   });
   if (body === null) return "unavailable";
