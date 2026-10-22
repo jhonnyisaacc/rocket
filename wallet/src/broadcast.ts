@@ -12,6 +12,7 @@ import type { AgedTx } from "./spend.js";
 import { defaultIo, evmContext, journal, onAnyRpc, rpcsFor, runLegs, solanaContext, type Ctx, type PreparedLeg, type SendHooks, type SendIo } from "./broadcast/shared.js";
 import { prepareEvmLeg } from "./broadcast/evm.js";
 import { prepareSolanaLeg } from "./broadcast/solana.js";
+import { readVendorText, vendorResponse } from "./vendor-fetch.js";
 export * from "./broadcast/shared.js";
 export * from "./broadcast/evm.js";
 export * from "./broadcast/solana.js";
@@ -36,13 +37,18 @@ async function sendHypercore(ctx: Ctx, request: SendRequest): Promise<SendResult
     await journal(ctx, record);
     let body: unknown;
     try {
-      const response = await fetchImpl(`${config.hyperliquidUrl.replace(/\/$/, "")}/exchange`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ action, nonce, signature, vaultAddress: null }),
-      });
+      const response = await vendorResponse(
+        fetchImpl,
+        `${config.hyperliquidUrl.replace(/\/$/, "")}/exchange`,
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ action, nonce, signature, vaultAddress: null }),
+        },
+        false,
+      );
       if (!response.ok) throw new Error(`hyperliquid exchange returned ${response.status}`);
-      body = await response.json();
+      body = JSON.parse(await readVendorText(response)) as unknown;
     } catch (error) {
       throw new BroadcastError(redactError(error, secrets), order);
     }

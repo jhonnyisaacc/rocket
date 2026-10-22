@@ -8,6 +8,7 @@ import { JUPITER_PROGRAM_ID, WSOL_MINT } from "../signing-policy.js";
 import { z } from "zod";
 import type { TxOutcome } from "../domain.js";
 import { redactError } from "../redact.js";
+import { readVendorText, vendorResponse } from "../vendor-fetch.js";
 import { assertMinOut, digits, executionSlippageBps, journal, ourMinOut, overCap, referenceFor, reusableQuote, reuseOrFirm, type Confirmed, type Ctx, type PreparedLeg, type SendIo, type SolanaCtx, type SolanaRpc, type SolanaStatus, type Submitted } from "./shared.js";
 
 export function solanaSignature(signed: Uint8Array): string {
@@ -17,13 +18,13 @@ export function solanaSignature(signed: Uint8Array): string {
 }
 
 export async function sendJito(fetchImpl: typeof fetch, url: string, signed: Uint8Array): Promise<void> {
-  const response = await fetchImpl(url, {
+  const response = await vendorResponse(fetchImpl, url, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "sendTransaction", params: [Buffer.from(signed).toString("base64"), { encoding: "base64" }] }),
-  });
+  }, false);
   if (!response.ok) throw new Error("jito send failed");
-  const body = z.object({ error: z.unknown().optional() }).passthrough().parse(await response.json());
+  const body = z.object({ error: z.unknown().optional() }).passthrough().parse(JSON.parse(await readVendorText(response)));
   if (body.error) throw new Error("jito send failed");
 }
 

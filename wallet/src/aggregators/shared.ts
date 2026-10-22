@@ -8,6 +8,7 @@ import { validSellAmount, type QuoteHop } from "../quote-hop.js";
 import type { HopQuote } from "../executor.js";
 import { ProviderGuard, classifyHttp, retryAfterAt } from "../provider-guard.js";
 import { impactPctFromUsd, readJupiter, readLifi, readZeroEx } from "../quotes.js";
+import { readVendorText, vendorResponse } from "../vendor-fetch.js";
 
 const ZEROEX = new Set([1, 10, 56, 137, 143, 8453, 42161, 59144, 534352, 4663, 999]);
 const ONEINCH = new Set([1, 10, 56, 137, 324, 8453, 42161, 59144]);
@@ -152,8 +153,8 @@ export async function callProvider(config: AppConfig, id: string, url: string, i
   const guard = guardFor(config);
   if (guard.before(id) !== "allow") return null;
   try {
-    const response = await fetchImpl(url, { ...init, signal });
-    const text = await response.text();
+    const response = await vendorResponse(fetchImpl, url, { ...init, signal });
+    const text = await readVendorText(response);
     const kind = classifyHttp(response.status, text);
     if (kind === "compliance") {
       guard.compliance(id);

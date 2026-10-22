@@ -4,6 +4,7 @@ import { keccak256 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import type { Hex } from "viem";
 import { Secret } from "./redact.js";
+import { readVendorText, vendorResponse } from "./vendor-fetch.js";
 
 export type OrderAction = {
   type: "order";
@@ -100,14 +101,14 @@ export function cappedLimitPx(mark: number, isBuy: boolean, capBps: number): num
 
 export async function assertApprovedAgent(url: string, master: string, agent: string, fetchImpl: typeof fetch, nowMs = Date.now()): Promise<void> {
   const body: unknown = await withTimeout(1500, async (signal) => {
-    const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+    const response = await vendorResponse(fetchImpl, `${url.replace(/\/$/, "")}/info`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ type: "extraAgents", user: master }),
       signal,
     });
     if (!response.ok) throw new Error("hyperliquid agent check failed");
-    return response.json() as Promise<unknown>;
+    return JSON.parse(await readVendorText(response)) as unknown;
   });
   if (!Array.isArray(body)) throw new Error("hyperliquid agent is not approved");
   const agents = body.flatMap((row) => {
@@ -220,13 +221,13 @@ export async function fetchSzDecimals(url: string, market: { market: "perp" | "s
     tokens?: Array<{ szDecimals?: number; index?: number }>;
   };
   const body = await withTimeout(1500, async (signal) => {
-    const response = await fetchImpl(`${url.replace(/\/$/, "")}/info`, {
+    const response = await vendorResponse(fetchImpl, `${url.replace(/\/$/, "")}/info`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ type: market.market === "spot" ? "spotMeta" : "meta" }),
       signal,
     });
-    return response.ok ? ((await response.json()) as Meta) : null;
+    return response.ok ? (JSON.parse(await readVendorText(response)) as Meta) : null;
   });
   if (!body) return null;
   let value: number | undefined;

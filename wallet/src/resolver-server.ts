@@ -14,6 +14,7 @@ import { alertSchema } from "./schemas.js";
 import { screenToken } from "./screening.js";
 import { fillTokenDecimals } from "./token-decimals.js";
 import { z } from "zod";
+import { vendorResponse } from "./vendor-fetch.js";
 
 export const watchlist = new MemoryWatchlist();
 
@@ -59,7 +60,7 @@ export async function getJson(url: string, init: RequestInit, fetchImpl: typeof 
       const aborted = new Promise<never>((_resolve, reject) => {
         signal.addEventListener("abort", () => reject(signal.reason ?? new Error("request timed out")), { once: true });
       });
-      const response = await Promise.race([fetchImpl(url, { ...init, signal }), aborted]);
+      const response = await Promise.race([vendorResponse(fetchImpl, url, { ...init, signal }), aborted]);
       if (!response.ok) throw new Error(`lookup failed ${response.status}`);
       return readCapped(response, maxBodyBytes);
     },
