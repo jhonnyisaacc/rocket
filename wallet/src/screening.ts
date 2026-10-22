@@ -2,6 +2,7 @@ import { z } from "zod";
 import { withTimeout } from "./timeout.js";
 import type { AppConfig } from "./config.js";
 import type { ChainRef } from "./domain.js";
+import { readVendorText, vendorResponse } from "./vendor-fetch.js";
 
 const BLOCKAID_CHAIN: Record<string, string> = {
   ethereum: "ethereum",
@@ -113,8 +114,8 @@ async function screenGoPlus(config: AppConfig, url: string, contract: string, fe
   const headers: Record<string, string> = {};
   if (config.keys.goplus) headers.authorization = `Bearer ${config.keys.goplus}`;
   const body = await withTimeout(config.liveLookupTimeoutMs, async (signal) => {
-    const response = await fetchImpl(url, { headers, signal });
-    return response.ok ? ((await response.json()) as unknown) : null;
+    const response = await vendorResponse(fetchImpl, url, { headers, signal });
+    return response.ok ? (JSON.parse(await readVendorText(response)) as unknown) : null;
   });
   if (body === null) return "unavailable";
   const parsed = goplusSchema.safeParse(body);
@@ -136,13 +137,13 @@ function taxTooHigh(raw: string | undefined, cap: number): boolean {
 
 async function screenBlockaid(config: AppConfig, chain: string, address: string, fetchImpl: typeof fetch): Promise<Outcome> {
   const body = await withTimeout(config.liveLookupTimeoutMs, async (signal) => {
-    const response = await fetchImpl("https://api.blockaid.io/v0/token/scan", {
+    const response = await vendorResponse(fetchImpl, "https://api.blockaid.io/v0/token/scan", {
       method: "POST",
       headers: { "content-type": "application/json", "x-api-key": config.keys.blockaid ?? "" },
       body: JSON.stringify({ chain, address }),
       signal,
     });
-    return response.ok ? ((await response.json()) as unknown) : null;
+    return response.ok ? (JSON.parse(await readVendorText(response)) as unknown) : null;
   });
   if (body === null) return "unavailable";
   const parsed = blockaidSchema.safeParse(body);
