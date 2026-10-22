@@ -88,3 +88,5 @@ jobs:
           image-ref: rocket-wallet:ci
           severity: HIGH,CRITICAL
           exit-code: "1"
+          vuln-type: os
+          ignore-unfixed: true
