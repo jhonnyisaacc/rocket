@@ -11,7 +11,7 @@ An MCP server runs from `dist/src/mcp-server.js` over stdio. It wraps the execut
 | `wallet_status` | Executor and resolver `/status` | None |
 | `resolve_alert` | Resolver `/alert` | None in live mode |
 | `request_swap` | Executor `/execute` | None. The route always runs dry_run |
-| `request_listing` | Executor `/listing` | Live only under an `autonomous` grant |
+| `request_listing` | Executor `/listing` | Live only under an `autonomous` grant with executor token screening on |
 | `plan_rebalance` | Executor `/rebalance` | None. It returns `would_send` |
 
 ## Install
