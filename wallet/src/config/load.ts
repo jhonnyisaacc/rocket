@@ -88,6 +88,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
   if (manifest && env.ROUTER_ALLOWLIST_JSON && JSON.stringify(manifestRouters(manifest)) !== JSON.stringify(legacyRouters)) {
     throw new Error("WALLET_DEPLOYMENT_MANIFEST_JSON and ROUTER_ALLOWLIST_JSON disagree on routers");
   }
+  const maxWithdrawAmount = intEnv(env, "MAX_WITHDRAW_AMOUNT", 1);
   const rpcUrlsByChainKey = rpcLists(env);
   const rpcByChainKey: Record<string, string> = {};
   for (const [key, urls] of Object.entries(rpcUrlsByChainKey)) {
@@ -164,7 +165,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): AppConfig {
     reconcileIntervalMs: intEnv(env, "RECONCILE_INTERVAL_MS", 5 * 60 * 1000),
     adminToken: env.ADMIN_TOKEN ?? null,
     withdrawEnabled: env.WITHDRAW_ENABLED === "true",
-    maxWithdrawAmount: intEnv(env, "MAX_WITHDRAW_AMOUNT", 1),
+    maxWithdrawAmount,
+    maxWithdrawDailyAmount: intEnv(env, "MAX_WITHDRAW_DAILY_AMOUNT", maxWithdrawAmount),
     tokenRecoveryAllowlist: splitList(env.TOKEN_RECOVERY_ALLOWLIST),
     spendTimezone: spendTimezone(env.SPEND_TIMEZONE),
     minPoolAgeHours: intEnv(env, "MIN_POOL_AGE_HOURS", 24),

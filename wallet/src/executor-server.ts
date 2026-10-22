@@ -22,12 +22,16 @@ import {
   backfillStrategyIds,
   closeSpendPools,
   commitSpend,
+  commitWithdraw,
+  createMemoryWithdrawJournal,
   listingKey,
   readKillSwitch,
   reconcileReserved,
   recordSpend,
   recordTx,
   releaseSpend,
+  releaseWithdraw,
+  reserveWithdraw,
   spendDay,
   spentOnDay,
   type SpendScope,
@@ -183,6 +187,7 @@ export async function createExecutorApp(
   fetchImpl: typeof fetch = fetch,
 ): Promise<FastifyInstance> {
   const app = await buildApp({ authTokens: config.executorAuthTokens, secrets, logger });
+  const memoryWithdraw = createMemoryWithdrawJournal();
   const guard = { preHandler: app.auth([app.verifyBearer]), config: mutatingLimit };
   const listingGuard = { preHandler: app.auth([app.verifyBearer]), config: perMinute(config.listingRateLimitPerMin) };
   app.get("/health", async () => ({ ok: true }));
@@ -267,6 +272,7 @@ export async function createExecutorApp(
       if (!adminOk) return reply.code(401).send({ error: "unauthorized" });
       return reply.code(400).send({ error: "invalid request" });
     }
+    const dbStopped = runtime.killSwitchEnabled ? await runtime.killSwitchEnabled().catch(() => true) : false;
     const decision = decideWithdraw({
       adminOk: Boolean(config.adminToken) && tokenMatches(presented, config.adminToken ?? ""),
       enabled: config.withdrawEnabled,
@@ -276,35 +282,61 @@ export async function createExecutorApp(
       mint: parsed.data.mint,
       recoveryAllowlist: config.tokenRecoveryAllowlist,
       live: config.live,
-      killSwitch: config.killSwitch,
+      killSwitch: config.killSwitch || dbStopped,
       signerReady: signer !== null,
       chainKey: parsed.data.chainKey,
       decimals: parsed.data.decimals,
     });
     if (decision.error) return reply.code(decision.http).send({ error: decision.error });
     if (decision.decision === "would_send") return { decision: "would_send", to: parsed.data.to, mode: config.live ? "live" : "dry_run" };
+    if (!parsed.data.idempotencyKey) return reply.code(409).send({ error: "live withdraw needs an idempotencyKey" });
     if (!signer || !parsed.data.chainKey || parsed.data.amount === undefined) return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
+    const withdrawKey = `withdraw:${parsed.data.idempotencyKey}`;
+    const withdrawScope = `${parsed.data.chainKey}:${parsed.data.mint ?? "native"}`;
+    const withdrawDay = spendDay(new Date(), config.spendTimezone);
+    const reserved = config.databaseUrl
+      ? await reserveWithdraw(config.databaseUrl, withdrawKey, withdrawScope, parsed.data.amount, withdrawDay, config.maxWithdrawDailyAmount)
+      : await memoryWithdraw.reserve(withdrawKey, withdrawScope, parsed.data.amount, withdrawDay, config.maxWithdrawDailyAmount);
+    if (reserved === "exists") return reply.code(409).send({ error: "duplicate withdraw" });
+    if (reserved === "cap") return reply.code(403).send({ error: "withdraw exceeds the daily cap" });
+    const commitKey = async () => {
+      if (config.databaseUrl) await commitWithdraw(config.databaseUrl, withdrawKey);
+      else await memoryWithdraw.commit(withdrawKey);
+    };
+    const releaseKey = async () => {
+      if (config.databaseUrl) await releaseWithdraw(config.databaseUrl, withdrawKey).catch(() => undefined);
+      else await memoryWithdraw.release(withdrawKey);
+    };
     const onTx = async (tx: TxRecord) => runtime.recordTx?.(null, tx);
     let tx: TxRecord;
-    if (!parsed.data.mint) {
-      tx = await app.drain.track(() => withdrawNative({ config, signer, chainKey: parsed.data.chainKey as string, to: parsed.data.to, amount: parsed.data.amount as number, secrets, onTx }));
-    } else {
-      if (parsed.data.decimals === undefined) return reply.code(409).send({ error: "token withdraw needs decimals" });
-      const recovery = { chainKey: parsed.data.chainKey, amount: parsed.data.amount, mint: parsed.data.mint, decimals: parsed.data.decimals };
-      tx = await app.drain.track(() =>
-        recoverToken({
-          config,
-          signer,
-          chainKey: recovery.chainKey,
-          to: parsed.data.to,
-          amount: recovery.amount,
-          mint: recovery.mint,
-          decimals: recovery.decimals,
-          secrets,
-          onTx,
-        }),
-      );
+    try {
+      if (!parsed.data.mint) {
+        tx = await app.drain.track(() => withdrawNative({ config, signer, chainKey: parsed.data.chainKey as string, to: parsed.data.to, amount: parsed.data.amount as number, secrets, onTx }));
+      } else {
+        if (parsed.data.decimals === undefined) {
+          await releaseKey();
+          return reply.code(409).send({ error: "token withdraw needs decimals" });
+        }
+        const recovery = { chainKey: parsed.data.chainKey, amount: parsed.data.amount, mint: parsed.data.mint, decimals: parsed.data.decimals };
+        tx = await app.drain.track(() =>
+          recoverToken({
+            config,
+            signer,
+            chainKey: recovery.chainKey,
+            to: parsed.data.to,
+            amount: recovery.amount,
+            mint: recovery.mint,
+            decimals: recovery.decimals,
+            secrets,
+            onTx,
+          }),
+        );
+      }
+    } catch (error) {
+      await releaseKey();
+      throw error;
     }
+    await commitKey();
     return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint, tx };
   });
   app.post("/rebalance", guard, async (request, reply) => {

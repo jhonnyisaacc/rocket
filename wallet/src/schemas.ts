@@ -84,6 +84,7 @@ export const alertSchema = z.object({
 });
 
 export const withdrawSchema = z.object({
+  idempotencyKey: z.string().min(1).max(80).optional(),
   to: z.string().min(1).max(128),
   chainKey: z.string().min(1).max(40).optional(),
   amount: z.number().positive().optional(),

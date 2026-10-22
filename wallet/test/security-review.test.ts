@@ -21,7 +21,7 @@ import { redactError, Secret, trackSecret, zeroLoadedSecrets } from "../src/reda
 import { createResolverApp, refreshLiquidity } from "../src/resolver-server.js";
 import { MemoryWatchlist } from "../src/watchlist.js";
 import { assertEvmSigning, DEFAULT_MAX_VALUE_WEI, JUPITER_PROGRAM_ID, SOLANA_BASE_PROGRAMS } from "../src/signing-policy.js";
-import { createMemoryJournal, spendDay } from "../src/spend.js";
+import { createMemoryJournal, createMemoryWithdrawJournal, spendDay } from "../src/spend.js";
 import type { SwapIntent } from "../src/domain.js";
 
 const tokenAuth = "0123456789abcdef";
@@ -373,6 +373,55 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
   await disabled.close();
   assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", WITHDRAW_ENABLED: "true" }), "executor"), /OWNER_WITHDRAW_ADDRESSES/);
   assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", WITHDRAW_ENABLED: "true", OWNER_WITHDRAW_ADDRESSES: "not-an-address" }), "executor"), /invalid address/);
+});
+
+test("a database kill switch stops a live withdraw and a live withdraw needs an idempotency key", async () => {
+  const config = loadConfig({
+    EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
+    ADMIN_TOKEN: adminAuth,
+    LISTING_TRADER_LIVE: "true",
+    WITHDRAW_ENABLED: "true",
+    OWNER_WITHDRAW_ADDRESSES: owner,
+    MAX_WITHDRAW_AMOUNT: "1",
+  });
+  const headers = { "content-type": "application/json", authorization: `Bearer ${tokenAuth}`, "x-admin-token": adminAuth };
+  const payload = { to: owner, amount: 1, chainKey: "base" };
+  const killed = await createExecutorApp(config, { ...runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), killSwitchEnabled: async () => true }, null, [], []);
+  const stopped = await killed.inject({ method: "POST", url: "/withdraw", headers, payload });
+  assert.equal(stopped.statusCode, 200);
+  assert.equal(stopped.json().decision, "would_send");
+  await killed.close();
+  const signer: TransactionSigner = {
+    backend: "keystore",
+    evmAddress: () => owner,
+    solanaAddress: () => null,
+    async signEvm() {
+      return "0x";
+    },
+    async signSolana() {
+      return new Uint8Array();
+    },
+    async signHyperliquid() {
+      return { r: "0x01", s: "0x02", v: 27 };
+    },
+  };
+  const open = await createExecutorApp(config, runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), signer, [], []);
+  const noKey = await open.inject({ method: "POST", url: "/withdraw", headers, payload });
+  assert.equal(noKey.statusCode, 409);
+  assert.equal(noKey.json().error, "live withdraw needs an idempotencyKey");
+  await open.close();
+});
+
+test("the withdraw journal blocks a duplicate key and a second asset scope keeps its own cap", async () => {
+  const journal = createMemoryWithdrawJournal();
+  assert.equal(await journal.reserve("withdraw:a", "base:native", 1, "2026-10-21", 1), "reserved");
+  assert.equal(await journal.reserve("withdraw:a", "base:native", 1, "2026-10-21", 1), "exists");
+  assert.equal(await journal.reserve("withdraw:b", "base:native", 1, "2026-10-21", 1), "cap");
+  assert.equal(await journal.reserve("withdraw:b", "solana:native", 1, "2026-10-21", 1), "reserved");
+  await journal.release("withdraw:b");
+  assert.equal(await journal.reserve("withdraw:b", "solana:native", 1, "2026-10-21", 1), "reserved");
+  await journal.commit("withdraw:a");
+  assert.equal(await journal.reserve("withdraw:c", "base:native", 1, "2026-10-21", 1), "cap");
 });
 
 test("two reservations that share a lock cannot both pass the daily cap", async () => {
