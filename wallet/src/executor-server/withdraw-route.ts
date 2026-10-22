@@ -3,7 +3,7 @@ import "../http.js";
 import { recoverToken, withdrawNative } from "../broadcast.js";
 import type { AppConfig } from "../config.js";
 import type { TxRecord } from "../domain.js";
-import { decideWithdraw, type ExecutorDeps } from "../executor.js";
+import { BroadcastError, decideWithdraw, type ExecutorDeps } from "../executor.js";
 import { tokenMatches, type TransactionSigner } from "../managed-signer.js";
 import { withdrawSchema } from "../schemas.js";
 import { spendDay } from "../spend.js";
@@ -41,7 +41,8 @@ export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOpti
     if (!parsed.data.idempotencyKey) return reply.code(409).send({ error: "live withdraw needs an idempotencyKey" });
     if (!signer || !parsed.data.chainKey || parsed.data.amount === undefined) return reply.code(409).send({ error: "live withdraw needs a signer, chainKey, and amount" });
     const withdrawKey = `withdraw:${parsed.data.idempotencyKey}`;
-    const withdrawScope = `${parsed.data.chainKey}:${parsed.data.mint ?? "native"}`;
+    const mintScope = parsed.data.mint ? (parsed.data.mint.startsWith("0x") ? parsed.data.mint.toLowerCase() : parsed.data.mint) : "native";
+    const withdrawScope = `${parsed.data.chainKey}:${mintScope}`;
     const withdrawDay = spendDay(new Date(), config.spendTimezone);
     const reserved = config.databaseUrl
       ? await reserveWithdraw(config.databaseUrl, withdrawKey, withdrawScope, parsed.data.amount, withdrawDay, config.maxWithdrawDailyAmount)
@@ -82,7 +83,8 @@ export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOpti
         );
       }
     } catch (error) {
-      await releaseKey();
+      const ambiguous = error instanceof BroadcastError && error.broadcast;
+      if (!ambiguous) await releaseKey();
       throw error;
     }
     await commitKey();
