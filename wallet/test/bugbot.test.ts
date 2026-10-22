@@ -551,6 +551,108 @@ test("a null or thrown read skips that holding and the other chain still quotes"
   await app.close();
 });
 
+function tierToken(chainKey: string, chainId: number): SwapIntent["token"] {
+  return {
+    symbol: "TKN",
+    address: contract,
+    decimals: 6,
+    chain: { kind: "evm", chainId },
+    chainKey,
+    pairMap: buildPairMap([
+      {
+        poolAddress: "pool",
+        dex: "uniswap",
+        chainKey,
+        baseSymbol: "TKN",
+        baseAddress: contract,
+        quoteSymbol: "USDC",
+        quoteAddress: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        liquidityUsd: 200_000,
+        priceUsd: 0.5,
+        baseDecimals: 6,
+      },
+    ]),
+  };
+}
+
+test("live support tiers fall through to a live alternate and never quote a non-live alternate", async () => {
+  const tiers = (chainKey: string): "live" | "dry_run" | "disabled" => (chainKey === "zksync" ? "dry_run" : chainKey === "monad" ? "disabled" : "live");
+  const tierIntent = (key: string, primary: SwapIntent["token"], alternates: SwapIntent["alternates"]): SwapIntent => ({
+    idempotencyKey: key,
+    side: "buy",
+    notionalUsd: 5,
+    slippageBps: 50,
+    token: primary,
+    holdings: ["zksync", "base", "monad"].map((chainKey) => ({
+      symbol: "USDC",
+      address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      amount: 20,
+      usd: 20,
+      native: false,
+      decimals: 6,
+      chainKey,
+    })),
+    hyperliquid: null,
+    receivedAtMs: 0,
+    alternates,
+  });
+  const tierDeps = (quoted: number[], sends: string[]): ExecutorDeps => ({
+    config: {
+      maxUsdPerTrade: 5,
+      dailyUsdCap: 25,
+      maxSlippageBps: 100,
+      slippageHardMaxBps: 300,
+      maxLeverage: 1,
+      minLiquidityUsd: 75_000,
+      killSwitch: false,
+      enabledChainKeys: new Set(["zksync", "base", "monad"]),
+    },
+    mode: "live",
+    spentTodayUsd: 0,
+    quoteHop: async (hop) => {
+      const chainId = hop.chain.kind === "evm" ? hop.chain.chainId : 0;
+      quoted.push(chainId);
+      return { priceImpactPct: chainId === 143 ? 0.1 : 0.2, feeUsd: 0.01, buyAmount: "10", signable: true };
+    },
+    markPrice: async () => null,
+    send: async (request) => {
+      sends.push(request.chain.kind === "evm" ? String(request.chain.chainId) : request.chain.kind);
+      return landedSend();
+    },
+    readBalance: async () => 20,
+    priceOf: () => 1,
+    supportTierFor: tiers,
+    now: () => 1_050,
+  });
+
+  resetExecutorState();
+  const fallthroughQuoted: number[] = [];
+  const fallthroughSends: string[] = [];
+  const fallthrough = await execute(tierIntent("tier-fallthrough", tierToken("zksync", 324), [tierToken("base", 8453)]), tierDeps(fallthroughQuoted, fallthroughSends));
+  assert.equal(fallthrough.decision, "sent");
+  assert.equal(fallthrough.venue, "base");
+  assert.deepEqual(fallthroughQuoted, [8453]);
+  assert.deepEqual(fallthroughSends, ["8453"]);
+
+  resetExecutorState();
+  const disabledQuoted: number[] = [];
+  const disabledSends: string[] = [];
+  const disabledAlternate = await execute(tierIntent("tier-disabled-alternate", tierToken("base", 8453), [tierToken("monad", 143)]), tierDeps(disabledQuoted, disabledSends));
+  assert.equal(disabledAlternate.decision, "sent");
+  assert.equal(disabledAlternate.venue, "base");
+  assert.deepEqual(disabledQuoted, [8453]);
+  assert.deepEqual(disabledSends, ["8453"]);
+
+  resetExecutorState();
+  const blockedQuoted: number[] = [];
+  const blockedSends: string[] = [];
+  const blocked = await execute(tierIntent("tier-blocked", tierToken("zksync", 324), [tierToken("monad", 143)]), tierDeps(blockedQuoted, blockedSends));
+  assert.equal(blocked.decision, "skipped");
+  assert.equal(blocked.reason, "chain is not enabled for live sends");
+  assert.deepEqual(blockedQuoted, []);
+  assert.deepEqual(blockedSends, []);
+});
+
 test("SOLANA_PROGRAM_ALLOWLIST adds to the base programs", () => {
   const extra = "Extra111111111111111111111111111111111111";
   const config = loadConfig({ SOLANA_PROGRAM_ALLOWLIST: extra });
