@@ -67,6 +67,7 @@ export type AppConfig = LimitConfig & {
   adminToken: string | null;
   withdrawEnabled: boolean;
   maxWithdrawAmount: number;
+  maxWithdrawDailyAmount: number;
   tokenRecoveryAllowlist: string[];
   spendTimezone: string;
   minPoolAgeHours: number;
