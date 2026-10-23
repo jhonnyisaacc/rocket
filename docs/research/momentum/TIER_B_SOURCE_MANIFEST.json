@@ -1,0 +1,5872 @@
+{
+  "audit": "MOM-DATA-002 Tier B availability; no feature/model scoring",
+  "audit_method": {
+    "catalog": "full paginated public S3 listings; all expected ZIP and CHECKSUM names tested",
+    "metrics": "all 1948 daily ZIP and sidecar names present; three days checksum/content sampled; within-file integrity of other days unverified",
+    "perp_funding": "all 144 ZIP bytes fetched and SHA-256 verified; all row event timestamps inspected, no features/labels/models computed",
+    "premium": "all 72 requested monthly ZIP and sidecar names present; two boundary ZIPs checksum/content sampled",
+    "source_receipts": "audit receipt timestamps are not historical availability"
+  },
+  "completed_at": "2026-10-02T21:07:07.364196+00:00",
+  "full_catalog_manifest_sha256": "f185102753e6134d4231a1b248250a3575e0e0f193e07a96a3632b2804313fb9",
+  "sources": {
+    "funding": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 48199,
+          "sha256": "0fef837c9747ef5a887f5361431c5ee25d1aa9859ca101de26774ab1d18e77d4",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2FfundingRate%2FBTCUSDT%2F&max-keys=1000"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 81,
+        "first_zip_key": "data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-01.zip",
+        "last_modified_max": "2026-10-01T08:47:54.000Z",
+        "last_modified_min": "2023-05-09T22:02:30.000Z",
+        "last_zip_key": "data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2026-09.zip",
+        "object_count": 162,
+        "zip_count": 81
+      },
+      "categories": [],
+      "expected_zip_count": 72,
+      "historical_pit": false,
+      "missing_checksum_keys": [],
+      "missing_zip_keys": [],
+      "prefix": "data/futures/um/monthly/fundingRate/BTCUSDT/",
+      "present_zip_count": 72,
+      "requested_range": [
+        "2020-01",
+        "2025-12"
+      ],
+      "source_vintage": "current corrected public archive observed at audit time",
+      "timestamp_audit": {
+        "duplicate_timestamp_count": 0,
+        "event_time_offset_from_nominal_ms_counts": {
+          "0": 3694,
+          "1": 674,
+          "10": 122,
+          "11": 96,
+          "12": 89,
+          "13": 75,
+          "14": 66,
+          "15": 65,
+          "16": 58,
+          "17": 38,
+          "18": 55,
+          "19": 26,
+          "2": 231,
+          "20": 22,
+          "21": 22,
+          "22": 11,
+          "23": 9,
+          "24": 7,
+          "25": 12,
+          "26": 5,
+          "27": 5,
+          "28": 5,
+          "29": 1,
+          "3": 192,
+          "30": 2,
+          "31": 3,
+          "33": 1,
+          "4": 196,
+          "43": 1,
+          "44": 1,
+          "45": 1,
+          "46": 1,
+          "47": 1,
+          "5": 208,
+          "6": 180,
+          "7": 148,
+          "8": 144,
+          "9": 109
+        },
+        "exact_grid_absent_count": 2882,
+        "expected_cadence_ms": 28800000,
+        "first_timestamp": 1577836800000,
+        "funding_interval_hours_values": [
+          "8"
+        ],
+        "last_timestamp": 1767196800001,
+        "missing_nominal_8h_slots": [],
+        "nominal_8h_slot_duplicate_count": 0,
+        "nominal_slot_audit_note": "Grouping by nominal 8h settlement slot is a diagnostic only. Retain actual calc_time when assigning event_time/availability; do not round the knowledge clock backward.",
+        "nonzero_event_time_offset_count": 2882,
+        "outside_requested_range": [],
+        "parsed_row_count": 6576,
+        "unique_timestamp_count": 6576
+      },
+      "verified_files": [
+        {
+          "bytes": 825,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1580486400000",
+            "8",
+            "0.00039858"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1577836800000",
+            "8",
+            "-0.00012359"
+          ],
+          "sha256": "7f81b2f3694d13779e7e896b69d60cd61e9444d7b9f9e90df761935e1c1b76e2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-01.zip"
+        },
+        {
+          "bytes": 885,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1582992000000",
+            "8",
+            "0.00062345"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-02.csv",
+          "row_count_including_header": 88,
+          "second_row": [
+            "1580515200000",
+            "8",
+            "0.00074991"
+          ],
+          "sha256": "6599466d108d120c64a078824326c063ed2d4335b3292e52c5e572f79166533a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-02.zip"
+        },
+        {
+          "bytes": 928,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1585670400001",
+            "8",
+            "-0.00016200"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1583020800000",
+            "8",
+            "0.00049317"
+          ],
+          "sha256": "eee845fde6336e29d25889563cba3d2cff2d4d640e51fb1f82ae9b28cedaee77",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-03.zip"
+        },
+        {
+          "bytes": 867,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1588262400000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1585699200002",
+            "8",
+            "-0.00009237"
+          ],
+          "sha256": "d009ce034d08c3dcf3e7f874b0f8b0ec76ba507bc6bb4e007e541df537bafbce",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-04.zip"
+        },
+        {
+          "bytes": 839,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1590940800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1588291200000",
+            "8",
+            "0.00021072"
+          ],
+          "sha256": "3f2b56dd6b9a42457009bb367d0adadd3cf7e2216cd325172d0089e3883125a8",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-05.zip"
+        },
+        {
+          "bytes": 791,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1593532800002",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1590969600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "30b3470ff98576578973d75e3c157a5cbf1778b11e4c26b4b4ff70a3cbb348ec",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-06.zip"
+        },
+        {
+          "bytes": 712,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1596211200000",
+            "8",
+            "0.00037716"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1593561600002",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "18dae7b11075fc0fba79ad47df46683415cba5d027caa69c66bc2a5c9d9b459a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-07.zip"
+        },
+        {
+          "bytes": 854,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1598889600001",
+            "8",
+            "0.00015461"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1596240000005",
+            "8",
+            "0.00027910"
+          ],
+          "sha256": "e6f6d1749f674c85d4766e0eb36af6ea40d91a0674234d30df80eb9876b094e3",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-08.zip"
+        },
+        {
+          "bytes": 838,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1601481600000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1598918400000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "7ae9a3b6afb2dc06e46080582908ec8c27063b707a14c7f1e679dc991ff48032",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-09.zip"
+        },
+        {
+          "bytes": 828,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1604160000000",
+            "8",
+            "0.00009204"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1601510400000",
+            "8",
+            "0.00007412"
+          ],
+          "sha256": "4c55b191c101f39c7fb193a6529665dd9e83302ca21876521e4c93b3902e9fb1",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-10.zip"
+        },
+        {
+          "bytes": 854,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1606752000000",
+            "8",
+            "0.00029481"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1604188800000",
+            "8",
+            "-0.00006386"
+          ],
+          "sha256": "676356a2d075caa51b4f8ada026e9430dc320ffd23d2343b13b7aa25324ed6d1",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-11.zip"
+        },
+        {
+          "bytes": 852,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1609430400010",
+            "8",
+            "0.00036744"
+          ],
+          "member": "BTCUSDT-fundingRate-2020-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1606780800000",
+            "8",
+            "0.00045929"
+          ],
+          "sha256": "d7390f90edf54cc4ad9bbe78e2f6b291ae06ad9539f591a2d0fce445873bbd63",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2020-12.zip"
+        },
+        {
+          "bytes": 981,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1612108800000",
+            "8",
+            "0.00044234"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1609459200002",
+            "8",
+            "0.00022753"
+          ],
+          "sha256": "cff916dc4b638ec3de97828e8911cd91cf7d7a3d0836ec0175869c374e66823d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-01.zip"
+        },
+        {
+          "bytes": 956,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1614528000000",
+            "8",
+            "0.00037706"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-02.csv",
+          "row_count_including_header": 85,
+          "second_row": [
+            "1612137600001",
+            "8",
+            "0.00013932"
+          ],
+          "sha256": "819a7b107443686adb313fc5fc223302a29f3981e1d1bd9828ad0ade65a8a8af",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-02.zip"
+        },
+        {
+          "bytes": 918,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1617206400000",
+            "8",
+            "0.00058414"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1614556800000",
+            "8",
+            "0.00016921"
+          ],
+          "sha256": "2125fd300848938c7b992b8f7b7b5007d5b277a4ff1ebda7da083b40242729da",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-03.zip"
+        },
+        {
+          "bytes": 914,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1619798400003",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1617235200025",
+            "8",
+            "0.00109277"
+          ],
+          "sha256": "9cd888e3b0a1954813d0062c2e60426fdc8e34a7f258f6838371ec67f535b028",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-04.zip"
+        },
+        {
+          "bytes": 960,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1622476800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1619827200002",
+            "8",
+            "0.00011209"
+          ],
+          "sha256": "ed934afb9cf84df6ecae742e755147333a84244836a66b51523abc66dd5f63af",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-05.zip"
+        },
+        {
+          "bytes": 883,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1625068800005",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1622505600001",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "7b8d9bfb8816636b800764dafb2aa2307d19166c695bfa245adbf7d01d61f766",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-06.zip"
+        },
+        {
+          "bytes": 973,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1627747200003",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1625097600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "8ab3df641d3bcf40527491f8e26d046ad2b662d1950ead9555ad32975571b7fe",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-07.zip"
+        },
+        {
+          "bytes": 781,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1630425600003",
+            "8",
+            "0.00023354"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1627776000005",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "7eb681cc45b94176f4b9192a62c3a1925d79031ba001cea2d8dec6ff6e5b9c35",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-08.zip"
+        },
+        {
+          "bytes": 828,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1633017600005",
+            "8",
+            "0.00009235"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1630454400000",
+            "8",
+            "0.00044618"
+          ],
+          "sha256": "03f25a7c25eef18d5f5b5b7bb0b664cab7a210b409f37e95a54e141808a0752d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-09.zip"
+        },
+        {
+          "bytes": 951,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1635696000001",
+            "8",
+            "0.00043874"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1633046400012",
+            "8",
+            "0.00002202"
+          ],
+          "sha256": "f25820d6add687addbca3ef43bee58f70853a6da53832a0c1bc22d00dc8ec64a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-10.zip"
+        },
+        {
+          "bytes": 919,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1638288000000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1635724800009",
+            "8",
+            "0.00032554"
+          ],
+          "sha256": "e2e6b2d7218607e7e4a38137d50f553c2cfb901275c19edf567024c1cc6de85f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-11.zip"
+        },
+        {
+          "bytes": 815,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1640966400000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2021-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1638316800000",
+            "8",
+            "0.00012689"
+          ],
+          "sha256": "bf3ce484faf41d7dccfd38c5cc3d8de34d8297df30ab10784e874cc10fd1b310",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2021-12.zip"
+        },
+        {
+          "bytes": 906,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1643644800000",
+            "8",
+            "-0.00005648"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1640995200006",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "22ee19079b620f5c6d820e7d7f8bafa7fde866d89bd664863b8bd527749c12cb",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-01.zip"
+        },
+        {
+          "bytes": 890,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1646064000002",
+            "8",
+            "-0.00005386"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-02.csv",
+          "row_count_including_header": 85,
+          "second_row": [
+            "1643673600010",
+            "8",
+            "-0.00004000"
+          ],
+          "sha256": "fa95088258a905c79ab79e8984d2f6f66933ec2e814dbab4ef9da89b01ab484a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-02.zip"
+        },
+        {
+          "bytes": 904,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1648742400015",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1646092800002",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "4cf0883bc07f4ed4cdd3b0d8c0d166b4d15d21e666ab752f9f44401af4d6172f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-03.zip"
+        },
+        {
+          "bytes": 926,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1651334400015",
+            "8",
+            "0.00005926"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1648771200000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "57e2776cc68b3169fc9f8632dad67278f470cd453407a8ebe6c87963c8a31357",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-04.zip"
+        },
+        {
+          "bytes": 915,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1654012800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1651363200000",
+            "8",
+            "0.00002403"
+          ],
+          "sha256": "bced8a5013d09742b96682e6fd01ad4456213515a03d7586ec2b1f2689af5255",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-05.zip"
+        },
+        {
+          "bytes": 966,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1656604800000",
+            "8",
+            "-0.00015879"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1654041600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "0cd0708f8903829eb46f98cf60f4b2516c986e1ccddf6620a5912b48e16baf93",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-06.zip"
+        },
+        {
+          "bytes": 917,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1659283200019",
+            "8",
+            "0.00006281"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1656633600001",
+            "8",
+            "-0.00008786"
+          ],
+          "sha256": "29d58cce0cd45f74c6a112039835c6d9ee5a7e60e7c38c2503beb7930453a4fe",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-07.zip"
+        },
+        {
+          "bytes": 997,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1661961600013",
+            "8",
+            "0.00004950"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1659312000010",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "6f4f0c6c84c05694b4b4a5c085776730fd4059723eecd98ee6ffeb3fde4da811",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-08.zip"
+        },
+        {
+          "bytes": 960,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1664553600007",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1661990400012",
+            "8",
+            "0.00009390"
+          ],
+          "sha256": "d62cd4e13009de37add446dc4f63ead4c56dcc4955a1e60f6726bcadc5a68fa9",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-09.zip"
+        },
+        {
+          "bytes": 950,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1667232000010",
+            "8",
+            "-0.00000434"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1664582400008",
+            "8",
+            "0.00003198"
+          ],
+          "sha256": "ad9efed10d4ca1567b865d7a158790977cec1b925395634217069df6696c8bc9",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-10.zip"
+        },
+        {
+          "bytes": 1000,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1669824000015",
+            "8",
+            "0.00009511"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1667260800000",
+            "8",
+            "0.00000722"
+          ],
+          "sha256": "8febe5bec1a029e993bbf27490761f8c47c32849bf7dd13441b2b2f6ec1ffb51",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-11.zip"
+        },
+        {
+          "bytes": 982,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1672502400000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2022-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1669852800001",
+            "8",
+            "0.00001029"
+          ],
+          "sha256": "4218c78331bcc4dbeb5768fa112242a880971c1f2cfd1d3f32aaa26ca34069af",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2022-12.zip"
+        },
+        {
+          "bytes": 863,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1675180800007",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1672531200000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "05e3df32f28d0d50f4c5a280adee9368b4a66fc68c6ddca1b3277087ac0d19f5",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-01.zip"
+        },
+        {
+          "bytes": 808,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1677600000005",
+            "8",
+            "0.00005950"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-02.csv",
+          "row_count_including_header": 85,
+          "second_row": [
+            "1675209600013",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "5227accd9aaa59f71f5e682abffb58be5f99573ed208ab968b1704c81ac11345",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-02.zip"
+        },
+        {
+          "bytes": 956,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1680278400011",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1677628800016",
+            "8",
+            "0.00000185"
+          ],
+          "sha256": "ab022adff9b853d2f33cf80154e77c770f57c3392f0bbc36564b2e2cdbd0e872",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-03.zip"
+        },
+        {
+          "bytes": 952,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1682870400010",
+            "8",
+            "0.00006078"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1680307200000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "2931039d26818edc65d4faefba84945fd1ba52989dd58fb127dc3cd7a12c7fbf",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-04.zip"
+        },
+        {
+          "bytes": 983,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1685548800000",
+            "8",
+            "0.00009865"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1682899200004",
+            "8",
+            "0.00002435"
+          ],
+          "sha256": "5d026fece46df86293054c8c56c2c8de575d30161b82979b11831831217a246e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-05.zip"
+        },
+        {
+          "bytes": 845,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1688140800001",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1685577600008",
+            "8",
+            "0.00002096"
+          ],
+          "sha256": "3ffdde6f1dc9c3c065d77ae43f3ba64d19d4cb76512d4bc1d541933d4fb2e6f7",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-06.zip"
+        },
+        {
+          "bytes": 861,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1690819200001",
+            "8",
+            "0.00008239"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1688169600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "0304baed9fd407293a8a8040b30a1b68bd344803b630d33530375b421733a930",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-07.zip"
+        },
+        {
+          "bytes": 846,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1693497600000",
+            "8",
+            "0.00008105"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1690848000000",
+            "8",
+            "0.00006300"
+          ],
+          "sha256": "516a8f50631c6ede6a9642f6d1590b6a22c33ba09935501d2ace8dc1396501fd",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-08.zip"
+        },
+        {
+          "bytes": 914,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1696089600000",
+            "8",
+            "0.00001525"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1693526400000",
+            "8",
+            "0.00002583"
+          ],
+          "sha256": "3fd9df6fd1eef33cf5fe625c27012359bc6d64a68c109305d7b44a0354f533c2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-09.zip"
+        },
+        {
+          "bytes": 865,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1698768000000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1696118400000",
+            "8",
+            "0.00000295"
+          ],
+          "sha256": "03105cc140150bffca834bcccbddc6cfee245e079d2df1759653243bd6e92448",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-10.zip"
+        },
+        {
+          "bytes": 696,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1701360000000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1698796800000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "8015d2997f8d5e757ff3707ee87800ca30a74da0129daa747b64117f07bcc186",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-11.zip"
+        },
+        {
+          "bytes": 810,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1704038400000",
+            "8",
+            "0.00033597"
+          ],
+          "member": "BTCUSDT-fundingRate-2023-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1701388800000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "8f02fdd2a2da261bbf13ab301c74bdb57fae005f19d5088e9ece5f8824c1a2a7",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2023-12.zip"
+        },
+        {
+          "bytes": 696,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1706716800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1704067200000",
+            "8",
+            "0.00037409"
+          ],
+          "sha256": "3e0d30870672aa8f0f937881056e3cfd55913ae5c780cd50b33f2763aa0ba58e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-01.zip"
+        },
+        {
+          "bytes": 776,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1709222400000",
+            "8",
+            "0.00057031"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-02.csv",
+          "row_count_including_header": 88,
+          "second_row": [
+            "1706745600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "daf1e4901e3d6436d82ad60f90d007eb5300be8047cfef121007203a7212cde6",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-02.zip"
+        },
+        {
+          "bytes": 939,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1711900800001",
+            "8",
+            "0.00040301"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1709251200000",
+            "8",
+            "0.00053322"
+          ],
+          "sha256": "711dcaf2a341aedfd06447b4117b540f60adb0784c5e64a313c718e4cf092bc3",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-03.zip"
+        },
+        {
+          "bytes": 842,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1714492800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1711929600000",
+            "8",
+            "0.00070161"
+          ],
+          "sha256": "6d220b8e2815362a11d294d35dbca28568370d8295351937eceec10f2b359b85",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-04.zip"
+        },
+        {
+          "bytes": 830,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1717171200000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1714521600000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "aef8c5fdce1493fd570b5829a72f2f17c7e459483390f25544d16c2a30be592e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-05.zip"
+        },
+        {
+          "bytes": 721,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1719763200000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1717200000000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "43fc4473820d1fb4fe340d1b1951a87555f6841aa352e684fa95d6adffce04c6",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-06.zip"
+        },
+        {
+          "bytes": 847,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1722441600000",
+            "8",
+            "0.00003826"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1719792000000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "acab0593c1452660ce74a6c239fb215c1192b0a9c6e8c1689e6495de40a0174b",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-07.zip"
+        },
+        {
+          "bytes": 904,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1725120000000",
+            "8",
+            "0.00003800"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1722470400000",
+            "8",
+            "0.00008208"
+          ],
+          "sha256": "7003d29a43dd5f9357f838da8766834954939e22c1d80af682d9f33984f67b71",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-08.zip"
+        },
+        {
+          "bytes": 924,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1727712000000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1725148800000",
+            "8",
+            "0.00004113"
+          ],
+          "sha256": "6ef23b02392b481ef9c3855434bf3644289fb6e228b4f7d9a0dfc6d3cdff1116",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-09.zip"
+        },
+        {
+          "bytes": 801,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1730390400000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1727740800000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "26db65ac8020d80ece35df79c254c5f7e24427529bcceeb2972748c4fe2d2707",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-10.zip"
+        },
+        {
+          "bytes": 746,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1732982400000",
+            "8",
+            "0.00012063"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1730419200000",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "e1b19cccfe2cdcba48b022790789b7b01edd86c075f39bc152e44c267d43bd51",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-11.zip"
+        },
+        {
+          "bytes": 808,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1735660800000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2024-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1733011200000",
+            "8",
+            "0.00015901"
+          ],
+          "sha256": "069409f525ebf6370ee1c7defe475167de4b97284c5ac8e68768652968cd3dc9",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2024-12.zip"
+        },
+        {
+          "bytes": 825,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-01.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1738339200000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-01.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1735689600015",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "df725010d55458866eb5a47e9ee708c6796c9d7e77b14c38342cea11f381815e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-01.zip"
+        },
+        {
+          "bytes": 854,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-02.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1740758400000",
+            "8",
+            "-0.00000373"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-02.csv",
+          "row_count_including_header": 85,
+          "second_row": [
+            "1738368000000",
+            "8",
+            "0.00008098"
+          ],
+          "sha256": "e918b90fb33df3a3317feea13807a892047f1ec86eeac100bdb7b3dd83285d46",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-02.zip"
+        },
+        {
+          "bytes": 938,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-03.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1743436800000",
+            "8",
+            "0.00001845"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-03.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1740787200000",
+            "8",
+            "-1.4E-7"
+          ],
+          "sha256": "a3b95cfb315641fbfddc61eb32adf2a2588afb7a3973a61f464aca007ad43e3f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-03.zip"
+        },
+        {
+          "bytes": 929,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-04.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1746028800003",
+            "8",
+            "-0.00003797"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-04.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1743465600000",
+            "8",
+            "0.00003961"
+          ],
+          "sha256": "01dbb7bd0135f98bd63bdde6b943cde1accc1770cabf92f68a1ec0653ced3888",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-04.zip"
+        },
+        {
+          "bytes": 943,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-05.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1748707200000",
+            "8",
+            "0.00004687"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-05.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1746057600000",
+            "8",
+            "0.00003519"
+          ],
+          "sha256": "e7355e2775b88009c984db1783bb8ed6b5f24ede2b52bb764151b5722d6a5e42",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-05.zip"
+        },
+        {
+          "bytes": 946,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-06.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1751299200002",
+            "8",
+            "0.00004923"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-06.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1748736000001",
+            "8",
+            "-0.00000582"
+          ],
+          "sha256": "a1f4a40953740fa83ee9ad97776ff8325d1958654a67f1325614071a983819d4",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-06.zip"
+        },
+        {
+          "bytes": 796,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-07.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1753977600000",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-07.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1751328000007",
+            "8",
+            "0.00001053"
+          ],
+          "sha256": "b097dff828f6e43fece23db0d3cb98042a9d7bc19693b8cbfd051d88eb973b7b",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-07.zip"
+        },
+        {
+          "bytes": 927,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-08.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1756656000001",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-08.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1754006400001",
+            "8",
+            "-0.00001408"
+          ],
+          "sha256": "1180129860b6e196e8d70bb9719e81573aa6b4acb423ba5ee7f82f10c836f7ab",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-08.zip"
+        },
+        {
+          "bytes": 941,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-09.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1759248000000",
+            "8",
+            "0.00002584"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-09.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1756684800000",
+            "8",
+            "0.00004660"
+          ],
+          "sha256": "21dc6570fc6bffad0e7b5f9e99211b82ad07c95ab4f18c3a2daa3b95ec98344c",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-09.zip"
+        },
+        {
+          "bytes": 944,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-10.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1761926400007",
+            "8",
+            "0.00010000"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-10.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1759276800000",
+            "8",
+            "0.00003355"
+          ],
+          "sha256": "9ecdedab6344fc4cdb154763266b8e09627a71c3cc5574cf868158b541c259c2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-10.zip"
+        },
+        {
+          "bytes": 941,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-11.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1764518400004",
+            "8",
+            "0.00003880"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-11.csv",
+          "row_count_including_header": 91,
+          "second_row": [
+            "1761955200001",
+            "8",
+            "0.00010000"
+          ],
+          "sha256": "23735400405627d610123e3a43db3e98ae7addb93459cd670e65a7659a5f081b",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-11.zip"
+        },
+        {
+          "bytes": 963,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-12.zip.CHECKSUM",
+          "first_row": [
+            "calc_time",
+            "funding_interval_hours",
+            "last_funding_rate"
+          ],
+          "last_row": [
+            "1767196800001",
+            "8",
+            "0.00003750"
+          ],
+          "member": "BTCUSDT-fundingRate-2025-12.csv",
+          "row_count_including_header": 94,
+          "second_row": [
+            "1764547200000",
+            "8",
+            "0.00003593"
+          ],
+          "sha256": "35318b789f020b0e04c9043112480743855554e52e1d188437cbdaa67246d51d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/fundingRate/BTCUSDT/BTCUSDT-fundingRate-2025-12.zip"
+        }
+      ]
+    },
+    "metrics": {
+      "actual_historical_receipts": null,
+      "catalog_first_zip": "data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2020-09-01.zip",
+      "catalog_last_zip": "data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2026-10-01.zip",
+      "catalog_pages": [
+        {
+          "bytes": 348521,
+          "sha256": "b7c2a4fb4c6b53c177a2c2ebd0874b859cb56afdaf6b8f27e69a98dd3b65e2c2",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2F&max-keys=1000"
+        },
+        {
+          "bytes": 268593,
+          "sha256": "f7ccf273ea4263ef74f0c4f654a88b24969d110e3c80293fbecb5f413c82676c",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2F&max-keys=1000&marker=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2FBTCUSDT-metrics-2022-01-13.zip.CHECKSUM"
+        },
+        {
+          "bytes": 307582,
+          "sha256": "96fed6fd8cf15f0ab9f49004e2303452cb93329255535ba053d1c986d7d29a0b",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2F&max-keys=1000&marker=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2FBTCUSDT-metrics-2023-05-28.zip.CHECKSUM"
+        },
+        {
+          "bytes": 356359,
+          "sha256": "9fea1e20e5d78139b7d91c36ebf3e9d29ce28efc1e80af200e029782aaa97b37",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2F&max-keys=1000&marker=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2FBTCUSDT-metrics-2024-10-09.zip.CHECKSUM"
+        },
+        {
+          "bytes": 158424,
+          "sha256": "fdbf62103eebf1ae5844754f096c5077b37b61ec589a5d45d5235666d8244a95",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2F&max-keys=1000&marker=data%2Ffutures%2Fum%2Fdaily%2Fmetrics%2FBTCUSDT%2FBTCUSDT-metrics-2026-02-21.zip.CHECKSUM"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 2222,
+        "first_zip_key": "data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2020-09-01.zip",
+        "last_modified_max": "2026-10-02T06:50:20.000Z",
+        "last_modified_min": "2023-06-16T11:35:54.000Z",
+        "last_zip_key": "data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2026-10-01.zip",
+        "object_count": 4444,
+        "requested_month_zip_counts": {
+          "2020-09": 30,
+          "2020-10": 31,
+          "2020-11": 30,
+          "2020-12": 31,
+          "2021-01": 31,
+          "2021-02": 28,
+          "2021-03": 31,
+          "2021-04": 30,
+          "2021-05": 31,
+          "2021-06": 30,
+          "2021-07": 31,
+          "2021-08": 31,
+          "2021-09": 30,
+          "2021-10": 31,
+          "2021-11": 30,
+          "2021-12": 31,
+          "2022-01": 31,
+          "2022-02": 28,
+          "2022-03": 31,
+          "2022-04": 30,
+          "2022-05": 31,
+          "2022-06": 30,
+          "2022-07": 31,
+          "2022-08": 31,
+          "2022-09": 30,
+          "2022-10": 31,
+          "2022-11": 30,
+          "2022-12": 31,
+          "2023-01": 31,
+          "2023-02": 28,
+          "2023-03": 31,
+          "2023-04": 30,
+          "2023-05": 31,
+          "2023-06": 30,
+          "2023-07": 31,
+          "2023-08": 31,
+          "2023-09": 30,
+          "2023-10": 31,
+          "2023-11": 30,
+          "2023-12": 31,
+          "2024-01": 31,
+          "2024-02": 29,
+          "2024-03": 31,
+          "2024-04": 30,
+          "2024-05": 31,
+          "2024-06": 30,
+          "2024-07": 31,
+          "2024-08": 31,
+          "2024-09": 30,
+          "2024-10": 31,
+          "2024-11": 30,
+          "2024-12": 31,
+          "2025-01": 31,
+          "2025-02": 28,
+          "2025-03": 31,
+          "2025-04": 30,
+          "2025-05": 31,
+          "2025-06": 30,
+          "2025-07": 31,
+          "2025-08": 31,
+          "2025-09": 30,
+          "2025-10": 31,
+          "2025-11": 30,
+          "2025-12": 31
+        },
+        "zip_count": 2222
+      },
+      "categories": [],
+      "expected_zip_count": 1948,
+      "historical_pit": false,
+      "missing_checksum_keys": [],
+      "missing_zip_keys": [],
+      "prefix": "data/futures/um/daily/metrics/BTCUSDT/",
+      "present_zip_count": 1948,
+      "requested_range": [
+        "2020-09-01",
+        "2025-12-31"
+      ],
+      "source_vintage": "current corrected public archive observed at audit time",
+      "verified_files": [
+        {
+          "bytes": 12191,
+          "checksum_url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2020-09-01.zip.CHECKSUM",
+          "first_row": [
+            "create_time",
+            "symbol",
+            "sum_open_interest",
+            "sum_open_interest_value",
+            "count_toptrader_long_short_ratio",
+            "sum_toptrader_long_short_ratio",
+            "count_long_short_ratio",
+            "sum_taker_long_short_vol_ratio"
+          ],
+          "last_row": [
+            "2020-09-01 23:55:00",
+            "BTCUSDT",
+            "39187.19100000",
+            "467388971.11357822",
+            "1.21184475",
+            "1.24628445",
+            "1.33229062",
+            "0.61414611"
+          ],
+          "member": "BTCUSDT-metrics-2020-09-01.csv",
+          "row_count_including_header": 577,
+          "sample_timestamp_audit": {
+            "conflicting_duplicate_timestamps": [],
+            "data_rows": 576,
+            "extra_duplicate_rows": 288,
+            "first_create_time": "2020-09-01 00:00:00",
+            "last_create_time": "2020-09-01 23:55:00",
+            "missing_5m_snapshot_count": 0,
+            "unique_create_times": 288
+          },
+          "second_row": [
+            "2020-09-01 00:00:00",
+            "BTCUSDT",
+            "39080.23100000",
+            "456144339.23360443",
+            "1.17547937",
+            "1.23012681",
+            "1.35731217",
+            "0.78373373"
+          ],
+          "sha256": "9a9c0518bfb939032afe97a6b1708668ec833457743b1ba6ef448fb157722ae3",
+          "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2020-09-01.zip"
+        },
+        {
+          "bytes": 14337,
+          "checksum_url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2023-01-01.zip.CHECKSUM",
+          "first_row": [
+            "create_time",
+            "symbol",
+            "sum_open_interest",
+            "sum_open_interest_value",
+            "count_toptrader_long_short_ratio",
+            "sum_toptrader_long_short_ratio",
+            "count_long_short_ratio",
+            "sum_taker_long_short_vol_ratio"
+          ],
+          "last_row": [
+            "2023-01-01 23:55:00",
+            "BTCUSDT",
+            "108830.56400000",
+            "1806837672.69720000",
+            "1.978413890192398",
+            "1.0455793453",
+            "2.1222610352492857",
+            "1.0693187875"
+          ],
+          "member": "BTCUSDT-metrics-2023-01-01.csv",
+          "row_count_including_header": 289,
+          "sample_timestamp_audit": {
+            "conflicting_duplicate_timestamps": [],
+            "data_rows": 288,
+            "extra_duplicate_rows": 0,
+            "first_create_time": "2023-01-01 00:00:00",
+            "last_create_time": "2023-01-01 23:55:00",
+            "missing_5m_snapshot_count": 0,
+            "unique_create_times": 288
+          },
+          "second_row": [
+            "2023-01-01 00:00:00",
+            "BTCUSDT",
+            "105692.75700000",
+            "1747893968.88750000",
+            "2.097981757398159",
+            "1.0820051693",
+            "2.22117548646657",
+            "0.9149287822"
+          ],
+          "sha256": "9e6e8c092362c63194b99a5da8244cfcdbdb162662c3a356f23197d617f0993e",
+          "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2023-01-01.zip"
+        },
+        {
+          "bytes": 11220,
+          "checksum_url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2025-12-31.zip.CHECKSUM",
+          "first_row": [
+            "create_time",
+            "symbol",
+            "sum_open_interest",
+            "sum_open_interest_value",
+            "count_toptrader_long_short_ratio",
+            "sum_toptrader_long_short_ratio",
+            "count_long_short_ratio",
+            "sum_taker_long_short_vol_ratio"
+          ],
+          "last_row": [
+            "2025-12-31 23:55:00",
+            "BTCUSDT",
+            "94202.5850000000000000",
+            "8252928327.4555000000000000",
+            "3.07170674",
+            "2.47824100",
+            "2.61142491",
+            "1.04695300"
+          ],
+          "member": "BTCUSDT-metrics-2025-12-31.csv",
+          "row_count_including_header": 289,
+          "sample_timestamp_audit": {
+            "conflicting_duplicate_timestamps": [],
+            "data_rows": 288,
+            "extra_duplicate_rows": 0,
+            "first_create_time": "2025-12-31 00:00:00",
+            "last_create_time": "2025-12-31 23:55:00",
+            "missing_5m_snapshot_count": 0,
+            "unique_create_times": 288
+          },
+          "second_row": [
+            "2025-12-31 00:00:00",
+            "BTCUSDT",
+            "94673.9480000000000000",
+            "8367643285.2424000000000000",
+            "2.31204347",
+            "2.27229900",
+            "2.04434698",
+            "0.57766800"
+          ],
+          "sha256": "2f8d4ce7d5d0d5feb03cec210e39f7ccdc56a6a2b4a7ecf5decb115aefcd09d5",
+          "url": "https://data.binance.vision/data/futures/um/daily/metrics/BTCUSDT/BTCUSDT-metrics-2025-12-31.zip"
+        }
+      ]
+    },
+    "monthly_categories": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 984,
+          "sha256": "3aa37e6fcbb1bce5f41ab9a2049b14c6c8e93efe9783cb707085f0c907907c76",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2F&max-keys=1000&delimiter=%2F"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 0,
+        "first_zip_key": null,
+        "last_zip_key": null,
+        "object_count": 0,
+        "zip_count": 0
+      },
+      "categories": [
+        "data/futures/um/monthly/aggTrades/",
+        "data/futures/um/monthly/bookTicker/",
+        "data/futures/um/monthly/fundingRate/",
+        "data/futures/um/monthly/indexPriceKlines/",
+        "data/futures/um/monthly/klines/",
+        "data/futures/um/monthly/markPriceKlines/",
+        "data/futures/um/monthly/premiumIndexKlines/",
+        "data/futures/um/monthly/trades/"
+      ],
+      "historical_pit": false,
+      "prefix": "data/futures/um/monthly/",
+      "source_vintage": "current corrected public archive observed at audit time"
+    },
+    "monthly_metrics": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 277,
+          "sha256": "1def90167fcdb781cce46ee3afcd4d591d7ab34b72042bfdfb0f1027f721c727",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2Fmetrics%2F&max-keys=1000"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 0,
+        "first_zip_key": null,
+        "last_zip_key": null,
+        "object_count": 0,
+        "zip_count": 0
+      },
+      "categories": [],
+      "historical_pit": false,
+      "prefix": "data/futures/um/monthly/metrics/",
+      "source_vintage": "current corrected public archive observed at audit time"
+    },
+    "monthly_open_interest": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 282,
+          "sha256": "686a59e14606b3c1b11892423ef1dd2b30bdf9728eb2d8ee550de0d4c3741e86",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2FopenInterest%2F&max-keys=1000"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 0,
+        "first_zip_key": null,
+        "last_zip_key": null,
+        "object_count": 0,
+        "zip_count": 0
+      },
+      "categories": [],
+      "historical_pit": false,
+      "prefix": "data/futures/um/monthly/openInterest/",
+      "source_vintage": "current corrected public archive observed at audit time"
+    },
+    "perp_1h": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 46575,
+          "sha256": "083d618d2b49fd379e5b0425483fc3ee9dbb036fbd023e4b17eb664c64844039",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2Fklines%2FBTCUSDT%2F1h%2F&max-keys=1000"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 81,
+        "first_zip_key": "data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip",
+        "last_modified_max": "2026-10-02T09:36:21.000Z",
+        "last_modified_min": "2021-03-02T20:46:34.000Z",
+        "last_zip_key": "data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2026-09.zip",
+        "object_count": 162,
+        "zip_count": 81
+      },
+      "categories": [],
+      "expected_zip_count": 72,
+      "historical_pit": false,
+      "missing_checksum_keys": [],
+      "missing_zip_keys": [],
+      "prefix": "data/futures/um/monthly/klines/BTCUSDT/1h/",
+      "present_zip_count": 72,
+      "requested_range": [
+        "2020-01",
+        "2025-12"
+      ],
+      "source_vintage": "current corrected public archive observed at audit time",
+      "timestamp_audit": {
+        "duplicate_timestamp_count": 0,
+        "expected_cadence_ms": 3600000,
+        "first_timestamp": 1577836800000,
+        "last_timestamp": 1767222000000,
+        "missing_expected_timestamps": [],
+        "off_grid_timestamps": [],
+        "outside_requested_range": [],
+        "parsed_row_count": 52608,
+        "unique_timestamp_count": 52608
+      },
+      "verified_files": [
+        {
+          "bytes": 37271,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip.CHECKSUM",
+          "first_row": [
+            "1577836800000",
+            "7189.43",
+            "7190.52",
+            "7170.15",
+            "7171.55",
+            "2449.049",
+            "1577840399999",
+            "17576424.43970",
+            "3688",
+            "996.198",
+            "7149370.76353",
+            "0"
+          ],
+          "last_row": [
+            "1580511600000",
+            "9415.25",
+            "9432.50",
+            "9341.00",
+            "9364.51",
+            "6078.196",
+            "1580515199999",
+            "57058699.20929",
+            "11341",
+            "2839.071",
+            "26650877.51963",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-01.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1577840400000",
+            "7171.43",
+            "7225",
+            "7171.10",
+            "7210.24",
+            "3865.038",
+            "1577843999999",
+            "27838046.00670",
+            "6635",
+            "2340.878",
+            "16860294.05346",
+            "0"
+          ],
+          "sha256": "512a1d725c8df97a1bbbee4f118e730e9628500a8f271c9e59d2a7fc5fbfcfcc",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip"
+        },
+        {
+          "bytes": 35268,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-02.zip.CHECKSUM",
+          "first_row": [
+            "1580515200000",
+            "9364.50",
+            "9407.14",
+            "9357.42",
+            "9394.21",
+            "4692.986",
+            "1580518799999",
+            "44028166.69423",
+            "9060",
+            "2396.962",
+            "22486856.19133",
+            "0"
+          ],
+          "last_row": [
+            "1583017200000",
+            "8643.30",
+            "8666.66",
+            "8530.00",
+            "8531.98",
+            "7819.600",
+            "1583020799999",
+            "67135937.95588",
+            "16145",
+            "3082.801",
+            "26481680.19200",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-02.csv",
+          "row_count_including_header": 696,
+          "second_row": [
+            "1580518800000",
+            "9394.20",
+            "9445.52",
+            "9388.39",
+            "9439.84",
+            "5907.632",
+            "1580522399999",
+            "55616424.04729",
+            "10977",
+            "3061.587",
+            "28823482.82158",
+            "0"
+          ],
+          "sha256": "13d067e5c7b258764b8524e1d3c61b129c44838c2ce9850f4d86cae13c61f198",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-02.zip"
+        },
+        {
+          "bytes": 38166,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-03.zip.CHECKSUM",
+          "first_row": [
+            "1583020800000",
+            "8532.50",
+            "8618.47",
+            "8526.00",
+            "8554.99",
+            "7585.961",
+            "1583024399999",
+            "65085376.11960",
+            "15835",
+            "3808.214",
+            "32677010.85421",
+            "0"
+          ],
+          "last_row": [
+            "1585695600000",
+            "6428.25",
+            "6435.59",
+            "6390.00",
+            "6407.10",
+            "8529.612",
+            "1585699199999",
+            "54704944.32134",
+            "30955",
+            "4317.426",
+            "27694475.15631",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-03.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1583024400000",
+            "8554.94",
+            "8657.76",
+            "8520.06",
+            "8646.81",
+            "7887.734",
+            "1583027999999",
+            "67695575.77805",
+            "16042",
+            "4013.049",
+            "34442877.73400",
+            "0"
+          ],
+          "sha256": "9fc0c560cce35fd083febee10c0c8c3ffcd56a9185f9b489f265a51bbf60ec6e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-03.zip"
+        },
+        {
+          "bytes": 36833,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-04.zip.CHECKSUM",
+          "first_row": [
+            "1585699200000",
+            "6407.10",
+            "6422.82",
+            "6240.00",
+            "6301.07",
+            "29832.808",
+            "1585702799999",
+            "188330009.82375",
+            "80875",
+            "13949.839",
+            "88057001.51317",
+            "0"
+          ],
+          "last_row": [
+            "1588287600000",
+            "8765.44",
+            "8785.00",
+            "8588.85",
+            "8624.76",
+            "20649.751",
+            "1588291199999",
+            "178914375.42744",
+            "60072",
+            "9798.787",
+            "84927894.93015",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-04.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1585702800000",
+            "6301.70",
+            "6320.47",
+            "6280.00",
+            "6287.20",
+            "8638.065",
+            "1585706399999",
+            "54383146.96611",
+            "30660",
+            "4555.033",
+            "28679796.92306",
+            "0"
+          ],
+          "sha256": "bfa6d2adc1aefd8a96b3cbd38932486741caa1ae40f1e646df3606205402176f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-04.zip"
+        },
+        {
+          "bytes": 38289,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-05.zip.CHECKSUM",
+          "first_row": [
+            "1588291200000",
+            "8623.61",
+            "8743.17",
+            "8619.84",
+            "8711.86",
+            "14864.900",
+            "1588294799999",
+            "129157834.81233",
+            "49782",
+            "7888.784",
+            "68553395.68542",
+            "0"
+          ],
+          "last_row": [
+            "1590966000000",
+            "9459.24",
+            "9478.91",
+            "9371.76",
+            "9446.43",
+            "17649.098",
+            "1590969599999",
+            "166389079.76752",
+            "49926",
+            "8403.283",
+            "79254994.72388",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-05.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1588294800000",
+            "8711.86",
+            "8768.55",
+            "8664.72",
+            "8668.49",
+            "11843.705",
+            "1588298399999",
+            "103218471.64825",
+            "35781",
+            "5693.650",
+            "49627809.89631",
+            "0"
+          ],
+          "sha256": "1eb7de25a14b8a6c70098b866a21ba2c35f1b55c9e1c1d4dadb431cd4d3e180d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-05.zip"
+        },
+        {
+          "bytes": 36260,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-06.zip.CHECKSUM",
+          "first_row": [
+            "1590969600000",
+            "9446.49",
+            "9505.00",
+            "9420.85",
+            "9496.22",
+            "10597.781",
+            "1590973199999",
+            "100380508.01966",
+            "32358",
+            "5674.708",
+            "53758154.96884",
+            "0"
+          ],
+          "last_row": [
+            "1593558000000",
+            "9134.99",
+            "9157.77",
+            "9130.18",
+            "9138.87",
+            "3518.901",
+            "1593561599999",
+            "32187612.24552",
+            "9667",
+            "1628.606",
+            "14897605.76712",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-06.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1590973200000",
+            "9496.20",
+            "9572.44",
+            "9462.15",
+            "9548.16",
+            "10712.576",
+            "1590976799999",
+            "101896112.89839",
+            "32481",
+            "6333.142",
+            "60253916.21113",
+            "0"
+          ],
+          "sha256": "5f5b7ccd40facb7ddecd6019192be8de148e0aeeec8c8adc30cab3c474406c5b",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-06.zip"
+        },
+        {
+          "bytes": 37043,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-07.zip.CHECKSUM",
+          "first_row": [
+            "1593561600000",
+            "9138.88",
+            "9138.88",
+            "9090.00",
+            "9123.29",
+            "8640.015",
+            "1593565199999",
+            "78748494.89655",
+            "23820",
+            "3832.815",
+            "34937944.91621",
+            "0"
+          ],
+          "last_row": [
+            "1596236400000",
+            "11313.07",
+            "11349.03",
+            "11290.78",
+            "11343.68",
+            "6547.898",
+            "1596239999999",
+            "74132904.37869",
+            "19645",
+            "3533.871",
+            "40014023.33450",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-07.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1593565200000",
+            "9123.29",
+            "9132.46",
+            "9101.22",
+            "9124.50",
+            "3607.890",
+            "1593568799999",
+            "32897447.94544",
+            "11370",
+            "1607.244",
+            "14655370.33001",
+            "0"
+          ],
+          "sha256": "f116be7c0a36e71f771ae4987b95e1f6d098dc0dae3b71154c12e7c390cf1a4c",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-07.zip"
+        },
+        {
+          "bytes": 37996,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-08.zip.CHECKSUM",
+          "first_row": [
+            "1596240000000",
+            "11343.67",
+            "11397.23",
+            "11201.00",
+            "11256.93",
+            "16213.276",
+            "1596243599999",
+            "183107100.65464",
+            "44184",
+            "7110.049",
+            "80314809.44195",
+            "0"
+          ],
+          "last_row": [
+            "1598914800000",
+            "11654.92",
+            "11695.00",
+            "11651.00",
+            "11658.11",
+            "2993.905",
+            "1598918399999",
+            "34954507.32168",
+            "15763",
+            "1449.079",
+            "16917292.56452",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-08.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1596243600000",
+            "11256.85",
+            "11312.21",
+            "11234.74",
+            "11276.72",
+            "5347.407",
+            "1596247199999",
+            "60332898.21378",
+            "16312",
+            "2494.987",
+            "28148921.14951",
+            "0"
+          ],
+          "sha256": "d4dff9c958c878c00f2f3f059043612ac051fdc4117c3e9e74261db28c4f13fc",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-08.zip"
+        },
+        {
+          "bytes": 36859,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-09.zip.CHECKSUM",
+          "first_row": [
+            "1598918400000",
+            "11658.11",
+            "11675.00",
+            "11531.34",
+            "11618.27",
+            "15015.299",
+            "1598921999999",
+            "174112062.33123",
+            "48351",
+            "6666.854",
+            "77327235.25097",
+            "0"
+          ],
+          "last_row": [
+            "1601506800000",
+            "10741.00",
+            "10786.83",
+            "10736.00",
+            "10773.00",
+            "4628.913",
+            "1601510399999",
+            "49826643.58922",
+            "21109",
+            "2806.130",
+            "30205987.79466",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-09.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1598922000000",
+            "11618.27",
+            "11643.75",
+            "11593.00",
+            "11634.31",
+            "4410.780",
+            "1598925599999",
+            "51261715.25539",
+            "18795",
+            "2151.537",
+            "25008941.58982",
+            "0"
+          ],
+          "sha256": "b210c5ecfae463aaef862ea0e6d8ccbf63430f32d6a80bad0bdeb2eef83a7165",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-09.zip"
+        },
+        {
+          "bytes": 38117,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-10.zip.CHECKSUM",
+          "first_row": [
+            "1601510400000",
+            "10773.00",
+            "10827.00",
+            "10773.00",
+            "10785.98",
+            "8068.478",
+            "1601513999999",
+            "87141986.51167",
+            "28076",
+            "4426.127",
+            "47807051.15535",
+            "0"
+          ],
+          "last_row": [
+            "1604185200000",
+            "13859.11",
+            "13859.11",
+            "13752.99",
+            "13783.73",
+            "10994.920",
+            "1604188799999",
+            "151639061.05542",
+            "41046",
+            "4745.055",
+            "65444971.69743",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-10.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1601514000000",
+            "10785.99",
+            "10844.00",
+            "10782.83",
+            "10833.13",
+            "5354.699",
+            "1601517599999",
+            "57913956.22888",
+            "21924",
+            "3337.519",
+            "36098251.19732",
+            "0"
+          ],
+          "sha256": "753bc2e366777b40294690c5bbee38da8ec99e3157739ba0f16850c94ac92dc7",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-10.zip"
+        },
+        {
+          "bytes": 37893,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-11.zip.CHECKSUM",
+          "first_row": [
+            "1604188800000",
+            "13783.73",
+            "13891.52",
+            "13653.00",
+            "13720.66",
+            "23570.687",
+            "1604192399999",
+            "324378302.78190",
+            "82180",
+            "11356.955",
+            "156320337.07869",
+            "0"
+          ],
+          "last_row": [
+            "1606777200000",
+            "19519.57",
+            "19775.34",
+            "19461.31",
+            "19720.00",
+            "17521.243",
+            "1606780799999",
+            "344314807.60502",
+            "76878",
+            "9446.728",
+            "185628646.38187",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-11.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1604192400000",
+            "13720.01",
+            "13763.14",
+            "13699.99",
+            "13749.99",
+            "5568.987",
+            "1604195999999",
+            "76502469.46281",
+            "32731",
+            "2677.287",
+            "36780954.12879",
+            "0"
+          ],
+          "sha256": "23694fa6fc619c159992db5325d37730a392e8ee23e9e5c375a7bfef6022fb82",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-11.zip"
+        },
+        {
+          "bytes": 39316,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-12.zip.CHECKSUM",
+          "first_row": [
+            "1606780800000",
+            "19722.09",
+            "19749.98",
+            "19500.00",
+            "19587.94",
+            "21722.253",
+            "1606784399999",
+            "426397502.83716",
+            "83070",
+            "10437.525",
+            "204939327.24134",
+            "0"
+          ],
+          "last_row": [
+            "1609455600000",
+            "29123.18",
+            "29133.36",
+            "28800.00",
+            "28951.68",
+            "6908.520",
+            "1609459199999",
+            "200177720.04849",
+            "57251",
+            "3151.956",
+            "91351921.30781",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-12.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1606784400000",
+            "19586.67",
+            "19661.55",
+            "19456.92",
+            "19624.01",
+            "10926.820",
+            "1606787999999",
+            "213875047.89820",
+            "50947",
+            "5376.404",
+            "105255914.50949",
+            "0"
+          ],
+          "sha256": "9eca4954142f813a1ab404161b76facb56389a26fcd0b05bf93a19bf29578cb3",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2020-12.zip"
+        },
+        {
+          "bytes": 40346,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-01.zip.CHECKSUM",
+          "first_row": [
+            "1609459200000",
+            "28948.19",
+            "29055.00",
+            "28706.00",
+            "29015.00",
+            "8037.588",
+            "1609462799999",
+            "232164597.07348",
+            "65942",
+            "3983.842",
+            "115131176.76487",
+            "0"
+          ],
+          "last_row": [
+            "1612134000000",
+            "32997.75",
+            "33280.73",
+            "32955.46",
+            "33126.21",
+            "7433.925",
+            "1612137599999",
+            "246406175.03226",
+            "77616",
+            "3847.316",
+            "127533404.48993",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-01.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1609462800000",
+            "29015.00",
+            "29546.42",
+            "28975.46",
+            "29448.40",
+            "19543.401",
+            "1609466399999",
+            "573639378.82902",
+            "127126",
+            "10386.352",
+            "304866252.44020",
+            "0"
+          ],
+          "sha256": "00de1eb2f3e3bc7f21b7ab321f1681385726fe7ba55306a7337acfd8f81fedfa",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-01.zip"
+        },
+        {
+          "bytes": 36379,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-02.zip.CHECKSUM",
+          "first_row": [
+            "1612137600000",
+            "33125.11",
+            "33140.03",
+            "32322.47",
+            "32570.42",
+            "13427.735",
+            "1612141199999",
+            "437510925.00884",
+            "130745",
+            "6894.415",
+            "224536684.82157",
+            "0"
+          ],
+          "last_row": [
+            "1614553200000",
+            "45220.70",
+            "45949.24",
+            "44867.00",
+            "45163.36",
+            "15467.888",
+            "1614556799999",
+            "702565097.81121",
+            "171217",
+            "7497.382",
+            "340828388.79335",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-02.csv",
+          "row_count_including_header": 672,
+          "second_row": [
+            "1612141200000",
+            "32570.42",
+            "33558.34",
+            "32492.10",
+            "33455.17",
+            "13803.115",
+            "1612144799999",
+            "457410902.03667",
+            "125143",
+            "7675.236",
+            "254235434.75579",
+            "0"
+          ],
+          "sha256": "c5739d16db0aa917f9b4f196cf1dc3c9741b2889253c029571dcd2d00e83ccbb",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-02.zip"
+        },
+        {
+          "bytes": 40163,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-03.zip.CHECKSUM",
+          "first_row": [
+            "1614556800000",
+            "45162.64",
+            "46587.98",
+            "44972.49",
+            "46246.26",
+            "18725.868",
+            "1614560399999",
+            "861691717.89318",
+            "207054",
+            "10064.825",
+            "462988112.80026",
+            "0"
+          ],
+          "last_row": [
+            "1617231600000",
+            "58728.30",
+            "58990.00",
+            "58640.00",
+            "58807.24",
+            "5743.578",
+            "1617235199999",
+            "337729851.05082",
+            "65078",
+            "2906.894",
+            "170940727.59712",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-03.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1614560400000",
+            "46246.26",
+            "46514.47",
+            "45870.00",
+            "46186.91",
+            "11462.250",
+            "1614563999999",
+            "529274524.80781",
+            "132139",
+            "5556.185",
+            "256603368.36390",
+            "0"
+          ],
+          "sha256": "518891de0fa643092cac84143c9b35a7cbcebfc75ae0846ce36c8e3adab1929f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-03.zip"
+        },
+        {
+          "bytes": 38669,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-04.zip.CHECKSUM",
+          "first_row": [
+            "1617235200000",
+            "58810.99",
+            "59320.40",
+            "58799.23",
+            "59304.39",
+            "6771.334",
+            "1617238799999",
+            "400192429.19800",
+            "77187",
+            "3583.337",
+            "211792571.06664",
+            "0"
+          ],
+          "last_row": [
+            "1619823600000",
+            "57143.26",
+            "57935.00",
+            "57107.76",
+            "57684.16",
+            "14858.722",
+            "1619827199999",
+            "855809377.06230",
+            "144245",
+            "7985.694",
+            "459920830.76439",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-04.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1617238800000",
+            "59304.39",
+            "59409.96",
+            "59032.33",
+            "59237.53",
+            "5679.300",
+            "1617242399999",
+            "336470261.08560",
+            "64691",
+            "2621.501",
+            "155333388.44182",
+            "0"
+          ],
+          "sha256": "0fdf8d01fa2eae368a63dcf709e6e6c5b0fd79bbe83b2f086aefbe2a7890924f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-04.zip"
+        },
+        {
+          "bytes": 40697,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-05.zip.CHECKSUM",
+          "first_row": [
+            "1619827200000",
+            "57688.29",
+            "58100.00",
+            "57410.00",
+            "57820.60",
+            "13890.069",
+            "1619830799999",
+            "803388501.08736",
+            "147345",
+            "6824.727",
+            "394810272.74721",
+            "0"
+          ],
+          "last_row": [
+            "1622502000000",
+            "36878.70",
+            "37500.00",
+            "36794.25",
+            "37243.38",
+            "20085.334",
+            "1622505599999",
+            "747745395.01921",
+            "171843",
+            "10606.955",
+            "394928825.63893",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-05.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1619830800000",
+            "57820.59",
+            "58488.17",
+            "57500.50",
+            "58444.58",
+            "14873.483",
+            "1619834399999",
+            "863136199.93312",
+            "145814",
+            "7585.293",
+            "440226550.51539",
+            "0"
+          ],
+          "sha256": "c209747915a1451a7b51d80d92e68332622c1dd1b9517dc7723f78cfa4f28ab9",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-05.zip"
+        },
+        {
+          "bytes": 39207,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-06.zip.CHECKSUM",
+          "first_row": [
+            "1622505600000",
+            "37244.36",
+            "37893.76",
+            "37100.00",
+            "37777.37",
+            "28162.765",
+            "1622509199999",
+            "1058506910.16496",
+            "241110",
+            "15029.420",
+            "564990232.88813",
+            "0"
+          ],
+          "last_row": [
+            "1625094000000",
+            "34884.76",
+            "35191.00",
+            "34884.76",
+            "35031.39",
+            "23811.135",
+            "1625097599999",
+            "834113404.55723",
+            "185587",
+            "12507.707",
+            "438179036.29828",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-06.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1622509200000",
+            "37777.36",
+            "37787.94",
+            "37159.19",
+            "37196.69",
+            "18117.185",
+            "1622512799999",
+            "678552933.87813",
+            "166487",
+            "8343.017",
+            "312456795.02020",
+            "0"
+          ],
+          "sha256": "5134cef4361e0819b721776da6e99f715141d122e3cfbf4be729e3dfc153ac33",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-06.zip"
+        },
+        {
+          "bytes": 40038,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-07.zip.CHECKSUM",
+          "first_row": [
+            "1625097600000",
+            "35031.39",
+            "35044.98",
+            "34700.00",
+            "34718.44",
+            "23826.698",
+            "1625101199999",
+            "829958551.48547",
+            "173844",
+            "11024.680",
+            "384055476.07740",
+            "0"
+          ],
+          "last_row": [
+            "1627772400000",
+            "41843.60",
+            "41927.77",
+            "41254.41",
+            "41448.11",
+            "15927.111",
+            "1627775999999",
+            "664360129.51939",
+            "151234",
+            "7064.128",
+            "294705988.35725",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-07.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1625101200000",
+            "34718.43",
+            "35023.55",
+            "34710.00",
+            "34923.04",
+            "14676.165",
+            "1625104799999",
+            "511792461.35537",
+            "121047",
+            "7695.486",
+            "268383728.39595",
+            "0"
+          ],
+          "sha256": "97241c02191fd4694daf9836269e6f8ed04ef5bf858414de5a3354678552b54d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-07.zip"
+        },
+        {
+          "bytes": 40160,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-08.zip.CHECKSUM",
+          "first_row": [
+            "1627776000000",
+            "41448.10",
+            "41750.00",
+            "41091.77",
+            "41715.88",
+            "23625.055",
+            "1627779599999",
+            "979348569.76346",
+            "209320",
+            "11915.614",
+            "494157077.19208",
+            "0"
+          ],
+          "last_row": [
+            "1630450800000",
+            "47128.70",
+            "47410.00",
+            "47035.31",
+            "47150.32",
+            "9964.627",
+            "1630454399999",
+            "470744318.31024",
+            "95436",
+            "5265.057",
+            "248736014.91217",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-08.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1627779600000",
+            "41715.87",
+            "41900.00",
+            "41602.31",
+            "41697.18",
+            "13164.342",
+            "1627783199999",
+            "549773688.26424",
+            "126544",
+            "6759.158",
+            "282317503.74918",
+            "0"
+          ],
+          "sha256": "4c8290ad0baa9fcf37d45b893e8cae1a1e3b9ef77987a9d9abd64e44ab7deb09",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-08.zip"
+        },
+        {
+          "bytes": 38738,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-09.zip.CHECKSUM",
+          "first_row": [
+            "1630454400000",
+            "47150.32",
+            "47392.56",
+            "46703.00",
+            "46795.29",
+            "19567.594",
+            "1630457999999",
+            "919909317.82485",
+            "161356",
+            "8685.382",
+            "408478431.06568",
+            "0"
+          ],
+          "last_row": [
+            "1633042800000",
+            "43710.63",
+            "43880.00",
+            "43556.16",
+            "43796.57",
+            "8225.111",
+            "1633046399999",
+            "359741872.42516",
+            "85125",
+            "3721.426",
+            "162775511.56066",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-09.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1630458000000",
+            "46795.30",
+            "46914.81",
+            "46550.99",
+            "46891.19",
+            "20017.452",
+            "1630461599999",
+            "934955386.97812",
+            "166999",
+            "10138.857",
+            "473674320.69928",
+            "0"
+          ],
+          "sha256": "22c55191129632daf70611af13e8f2b0f34a5e79f4876f41744a9848c43b9864",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-09.zip"
+        },
+        {
+          "bytes": 40087,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-10.zip.CHECKSUM",
+          "first_row": [
+            "1633046400000",
+            "43799.49",
+            "44043.22",
+            "43637.43",
+            "43672.26",
+            "17392.209",
+            "1633049999999",
+            "762299685.10225",
+            "137358",
+            "8748.713",
+            "383601633.09967",
+            "0"
+          ],
+          "last_row": [
+            "1635721200000",
+            "61426.44",
+            "61680.00",
+            "61258.00",
+            "61348.61",
+            "5430.923",
+            "1635724799999",
+            "333777808.31720",
+            "57958",
+            "2360.735",
+            "145100772.22386",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-10.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1633050000000",
+            "43671.50",
+            "43782.67",
+            "43401.99",
+            "43716.80",
+            "9846.998",
+            "1633053599999",
+            "429158409.29340",
+            "102163",
+            "5119.869",
+            "223192656.34911",
+            "0"
+          ],
+          "sha256": "d3b55f8ae3689efe9bccc1d9b7082bda39fa7fa194e4c1197a63d1473ca57b4e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-10.zip"
+        },
+        {
+          "bytes": 38610,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-11.zip.CHECKSUM",
+          "first_row": [
+            "1635724800000",
+            "61347.14",
+            "61736.85",
+            "61129.90",
+            "61617.76",
+            "7621.954",
+            "1635728399999",
+            "468618542.29266",
+            "76413",
+            "3514.489",
+            "216131251.00686",
+            "0"
+          ],
+          "last_row": [
+            "1638313200000",
+            "57305.23",
+            "57455.23",
+            "56768.69",
+            "56975.00",
+            "7372.932",
+            "1638316799999",
+            "421047905.88292",
+            "91299",
+            "3636.311",
+            "207719607.42436",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-11.csv",
+          "row_count_including_header": 720,
+          "second_row": [
+            "1635728400000",
+            "61617.76",
+            "61794.60",
+            "61305.03",
+            "61354.01",
+            "6578.870",
+            "1635731999999",
+            "405223671.48550",
+            "65681",
+            "3005.671",
+            "185175026.57287",
+            "0"
+          ],
+          "sha256": "a013f6adfd3012130c0b0bc58895373ae478cd38c646ac87957b855682c7f069",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-11.zip"
+        },
+        {
+          "bytes": 40053,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-12.zip.CHECKSUM",
+          "first_row": [
+            "1638316800000",
+            "56978.06",
+            "57715.00",
+            "56669.49",
+            "57607.12",
+            "11689.605",
+            "1638320399999",
+            "669896007.94253",
+            "135239",
+            "6020.928",
+            "345123782.62352",
+            "0"
+          ],
+          "last_row": [
+            "1640991600000",
+            "46298.12",
+            "46508.15",
+            "46127.85",
+            "46210.56",
+            "5416.188",
+            "1640995199999",
+            "251092382.89679",
+            "56692",
+            "2656.732",
+            "123219261.55928",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2021-12.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1638320400000",
+            "57607.10",
+            "57608.95",
+            "56951.18",
+            "57035.13",
+            "6517.089",
+            "1638323999999",
+            "372909786.17342",
+            "82540",
+            "3034.105",
+            "173577452.73662",
+            "0"
+          ],
+          "sha256": "f1dff81c6e322f7d5cee3c0808efd4e35b33e371f04ba613054264d9621318f1",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2021-12.zip"
+        },
+        {
+          "bytes": 39953,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-01.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1643670000000",
+            "38385.61",
+            "38488.66",
+            "38326.09",
+            "38439.04",
+            "4608.668",
+            "1643673599999",
+            "177033135.67552",
+            "52855",
+            "2233.144",
+            "85795278.32358",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-01.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1640995200000",
+            "46210.57",
+            "46729.73",
+            "46210.55",
+            "46650.01",
+            "8957.465",
+            "1640998799999",
+            "416444814.26569",
+            "91267",
+            "4777.701",
+            "222129624.36157",
+            "0"
+          ],
+          "sha256": "5281a9c866e7d54b0a5b5e6a7dad5575ad7b96df67f05f74d614c54190ffff5f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-01.zip"
+        },
+        {
+          "bytes": 35964,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-02.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1646089200000",
+            "43029.90",
+            "43338.30",
+            "42842.80",
+            "43155.00",
+            "28103.911",
+            "1646092799999",
+            "1211692355.18749",
+            "270626",
+            "14658.522",
+            "632064962.15081",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-02.csv",
+          "row_count_including_header": 673,
+          "second_row": [
+            "1643673600000",
+            "38439.04",
+            "38611.57",
+            "38250.63",
+            "38326.19",
+            "10250.981",
+            "1643677199999",
+            "393525108.44597",
+            "98168",
+            "5162.339",
+            "198202201.32383",
+            "0"
+          ],
+          "sha256": "b3a199287b2a8fed2c261999205d56cfd72ef9675c4b498a399601978d666228",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-02.zip"
+        },
+        {
+          "bytes": 39024,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-03.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1648767600000",
+            "45782.20",
+            "45788.60",
+            "45185.00",
+            "45506.00",
+            "15820.137",
+            "1648771199999",
+            "718980766.47195",
+            "130471",
+            "6996.809",
+            "318078040.61499",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-03.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1646092800000",
+            "43155.00",
+            "43790.00",
+            "43150.30",
+            "43548.70",
+            "24064.483",
+            "1646096399999",
+            "1044751996.36406",
+            "233310",
+            "12540.728",
+            "544576603.86962",
+            "0"
+          ],
+          "sha256": "f61ebcacd9a38f20b0ad89c64bbeb56baf368641fbbd6e25e987db2b96ede5ff",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-03.zip"
+        },
+        {
+          "bytes": 37478,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-04.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1651359600000",
+            "38234.80",
+            "38259.70",
+            "37550.00",
+            "37614.50",
+            "36665.248",
+            "1651363199999",
+            "1384642775.79817",
+            "386071",
+            "15743.149",
+            "594276642.08509",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-04.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1648771200000",
+            "45505.90",
+            "45638.90",
+            "45338.30",
+            "45539.40",
+            "10308.452",
+            "1648774799999",
+            "469306642.30126",
+            "89650",
+            "5147.236",
+            "234364859.04895",
+            "0"
+          ],
+          "sha256": "db7f9dbcc60cf68051b755346a5be32d27b0d3565cf6c02341b050a234ef44df",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-04.zip"
+        },
+        {
+          "bytes": 39107,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-05.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1654038000000",
+            "31856.20",
+            "31932.30",
+            "31763.20",
+            "31797.80",
+            "7116.994",
+            "1654041599999",
+            "226696704.51535",
+            "76345",
+            "3457.619",
+            "110160670.63099",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-05.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1651363200000",
+            "37614.40",
+            "37785.60",
+            "37437.70",
+            "37660.70",
+            "15995.309",
+            "1651366799999",
+            "602168169.80532",
+            "180498",
+            "7816.301",
+            "294361383.65484",
+            "0"
+          ],
+          "sha256": "b1512041ade711819be114fee30668fbdd2783b73fa55607991ae14d1d43653f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-05.zip"
+        },
+        {
+          "bytes": 37922,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-06.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1656630000000",
+            "18884.90",
+            "19965.60",
+            "18870.40",
+            "19923.50",
+            "87524.406",
+            "1656633599999",
+            "1702321790.94108",
+            "476990",
+            "50391.766",
+            "979931916.94598",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-06.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1654041600000",
+            "31797.90",
+            "31986.10",
+            "31680.00",
+            "31925.50",
+            "13588.888",
+            "1654045199999",
+            "432640301.11709",
+            "132462",
+            "6894.888",
+            "219572827.04889",
+            "0"
+          ],
+          "sha256": "1006ae5b8b4704da69f8f14fb4711d075d689fcf44cd0a98317df97953f1332d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-06.zip"
+        },
+        {
+          "bytes": 38784,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-07.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1659308400000",
+            "23369.00",
+            "23460.40",
+            "23267.00",
+            "23290.10",
+            "18877.751",
+            "1659311999999",
+            "440684899.54500",
+            "185547",
+            "9111.086",
+            "212742558.51870",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-07.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1656633600000",
+            "19923.30",
+            "20926.40",
+            "19649.50",
+            "20288.90",
+            "126872.383",
+            "1656637199999",
+            "2567850142.34095",
+            "702855",
+            "66342.600",
+            "1343251953.79722",
+            "0"
+          ],
+          "sha256": "72060f8608459b04817f652cbb945be28afef0ae54ccf38113911c194630c184",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-07.zip"
+        },
+        {
+          "bytes": 38388,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-08.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1661986800000",
+            "20148.30",
+            "20148.30",
+            "19959.80",
+            "20041.50",
+            "20369.711",
+            "1661990399999",
+            "407952520.76400",
+            "153366",
+            "10421.438",
+            "208677915.85450",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-08.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1659312000000",
+            "23290.10",
+            "23384.90",
+            "23251.00",
+            "23365.90",
+            "14751.085",
+            "1659315599999",
+            "343900242.16280",
+            "152524",
+            "7866.200",
+            "183405723.51950",
+            "0"
+          ],
+          "sha256": "a1ad9eafd3dfecccfbc60c07de33ec2f7c33eab96f8ec04f88360b73b55dad76",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-08.zip"
+        },
+        {
+          "bytes": 37283,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-09.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1664578800000",
+            "19378.00",
+            "19461.30",
+            "19351.10",
+            "19411.70",
+            "17905.987",
+            "1664582399999",
+            "347656397.73570",
+            "113990",
+            "8940.045",
+            "173582623.85830",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-09.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1661990400000",
+            "20041.40",
+            "20126.20",
+            "19910.00",
+            "20057.20",
+            "30830.486",
+            "1661993999999",
+            "617347537.16410",
+            "192654",
+            "14689.502",
+            "294179962.16540",
+            "0"
+          ],
+          "sha256": "92753ae32ed042ab7f10b90e3b9a49ddafc695c8e60eb563713855c73e2e6e82",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-09.zip"
+        },
+        {
+          "bytes": 37838,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-10.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1667257200000",
+            "20467.40",
+            "20514.10",
+            "20450.60",
+            "20482.00",
+            "8521.222",
+            "1667260799999",
+            "174524899.49950",
+            "59692",
+            "4224.890",
+            "86537844.93810",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-10.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1664582400000",
+            "19411.60",
+            "19474.00",
+            "19338.00",
+            "19393.10",
+            "18441.044",
+            "1664585999999",
+            "357797245.19380",
+            "114737",
+            "8512.753",
+            "165203404.47370",
+            "0"
+          ],
+          "sha256": "d85a5f4bdbe93df2babdecf3b37f866655fa23c3fb31eeca96c3e3f6a1e9b872",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-10.zip"
+        },
+        {
+          "bytes": 36889,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-11.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1669849200000",
+            "17139.20",
+            "17215.50",
+            "17100.80",
+            "17153.30",
+            "30563.862",
+            "1669852799999",
+            "524395370.53840",
+            "165063",
+            "14609.687",
+            "250701514.15570",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-11.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1667260800000",
+            "20482.10",
+            "20492.10",
+            "20429.60",
+            "20445.40",
+            "9319.649",
+            "1667264399999",
+            "190679421.37330",
+            "65595",
+            "4259.452",
+            "87153703.93980",
+            "0"
+          ],
+          "sha256": "e9b3f3b1929e3f6f255269c2d2eb564d9d9bcacbfc16651888e95765df383888",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-11.zip"
+        },
+        {
+          "bytes": 36820,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-12.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1672527600000",
+            "16515.10",
+            "16546.90",
+            "16483.10",
+            "16537.60",
+            "8343.086",
+            "1672531199999",
+            "137805090.13250",
+            "44489",
+            "4534.072",
+            "74892551.40650",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2022-12.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1669852800000",
+            "17153.40",
+            "17222.10",
+            "17112.50",
+            "17153.70",
+            "24927.003",
+            "1669856399999",
+            "427907461.28460",
+            "142018",
+            "11382.772",
+            "195427425.40250",
+            "0"
+          ],
+          "sha256": "d313c2cb509cba13eff6538829245aedc993f18eff4a7bd48fe0eb6c3a9fa158",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2022-12.zip"
+        },
+        {
+          "bytes": 37766,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-01.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1675206000000",
+            "23178.50",
+            "23180.00",
+            "23076.20",
+            "23119.40",
+            "18130.506",
+            "1675209599999",
+            "419158004.54450",
+            "122730",
+            "9051.646",
+            "209260543.59370",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-01.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1672531200000",
+            "16537.50",
+            "16540.90",
+            "16504.00",
+            "16527.00",
+            "5381.399",
+            "1672534799999",
+            "88923087.83210",
+            "31529",
+            "2541.791",
+            "42000649.27240",
+            "0"
+          ],
+          "sha256": "b9ac60cc3ffc1e16db96ca2314120ff7531988108ebef1733ee54234f4fedf7f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-01.zip"
+        },
+        {
+          "bytes": 34682,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-02.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1677625200000",
+            "23149.70",
+            "23186.80",
+            "23086.00",
+            "23129.60",
+            "13698.681",
+            "1677628799999",
+            "316912152.26680",
+            "113352",
+            "6526.020",
+            "150991169.71410",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-02.csv",
+          "row_count_including_header": 673,
+          "second_row": [
+            "1675209600000",
+            "23119.50",
+            "23161.40",
+            "22988.00",
+            "23076.20",
+            "17113.147",
+            "1675213199999",
+            "394805633.81680",
+            "119104",
+            "8010.801",
+            "184821430.95270",
+            "0"
+          ],
+          "sha256": "1ace9802f4da961db025a7b76a6171ef2c516c5307e5dee24267182f059110e0",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-02.zip"
+        },
+        {
+          "bytes": 38700,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-03.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1680303600000",
+            "28560.50",
+            "28589.80",
+            "28454.80",
+            "28454.90",
+            "8858.776",
+            "1680307199999",
+            "252599709.50480",
+            "105736",
+            "4222.791",
+            "120414887.63060",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-03.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1677628800000",
+            "23129.70",
+            "23209.60",
+            "23008.40",
+            "23090.30",
+            "23775.114",
+            "1677632399999",
+            "549484774.43110",
+            "168219",
+            "11601.564",
+            "268118850.21990",
+            "0"
+          ],
+          "sha256": "35f0068cc41887ea11960c4bb10e251a404fef5ad4cb4c88699cc2419b6bc38b",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-03.zip"
+        },
+        {
+          "bytes": 37139,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-04.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1682895600000",
+            "29363.20",
+            "29410.90",
+            "29145.50",
+            "29223.00",
+            "15456.408",
+            "1682899199999",
+            "452989140.32380",
+            "163421",
+            "7121.832",
+            "208802623.63090",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-04.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1680307200000",
+            "28454.80",
+            "28543.30",
+            "28401.00",
+            "28430.10",
+            "10973.721",
+            "1680310799999",
+            "312354113.56510",
+            "112964",
+            "5400.234",
+            "153725276.14360",
+            "0"
+          ],
+          "sha256": "ed6f0a84d1b2ed8f73fbdd4df10703e2ab49864fc4d657b0d8a9464a49dd4a29",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-04.zip"
+        },
+        {
+          "bytes": 38198,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-05.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1685574000000",
+            "27170.00",
+            "27290.00",
+            "27140.80",
+            "27201.10",
+            "16573.762",
+            "1685577599999",
+            "450963973.28530",
+            "133913",
+            "8410.251",
+            "228871908.79000",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-05.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1682899200000",
+            "29223.00",
+            "29325.50",
+            "29198.20",
+            "29303.30",
+            "16725.930",
+            "1682902799999",
+            "489597793.58130",
+            "159146",
+            "8983.688",
+            "262975080.39380",
+            "0"
+          ],
+          "sha256": "2f278ad3ea09cc42e577ad7185de74391a1eb09b9d9836d375e2c540aef1667f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-05.zip"
+        },
+        {
+          "bytes": 37120,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-06.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1688166000000",
+            "30468.60",
+            "30537.30",
+            "30443.80",
+            "30460.20",
+            "5479.407",
+            "1688169599999",
+            "167046120.57240",
+            "70280",
+            "2830.081",
+            "86287254.48000",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-06.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1685577600000",
+            "27201.10",
+            "27347.90",
+            "27008.10",
+            "27059.80",
+            "33639.569",
+            "1685581199999",
+            "914441697.88480",
+            "256082",
+            "15501.040",
+            "421502923.78800",
+            "0"
+          ],
+          "sha256": "19bd435cdf58b426642c24a0df3b5fa755433f52a8c39f05dc5cfdeffa453aa0",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-06.zip"
+        },
+        {
+          "bytes": 37558,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-07.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1690844400000",
+            "29199.50",
+            "29229.80",
+            "29173.40",
+            "29220.80",
+            "3765.949",
+            "1690847999999",
+            "109981075.55480",
+            "42779",
+            "1826.605",
+            "53346223.24840",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-07.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1688169600000",
+            "30460.20",
+            "30527.20",
+            "30405.60",
+            "30459.10",
+            "8790.092",
+            "1688173199999",
+            "267887525.86960",
+            "98338",
+            "4269.250",
+            "130112872.35110",
+            "0"
+          ],
+          "sha256": "ae9ebc03dff2bdeb805a1401b5cf1256b2b84283f5f9d92b1f454f33b223f499",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-07.zip"
+        },
+        {
+          "bytes": 37282,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-08.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1693522800000",
+            "26042.80",
+            "26047.30",
+            "25895.80",
+            "25928.00",
+            "8498.977",
+            "1693526399999",
+            "220648510.18670",
+            "96732",
+            "3801.762",
+            "98678183.21390",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-08.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1690848000000",
+            "29220.80",
+            "29277.00",
+            "29200.90",
+            "29272.30",
+            "4934.266",
+            "1690851599999",
+            "144272671.57760",
+            "49285",
+            "2739.515",
+            "80101767.81650",
+            "0"
+          ],
+          "sha256": "599daa607ff593666036fe742d8272de6e0e9d284cd7d41d6585cf53baa20ca2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-08.zip"
+        },
+        {
+          "bytes": 35974,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-09.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1696114800000",
+            "26996.50",
+            "26999.80",
+            "26942.10",
+            "26950.90",
+            "3409.319",
+            "1696118399999",
+            "91932685.14040",
+            "48102",
+            "1507.884",
+            "40659453.44510",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-09.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1693526400000",
+            "25928.00",
+            "26060.50",
+            "25918.90",
+            "26037.80",
+            "8418.026",
+            "1693529999999",
+            "218833599.87360",
+            "93652",
+            "5062.845",
+            "131596299.78470",
+            "0"
+          ],
+          "sha256": "7849f82af86aabcb9a79f64d0527480f22117656a68f98280fe8b840a6ee1339",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-09.zip"
+        },
+        {
+          "bytes": 37679,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-10.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1698793200000",
+            "34571.70",
+            "34677",
+            "34528.50",
+            "34651.40",
+            "5988.111",
+            "1698796799999",
+            "207256385.47330",
+            "81161",
+            "3031.079",
+            "104913330.97720",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-10.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1696118400000",
+            "26951",
+            "26986.60",
+            "26939",
+            "26976.90",
+            "2733.691",
+            "1696121999999",
+            "73701819.91770",
+            "36206",
+            "1615.927",
+            "43571737.84960",
+            "0"
+          ],
+          "sha256": "bbf0ef273c80f696ed9eb129a257812162487486692f124b9631ec38a924f6ae",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-10.zip"
+        },
+        {
+          "bytes": 36685,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-11.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1701385200000",
+            "37685.90",
+            "37720.10",
+            "37585",
+            "37716.80",
+            "5806.750",
+            "1701388799999",
+            "218656191.60895",
+            "63465",
+            "2847.427",
+            "107229766.83940",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-11.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1698796800000",
+            "34651.40",
+            "34684",
+            "34506.70",
+            "34522.30",
+            "11707.408",
+            "1698800399999",
+            "404972946.55546",
+            "163247",
+            "4599.907",
+            "159132500.40816",
+            "0"
+          ],
+          "sha256": "26f1a2870f57925303edcf75581f0a33ff5e145c2126e15afc5fc1b400522428",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-11.zip"
+        },
+        {
+          "bytes": 38475,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-12.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1704063600000",
+            "42294.80",
+            "42380.10",
+            "42083.10",
+            "42314.00",
+            "11676.465",
+            "1704067199999",
+            "493201782.14854",
+            "116242",
+            "5218.798",
+            "220459181.35125",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2023-12.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1701388800000",
+            "37716.90",
+            "37734.60",
+            "37600",
+            "37665.60",
+            "6134.170",
+            "1701392399999",
+            "230902990.25210",
+            "60132",
+            "2517.091",
+            "94753985.58480",
+            "0"
+          ],
+          "sha256": "5377bec9e6dc04027717836cc1c2a3789da4e4122d57e8395265a0414b766b7c",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2023-12.zip"
+        },
+        {
+          "bytes": 38890,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-01.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1706742000000",
+            "42634.70",
+            "42677.10",
+            "42539.50",
+            "42560.50",
+            "6511.237",
+            "1706745599999",
+            "277440463.27570",
+            "77225",
+            "3042.665",
+            "129651789.66170",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-01.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1704067200000",
+            "42314.00",
+            "42603.20",
+            "42289.60",
+            "42503.50",
+            "8459.477",
+            "1704070799999",
+            "359196345.08716",
+            "88278",
+            "4687.976",
+            "199033806.82405",
+            "0"
+          ],
+          "sha256": "bf673f3d10804a951e8bac56dd2473486f113025971d43ebe5258ec40f9bfeb3",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-01.zip"
+        },
+        {
+          "bytes": 36374,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-02.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1709247600000",
+            "61290.40",
+            "61600.00",
+            "61173.10",
+            "61203.30",
+            "9263.588",
+            "1709251199999",
+            "568823569.50448",
+            "147521",
+            "4533.401",
+            "278412398.58429",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-02.csv",
+          "row_count_including_header": 697,
+          "second_row": [
+            "1706745600000",
+            "42560.50",
+            "42674.90",
+            "42201.60",
+            "42460.20",
+            "12447.683",
+            "1706749199999",
+            "528275053.57167",
+            "148317",
+            "6181.434",
+            "262380385.13886",
+            "0"
+          ],
+          "sha256": "655ff5ac0fc570956756944c7afef4895c9bd149342f1e437de97292cbd1fe22",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-02.zip"
+        },
+        {
+          "bytes": 39301,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-03.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1711926000000",
+            "71043.30",
+            "71495.50",
+            "70982.30",
+            "71363.00",
+            "9792.916",
+            "1711929599999",
+            "698084315.06385",
+            "122784",
+            "5331.723",
+            "380089399.63865",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-03.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1709251200000",
+            "61203.30",
+            "61842.20",
+            "61199.40",
+            "61575.30",
+            "9463.711",
+            "1709254799999",
+            "582509454.72016",
+            "160584",
+            "4971.783",
+            "306043441.25270",
+            "0"
+          ],
+          "sha256": "8138642b757ddf5a42207130277be4569afb4c581a0a1817be9f5f35a4415498",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-03.zip"
+        },
+        {
+          "bytes": 37804,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-04.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1714518000000",
+            "60560.90",
+            "60901.60",
+            "60372.00",
+            "60651.20",
+            "6496.840",
+            "1714521599999",
+            "393902260.34260",
+            "112197",
+            "3246.996",
+            "196881245.30690",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-04.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1711929600000",
+            "71363.00",
+            "71388.00",
+            "70935.50",
+            "71234.10",
+            "7161.196",
+            "1711933199999",
+            "509749428.31080",
+            "113050",
+            "3083.564",
+            "219473216.03670",
+            "0"
+          ],
+          "sha256": "4bf3ca3574e0075c1b79f5b22c4253e26f6260f3621943205e3a8016c4c12318",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-04.zip"
+        },
+        {
+          "bytes": 38427,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-05.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1717196400000",
+            "67537.20",
+            "67643.00",
+            "67259.70",
+            "67577.90",
+            "7833.572",
+            "1717199999999",
+            "528359948.11260",
+            "102556",
+            "3700.491",
+            "249608308.65580",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-05.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1714521600000",
+            "60651.20",
+            "60816.70",
+            "60060.60",
+            "60217.20",
+            "10900.384",
+            "1714525199999",
+            "658389649.47060",
+            "188405",
+            "5144.880",
+            "310746587.70580",
+            "0"
+          ],
+          "sha256": "1d607e3b26e6886ba742477bc97687f0b86c4c26ac564325dc5f1667e0362d35",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-05.zip"
+        },
+        {
+          "bytes": 36794,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-06.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1719788400000",
+            "62894.90",
+            "63058.40",
+            "62753.90",
+            "62766.00",
+            "8430.946",
+            "1719791999999",
+            "530422993.49580",
+            "106698",
+            "4112.704",
+            "258801532.88940",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-06.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1717200000000",
+            "67577.90",
+            "67729.90",
+            "67535.40",
+            "67690.00",
+            "3025.451",
+            "1717203599999",
+            "204628990.86440",
+            "49741",
+            "1569.014",
+            "106127949.20210",
+            "0"
+          ],
+          "sha256": "7dba8642e56641fca2c7f3f363050ae88bf0d6c87d28e14b747fbd3267d4d3a8",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-06.zip"
+        },
+        {
+          "bytes": 38700,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-07.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1722466800000",
+            "64943.30",
+            "64968.10",
+            "64600.00",
+            "64601.80",
+            "4980.108",
+            "1722470399999",
+            "322304201.90170",
+            "67995",
+            "2312.582",
+            "149670413.61630",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-07.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1719792000000",
+            "62766.10",
+            "62935.20",
+            "62562.00",
+            "62924.60",
+            "7156.801",
+            "1719795599999",
+            "449009096.50570",
+            "95758",
+            "3512.698",
+            "220405889.95280",
+            "0"
+          ],
+          "sha256": "920aacb84b2745ee8f31806a753cdc5b2d672e6814d9c50c0bf524ad45eb5611",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-07.zip"
+        },
+        {
+          "bytes": 38718,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-08.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1725145200000",
+            "58998.90",
+            "59035.50",
+            "58897.10",
+            "58941.90",
+            "1966.036",
+            "1725148799999",
+            "115883018.71610",
+            "26779",
+            "989.169",
+            "58302988.07550",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-08.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1722470400000",
+            "64601.80",
+            "64824.40",
+            "64320.00",
+            "64626.40",
+            "11766.814",
+            "1722473999999",
+            "759863191.58640",
+            "148858",
+            "5438.935",
+            "351373052.56030",
+            "0"
+          ],
+          "sha256": "8d8465eb4c8a4fd05ebc0126e4c14a217edb2039441546bf095229e975268de6",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-08.zip"
+        },
+        {
+          "bytes": 37266,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-09.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1727737200000",
+            "63458.30",
+            "63591.50",
+            "62825.00",
+            "63309.10",
+            "18129.367",
+            "1727740799999",
+            "1145199295.70180",
+            "212355",
+            "8222.830",
+            "519539270.18530",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-09.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1725148800000",
+            "58941.90",
+            "59052.70",
+            "58872.00",
+            "58905.40",
+            "1896.832",
+            "1725152399999",
+            "111840062.66910",
+            "38132",
+            "1074.962",
+            "63385987.30710",
+            "0"
+          ],
+          "sha256": "0a8118b3601f18ddad04a8afcf887fdc01661f66824a0ce49e0419be1f97f907",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-09.zip"
+        },
+        {
+          "bytes": 38285,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-10.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1730415600000",
+            "70502.80",
+            "70669.70",
+            "70317.70",
+            "70321.90",
+            "5339.259",
+            "1730419199999",
+            "376579211.34140",
+            "88516",
+            "2604.024",
+            "183712447.53090",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-10.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1727740800000",
+            "63309.00",
+            "63601.70",
+            "63000.00",
+            "63513.20",
+            "13510.100",
+            "1727744399999",
+            "854970002.36730",
+            "186096",
+            "6624.095",
+            "419328585.27380",
+            "0"
+          ],
+          "sha256": "e3dcb9fe9d70fea19dfbdc5294044da69b9061c6f7411e99468825fac1ce8d61",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-10.zip"
+        },
+        {
+          "bytes": 37741,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-11.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1733007600000",
+            "96529.50",
+            "96658.60",
+            "96380.00",
+            "96475.10",
+            "3205.182",
+            "1733011199999",
+            "309298578.50120",
+            "61200",
+            "1580.747",
+            "152551105.43700",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-11.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1730419200000",
+            "70321.90",
+            "70500.00",
+            "70160.90",
+            "70188.60",
+            "6293.539",
+            "1730422799999",
+            "442597463.83280",
+            "99930",
+            "3122.970",
+            "219650270.50210",
+            "0"
+          ],
+          "sha256": "0675e55056748489b8750cf6088a666f65dd4fd932d7ca5bd30491f5996b5f3d",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-11.zip"
+        },
+        {
+          "bytes": 38950,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-12.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1735686000000",
+            "93469.10",
+            "93736.90",
+            "93356.60",
+            "93548.90",
+            "3036.946",
+            "1735689599999",
+            "284056933.39400",
+            "75386",
+            "1614.638",
+            "151022619.45650",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2024-12.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1733011200000",
+            "96475.20",
+            "96746.30",
+            "96313.00",
+            "96403.20",
+            "4201.075",
+            "1733014799999",
+            "405464385.14800",
+            "79914",
+            "2372.155",
+            "228943805.01960",
+            "0"
+          ],
+          "sha256": "b072f3147b3e390c81dcbf35830a12ff7d53a73236aa44a9eea78199502529cb",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2024-12.zip"
+        },
+        {
+          "bytes": 38915,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-01.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1738364400000",
+            "102212.80",
+            "102390.50",
+            "101900.50",
+            "102379.70",
+            "2783.077",
+            "1738367999999",
+            "284280243.38830",
+            "75627",
+            "1441.026",
+            "147209220.99570",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-01.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1735689600000",
+            "93548.80",
+            "94449.20",
+            "93460.20",
+            "94363.60",
+            "5744.609",
+            "1735693199999",
+            "539615914.46460",
+            "105263",
+            "3278.334",
+            "308056781.54270",
+            "0"
+          ],
+          "sha256": "9ebc05c9b3d5ab3591edf65bc5c7e5dbc2f96c1efc4adc4ea198c651a99a41b1",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-01.zip"
+        },
+        {
+          "bytes": 34861,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-02.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1740783600000",
+            "84107.50",
+            "84513.10",
+            "83968.70",
+            "84299.60",
+            "3232.822",
+            "1740787199999",
+            "272354846.21710",
+            "75195",
+            "1850.008",
+            "155842117.33940",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-02.csv",
+          "row_count_including_header": 673,
+          "second_row": [
+            "1738368000000",
+            "102379.80",
+            "102538.70",
+            "102160.30",
+            "102450.20",
+            "3437.770",
+            "1738371599999",
+            "351972187.88360",
+            "83367",
+            "1603.890",
+            "164229274.77400",
+            "0"
+          ],
+          "sha256": "077d761098eb5f2dbde65457833b9edab41ea6475284a77fcce0d4bec1bfb5cf",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-02.zip"
+        },
+        {
+          "bytes": 38723,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-03.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1743462000000",
+            "82372.30",
+            "82898.60",
+            "82242.40",
+            "82517.50",
+            "6137.978",
+            "1743465599999",
+            "506545832.53290",
+            "96176",
+            "3696.254",
+            "305135152.79810",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-03.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1740787200000",
+            "84299.60",
+            "84588.40",
+            "83779.00",
+            "83817.10",
+            "4104.741",
+            "1740790799999",
+            "345431414.25980",
+            "95254",
+            "2196.178",
+            "184818486.75890",
+            "0"
+          ],
+          "sha256": "08043384c3336b0fa3eeee06e113a6f1eceb6d3fbe7b2971e9b9fa83625fdfb9",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-03.zip"
+        },
+        {
+          "bytes": 37389,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-04.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1746054000000",
+            "94075.90",
+            "94287.70",
+            "93950.00",
+            "94125.10",
+            "3360.796",
+            "1746057599999",
+            "316423331.61220",
+            "63227",
+            "1914.954",
+            "180292953.47930",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-04.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1743465600000",
+            "82517.50",
+            "82775.40",
+            "82383.30",
+            "82598.40",
+            "4653.565",
+            "1743469199999",
+            "384299877.82670",
+            "96966",
+            "2070.402",
+            "170998537.31860",
+            "0"
+          ],
+          "sha256": "2adf7c1be412e43b04a128e997f4cb1e5e7f895f55b6e1bf66621807f221f274",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-04.zip"
+        },
+        {
+          "bytes": 38805,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-05.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1748732400000",
+            "104567.30",
+            "104799.60",
+            "104423.00",
+            "104544.70",
+            "2728.034",
+            "1748735999999",
+            "285367747.74980",
+            "59802",
+            "1353.578",
+            "141581141.75660",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-05.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1746057600000",
+            "94125.20",
+            "94358.90",
+            "94086.70",
+            "94358.90",
+            "2408.187",
+            "1746061199999",
+            "226944387.00800",
+            "46381",
+            "1157.920",
+            "109119246.16890",
+            "0"
+          ],
+          "sha256": "2e736b9e792d5ae9d4607d7426e4530020762cb898d580b18d3fb0faf9d2ba8e",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-05.zip"
+        },
+        {
+          "bytes": 37374,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-06.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1751324400000",
+            "107051.10",
+            "107181.30",
+            "107009.40",
+            "107087.40",
+            "1795.019",
+            "1751327999999",
+            "192198745.99960",
+            "34685",
+            "929.039",
+            "99473407.17830",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-06.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1748736000000",
+            "104544.60",
+            "104599.60",
+            "104277.30",
+            "104408.70",
+            "3438.526",
+            "1748739599999",
+            "358998670.72560",
+            "71534",
+            "1691.726",
+            "176614558.10500",
+            "0"
+          ],
+          "sha256": "d1d9d5dbc540c19dd882305937f864f59ffffe3f5449a6b05b3f95efe7ca4fbc",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-06.zip"
+        },
+        {
+          "bytes": 38443,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-07.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1754002800000",
+            "115934.90",
+            "116307.60",
+            "115373.90",
+            "115697.30",
+            "11144.991",
+            "1754006399999",
+            "1290906536.94600",
+            "221221",
+            "4842.068",
+            "561028767.52460",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-07.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1751328000000",
+            "107087.30",
+            "107408.20",
+            "106972.90",
+            "107327.80",
+            "3525.572",
+            "1751331599999",
+            "377988159.22950",
+            "66059",
+            "1677.821",
+            "179874133.07530",
+            "0"
+          ],
+          "sha256": "3f471677b97cd3c5c21e9c1420bd7d58c1fe4041a3d2e195369277298ca01ea2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-07.zip"
+        },
+        {
+          "bytes": 38617,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-08.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1756681200000",
+            "108842.30",
+            "108866.70",
+            "108021.00",
+            "108208.40",
+            "7595.205",
+            "1756684799999",
+            "822705718.83360",
+            "140211",
+            "3624.401",
+            "392524886.57780",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-08.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1754006400000",
+            "115697.30",
+            "115877.80",
+            "114239.00",
+            "115366.90",
+            "21495.534",
+            "1754009999999",
+            "2473716709.55010",
+            "376124",
+            "9343.768",
+            "1075707468.51370",
+            "0"
+          ],
+          "sha256": "a240d3f766cd5c3db4e0702cf660ae54e327ec67aba169dda55abc90cae055f2",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-08.zip"
+        },
+        {
+          "bytes": 37022,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-09.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1759273200000",
+            "113883.30",
+            "113988.80",
+            "113710.00",
+            "113988.80",
+            "2782.843",
+            "1759276799999",
+            "316788079.93880",
+            "62132",
+            "1311.844",
+            "149342931.30170",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-09.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1756684800000",
+            "108208.40",
+            "108372.50",
+            "107588.00",
+            "108180.10",
+            "9992.787",
+            "1756688399999",
+            "1078714666.55580",
+            "196393",
+            "4892.270",
+            "528088927.04530",
+            "0"
+          ],
+          "sha256": "b15817c45e6ca13a907772591664a57e00b711fecbd4285f2a16ced3c7023019",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-09.zip"
+        },
+        {
+          "bytes": 38885,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-10.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1761951600000",
+            "109543.00",
+            "109641.90",
+            "109475.60",
+            "109557.30",
+            "798.445",
+            "1761955199999",
+            "87474473.40150",
+            "38206",
+            "424.628",
+            "46521272.56560",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-10.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1759276800000",
+            "113988.70",
+            "114246.00",
+            "113899.40",
+            "114181.10",
+            "3773.132",
+            "1759280399999",
+            "430431137.63140",
+            "87657",
+            "1834.045",
+            "209234332.67050",
+            "0"
+          ],
+          "sha256": "b173469216acad36058ecfb0a5432471ec58b3c49032246d4d687dd3af8ae34a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-10.zip"
+        },
+        {
+          "bytes": 37564,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-11.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1764543600000",
+            "91179.00",
+            "91213.20",
+            "90300.00",
+            "90320.60",
+            "8562.419",
+            "1764547199999",
+            "776112483.24900",
+            "171409",
+            "3354.642",
+            "304083705.63320",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-11.csv",
+          "row_count_including_header": 721,
+          "second_row": [
+            "1761955200000",
+            "109557.20",
+            "109725.00",
+            "109351.50",
+            "109689.70",
+            "1488.945",
+            "1761958799999",
+            "163062015.24920",
+            "66857",
+            "717.527",
+            "78587823.41000",
+            "0"
+          ],
+          "sha256": "75c4069b8ff93aa5e4064e885077426fd60f1cf6239a728b2d4ca543c0210d5a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-11.zip"
+        },
+        {
+          "bytes": 38148,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-12.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1767222000000",
+            "87695.80",
+            "87702.10",
+            "87583.60",
+            "87608.20",
+            "955.665",
+            "1767225599999",
+            "83755052.34230",
+            "26985",
+            "490.872",
+            "43020887.10990",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-12.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1764547200000",
+            "90320.50",
+            "90396.90",
+            "86939.60",
+            "86970.70",
+            "43263.872",
+            "1764550799999",
+            "3826966306.53590",
+            "917638",
+            "18760.682",
+            "1658537504.27960",
+            "0"
+          ],
+          "sha256": "41e977a06b7806ce1398aca5f9075befffd1e6303db891795f3b179c762709ec",
+          "url": "https://data.binance.vision/data/futures/um/monthly/klines/BTCUSDT/1h/BTCUSDT-1h-2025-12.zip"
+        }
+      ]
+    },
+    "premium_1h": {
+      "actual_historical_receipts": null,
+      "catalog_pages": [
+        {
+          "bytes": 48531,
+          "sha256": "a3310217c977d3389a32183a924200bde62303c084250cf962d3d3ea13a30adb",
+          "url": "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision?prefix=data%2Ffutures%2Fum%2Fmonthly%2FpremiumIndexKlines%2FBTCUSDT%2F1h%2F&max-keys=1000"
+        }
+      ],
+      "catalog_summary": {
+        "checksum_count": 81,
+        "first_zip_key": "data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip",
+        "last_modified_max": "2026-10-02T09:47:25.000Z",
+        "last_modified_min": "2021-03-29T13:44:52.000Z",
+        "last_zip_key": "data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2026-09.zip",
+        "object_count": 162,
+        "zip_count": 81
+      },
+      "categories": [],
+      "expected_zip_count": 72,
+      "historical_pit": false,
+      "missing_checksum_keys": [],
+      "missing_zip_keys": [],
+      "prefix": "data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/",
+      "present_zip_count": 72,
+      "requested_range": [
+        "2020-01",
+        "2025-12"
+      ],
+      "source_vintage": "current corrected public archive observed at audit time",
+      "verified_files": [
+        {
+          "bytes": 16478,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip.CHECKSUM",
+          "first_row": [
+            "1577836800000",
+            "-0.00077732",
+            "-0.00044253",
+            "-0.00120564",
+            "-0.00080868",
+            "0",
+            "1577840399999",
+            "0",
+            "60",
+            "0",
+            "0",
+            "0"
+          ],
+          "last_row": [
+            "1580511600000",
+            "0.00142021",
+            "0.00199606",
+            "0.00080165",
+            "0.00122396",
+            "0",
+            "1580515199999",
+            "0",
+            "60",
+            "0",
+            "0",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2020-01.csv",
+          "row_count_including_header": 744,
+          "second_row": [
+            "1577840400000",
+            "-0.00081792",
+            "-0.00010016",
+            "-0.00101544",
+            "-0.00080084",
+            "0",
+            "1577843999999",
+            "0",
+            "60",
+            "0",
+            "0",
+            "0"
+          ],
+          "sha256": "32908c64c74ad4a74f4467a4918267e8e3ffa36d26ddf1d3c2cfe3e55a1b807a",
+          "url": "https://data.binance.vision/data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2020-01.zip"
+        },
+        {
+          "bytes": 16665,
+          "checksum_url": "https://data.binance.vision/data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2025-12.zip.CHECKSUM",
+          "first_row": [
+            "open_time",
+            "open",
+            "high",
+            "low",
+            "close",
+            "volume",
+            "close_time",
+            "quote_volume",
+            "count",
+            "taker_buy_volume",
+            "taker_buy_quote_volume",
+            "ignore"
+          ],
+          "last_row": [
+            "1767222000000",
+            "-0.00033184",
+            "-0.00018987",
+            "-0.00068002",
+            "-0.00043904",
+            "0",
+            "1767225599999",
+            "0",
+            "720",
+            "0",
+            "0",
+            "0"
+          ],
+          "member": "BTCUSDT-1h-2025-12.csv",
+          "row_count_including_header": 745,
+          "second_row": [
+            "1764547200000",
+            "-0.00048983",
+            "0.00064366",
+            "-0.00353520",
+            "-0.00040468",
+            "0",
+            "1764550799999",
+            "0",
+            "720",
+            "0",
+            "0",
+            "0"
+          ],
+          "sha256": "8641d6a10dbb6e473983c051b4006510dcc970c49eadb916e70071a625a53f2f",
+          "url": "https://data.binance.vision/data/futures/um/monthly/premiumIndexKlines/BTCUSDT/1h/BTCUSDT-1h-2025-12.zip"
+        }
+      ]
+    }
+  },
+  "started_at": "2026-10-02T21:06:28.602690+00:00"
+}

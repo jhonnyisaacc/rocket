@@ -1,0 +1,30 @@
+{
+  "scope": "Frozen MOM-000 replication and unscored MOM-002 proposal",
+  "reconciliation_byte_replay": "PASS",
+  "predictive_trials": 0,
+  "files_sha256": {
+    "docs/research/momentum/MOM_002_PROPOSAL.md": "5c0ecbf5302145a98c620c7f44f7f027b9d376fd9c0e9289f0a304c961307df2",
+    "docs/research/momentum/MOM_002_REVIEW_STATE.json": "644282bd27c1a67a77d9448628df4a535ca0154b1c153309ad6d251b39a7fcd9",
+    "docs/research/momentum/SOURCE_MANIFEST.json": "7ee9bfb53c30de97e5ed4fd6faf495c9ab14723a833a8465020cd1a3943e068f",
+    "docs/research/momentum/reconciliation/CANDIDATE_DIFF.json": "5020900ecbd3a7ab56d7e7a67868bea8030951a7b57c734d780018a5e81552b6",
+    "docs/research/momentum/reconciliation/DISCREPANT_BARRIER_TRACES.json": "b0c71b965ae51055146fd56ad9a0fda38fb3fea50590db8b16f57f0b4950459e",
+    "docs/research/momentum/reconciliation/LEG_DIFF.json": "cff211b0e04a55f2d85d1bf1f1e905a45f81637aea7d6881614592cc2a9326f3",
+    "docs/research/momentum/reconciliation/PR49_FROZEN_CENSUS.json": "49b59a617f0aeb73fd7423a0c8cb6638937dabf2f889b91fa87887b7b8673a64",
+    "docs/research/momentum/reconciliation/PR50_FROZEN_CENSUS.json": "c4b2e44b0301008552f62255f9094b9b9a681656d624f19180f125c009e7f4f0",
+    "docs/research/momentum/reconciliation/RECONCILIATION.json": "22692bd4106e85b227f7032bee6be652a942437dc0cf523d4553ef846f212be1",
+    "docs/research/momentum/results/CENSUS.json": "43424963168d5bac395d40a0367c5bef01feb5e0572477f54821d3693a682a1b",
+    "docs/research/momentum/results/EPISODES_DIAGNOSTIC.json": "9999d0ccde777d921f33bcce7fd085a4f2afce06c7bc58321474167fd9329295",
+    "docs/research/momentum/results/EVENTS.json": "91986617fe6bcf607693ed80e120ec9ce57d794426d8445d6477e1ee87b7fb15"
+  },
+  "current_code_sha256": {
+    "rocket/momentum/__init__.py": "9c8f9f651216f0debe77b2ac13da0d7f9e33ca031761f1062e380aae5cfc54e4",
+    "rocket/momentum/census.py": "98f8dd1d18da1e93885579599d75fb45bc7a362e93ec43b3c6963b1c15fcc1f4",
+    "rocket/momentum/collect.py": "81824ee8bace05676f06c34a52873a693b299a597590ac09bbf9bd56b9ba2233",
+    "rocket/momentum/core.py": "5be7a7a5f610d7ec189dcd5c3b7629b3a348651ca97653ec84f720d13ca4c385",
+    "rocket/momentum/enrich.py": "44a536f3286016d2714ebea4061d4f38fedf08a6479cf509a3fa9c07bc71cacb",
+    "rocket/momentum/reconcile.py": "0543768c232100f31173bf2c2cd16a912738f1fda53dfc24b1bff18f732f80c1",
+    "rocket/momentum/shadow.py": "eeb122dd1f54ed0fa4fcada88a9d52666f7b2d00dd991241fb17b115109e3ec5",
+    "rocket/momentum/source.py": "1398acb0facd2e31750b5190fac4c261d7a799939aa60210cdab2551b29238a6",
+    "rocket/momentum/status.py": "c8464007278eded72a84a4b81d9cbd0f3dad2c35a4f577229e0da6fa598f0ad1"
+  }
+}
