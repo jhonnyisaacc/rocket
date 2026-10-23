@@ -16,6 +16,7 @@ import { buildPairMap } from "../src/pairs.js";
 import { holdingsSchema } from "../src/schemas.js";
 import { JUPITER_PROGRAM_ID } from "../src/signing-policy.js";
 import { fillTokenDecimals, resetTokenDecimals } from "../src/token-decimals.js";
+import { createMemoryWithdrawJournal, withdrawJournalAction } from "../src/withdraw-journal.js";
 
 const contract = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
@@ -841,4 +842,78 @@ test("spl recovery pays the destination associated token account", async () => {
   const denied = withPolicy(signer(calls, payer.publicKey.toBase58()), loadConfig({ OWNER_WITHDRAW_ADDRESSES: stranger.toBase58() }));
   await assert.rejects(() => denied.signSolana(raw), /not allowlisted/);
   assert.deepEqual(calls, ["solana"]);
+});
+
+test("screening a denied primary still sends a clean alternate", async () => {
+  const screenDeps = (sends: string[], deny: ReadonlySet<string>): ExecutorDeps => ({
+    config: {
+      maxUsdPerTrade: 5,
+      dailyUsdCap: 25,
+      maxSlippageBps: 100,
+      slippageHardMaxBps: 300,
+      maxLeverage: 1,
+      minLiquidityUsd: 75_000,
+      killSwitch: false,
+      enabledChainKeys: new Set(["ethereum", "base"]),
+    },
+    mode: "live",
+    spentTodayUsd: 0,
+    quoteHop: async () => ({ priceImpactPct: 0.2, feeUsd: 0.01, buyAmount: "10", signable: true }),
+    markPrice: async () => null,
+    send: async (request) => {
+      sends.push(request.chain.kind === "evm" ? String(request.chain.chainId) : request.chain.kind);
+      return landedSend();
+    },
+    readBalance: async () => 20,
+    priceOf: () => 1,
+    screenToken: async (token) => (deny.has(token.chainKey) ? "deny" : "allow"),
+    now: () => 1_050,
+  });
+  const screenIntent = (key: string): SwapIntent => ({
+    idempotencyKey: key,
+    side: "buy",
+    notionalUsd: 5,
+    slippageBps: 50,
+    token: tierToken("ethereum", 1),
+    holdings: ["ethereum", "base"].map((chainKey) => ({
+      symbol: "USDC",
+      address: "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      amount: 20,
+      usd: 20,
+      native: false,
+      decimals: 6,
+      chainKey,
+    })),
+    hyperliquid: null,
+    receivedAtMs: 0,
+    alternates: [tierToken("base", 8453)],
+  });
+
+  resetExecutorState();
+  const fallthroughSends: string[] = [];
+  const fallthrough = await execute(screenIntent("screen-fallthrough"), screenDeps(fallthroughSends, new Set(["ethereum"])));
+  assert.equal(fallthrough.decision, "sent");
+  assert.equal(fallthrough.venue, "base");
+  assert.deepEqual(fallthroughSends, ["8453"]);
+
+  resetExecutorState();
+  const blockedSends: string[] = [];
+  const blocked = await execute(screenIntent("screen-blocked"), screenDeps(blockedSends, new Set(["ethereum", "base"])));
+  assert.equal(blocked.decision, "skipped");
+  assert.equal(blocked.reason, "token screening rejected the contract");
+  assert.deepEqual(blockedSends, []);
+});
+
+test("a reverted withdraw releases its reservation and a pending one keeps it", async () => {
+  assert.equal(withdrawJournalAction("landed"), "commit");
+  assert.equal(withdrawJournalAction("pending"), "keep");
+  assert.equal(withdrawJournalAction("reverted"), "release");
+  assert.equal(withdrawJournalAction("expired"), "release");
+
+  const journal = createMemoryWithdrawJournal();
+  assert.equal(await journal.reserve("withdraw:reverted", "base:native", 1, "2026-10-21", 1), "reserved");
+  await journal.release("withdraw:reverted");
+  assert.equal(await journal.reserve("withdraw:reverted", "base:native", 1, "2026-10-21", 1), "reserved");
+  await journal.commit("withdraw:reverted");
+  assert.equal(await journal.reserve("withdraw:next", "base:native", 1, "2026-10-21", 1), "cap");
 });

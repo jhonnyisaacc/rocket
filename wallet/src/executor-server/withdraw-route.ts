@@ -7,7 +7,7 @@ import { BroadcastError, decideWithdraw, type ExecutorDeps } from "../executor.j
 import { tokenMatches, type TransactionSigner } from "../managed-signer.js";
 import { withdrawSchema } from "../schemas.js";
 import { spendDay } from "../spend.js";
-import { commitWithdraw, createMemoryWithdrawJournal, releaseWithdraw, reserveWithdraw } from "../withdraw-journal.js";
+import { commitWithdraw, createMemoryWithdrawJournal, releaseWithdraw, reserveWithdraw, withdrawJournalAction } from "../withdraw-journal.js";
 
 export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOptions, input: { config: AppConfig; runtime: ExecutorDeps; signer: TransactionSigner | null; secrets: readonly string[] }): void {
   const { config, runtime, signer, secrets } = input;
@@ -21,7 +21,6 @@ export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOpti
       if (!adminOk) return reply.code(401).send({ error: "unauthorized" });
       return reply.code(400).send({ error: "invalid request" });
     }
-    const dbStopped = runtime.killSwitchEnabled ? await runtime.killSwitchEnabled().catch(() => true) : false;
     const decision = decideWithdraw({
       adminOk: Boolean(config.adminToken) && tokenMatches(presented, config.adminToken ?? ""),
       enabled: config.withdrawEnabled,
@@ -31,7 +30,7 @@ export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOpti
       mint: parsed.data.mint,
       recoveryAllowlist: config.tokenRecoveryAllowlist,
       live: config.live,
-      killSwitch: config.killSwitch || dbStopped,
+      killSwitch: config.killSwitch,
       signerReady: signer !== null,
       chainKey: parsed.data.chainKey,
       decimals: parsed.data.decimals,
@@ -87,7 +86,12 @@ export function registerWithdraw(app: FastifyInstance, guard: RouteShorthandOpti
       if (!ambiguous) await releaseKey();
       throw error;
     }
-    await commitKey();
+    const action = withdrawJournalAction(tx.outcome);
+    if (action === "commit") await commitKey();
+    if (action === "release") {
+      await releaseKey();
+      return reply.code(409).send({ error: `withdraw ${tx.outcome}`, tx });
+    }
     return { decision: "sent", to: parsed.data.to, chainKey: parsed.data.chainKey, mint: parsed.data.mint, tx };
   });
 }

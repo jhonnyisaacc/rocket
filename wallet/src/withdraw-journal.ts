@@ -1,4 +1,23 @@
+import type { TxOutcome } from "./domain.js";
 import { reserveDecision, type SpendStatus } from "./spend.js";
+
+export type WithdrawJournalAction = "commit" | "release" | "keep";
+
+export function withdrawJournalAction(outcome: TxOutcome): WithdrawJournalAction {
+  switch (outcome) {
+    case "landed":
+      return "commit";
+    case "pending":
+      return "keep";
+    case "reverted":
+    case "expired":
+      return "release";
+    default: {
+      const exhaustive: never = outcome;
+      return exhaustive;
+    }
+  }
+}
 
 export const WITHDRAW_SCHEMA = `
 CREATE TABLE IF NOT EXISTS withdraw_journal (

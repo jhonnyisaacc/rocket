@@ -119,16 +119,20 @@ export function publicRoute(route: RouteQuote | null): RouteQuote | null {
   return { ...route, legs: route.legs.map(({ quote: _quote, ...leg }) => leg) };
 }
 
-type Screened = { ok: false } | { ok: true; alternates: NonNullable<SwapIntent["alternates"]> };
+type Screened =
+  | { ok: false }
+  | { ok: true; alternates: NonNullable<SwapIntent["alternates"]>; kept: Array<SwapIntent["token"]> };
 
 export async function keepScreened(intent: SwapIntent, deps: ExecutorDeps): Promise<Screened> {
   const alternates = intent.alternates ?? [];
-  if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates };
+  if (deps.mode !== "live" || !deps.screenToken) return { ok: true, alternates, kept: [intent.token, ...alternates] };
   const screen = deps.screenToken;
   const verdict = (token: SwapIntent["token"]) => screen({ chainKey: token.chainKey, chain: token.chain, contract: token.address }).catch(() => "deny" as const);
   const [primary, ...rest] = await Promise.all([intent.token, ...alternates].map(verdict));
-  if (primary !== "allow") return { ok: false };
-  return { ok: true, alternates: alternates.filter((_, index) => rest[index] === "allow") };
+  const keptAlternates = alternates.filter((_, index) => rest[index] === "allow");
+  if (primary !== "allow" && keptAlternates.length === 0) return { ok: false };
+  const kept = primary === "allow" ? [intent.token, ...keptAlternates] : keptAlternates;
+  return { ok: true, alternates: keptAlternates, kept };
 }
 
 export async function quotePlan(intent: SwapIntent, token: SwapIntent["token"], deps: ExecutorDeps): Promise<{ quotes: RouteQuote[]; unsized: boolean }> {

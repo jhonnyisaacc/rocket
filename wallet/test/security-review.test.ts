@@ -376,7 +376,7 @@ test("withdraw requires the admin token, the enable flag, the cap, and the allow
   assert.throws(() => assertBoot(loadConfig({ EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456", WITHDRAW_ENABLED: "true", OWNER_WITHDRAW_ADDRESSES: "not-an-address" }), "executor"), /invalid address/);
 });
 
-test("a database kill switch stops a live withdraw and a live withdraw needs an idempotency key", async () => {
+test("the database kill switch leaves withdraw open and the env switch holds it at would_send", async () => {
   const config = loadConfig({
     EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
     ADMIN_TOKEN: adminAuth,
@@ -387,11 +387,6 @@ test("a database kill switch stops a live withdraw and a live withdraw needs an 
   });
   const headers = { "content-type": "application/json", authorization: `Bearer ${tokenAuth}`, "x-admin-token": adminAuth };
   const payload = { to: owner, amount: 1, chainKey: "base" };
-  const killed = await createExecutorApp(config, { ...runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), killSwitchEnabled: async () => true }, null, [], []);
-  const stopped = await killed.inject({ method: "POST", url: "/withdraw", headers, payload });
-  assert.equal(stopped.statusCode, 200);
-  assert.equal(stopped.json().decision, "would_send");
-  await killed.close();
   const signer: TransactionSigner = {
     backend: "keystore",
     evmAddress: () => owner,
@@ -406,6 +401,25 @@ test("a database kill switch stops a live withdraw and a live withdraw needs an 
       return { r: "0x01", s: "0x02", v: 27 };
     },
   };
+  const dbKilled = await createExecutorApp(config, { ...runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), killSwitchEnabled: async () => true }, signer, [], []);
+  const reachable = await dbKilled.inject({ method: "POST", url: "/withdraw", headers, payload });
+  assert.equal(reachable.statusCode, 409);
+  assert.equal(reachable.json().error, "live withdraw needs an idempotencyKey");
+  await dbKilled.close();
+  const envConfig = loadConfig({
+    EXECUTOR_AUTH_TOKEN: tokenAuth, RESOLVER_AUTH_TOKEN: "resolver-token-123456",
+    ADMIN_TOKEN: adminAuth,
+    LISTING_TRADER_LIVE: "true",
+    WITHDRAW_ENABLED: "true",
+    OWNER_WITHDRAW_ADDRESSES: owner,
+    MAX_WITHDRAW_AMOUNT: "1",
+    KILL_SWITCH: "true",
+  });
+  const envKilled = await createExecutorApp(envConfig, runtime(envConfig, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), signer, [], []);
+  const held = await envKilled.inject({ method: "POST", url: "/withdraw", headers, payload });
+  assert.equal(held.statusCode, 200);
+  assert.equal(held.json().decision, "would_send");
+  await envKilled.close();
   const open = await createExecutorApp(config, runtime(config, [], async () => ({ priceImpactPct: null, feeUsd: 0, buyAmount: "0" })), signer, [], []);
   const noKey = await open.inject({ method: "POST", url: "/withdraw", headers, payload });
   assert.equal(noKey.statusCode, 409);

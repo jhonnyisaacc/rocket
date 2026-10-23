@@ -408,7 +408,7 @@ export async function execute(intent: SwapIntent, deps: ExecutorDeps): Promise<E
   latency = stamp(latency, "quotedMs", now());
   const screened = await screening;
   if (!screened.ok) return rejected();
-  const kept = new Set([intent.token, ...screened.alternates]);
+  const kept = new Set(screened.kept);
   const allowed = results.filter((_, index) => kept.has(candidates[index] as SwapIntent["token"]));
   const quotes = allowed.flatMap((result) => result.quotes);
   if (quotes.length === 0) {
