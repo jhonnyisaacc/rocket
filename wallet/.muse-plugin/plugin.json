@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "name": "rocket",
+  "displayName": "Rocket Wallet",
+  "version": "0.1.0",
+  "description": "Secure multichain agentic wallet. Dry-run by default, Turnkey signing in live mode.",
+  "compat": { "source": "native", "manifestDir": ".muse-plugin" },
+  "capabilities": {
+    "skills": [
+      { "id": "rocket-get-started", "path": "skills/rocket-get-started/SKILL.md", "enabledDefault": true },
+      { "id": "rocket-pay-and-swap", "path": "skills/rocket-pay-and-swap/SKILL.md", "enabledDefault": true },
+      { "id": "rocket-x402-services", "path": "skills/rocket-x402-services/SKILL.md", "enabledDefault": true }
+    ],
+    "commands": [],
+    "hooks": [],
+    "mcpServers": [
+      { "id": "rocket", "transport": "stdio", "command": ["node", "dist/src/mcp-server.js"] }
+    ],
+    "reminders": []
+  }
+}

@@ -1,0 +1,92 @@
+name: Wallet
+on:
+  pull_request:
+    paths:
+      - "wallet/**"
+      - ".github/workflows/wallet.yml"
+  push:
+    branches: [main]
+    paths:
+      - "wallet/**"
+      - ".github/workflows/wallet.yml"
+permissions:
+  contents: read
+jobs:
+  hygiene:
+    name: Hygiene
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - run: node scripts/check-file-size.mjs
+      - run: node scripts/check-boundaries.mjs
+      - run: node scripts/check-agent-manifests.mjs
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: wallet/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm test
+      - run: node scripts/turnkey-policy.mjs --manifest policies/deployment.example.json --out policies/turnkey.example.json --check
+  smoke:
+    name: Entrypoint smoke
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: wallet/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm run smoke
+  supply:
+    name: Supply chain
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: wallet
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: wallet/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=high
+      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          path: wallet
+          format: spdx-json
+          artifact-name: wallet-sbom.spdx.json
+  docker:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: docker build -t rocket-wallet:ci wallet
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: rocket-wallet:ci
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          vuln-type: os
+          ignore-unfixed: true

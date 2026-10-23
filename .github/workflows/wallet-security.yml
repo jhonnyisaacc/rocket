@@ -1,0 +1,59 @@
+name: Wallet security
+on:
+  pull_request:
+    paths:
+      - "wallet/**"
+      - ".github/workflows/wallet-security.yml"
+      - ".github/workflows/wallet.yml"
+      - ".github/dependabot.yml"
+      - ".gitleaks.toml"
+      - ".semgrepignore"
+  push:
+    branches: [main]
+    paths:
+      - "wallet/**"
+      - ".github/workflows/wallet-security.yml"
+      - ".github/workflows/wallet.yml"
+      - ".github/dependabot.yml"
+      - ".gitleaks.toml"
+      - ".semgrepignore"
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: github/codeql-action/init@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
+        with:
+          languages: javascript-typescript
+          config: |
+            paths:
+              - wallet
+      - uses: github/codeql-action/analyze@ce5e7eeac396d720fe2d802714996c8ce561e311 # v3
+  semgrep:
+    name: Semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:latest@sha256:81474464c1f07483ba0682a44787fd93c91397419762a04abe2bafaae396304b # verified against Docker Hub 2026-10-21
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: semgrep scan --config p/typescript --config p/security-audit --error --metrics=off wallet
+  gitleaks:
+    name: Gitleaks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
