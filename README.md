@@ -8,7 +8,7 @@ any bot  →  rocket <workflow> --json  →  ResearchResult  →  adapter presen
 
 Safety: `READ_ONLY_RESEARCH_ONLY_HUMAN_GATED`. No orders, no signing, no automatic holdings or watch changes.
 
-`wallet/` is a separate Node service for listing alerts. The Rocket CLI does not import it. See [wallet/README.md](wallet/README.md).
+Listing match stays in `listings/`. Swaps and bridges live in [Whale](https://github.com/jhonnyisaacc/whale). Rocket does not import either tree, and `listings/` will not send a live order.
 
 Design: [docs/ROCKET_PLAN.md](docs/ROCKET_PLAN.md)
 

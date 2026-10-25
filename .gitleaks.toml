@@ -1,14 +1,4 @@
-title = "wallet"
+title = "rocket"
 
 [extend]
 useDefault = true
-
-[allowlist]
-condition = "AND"
-description = "Synthetic fixture values used only by wallet unit tests"
-paths = [
-  '''wallet/test/.*\.test\.ts''',
-]
-regexes = [
-  '''(0123456789abcdef|executor-token-123456|resolver-token-123456|strategy-token-12345|admin-token-1234567|zeroex-secret-key|oneinch-secret-key|okx-api-secret-key|okx-api-passphrase|blockaid-secret-key|goplus-secret-key|lifi-secret-key|listing-trader-test|admin-token-value|supersecretvalue|blockaid-test)''',
-]
