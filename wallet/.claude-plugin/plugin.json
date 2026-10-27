@@ -1,9 +1,0 @@
-{
-  "name": "rocket",
-  "description": "Rocket agentic wallet for Claude. Resolve listings, quote across EVM L1 and L2 chains and Solana, and swap under a Turnkey policy. Dry-run is the default.",
-  "version": "0.1.0",
-  "author": { "name": "Rocket" },
-  "repository": "https://github.com/jhonnyisaacc/rocket",
-  "license": "MIT",
-  "keywords": ["rocket", "agentic wallet", "multichain wallet", "turnkey"]
-}
