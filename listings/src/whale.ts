@@ -19,7 +19,7 @@ export type WhaleSwap = {
   mode: "dry_run";
 };
 
-export type WhaleResult = { decision: "skipped" | "would_send"; reason: string };
+export type WhaleResult = { decision: "skipped"; reason: string };
 
 export interface WhaleClient {
   swap(command: WhaleSwap): Promise<WhaleResult>;
@@ -36,9 +36,9 @@ export function dryRunWhaleClient(): WhaleClient {
 }
 
 export function assertNoLiveWhale(env: NodeJS.ProcessEnv): void {
-  if (env.WHALE_LIVE === "true") {
-    throw new Error("Rocket stays read-only. WHALE_LIVE is refused even when WHALE_URL is set");
-  }
+  const live = env.WHALE_LIVE;
+  if (live === undefined || live === "" || live === "false") return;
+  throw new Error("Rocket stays read-only.");
 }
 
 export function receiveListing(alert: Alert, index: WatchIndex, minLiquidityUsd: number): { outcome: MatchOutcome; command: WhaleSwap | null } {
