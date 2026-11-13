@@ -54,3 +54,33 @@ synthetic reproduction. Original packets and historical source documents
 remain unchanged. #51 source/publication/Tier-B readiness and human values
 remain unresolved; #49/#50 remain open for their explicit full-foundation
 prerequisites. No result, trial count or scoring authority is changed.
+
+## #49/#50 closed unmerged, 2026-11-13 live verification
+
+The repository owner closed #49 and #50 unmerged at 2026-11-03T08:50:37Z.
+Neither PR received a closing comment. #50 carries the `evidence-archive`
+label; #49 carries none. This was a human closure, not #51 acceptance: #51
+stays open and its recorded REQUEST_CHANGES decision stands. The statements
+above that #49/#50 remain open are superseded by this section only for PR
+state. All gates, trial counts and MOM-002 Draft/unscored status are unchanged.
+A closed branch grants no continuation.
+
+#50 evidence: the seven [archive/pr-50](archive/pr-50/README.md) documents
+were re-verified byte-identical to `b8ddbd0d1f477f82f96b26298885b97b0f95e063`.
+The archive manifest and `research/governance/project.json` still record
+pre-closure status. They are not rewritten here because a closure record needs
+an individual #50 closing note, which does not exist.
+
+#49 evidence: the 2026-10-02 pin `7c42582` above is no longer reachable from
+any branch after the 2026-10-06 rebase. The same documents are byte-identical at
+the final head `877a77afcdcc1fee1521518ce0b5c3a4d54daaed`, which
+`refs/pull/49/head` and `feat/momentum-refactor-codex` keep reachable.
+
+| #49 document at `877a77a` | SHA-256 |
+| --- | --- |
+| [REPLICATION_REPORT.md](https://github.com/jhonnyisaacc/rocket/blob/877a77afcdcc1fee1521518ce0b5c3a4d54daaed/docs/research/momentum/REPLICATION_REPORT.md) | `52150c3de972f4e94050f7ba7a7bde4d19cbf83ec6ed37072c359b1936f90b69` |
+| [CFTC_LINEAGE_AUDIT.md](https://github.com/jhonnyisaacc/rocket/blob/877a77afcdcc1fee1521518ce0b5c3a4d54daaed/docs/research/momentum/CFTC_LINEAGE_AUDIT.md) | `1d639f77d5510f2263151a4ba1f4d5b92a151154f440f13314c7d2bfcf492a01` |
+| [MOM_002_REVIEW_STATE.json](https://github.com/jhonnyisaacc/rocket/blob/877a77afcdcc1fee1521518ce0b5c3a4d54daaed/docs/research/momentum/MOM_002_REVIEW_STATE.json) | `644282bd27c1a67a77d9448628df4a535ca0154b1c153309ad6d251b39a7fcd9` |
+
+The #26/#38/#40/#46 archives (43 documents) were re-verified byte-identical to
+their source revisions on the same date.
