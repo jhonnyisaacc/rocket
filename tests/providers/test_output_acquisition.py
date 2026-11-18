@@ -66,6 +66,42 @@ def test_ism_archive_cannot_relabel_stale_release():
         fetch_ism_report('services', http=client, now=NOW)
 
 
+def test_default_news_plan_does_not_call_fmp():
+    from rocket.config import providers_config
+    from rocket.providers.news import acquire_news
+
+    class FMP:
+        def __init__(self):
+            self.paths = []
+
+        def configured(self):
+            return True
+
+        def _get(self, path, params=None):
+            self.paths.append(path)
+            return []
+
+    fmp = FMP()
+    published = datetime.now(UTC).isoformat()
+    result = acquire_news(
+        "CAT",
+        fmp=fmp,
+        openbb_fetcher=lambda **kwargs: [{
+            "title": "CAT guidance",
+            "url": "https://example.test/cat",
+            "publishedDate": published,
+            "symbol": "CAT",
+        }],
+    )
+    plan = providers_config()["news"]
+    assert fmp.paths == []
+    assert plan["primary"] == "openbb_news"
+    assert plan.get("fallbacks", []) == []
+    assert "FMP_API_KEY" not in plan.get("env", [])
+    assert result.result.source == "OpenBB.news"
+    assert result.result.records[0]["verified_fact"] is False
+
+
 def test_news_is_optional_reporting_context():
     from rocket.providers.news import acquire_news
     class FMP:

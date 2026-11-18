@@ -307,6 +307,33 @@ def _provider(growth, *, accounting, window, basis, source, extra=None):
     return ProviderResult(O.HEALTHY, (record,), NOW, source=source)
 
 
+def test_default_fundamentals_plan_uses_edgar_and_skips_fmp():
+    from rocket.config import providers_config
+
+    fmp, edgar, massive = Mock(), Mock(), Mock()
+    fmp.fundamentals.return_value = _provider(
+        -0.9, accounting="UNSPECIFIED", window="ANNUAL",
+        basis="reported annual EPS growth", source="fmp",
+    )
+    edgar.fetch.return_value = _provider(
+        -0.2, accounting="GAAP", window="TTM",
+        basis="reported TTM EPS YoY", source="sec.edgar", extra={"eps_ttm": 4.0},
+    )
+    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, price=40)
+    plan = providers_config()["fundamentals"]
+    fmp.fundamentals.assert_not_called()
+    massive.fetch.assert_not_called()
+    assert plan["primary"] == "sec.edgar"
+    assert plan["fallbacks"] == ["massive"]
+    assert plan["env"] == ["ROCKET_SEC_USER_AGENT", "MASSIVE_API_KEY"]
+    assert row["fundamentals_source"] == "sec.edgar"
+    assert row["company_fundamentals"] is True
+    assert row["pe_ttm"] == 10
+    assert row["valuation_support"] is True
+    assert row["field_provenance"]["valuation_support"] == "sec.edgar+yahoo"
+    assert providers_config()["disclosures_secondary"]["primary"] == "fmp"
+
+
 def test_pep_shaped_opposite_sign_prefers_gaap_ttm_and_flags():
     fmp, edgar, massive = Mock(), Mock(), Mock()
     fmp.fundamentals.return_value = _provider(
