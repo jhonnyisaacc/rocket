@@ -1,12 +1,18 @@
 # Fundamentals coverage and recovery
 
-The default dispatch order in `config/providers.toml` is **FMP → SEC EDGAR →
-Massive**. FMP and SEC EDGAR are both read when they are in that chain. The gate
+The default dispatch order in `config/providers.toml` is **SEC EDGAR, then
+Massive**. FMP is not in that chain. The free FMP plan returns HTTP 402
+Entitlement on `/stable/ratios-ttm`, `/stable/income-statement-growth`, and
+`/stable/analyst-estimates` for symbols outside a small sample, so fundamentals
+acquisition does not call those endpoints. Massive runs only when EDGAR has no
+eligible EPS.
+
+When a configured chain includes both FMP and SEC EDGAR, both are read. The gate
 EPS prefers GAAP TTM, then GAAP quarterly year-over-year, then the only provider
 that returned growth. Massive runs only when neither comparison provider has
 eligible EPS. A daily-quota HTTP 429 (including "Limit Reach") opens an in-memory
-guard for that FMP client until the next UTC day; the remaining endpoints and
-tickers in the scan do not spend requests on an exhausted quota.
+guard for that FMP client until the next UTC day. The remaining endpoints and
+tickers in that scan do not spend requests on an exhausted quota.
 
 `eps_accounting` and `eps_window` name the selected basis. EDGAR us-gaap facts are
 `GAAP` with window `TTM` or `QUARTER`. FMP annual `growthEPS` is `UNSPECIFIED` /
@@ -74,10 +80,11 @@ abs(prior)`; zero denominators stay UNKNOWN. The gate's EPS growth uses TTM YoY
 when available, otherwise same-quarter YoY, with its basis recorded explicitly.
 
 The unchanged `ism_simple` gates remain: ISM contracting, close below the prior
-20-session low, and bearish EPS growth. When FMP valuation is missing, EDGAR TTM
-EPS plus the already acquired Yahoo price supplies trailing P/E and the same
-positive P/E <= 15 valuation-support veto. Its provenance is `sec.edgar+yahoo`.
-Nonpositive or unavailable EPS/price leaves valuation UNKNOWN. Instantaneous
+20-session low, and bearish EPS growth. The valuation-support veto is a positive
+trailing P/E <= 15. On the default chain, EDGAR reported TTM EPS plus the
+already acquired Yahoo price supplies that ratio. Its provenance is
+`sec.edgar+yahoo`. An FMP `pe_ttm` already on the row is kept. Nonpositive or
+unavailable EPS/price leaves valuation UNKNOWN. Instantaneous
 shares are reported separately: dividing net income by current common shares
 would misstate diluted EPS, especially for multiple share classes.
 
@@ -91,6 +98,9 @@ prevent acquisition. Snapshot availability is observation-based and never claims
 historical replay availability.
 
 ## Actual VPS limitations, October 1, 2026
+
+This section records that scan. The current plan does not call FMP for
+fundamentals.
 
 FMP's daily quota returned HTTP 429 "Limit Reach", leaving NUE, TXN, CAT, DOW,
 PEP, F, WMT, GOOGL, UPS and JPM without fundamentals in the observed scan. Massive

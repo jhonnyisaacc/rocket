@@ -14,10 +14,12 @@ from rocket.providers.edgar import SECEDGAR, apply_price_valuation, parse_compan
 from rocket.providers.fmp import FMPClient
 from rocket.providers.fundamentals import fundamentals_row
 from rocket.providers.protocols import ProviderResult
+from rocket.providers.registry import Registry
 from rocket.providers.shorts import acquire_short_snapshot
 from rocket.workflows.shorts import score_ism_short_candidate
 
 NOW = datetime(2026, 10, 1, 15, tzinfo=UTC)
+FMP_AND_EDGAR = lambda: Registry({"fundamentals": {"primary": "fmp", "fallbacks": ["sec.edgar", "massive"]}})
 FIXTURES = Path(__file__).parents[1] / "fixtures/fundamentals/edgar"
 
 
@@ -212,7 +214,7 @@ def test_fmp_429_falls_through_to_sec_once_and_mixed_misses(tmp_path):
         pinned.fetch.side_effect = lambda symbol: edgar.fetch(symbol, now=NOW)
         fmp = FMPClient(api_key="SECRET", http=http)
         rows = {
-            s: fundamentals_row(s, fmp=fmp, edgar=pinned, massive=massive, price=400)
+            s: fundamentals_row(s, fmp=fmp, edgar=pinned, massive=massive, price=400, registry=FMP_AND_EDGAR())
             for s in ("CAT", "JPM", "WMT", "MISSING")
         }
     assert len(fmp_calls) == 1
@@ -240,14 +242,14 @@ def test_valid_fmp_fields_survive_sec_recovery_and_false_stops_fallback(tmp_path
         adapter = SECEDGAR(state_dir=tmp_path, http=http)
         edgar = Mock()
         edgar.fetch.side_effect = lambda s: adapter.fetch(s, now=NOW)
-        row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, price=400)
+        row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, price=400, registry=FMP_AND_EDGAR())
         assert row["field_provenance"]["pe_ttm"] == "fmp"
         assert row["valuation_support"] is True
         assert row["fundamentals_source"] == "sec.edgar"
         fmp.fundamentals.return_value = ProviderResult(
             O.HEALTHY, ({"company_fundamentals": False, "eps_growth": 0.1},), NOW, source="fmp"
         )
-        row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
+        row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
         assert row["fundamentals_source"] == "sec.edgar"
         assert row["eps_accounting"] == "GAAP"
         assert row["eps_window"] == "TTM"
@@ -369,7 +371,7 @@ def test_request_spacing_and_valid_fmp_still_reads_edgar(tmp_path, monkeypatch):
                      "eps_accounting": "UNSPECIFIED", "eps_window": "ANNUAL"},), NOW, source="fmp"
     )
     edgar.fetch.return_value = ProviderResult(O.UNAVAILABLE, failure_kind="Empty", source="sec.edgar")
-    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
+    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
     assert row["fundamentals_source"] == "fmp"
     assert row["eps_accounting"] == "UNSPECIFIED"
     assert row["eps_window"] == "ANNUAL"
