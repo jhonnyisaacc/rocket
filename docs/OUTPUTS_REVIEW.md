@@ -41,6 +41,11 @@ loaded only into child processes; no secrets or user portfolio files are include
 | Disclosures | Official House/OGE metadata; FMP Pelosi history; free Open Cabinet Trump history | Official metadata worked; FMP history previously returned 402. Follow-up live Trump acquisition returned 8,940 transaction rows, all joined to OGE posting dates. |
 | Wallet RPC | Explicit RPC, Helius, public Solana, publicnode | Mainnet RPC reachability checked; actual caller wallet inventory unavailable for live validation. |
 
+The table above is the 2026-09-08 probe. The current `config/providers.toml` plan
+does not call FMP for fundamentals or news. Fundamentals primary is SEC EDGAR,
+then Massive. News primary is OpenBB, with no FMP fallback. FMP stays the
+`disclosures_secondary` provider for house-latest and senate-latest.
+
 OpenBB can use the configured `OPENBB_PYTHON` interpreter when installed outside
 Rocket's environment. No new mandatory dependencies are introduced. Grok/X and
 browser scraping are not used to manufacture corroboration. The experimental

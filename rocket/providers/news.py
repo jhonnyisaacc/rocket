@@ -8,9 +8,15 @@ from rocket.providers.fmp import FMPClient
 from rocket.providers.protocols import ProviderResult
 
 
-def acquire_news(symbol=None, *, fmp=None, openbb_fetcher=None):
+def acquire_news(symbol=None, *, fmp=None, openbb_fetcher=None, registry=None):
+    from rocket.providers.registry import Registry
+
+    registry = registry or Registry()
+    config = registry.capability("news")
+    names = list(dict.fromkeys([config["primary"], *config.get("fallbacks", [])]))
     fmp = fmp or FMPClient()
-    def primary():
+
+    def fmp_news():
         if not fmp.configured():
             return ProviderResult(OperationalStatus.UNAVAILABLE, source="fmp.news", failure_kind="NotConfigured")
         rows = fmp._get("/news/stock" if symbol else "/news/general-latest",
@@ -18,7 +24,8 @@ def acquire_news(symbol=None, *, fmp=None, openbb_fetcher=None):
         if not isinstance(rows, list):
             raise ValueError("invalid news schema")
         return normalize(rows, "fmp.news")
-    def fallback():
+
+    def openbb_news():
         fetch = openbb_fetcher
         if fetch is None:
             from rocket.providers.openbb_bridge import read_openbb
@@ -26,8 +33,10 @@ def acquire_news(symbol=None, *, fmp=None, openbb_fetcher=None):
         data = fetch(symbol=symbol, provider="yfinance", limit=20) if symbol else fetch(provider="fmp", limit=20)
         rows = data.results if hasattr(data, "results") else data
         return normalize([r.model_dump() if hasattr(r, "model_dump") else r for r in rows], "OpenBB.news")
-    return acquire("news", [("fmp.news", primary), ("openbb.news", fallback)], required=False,
-                   sufficient=lambda r: r.status is OperationalStatus.HEALTHY)
+
+    factories = {"fmp_news": fmp_news, "openbb_news": openbb_news}
+    return acquire("news", [(name, factories[name]) for name in names if name in factories],
+                   required=False, sufficient=lambda r: r.status is OperationalStatus.HEALTHY)
 
 
 def normalize(rows, source):

@@ -122,13 +122,6 @@ def _ism_contracting(row: Mapping[str, Any]) -> bool | None:
 
 
 def score_ism_short_candidate(row: Mapping[str, Any]) -> dict[str, Any]:
-    """Small, explainable ISM short gate using the canonical live inputs.
-
-    ISM supplies the contracting-industry signal, Yahoo supplies the price
-    breakdown, and shared fundamentals supplies bearish EPS growth (FMP primary,
-    SEC EDGAR then validated Massive fallback). Optional valuation support remains a
-    safety veto when the provider has it.
-    """
     ticker = str(row.get("ticker") or row.get("asset") or "").strip().upper()
     factors = {
         "ism_contracting": _ism_contracting(row),

@@ -634,7 +634,7 @@ Adding a provider later:
 |---|---|---|---|---|
 | MacroSeries | OpenBB FRED | FRED CSV | `research/core/macro.py`, OpenBB `_to_records` | Cava corroboration uses the same capability |
 | Quotes / history | Yahoo chart | (slot open) | `research/equity_quotes.py` | listed equity/ETF identity checks |
-| Fundamentals | FMP | Massive if env present | FMPClient | never labeled official |
+| Fundamentals | SEC EDGAR | Massive if env present | SECEDGAR | P/E <= 15 from reported TTM EPS and Yahoo price. FMP is not in this chain. |
 | Universe | CoinGecko | (slot open) | current-universe discovery | live only |
 | Perps | Hyperliquid **market** reads | (slot open) | extract read methods | no signing; `HL_WALLET` is not an order path |
 | COT | OpenBB CFTC | official CFTC | `research/crypto_cot.py` + analyzer/fetcher | market regime, not alt signals |

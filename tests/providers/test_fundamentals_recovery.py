@@ -17,6 +17,7 @@ from rocket.workflows.ism import IsmWorkflow
 from rocket.workflows.shorts import ShortsWorkflow, score_ism_short_candidate
 
 LEGACY_REGISTRY = lambda: Registry({"fundamentals": {"primary": "fmp", "fallbacks": ["massive"]}})
+FMP_AND_EDGAR = lambda: Registry({"fundamentals": {"primary": "fmp", "fallbacks": ["sec.edgar", "massive"]}})
 
 NOW = datetime(2026, 9, 8, 15, tzinfo=UTC)
 
@@ -345,7 +346,7 @@ def test_pep_shaped_opposite_sign_prefers_gaap_ttm_and_flags():
         basis="reported TTM EPS YoY (FY plus comparable YTD; quarter sum fallback)",
         source="sec.edgar", extra={"eps_ttm": 6.95},
     )
-    row = fundamentals_row("PEP", fmp=fmp, edgar=edgar, massive=massive)
+    row = fundamentals_row("PEP", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
     assert row["eps_growth"] == 0.39
     assert row["company_fundamentals"] is False
     assert row["eps_accounting"] == "GAAP"
@@ -378,7 +379,7 @@ def test_same_sign_large_gap_keeps_preferred_basis_and_flags():
         basis="reported TTM EPS YoY (FY plus comparable YTD; quarter sum fallback)",
         source="sec.edgar",
     )
-    row = fundamentals_row("F", fmp=fmp, edgar=edgar, massive=massive)
+    row = fundamentals_row("F", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
     assert row["eps_growth"] == 0.40
     assert row["eps_accounting"] == "GAAP"
     assert row["eps_window"] == "TTM"
@@ -397,7 +398,7 @@ def test_same_sign_small_gap_records_both_without_flag():
         0.18, accounting="GAAP", window="QUARTER",
         basis="reported latest fiscal quarter EPS YoY", source="sec.edgar",
     )
-    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive)
+    row = fundamentals_row("CAT", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
     assert row["eps_window"] == "QUARTER"
     assert row["fundamentals_source"] == "sec.edgar"
     assert row["eps_provider_disagreement"]["flagged"] is False
@@ -415,7 +416,7 @@ def test_basis_text_is_inferred_when_structured_fields_are_absent():
         NOW, source="fmp",
     )
     edgar.fetch.return_value = ProviderResult(O.UNAVAILABLE, failure_kind="Empty", source="sec.edgar")
-    row = fundamentals_row("DOW", fmp=fmp, edgar=edgar, massive=massive)
+    row = fundamentals_row("DOW", fmp=fmp, edgar=edgar, massive=massive, registry=FMP_AND_EDGAR())
     assert row["eps_accounting"] == "UNSPECIFIED"
     assert row["eps_window"] == "ANNUAL"
     assert row["eps_provider_disagreement"] is None

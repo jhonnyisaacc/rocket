@@ -12,9 +12,9 @@ fallbacks = []
 env = []
 
 [fundamentals]
-primary = "fmp"
-fallbacks = ["sec.edgar", "massive"]
-env = ["FMP_API_KEY", "ROCKET_SEC_USER_AGENT", "MASSIVE_API_KEY"]
+primary = "sec.edgar"
+fallbacks = ["massive"]
+env = ["ROCKET_SEC_USER_AGENT", "MASSIVE_API_KEY"]
 
 [universe]
 primary = "coingecko"
@@ -67,9 +67,9 @@ fallbacks = ["supadata_metadata"]
 env = ["SUPADATA_API_KEY"]
 
 [news]
-primary = "fmp_news"
-fallbacks = ["openbb_news"]
-env = ["FMP_API_KEY", "OPENBB_PYTHON"]
+primary = "openbb_news"
+fallbacks = []
+env = ["OPENBB_PYTHON"]
 
 [memecoin_capture]
 primary = "pumpapi"
